@@ -1,0 +1,3 @@
+[submodule "mobius-pipeline"]
+	path = mobius-pipeline
+	url = ../mobius-pipeline.git
