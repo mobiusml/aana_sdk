@@ -1,0 +1,36 @@
+{
+	"name": "Ubuntu",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "3.10"
+		},
+		"ghcr.io/devcontainers-contrib/features/poetry:2": {
+			"version": "latest"
+		}
+	},
+	"hostRequirements": {
+		"gpu": "optional" 
+	},
+	"mounts": [
+		"source=/nas,target=/nas,type=bind",
+		"source=/nas2,target=/nas2,type=bind"
+	],
+
+	"postCreateCommand": "sh ${containerWorkspaceFolder}/install.sh",
+	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.black-formatter",
+				"ms-python.python",
+				"ms-python.mypy-type-checker",
+				"ms-toolsai.jupyter"
+			]
+		}
+	}
+
+}
