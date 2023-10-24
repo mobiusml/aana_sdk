@@ -1,5 +1,4 @@
 from typing import Dict, List, Tuple
-import ray
 from ray import serve
 
 from mobius_pipeline.pipeline import Pipeline

@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from aana.utils.general import load_options
 
 
@@ -12,7 +13,7 @@ class BaseDeployment:
         self.config = None
         self.configured = False
 
-    async def reconfigure(self, config):
+    async def reconfigure(self, config: Dict[str, Any]):
         """
         Reconfigure the deployment.
         The method is called when the deployment is updated.
@@ -21,11 +22,14 @@ class BaseDeployment:
         # go through the config and try to load options
         for key in self.config:
             self.config[key] = load_options(self.config[key], ignore_errors=True)
-        await self.apply_config()
+        await self.apply_config(config)
         self.configured = True
 
-    async def apply_config(self):
+    async def apply_config(self, config: Dict[str, Any]):
         """
         Apply the configuration.
+
+        Args:
+            config (dict): the configuration
         """
         pass
