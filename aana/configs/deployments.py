@@ -2,7 +2,6 @@ from aana.deployments.vllm_deployment import VLLMDeployment
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.general import encode_options
 
-#TODO: add build system to only serve the deployment if it's needed
 
 deployments = {
     "vllm_deployment_llama2_7b_chat": VLLMDeployment.options(
@@ -18,5 +17,5 @@ deployments = {
                 SamplingParams(temperature=1.0, top_p=1.0, top_k=-1, max_tokens=256)
             ),
         },
-    ).bind(),
+    ),
 }

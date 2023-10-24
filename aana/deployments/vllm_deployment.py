@@ -1,9 +1,10 @@
-from typing import List
+from typing import Any, Dict, List
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
+from vllm.model_executor.utils import set_random_seed
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
@@ -17,7 +18,7 @@ class VLLMDeployment(BaseDeployment):
     Deployment to serve large language models using vLLM.
     """
 
-    async def apply_config(self):
+    async def apply_config(self, config: Dict[str, Any]):
         """
         Apply the configuration.
 
@@ -31,17 +32,18 @@ class VLLMDeployment(BaseDeployment):
         - quantization: the quantization method (optional, default: None)
         - gpu_memory_utilization: the GPU memory utilization.
         - default_sampling_params: the default sampling parameters.
+
+        Args:
+            config (dict): the configuration of the deployment
         """
-        await super().apply_config()
+        await super().apply_config(config)
 
         # parse the config
-        model: str = self.config["model"]
-        dtype: str = self.config.get("dtype", "auto")
-        quantization: str = self.config.get("quantization", None)
-        gpu_memory_utilization: float = self.config["gpu_memory_utilization"]
-        self.default_sampling_params: SamplingParams = self.config[
-            "default_sampling_params"
-        ]
+        model: str = config["model"]
+        dtype: str = config.get("dtype", "auto")
+        quantization: str = config.get("quantization", None)
+        gpu_memory_utilization: float = config["gpu_memory_utilization"]
+        self.default_sampling_params: SamplingParams = config["default_sampling_params"]
         args = AsyncEngineArgs(
             model=model,
             dtype=dtype,
@@ -72,13 +74,12 @@ class VLLMDeployment(BaseDeployment):
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
-                temperature=sampling_params.temperature,
-                top_p=sampling_params.top_p,
-                top_k=sampling_params.top_k,
-                max_tokens=sampling_params.max_tokens,
+                **sampling_params.dict(exclude_unset=True)
             )
             # start the request
             request_id = random_uuid()
+            # set the random seed for reproducibility
+            set_random_seed(42)
             results_generator = self.engine.generate(
                 prompt, sampling_params_vllm, request_id
             )
