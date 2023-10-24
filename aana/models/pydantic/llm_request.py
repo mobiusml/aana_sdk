@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Optional
 from pydantic import BaseModel, Extra, Field
 
 from aana.models.pydantic.prompt import Prompt

@@ -1,7 +1,7 @@
 import pickle
 from typing import Any, TypeVar
 
-OptionType = TypeVar("OptionType")
+from pydantic import BaseModel
 
 
 def load_options(s: str, ignore_errors: bool = True) -> Any:
@@ -48,6 +48,9 @@ def encode_options(options: Any) -> str:
     """
     b = pickle.dumps(options)
     return b.decode("latin1")
+
+
+OptionType = TypeVar("OptionType", bound=BaseModel)
 
 
 def merged_options(default_options: OptionType, options: OptionType) -> OptionType:

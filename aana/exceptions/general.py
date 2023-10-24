@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type
+from typing import Any, Dict
 
 
 class AanaException(Exception):

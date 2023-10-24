@@ -31,7 +31,7 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
 
 
 def custom_exception_handler(
-    request: Request, exc: Union[PipelineException, AanaException, RayTaskError]
+    request: Request, exc_raw: Union[PipelineException, AanaException, RayTaskError]
 ):
     """
     This handler is used to handle custom exceptions raised in the application.
@@ -41,7 +41,7 @@ def custom_exception_handler(
 
     Args:
         request (Request): The request object
-        exc (Union[PipelineException, AanaException, RayTaskError]): The exception raised
+        exc_raw (Union[PipelineException, AanaException, RayTaskError]): The exception raised
 
     Returns:
         JSONResponse: JSON response with the error details. The response contains the following fields:
@@ -51,17 +51,19 @@ def custom_exception_handler(
             stacktrace: The stacktrace of the exception.
     """
     # a PipelineException or AanaException can be wrapped into a RayTaskError
-    if isinstance(exc, RayTaskError):
+    if isinstance(exc_raw, RayTaskError):
         # str(e) returns whole stack trace
         # if exception is a RayTaskError
         # let's use it to get the stack trace
-        stacktrace = str(exc)
+        stacktrace = str(exc_raw)
         # get the original exception
-        exc = exc.cause
+        exc: Union[PipelineException, AanaException] = exc_raw.cause
+        assert isinstance(exc, (PipelineException, AanaException))
     else:
         # if it is not a RayTaskError
         # then we need to get the stack trace
         stacktrace = traceback.format_exc()
+        exc = exc_raw
     # get the data from the exception
     # can be used to return additional info
     # like image path, url, model name etc.
