@@ -1,44 +1,26 @@
-from typing import Dict, List, Tuple
+from typing import Dict
 from ray import serve
+from fastapi.openapi.utils import get_openapi
 
 from mobius_pipeline.pipeline import Pipeline
+from aana.api.api_generation import (
+    add_custom_schemas_to_openapi_schema,
+    get_request_schema,
+    register_endpoint,
+)
 
 from aana.api.app import app
 from aana.api.responses import AanaJSONResponse
+from aana.configs.endpoints import endpoints
 from aana.configs.pipeline import nodes
-from aana.models.pydantic.llm_request import LLMRequest
-
-
-async def run_pipeline(
-    pipeline: Pipeline, data: Dict, required_outputs: List[str]
-) -> Tuple[Dict, Dict[str, float]]:
-    """
-    This function is used to run a Mobius Pipeline.
-    It creates a container from the data, runs the pipeline and returns the output.
-
-    Args:
-        pipeline (Pipeline): The pipeline to run.
-        data (dict): The data to create the container from.
-        required_outputs (List[str]): The required outputs of the pipeline.
-
-    Returns:
-        tuple[dict, dict[str, float]]: The output of the pipeline and the execution time of the pipeline.
-    """
-
-    # create a container from the data
-    container = pipeline.parse_dict(data)
-
-    # run the pipeline
-    output, execution_time = await pipeline.run(
-        container, required_outputs, return_execution_time=True
-    )
-    return output, execution_time
 
 
 @serve.deployment(route_prefix="/", num_replicas=1, ray_actor_options={"num_cpus": 0.1})
 @serve.ingress(app)
 class RequestHandler:
     """This class is used to handle requests to the Aana application."""
+
+    ready = False
 
     def __init__(self, deployments: Dict):
         """
@@ -51,26 +33,46 @@ class RequestHandler:
         }
         self.pipeline = Pipeline(nodes, self.context)
 
-    @app.post("/llm/generate")
-    async def generate_llm(self, llm_request: LLMRequest) -> AanaJSONResponse:
-        """
-        The endpoint for running the LLM.
-        It is running the pipeline with the given prompt and sampling parameters.
-        This is here as an example and will be replace with automatic endpoint generation.
+        self.custom_schemas = {}
+        for endpoint in endpoints:
+            register_endpoint(app=app, pipeline=self.pipeline, endpoint=endpoint)
+            # get schema for endpoint to add to openapi schema
+            schema = get_request_schema(pipeline=self.pipeline, endpoint=endpoint)
+            self.custom_schemas[endpoint.name] = schema
 
-        Args:
-            llm_request (LLMRequest): The LLM request. It contains the prompt and sampling parameters.
+        app.openapi = self.custom_openapi
+        self.ready = True
+
+    def custom_openapi(self):
+        if app.openapi_schema:
+            return app.openapi_schema
+        # TODO: populate title and version from package info
+        openapi_schema = get_openapi(title="Aana", version="0.1.0", routes=app.routes)
+        openapi_schema = add_custom_schemas_to_openapi_schema(
+            openapi_schema=openapi_schema, custom_schemas=self.custom_schemas
+        )
+        app.openapi_schema = openapi_schema
+        return app.openapi_schema
+
+    def get_context(self):
+        """
+        Returns:
+            dict: The context of the pipeline.
+        """
+        return self.context
+
+    @app.get("/api/ready")
+    async def ready(self):
+        """
+        The endpoint for checking if the application is ready.
+
+        Real reason for this endpoint is to make automatic endpoint generation work.
+        If RequestHandler doesn't have any endpoints defined manually,
+        then the automatic endpoint generation doesn't work.
+        #TODO: Find a better solution for this.
 
         Returns:
-            AanaJSONResponse: The response containing the output of the pipeline and the execution time.
+            AanaJSONResponse: The response containing the ready status.
         """
-        prompt = llm_request.prompt
-        sampling_params = llm_request.sampling_params
 
-        output, execution_time = await run_pipeline(
-            self.pipeline,
-            {"prompt": prompt, "sampling_params": sampling_params},
-            ["vllm_llama2_7b_chat_output"],
-        )
-        output["execution_time"] = execution_time
-        return AanaJSONResponse(content=output)
+        return AanaJSONResponse(content={"ready": self.ready})
