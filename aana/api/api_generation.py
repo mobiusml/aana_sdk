@@ -329,7 +329,8 @@ class Endpoint:
         )(route_func)
 
     def get_request_schema(self, pipeline: Pipeline):
-        RequestModel = self.get_request_model(pipeline)
+        input_sockets, _ = pipeline.get_sockets(self.outputs)
+        RequestModel = self.get_request_model(input_sockets)
         return RequestModel.schema()
 
 
