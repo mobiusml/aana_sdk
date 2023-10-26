@@ -1,4 +1,5 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
@@ -10,6 +11,25 @@ from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.general import merged_options
+
+
+class VLLMConfig(BaseModel):
+    """
+    The configuration of the vLLM deployment.
+
+    Attributes:
+        model (str): the model name
+        dtype (str): the data type (optional, default: "auto")
+        quantization (str): the quantization method (optional, default: None)
+        gpu_memory_utilization (float): the GPU memory utilization.
+        default_sampling_params (SamplingParams): the default sampling parameters.
+    """
+
+    model: str
+    dtype: Optional[str] = Field(default="auto")
+    quantization: Optional[str] = Field(default=None)
+    gpu_memory_utilization: float
+    default_sampling_params: SamplingParams
 
 
 @serve.deployment
@@ -36,19 +56,16 @@ class VLLMDeployment(BaseDeployment):
         Args:
             config (dict): the configuration of the deployment
         """
-        await super().apply_config(config)
-
-        # parse the config
-        model: str = config["model"]
-        dtype: str = config.get("dtype", "auto")
-        quantization: str = config.get("quantization", None)
-        gpu_memory_utilization: float = config["gpu_memory_utilization"]
-        self.default_sampling_params: SamplingParams = config["default_sampling_params"]
+        config_obj = VLLMConfig(**config)
+        self.model = config_obj.model
+        self.default_sampling_params: SamplingParams = (
+            config_obj.default_sampling_params
+        )
         args = AsyncEngineArgs(
-            model=model,
-            dtype=dtype,
-            quantization=quantization,
-            gpu_memory_utilization=gpu_memory_utilization,
+            model=config_obj.model,
+            dtype=config_obj.dtype,
+            quantization=config_obj.quantization,
+            gpu_memory_utilization=config_obj.gpu_memory_utilization,
         )
 
         # TODO: check if the model is already loaded.
@@ -95,7 +112,7 @@ class VLLMDeployment(BaseDeployment):
                 await self.engine.abort(request_id)
             raise e
         except Exception as e:
-            raise InferenceException() from e
+            raise InferenceException(model_name=self.model) from e
 
     async def generate(self, prompt: str, sampling_params: SamplingParams):
         """
