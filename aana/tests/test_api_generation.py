@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 from unittest.mock import Mock
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
@@ -7,6 +7,7 @@ import pytest
 from pydantic import BaseModel, Field, Extra
 
 from aana.api.api_generation import Endpoint
+from aana.exceptions.general import MultipleFileUploadNotAllowed
 
 
 class InputModel(BaseModel):
@@ -16,6 +17,24 @@ class InputModel(BaseModel):
         extra = Extra.forbid
 
 
+class FileUploadModel(BaseModel):
+    content: Optional[bytes] = Field(
+        None,
+        description="The content in bytes. Set this field to 'file' to upload files to the endpoint.",
+    )
+
+    def set_files(self, files):
+        if files:
+            if isinstance(files, list):
+                files = files[0]
+            self.content = files
+
+    class Config:
+        extra = Extra.forbid
+        file_upload = True
+        file_upload_description = "Upload image files."
+
+
 class OutputModel(BaseModel):
     output: str = Field(..., description="Output text")
 
@@ -23,37 +42,7 @@ class OutputModel(BaseModel):
         extra = Extra.forbid
 
 
-@pytest.fixture
-def mock_pipeline():
-    mock = Mock(spec=Pipeline)
-
-    def mock_get_sockets(outputs):
-        input_sockets = [
-            Socket(name="input", path="input", key="input", data_model=InputModel),
-            Socket(
-                name="input_without_datamodel",
-                path="input_without_datamodel",
-                key="input_without_datamodel",
-            ),
-        ]
-        possible_outputs = {
-            "output": Socket(
-                name="output", path="output", key="output", data_model=OutputModel
-            ),
-            "output_without_datamodel": Socket(
-                name="output_without_datamodel",
-                path="output_without_datamodel",
-                key="output_without_datamodel",
-            ),
-        }
-        output_sockets = [possible_outputs[output] for output in outputs]
-        return input_sockets, output_sockets
-
-    mock.get_sockets.side_effect = mock_get_sockets
-    return mock
-
-
-def test_get_request_model(mock_pipeline):
+def test_get_request_model():
     """Test the get_request_model function."""
 
     endpoint = Endpoint(
@@ -63,7 +52,16 @@ def test_get_request_model(mock_pipeline):
         outputs=["output"],
     )
 
-    RequestModel = endpoint.get_request_model(mock_pipeline)
+    input_sockets = [
+        Socket(name="input", path="input", key="input", data_model=InputModel),
+        Socket(
+            name="input_without_datamodel",
+            path="input_without_datamodel",
+            key="input_without_datamodel",
+        ),
+    ]
+
+    RequestModel = endpoint.get_request_model(input_sockets)
 
     # Check that the request model named correctly
     assert RequestModel.__name__ == "TestEndpointRequest"
@@ -76,7 +74,7 @@ def test_get_request_model(mock_pipeline):
     assert RequestModel.__fields__["input_without_datamodel"].type_ == Any
 
 
-def test_get_response_model(mock_pipeline):
+def test_get_response_model():
     """Test the get_response_model function."""
 
     endpoint = Endpoint(
@@ -86,7 +84,16 @@ def test_get_response_model(mock_pipeline):
         outputs=["output", "output_without_datamodel"],
     )
 
-    ResponseModel = endpoint.get_response_model(mock_pipeline)
+    output_sockets = [
+        Socket(name="output", path="output", key="output", data_model=OutputModel),
+        Socket(
+            name="output_without_datamodel",
+            path="output_without_datamodel",
+            key="output_without_datamodel",
+        ),
+    ]
+
+    ResponseModel = endpoint.get_response_model(output_sockets)
 
     # Check that the response model named correctly
     assert ResponseModel.__name__ == "TestEndpointResponse"
@@ -105,7 +112,11 @@ def test_get_response_model(mock_pipeline):
         outputs=["output"],
     )
 
-    ResponseModel = endpoint_with_one_output.get_response_model(mock_pipeline)
+    output_sockets = [
+        Socket(name="output", path="output", key="output", data_model=OutputModel),
+    ]
+
+    ResponseModel = endpoint_with_one_output.get_response_model(output_sockets)
 
     # Check that the response model named correctly
     assert ResponseModel.__name__ == "TestEndpointResponse"
@@ -115,3 +126,59 @@ def test_get_response_model(mock_pipeline):
 
     # Check that the response fields have the correct types
     assert ResponseModel.__fields__["output"].type_ == OutputModel
+
+
+def test_get_file_upload_field():
+    """Test the get_file_upload_field function."""
+
+    endpoint = Endpoint(
+        name="test_endpoint",
+        summary="Test endpoint",
+        path="/test_endpoint",
+        outputs=["output"],
+    )
+
+    input_sockets = [
+        Socket(
+            name="input",
+            path="input",
+            key="input",
+            data_model=FileUploadModel,
+        ),
+    ]
+
+    file_upload_field = endpoint.get_file_upload_field(input_sockets)
+
+    # Check that the file upload field named correctly
+    assert file_upload_field.name == "input"
+
+    # Check that the file upload field has the correct description
+    assert file_upload_field.description == "Upload image files."
+
+def test_get_file_upload_field_multiple_file_uploads():
+    """Test the get_file_upload_field function with multiple file uploads."""
+
+    endpoint = Endpoint(
+        name="test_endpoint",
+        summary="Test endpoint",
+        path="/test_endpoint",
+        outputs=["output"],
+    )
+
+    input_sockets = [
+        Socket(
+            name="input",
+            path="input",
+            key="input",
+            data_model=FileUploadModel,
+        ),
+        Socket(
+            name="input2",
+            path="input2",
+            key="input2",
+            data_model=FileUploadModel,
+        ),
+    ]
+
+    with pytest.raises(MultipleFileUploadNotAllowed):
+        endpoint.get_file_upload_field(input_sockets)
