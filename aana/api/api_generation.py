@@ -2,12 +2,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Tuple, Type, Any, List, Optional
 from fastapi import FastAPI, File, Form, UploadFile
-from fastapi.openapi.utils import get_openapi
 from mobius_pipeline.pipeline.pipeline import Pipeline
 from mobius_pipeline.node.socket import Socket
 from pydantic import Field, create_model, BaseModel, parse_raw_as
-
-# from aana.api.app import app
 
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 from aana.models.pydantic.exception_response import ExceptionResponseModel
@@ -15,12 +12,37 @@ from aana.models.pydantic.exception_response import ExceptionResponseModel
 
 @dataclass
 class OutputFilter:
+    """
+    Class used to represent an output filter.
+
+    The output filter is a parameter that will be added to the request
+    and will allow to choose subset of `outputs` to return.
+
+    Attributes:
+        name (str): Name of the output filter.
+        description (str): Description of the output filter.
+    """
+
     name: str
     description: str
 
 
 @dataclass
 class Endpoint:
+    """
+    Class used to represent an endpoint.
+
+    Attributes:
+        name (str): Name of the endpoint.
+        path (str): Path of the endpoint.
+        summary (str): Description of the endpoint that will be shown in the API documentation.
+        outputs (List[str]): List of required outputs from the pipeline that should be returned
+                                by the endpoint.
+        output_filter (Optional[OutputFilter]): The parameter will be added to the request and
+                                will allow to choose subset of `outputs` to return.
+        streaming (bool): Whether the endpoint outputs a stream of data.
+    """
+
     name: str
     path: str
     summary: str
@@ -31,6 +53,14 @@ class Endpoint:
 
 @dataclass
 class FileUploadField:
+    """
+    Class used to represent a file upload field.
+
+    Attributes:
+        name (str): Name of the field.
+        description (str): Description of the field.
+    """
+
     name: str
     description: str
 
@@ -49,7 +79,7 @@ def generate_model_name(endpoint_name: str, suffix: str) -> str:
     return "".join([word.capitalize() for word in endpoint_name.split("_")]) + suffix
 
 
-def socket_to_field(socket: Socket) -> Tuple[Any, Field]:
+def socket_to_field(socket: Socket) -> Tuple[Any, Any]:
     """
     Convert a socket to a Pydantic field.
 
@@ -73,7 +103,7 @@ def socket_to_field(socket: Socket) -> Tuple[Any, Field]:
     return (data_model, data_model())
 
 
-def get_fields(sockets: List[Socket]) -> Dict[str, Tuple[Any, Field]]:
+def get_fields(sockets: List[Socket]) -> Dict[str, Tuple[Any, Any]]:
     """
     Generate fields for the Pydantic model based on the provided sockets.
 
@@ -132,7 +162,7 @@ def get_file_upload_field(
     return file_upload_field
 
 
-def get_output_filter_field(endpoint: Endpoint) -> Optional[Tuple[Any, Field]]:
+def get_output_filter_field(endpoint: Endpoint) -> Optional[Tuple[Any, Any]]:
     """
     Get the output filter field from the provided endpoint.
 
@@ -145,10 +175,9 @@ def get_output_filter_field(endpoint: Endpoint) -> Optional[Tuple[Any, Field]]:
     if not endpoint.output_filter:
         return None
 
-    name = endpoint.output_filter.name
     description = endpoint.output_filter.description
     outputs_enum_name = generate_model_name(endpoint.name, "Outputs")
-    outputs_enum = Enum(
+    outputs_enum = Enum(  # type: ignore
         outputs_enum_name, [(output, output) for output in endpoint.outputs], type=str
     )
     field = (Optional[List[outputs_enum]], Field(None, description=description))
@@ -170,7 +199,7 @@ def get_request_model(endpoint: Endpoint, pipeline: Pipeline) -> Type[BaseModel]
     input_sockets, _ = pipeline.get_sockets(endpoint.outputs)
     input_fields = get_fields(input_sockets)
     output_filter_field = get_output_filter_field(endpoint)
-    if output_filter_field:
+    if output_filter_field and endpoint.output_filter:
         input_fields[endpoint.output_filter.name] = output_filter_field
     RequestModel = create_model(model_name, **input_fields)
     return RequestModel
@@ -226,16 +255,16 @@ def create_endpoint_func(
     endpoint: Endpoint,
     RequestModel: Type[BaseModel],
     ResponseModel: Type[BaseModel],
-    file_upload_field: FileUploadField = None,
+    file_upload_field: Optional[FileUploadField] = None,
 ):
-    async def route_func_body(body: str, files: List[UploadFile] = None):
+    async def route_func_body(body: str, files: Optional[List[UploadFile]] = None):
         # parse form data as a pydantic model and validate it
         data = parse_raw_as(RequestModel, body)
 
         # if the input requires file upload, add the files to the data
         if file_upload_field and files:
-            files = [await file.read() for file in files]
-            getattr(data, file_upload_field).set_files(files)
+            files_as_bytes = [await file.read() for file in files]
+            getattr(data, file_upload_field.name).set_files(files_as_bytes)
 
         # We have to do this instead of data.dict() because
         # data.dict() will convert all nested models to dicts
