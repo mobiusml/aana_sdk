@@ -6,7 +6,7 @@ class AanaException(Exception):
     Base class for SDK exceptions.
     """
 
-    extra = {}
+    extra: Dict[str, Any] = {}
 
     def __str__(self) -> str:
         """
@@ -82,10 +82,11 @@ class InferenceException(AanaException):
         # TODO: check if there is a better way to do this
         return (self.__class__, (self.model_name,))
 
+
 class MultipleFileUploadNotAllowed(AanaException):
     """
     Exception raised when multiple inputs require file upload.
-    
+
     Attributes:
         input_name -- name of the input
     """

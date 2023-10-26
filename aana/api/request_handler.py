@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 from ray import serve
 from fastapi.openapi.utils import get_openapi
 
@@ -43,7 +43,7 @@ class RequestHandler:
         app.openapi = self.custom_openapi
         self.ready = True
 
-    def custom_openapi(self):
+    def custom_openapi(self) -> Dict[str, Any]:
         if app.openapi_schema:
             return app.openapi_schema
         # TODO: populate title and version from package info
@@ -62,7 +62,7 @@ class RequestHandler:
         return self.context
 
     @app.get("/api/ready")
-    async def ready(self):
+    async def is_ready(self):
         """
         The endpoint for checking if the application is ready.
 
