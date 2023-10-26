@@ -142,12 +142,14 @@ class Endpoint:
             fields[socket.name] = field
         return fields
 
-    def get_file_upload_field(self, pipeline: Pipeline) -> Optional[FileUploadField]:
+    def get_file_upload_field(
+        self, input_sockets: List[Socket]
+    ) -> Optional[FileUploadField]:
         """
         Get the file upload field for the endpoint.
 
         Parameters:
-            pipeline (Pipeline): Pipeline to get the sockets from.
+            input_sockets (List[Socket]): List of input sockets.
 
         Returns:
             Optional[FileUploadField]: File upload field or None if not found.
@@ -155,7 +157,6 @@ class Endpoint:
         Raises:
             MultipleFileUploadNotAllowed: If multiple inputs require file upload.
         """
-        input_sockets, _ = pipeline.get_sockets(self.outputs)
 
         file_upload_field = None
         for socket in input_sockets:
@@ -198,18 +199,17 @@ class Endpoint:
         field = (Optional[List[outputs_enum]], Field(None, description=description))
         return field
 
-    def get_request_model(self, pipeline: Pipeline) -> Type[BaseModel]:
+    def get_request_model(self, input_sockets: List[Socket]) -> Type[BaseModel]:
         """
         Generate a Pydantic model for the request.
 
         Parameters:
-            pipeline (Pipeline): Pipeline to get the sockets from.
+            input_sockets (List[Socket]): List of input sockets.
 
         Returns:
             Type[BaseModel]: Pydantic model for the request.
         """
         model_name = self.generate_model_name("Request")
-        input_sockets, _ = pipeline.get_sockets(self.outputs)
         input_fields = self.get_fields(input_sockets)
         output_filter_field = self.get_output_filter_field()
         if output_filter_field and self.output_filter:
@@ -217,18 +217,17 @@ class Endpoint:
         RequestModel = create_model(model_name, **input_fields)
         return RequestModel
 
-    def get_response_model(self, pipeline: Pipeline) -> Type[BaseModel]:
+    def get_response_model(self, output_sockets: List[Socket]) -> Type[BaseModel]:
         """
         Generate a Pydantic model for the response.
 
         Parameters:
-            pipeline (Pipeline): Pipeline to get the sockets from.
+            output_sockets (List[Socket]): List of output sockets.
 
         Returns:
             Type[BaseModel]: Pydantic model for the response.
         """
         model_name = self.generate_model_name("Response")
-        _, output_sockets = pipeline.get_sockets(self.outputs)
         output_fields = self.get_fields(output_sockets)
         ResponseModel = create_model(model_name, **output_fields)
         return ResponseModel
@@ -308,9 +307,10 @@ class Endpoint:
             app (FastAPI): FastAPI app to register the endpoint to.
             pipeline (Pipeline): Pipeline to register the endpoint to.
         """
-        RequestModel = self.get_request_model(pipeline)
-        ResponseModel = self.get_response_model(pipeline)
-        file_upload_field = self.get_file_upload_field(pipeline)
+        input_sockets, output_sockets = pipeline.get_sockets(self.outputs)
+        RequestModel = self.get_request_model(input_sockets)
+        ResponseModel = self.get_response_model(output_sockets)
+        file_upload_field = self.get_file_upload_field(input_sockets)
         route_func = self.create_endpoint_func(
             pipeline=pipeline,
             RequestModel=RequestModel,
