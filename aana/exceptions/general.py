@@ -64,7 +64,7 @@ class InferenceException(AanaException):
         model_name -- name of the model
     """
 
-    def __init__(self, model_name=""):
+    def __init__(self, model_name):
         """
         Initialize the exception.
 
