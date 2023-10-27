@@ -6,6 +6,7 @@ from ray import serve
 
 from aana.configs.deployments import deployments
 from aana.models.pydantic.sampling_params import SamplingParams
+from aana.tests.utils import is_gpu_available
 
 
 def expected_output(name):
@@ -27,7 +28,7 @@ def ray_setup(deployment):
     handle = serve.run(app, port=port)
     return handle
 
-
+@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
 async def test_vllm_deployments():
     for name, deployment in deployments.items():
