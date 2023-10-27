@@ -84,4 +84,5 @@ def test_app(ray_setup):
         f"http://localhost:{port}/lowercase", data={"body": json.dumps(data)}
     )
     assert response.status_code == 200
-    assert response.json() == {"lowercase_text": ["hello world!", "this is a test."]}
+    lowercase_text = response.json().get("lowercase_text")
+    assert lowercase_text == ["hello world!", "this is a test."]
