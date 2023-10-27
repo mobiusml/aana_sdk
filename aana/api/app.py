@@ -1,12 +1,13 @@
 import traceback
 from typing import Union
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from mobius_pipeline.exceptions import PipelineException
 from pydantic import ValidationError
 from ray.exceptions import RayTaskError
+from aana.api.responses import AanaJSONResponse
 
 from aana.exceptions.general import AanaException
+from aana.models.pydantic.exception_response import ExceptionResponseModel
 
 app = FastAPI()
 
@@ -23,10 +24,14 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     Returns:
         JSONResponse: JSON response with the error details
     """
-    # TODO: Structure the error response so that it is consistent with the other error responses
-    return JSONResponse(
+
+    return AanaJSONResponse(
         status_code=422,
-        content={"detail": exc.errors()},
+        content=ExceptionResponseModel(
+            error="ValidationError",
+            message="Validation error",
+            data=exc.errors(),
+        ).dict(),
     )
 
 
@@ -73,14 +78,11 @@ def custom_exception_handler(
     error = exc.__class__.__name__
     # get the message of the exception
     message = str(exc)
-    return JSONResponse(
+    return AanaJSONResponse(
         status_code=400,
-        content={
-            "error": error,
-            "message": message,
-            "data": data,
-            "stacktrace": stacktrace,
-        },
+        content=ExceptionResponseModel(
+            error=error, message=message, data=data, stacktrace=stacktrace
+        ).dict(),
     )
 
 
@@ -132,7 +134,9 @@ async def ray_task_error_handler(request: Request, exc: RayTaskError):
     error = exc.__class__.__name__
     stacktrace = traceback.format_exc()
 
-    return JSONResponse(
+    return AanaJSONResponse(
         status_code=400,
-        content={"error": error, "message": str(exc), "stacktrace": stacktrace},
+        content=ExceptionResponseModel(
+            error=error, message=str(exc), stacktrace=stacktrace
+        ).dict(),
     )
