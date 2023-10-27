@@ -19,11 +19,11 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
     """
     # if options is None, return default_options
     if options is None:
-        return default_options
+        return default_options.copy()
     # options and default_options have to be of the same type
     assert type(default_options) == type(options)
     default_options_dict = default_options.dict()
     for k, v in options.dict().items():
         if v is not None:
             default_options_dict[k] = v
-    return options.__class__(**default_options_dict)
+    return options.__class__.parse_obj(default_options_dict)
