@@ -5,6 +5,7 @@ from fastapi import FastAPI, File, Form, UploadFile
 from mobius_pipeline.pipeline.pipeline import Pipeline
 from mobius_pipeline.node.socket import Socket
 from pydantic import Field, create_model, BaseModel, parse_raw_as
+from aana.api.responses import AanaJSONResponse
 
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 from aana.models.pydantic.exception_response import ExceptionResponseModel
@@ -279,7 +280,8 @@ class Endpoint:
                 del data_dict[self.output_filter.name]
 
             # run the pipeline
-            return await run_pipeline(pipeline, data_dict, outputs)
+            output = await run_pipeline(pipeline, data_dict, outputs)
+            return AanaJSONResponse(content=output)
 
         if file_upload_field:
 
