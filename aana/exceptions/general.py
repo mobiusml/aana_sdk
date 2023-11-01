@@ -1,70 +1,15 @@
 from typing import Any, Dict
+from mobius_pipeline.exceptions import BaseException
 
 
-class AanaException(Exception):
-    """
-    Base class for SDK exceptions.
-    """
-
-    extra: Dict[str, Any] = {}
-
-    def __str__(self) -> str:
-        """
-        Return a string representation of the exception.
-
-        String is defined as follows:
-        ```
-        <class_name>(extra_key1=extra_value1, extra_key2=extra_value2, ...)
-        ```
-        """
-        class_name = self.__class__.__name__
-        extra_str = ""
-        for key, value in self.extra.items():
-            extra_str += f", {key}={value}"
-        return f"{class_name}({extra_str})"
-
-    def get_data(self) -> Dict[str, Any]:
-        """
-        Get the data to be returned to the client.
-
-        Returns:
-            Dict[str, Any]: data to be returned to the client
-        """
-        data = self.extra.copy()
-        return data
-
-    def add_extra(self, key: str, value: Any):
-        """
-        Add extra data to the exception.
-
-        This data will be returned to the user as part of the response.
-
-        How to use: in the exception handler, add the extra data to the exception and raise it again.
-
-        Example:
-            ```
-            try:
-                ...
-            except AanaException as e:
-                e.add_extra('extra_key', 'extra_value')
-                raise e
-            ```
-
-        Args:
-            key (str): key of the extra data
-            value (Any): value of the extra data
-        """
-        self.extra[key] = value
-
-
-class InferenceException(AanaException):
+class InferenceException(BaseException):
     """Exception raised when there is an error during inference.
 
     Attributes:
         model_name -- name of the model
     """
 
-    def __init__(self, model_name: str = ""):
+    def __init__(self, model_name):
         """
         Initialize the exception.
 
@@ -83,7 +28,7 @@ class InferenceException(AanaException):
         return (self.__class__, (self.model_name,))
 
 
-class MultipleFileUploadNotAllowed(AanaException):
+class MultipleFileUploadNotAllowed(BaseException):
     """
     Exception raised when multiple inputs require file upload.
 
