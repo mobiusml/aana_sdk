@@ -17,6 +17,11 @@ def expected_output(name):
             "  Elon Musk is a South African-born entrepreneur, inventor, and business magnate. "
             "He is best known for his revolutionary ideas"
         )
+    if name == "vllm_deployment_zephyr_7b_beta":
+        return (
+            "\n\nElon Musk is an entrepreneur, business magnate, and investor. "
+            "He is the founder, CEO, and Chief Designer of SpaceX"
+        )
     else:
         raise ValueError(f"Unknown deployment name: {name}")
 

@@ -1,7 +1,5 @@
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.utils.general import encode_options
-
 
 deployments = {
     "vllm_deployment_llama2_7b_chat": VLLMDeployment.options(
@@ -26,7 +24,8 @@ deployments = {
             model="TheBloke/zephyr-7B-beta-AWQ",
             dtype="auto",
             quantization="awq",
-            gpu_memory_utilization=0.7,
+            gpu_memory_utilization=0.9,
+            max_model_len=512,
             default_sampling_params=SamplingParams(
                 temperature=1.0, top_p=1.0, top_k=-1, max_tokens=256
             ),
