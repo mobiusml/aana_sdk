@@ -1,3 +1,5 @@
+[![Python package](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml/badge.svg)](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml)
+
 # Aana
 
 Aana is a multi-model SDK for deploying and serving machine learning models.
@@ -28,7 +30,7 @@ sh install.sh
 5. Run the SDK.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 poetry run serve run --port 8000 --host 0.0.0.0 aana.main:server
+CUDA_VISIBLE_DEVICES=0 poetry run python aana/main.py --port 8000 --host 0.0.0.0 -- target llama2
 ```
 
 The first run might take a while because the models will be downloaded from Google Drive and cached.
