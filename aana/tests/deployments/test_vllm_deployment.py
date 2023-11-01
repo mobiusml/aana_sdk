@@ -8,6 +8,8 @@ from aana.configs.deployments import deployments
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.tests.utils import is_gpu_available
 
+ALLOWED_LEVENSTEIN_ERROR_RATE = 0.1
+
 
 def expected_output(name):
     if name == "vllm_deployment_llama2_7b_chat":
@@ -28,6 +30,26 @@ def ray_setup(deployment):
     handle = serve.run(app, port=port)
     return handle
 
+
+def compare_texts(expected_text: str, text: str):
+    """
+    Compare two texts using Levenshtein distance.
+    The error rate is allowed to be less than ALLOWED_LEVENSTEIN_ERROR_RATE.
+
+    Args:
+        expected_text (str): the expected text
+        text (str): the actual text
+
+    Raises:
+        AssertionError: if the error rate is too high
+    """
+    dist = rapidfuzz.distance.Levenshtein.distance(text, expected_text)
+    assert dist < len(expected_text) * ALLOWED_LEVENSTEIN_ERROR_RATE, (
+        expected_text,
+        text,
+    )
+
+
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
 async def test_vllm_deployments():
@@ -41,10 +63,7 @@ async def test_vllm_deployments():
         )
         text = output["text"]
         expected_text = expected_output(name)
-        dist = rapidfuzz.distance.Levenshtein.distance(text, expected_text)
-        assert (
-            dist <= len(expected_text) * 0.1
-        )  # Allow 10% difference in case of randomness
+        compare_texts(expected_text, text)
 
         # test generate_stream method
         stream = handle.options(stream=True).generate_stream.remote(
@@ -56,8 +75,7 @@ async def test_vllm_deployments():
             chunk = await chunk
             text += chunk["text"]
         expected_text = expected_output(name)
-        dist = rapidfuzz.distance.Levenshtein.distance(text, expected_text)
-        assert dist <= len(expected_text) * 0.1
+        compare_texts(expected_text, text)
 
         # test generate_batch method
         output = await handle.generate_batch.remote(
@@ -69,8 +87,6 @@ async def test_vllm_deployments():
         )
         texts = output["texts"]
         expected_text = expected_output(name)
-        print(texts)
 
         for text in texts:
-            dist = rapidfuzz.distance.Levenshtein.distance(text, expected_text)
-            assert dist <= len(expected_text) * 0.1
+            compare_texts(expected_text, text)

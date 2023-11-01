@@ -1,5 +1,4 @@
 from typing import Any, Dict
-from aana.utils.general import load_options
 
 
 class BaseDeployment:
@@ -19,9 +18,6 @@ class BaseDeployment:
         The method is called when the deployment is updated.
         """
         self.config = config
-        # go through the config and try to load options
-        for key in self.config:
-            self.config[key] = load_options(self.config[key], ignore_errors=True)
         await self.apply_config(config)
         self.configured = True
 
@@ -32,4 +28,4 @@ class BaseDeployment:
         Args:
             config (dict): the configuration
         """
-        pass
+        raise NotImplementedError
