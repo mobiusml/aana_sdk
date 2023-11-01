@@ -23,6 +23,7 @@ class VLLMConfig(BaseModel):
         quantization (str): the quantization method (optional, default: None)
         gpu_memory_utilization (float): the GPU memory utilization.
         default_sampling_params (SamplingParams): the default sampling parameters.
+        max_model_len (int): the maximum generated text length in tokens (optional, default: None)
     """
 
     model: str
@@ -30,6 +31,7 @@ class VLLMConfig(BaseModel):
     quantization: Optional[str] = Field(default=None)
     gpu_memory_utilization: float
     default_sampling_params: SamplingParams
+    max_model_len: Optional[int] = Field(default=None)
 
 
 @serve.deployment
@@ -52,6 +54,7 @@ class VLLMDeployment(BaseDeployment):
         - quantization: the quantization method (optional, default: None)
         - gpu_memory_utilization: the GPU memory utilization.
         - default_sampling_params: the default sampling parameters.
+        - max_model_len: the maximum generated text length in tokens (optional, default: None)
 
         Args:
             config (dict): the configuration of the deployment
@@ -66,6 +69,7 @@ class VLLMDeployment(BaseDeployment):
             dtype=config_obj.dtype,
             quantization=config_obj.quantization,
             gpu_memory_utilization=config_obj.gpu_memory_utilization,
+            max_model_len=config_obj.max_model_len,
         )
 
         # TODO: check if the model is already loaded.

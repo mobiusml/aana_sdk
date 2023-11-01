@@ -3,7 +3,8 @@ import sys
 import time
 import traceback
 
-if __name__ == "__main__":
+
+def run():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--port", type=int, default=8000)
     arg_parser.add_argument("--host", type=str, default="0.0.0.0")

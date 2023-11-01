@@ -13,7 +13,7 @@ endpoints = {
     "zephyr": [
         Endpoint(
             name="zephyr_generate",
-            path="/zephyr/generate",
+            path="/llm/generate",
             summary="Generate text using Zephyr 7B Beta",
             outputs=["vllm_zephyr_7b_beta_output"],
         )
