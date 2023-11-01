@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class SamplingParams(BaseModel):
@@ -8,18 +8,53 @@ class SamplingParams(BaseModel):
     A model for sampling parameters of LLM.
 
     Attributes:
-        temperature (float): The temperature.
-        top_p (float): Top-p.
-        top_k (int): Top-k.
+        temperature (float): Float that controls the randomness of the sampling. Lower
+            values make the model more deterministic, while higher values make
+            the model more random. Zero means greedy sampling.
+        top_p (float): Float that controls the cumulative probability of the top tokens
+            to consider. Must be in (0, 1]. Set to 1 to consider all tokens.
+        top_k (int): Integer that controls the number of top tokens to consider. Set
+            to -1 to consider all tokens.
         max_tokens (int): The maximum number of tokens to generate.
     """
 
-    temperature: Optional[float] = Field(default=None, description="The temperature.")
-    top_p: Optional[float] = Field(default=None, description="Top-p.")
-    top_k: Optional[int] = Field(default=None, description="Top-k.")
-    max_tokens: Optional[int] = Field(
-        default=None, description="The maximum number of tokens to generate."
+    temperature: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        description=(
+            "Float that controls the randomness of the sampling. "
+            "Lower values make the model more deterministic, "
+            "while higher values make the model more random. "
+            "Zero means greedy sampling."
+        ),
     )
+    top_p: Optional[float] = Field(
+        default=None,
+        gt=0.0,
+        le=1.0,
+        description=(
+            "Float that controls the cumulative probability of the top tokens to consider. "
+            "Must be in (0, 1]. Set to 1 to consider all tokens."
+        ),
+    )
+    top_k: Optional[int] = Field(
+        default=None,
+        description=(
+            "Integer that controls the number of top tokens to consider. "
+            "Set to -1 to consider all tokens."
+        ),
+    )
+    max_tokens: Optional[int] = Field(
+        default=None, ge=1, description="The maximum number of tokens to generate."
+    )
+
+    @validator("top_k", always=True, pre=True)
+    def check_top_k(cls, v):
+        if v is None:
+            return v
+        if v < -1 or v == 0:
+            raise ValueError(f"top_k must be -1 (disable), or at least 1, got {v}.")
+        return v
 
     class Config:
         schema_extra = {"description": "Sampling parameters for generating text."}
