@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Any, Optional
 from pydantic import BaseModel, Extra
 
 
@@ -15,7 +15,7 @@ class ExceptionResponseModel(BaseModel):
 
     error: str
     message: str
-    data: Optional[Dict] = None
+    data: Optional[Any] = None
     stacktrace: Optional[str] = None
 
     class Config:
