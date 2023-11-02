@@ -284,22 +284,14 @@ class Endpoint:
             return AanaJSONResponse(content=output)
 
         if file_upload_field:
-
-            async def route_func_files(
-                body: str = Form(...),
-                files: List[UploadFile] = File(
-                    None, description=file_upload_field.description
-                ),
-            ):
-                return await route_func_body(body=body, files=files)
-
-            return route_func_files
+            files = File(None, description=file_upload_field.description)
         else:
+            files = None
 
-            async def route_func(body: str = Form(...)):
-                return await route_func_body(body=body)
+        async def route_func(body: str = Form(...), files=files):
+            return await route_func_body(body=body, files=files)
 
-            return route_func
+        return route_func
 
     def register(self, app: FastAPI, pipeline: Pipeline):
         """
@@ -344,6 +336,7 @@ def add_custom_schemas_to_openapi_schema(
 
     File upload is that FastAPI doesn't support Pydantic models in multipart requests.
     There is a discussion about it on FastAPI discussion forum.
+    See https://github.com/tiangolo/fastapi/discussions/8406
     The topic starter suggests a workaround.
     The workaround is to use Forms instead of Pydantic models in the endpoint definition and
     then convert the Forms to Pydantic models in the endpoint itself
