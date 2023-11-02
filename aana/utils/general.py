@@ -1,6 +1,9 @@
 from typing import TypeVar
 
 from pydantic import BaseModel
+import requests
+
+from aana.exceptions.general import DownloadException
 
 
 OptionType = TypeVar("OptionType", bound=BaseModel)
@@ -27,3 +30,24 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
         if v is not None:
             default_options_dict[k] = v
     return options.__class__.parse_obj(default_options_dict)
+
+
+def download_file(url: str) -> bytes:
+    """
+    Download a file from a URL.
+
+    Args:
+        url (str): the URL of the file to download
+
+    Returns:
+        bytes: the file content
+
+    Raises:
+
+    """
+    # TODO: add retries, check status code, etc.
+    try:
+        response = requests.get(url)
+    except Exception as e:
+        raise DownloadException(url) from e
+    return response.content
