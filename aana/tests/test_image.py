@@ -13,7 +13,19 @@ def load_numpy_from_image_bytes(content: bytes) -> np.ndarray:
     return image.get_numpy()
 
 
-def test_image():
+@pytest.fixture
+def mock_download_file(mocker):
+    """
+    Mock download_file.
+    """
+    mock = mocker.patch("aana.models.core.image.download_file", autospec=True)
+    path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    content = path.read_bytes()
+    mock.return_value = content
+    return mock
+
+
+def test_image(mock_download_file):
     """
     Test that the image can be created from path, url, content, or numpy.
     """
@@ -36,7 +48,7 @@ def test_image():
         image.cleanup()
 
     try:
-        url = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/909px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+        url = "http://example.com/Starry_Night.jpeg"
         image = Image(url=url, save_on_disc=False)
         assert image.path is None
         assert image.content is None
@@ -97,7 +109,7 @@ def test_image_path_not_exist():
         Image(path=path)
 
 
-def test_save_image():
+def test_save_image(mock_download_file):
     """
     Test that save_on_disc works.
     """
@@ -114,7 +126,7 @@ def test_save_image():
         image.cleanup()
 
     try:
-        url = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+        url = "http://example.com/Starry_Night.jpeg"
         image = Image(url=url, save_on_disc=True)
         assert image.content is None
         assert image.numpy is None
