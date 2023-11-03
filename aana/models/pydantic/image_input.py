@@ -1,7 +1,7 @@
 import io
 from pathlib import Path
 import numpy as np
-from typing import List, Optional
+from typing import Dict, List, Optional
 from pydantic import BaseModel, Field, ValidationError, root_validator
 from pydantic.error_wrappers import ErrorWrapper
 
@@ -43,30 +43,59 @@ class ImageInput(BaseModel):
         ),
     )
 
-    def set_files(self, files):
+    def set_file(self, file: bytes):
         """
         If 'content' or 'numpy' is set to 'file',
-        the image will be loaded from the files uploaded to the endpoint.
+        the image will be loaded from the file uploaded to the endpoint.
 
-        set_files() should be called after the files are uploaded to the endpoint.
+        set_file() should be called after the files are uploaded to the endpoint.
+
+        Args:
+            file (bytes): the file uploaded to the endpoint
+
+        Raises:
+            ValueError: if the content or numpy isn't set to 'file'
         """
+        if self.content == b"file":
+            self.content = file
+        elif self.numpy == b"file":
+            self.numpy = file
+        else:
+            raise ValueError(
+                "The content or numpy of the image must be 'file' to set files."
+            )
 
-        if files:
-            if isinstance(files, list):
-                files = files[0]
-            if self.content == b"file":
-                self.content = files
-            elif self.numpy == b"file":
-                self.numpy = files
-            else:
-                raise ValueError(
-                    "The content or numpy of the image must be 'file' to set files."
-                )
+    def set_files(self, files: List[bytes]):
+        """
+        Set the files for the image.
+
+        Args:
+            files (List[bytes]): the files uploaded to the endpoint
+
+        Raises:
+            ValidationError: if the number of images and files aren't the same
+        """
+        if len(files) != 1:
+            error = ErrorWrapper(
+                ValueError("The number of images and files must be the same."),
+                loc=("images",),
+            )
+            raise ValidationError([error], self.__class__)
+        self.set_file(files[0])
 
     @root_validator
-    def check_only_one_field(cls, values):
+    def check_only_one_field(cls, values: Dict) -> Dict:
         """
         Check that exactly one of 'path', 'url', 'content' or 'numpy' is provided.
+
+        Args:
+            values (Dict): the values of the fields
+
+        Returns:
+            Dict: the values of the fields
+
+        Raises:
+            ValueError: if not exactly one of 'path', 'url', 'content' or 'numpy' is provided
         """
         count = sum(
             value is not None
@@ -90,7 +119,10 @@ class ImageInput(BaseModel):
             ValueError: if the numpy file isn't set
         """
         if self.numpy and self.numpy != b"file":
-            numpy = np.load(io.BytesIO(self.numpy), allow_pickle=False)
+            try:
+                numpy = np.load(io.BytesIO(self.numpy), allow_pickle=False)
+            except ValueError:
+                raise ValueError("The numpy file isn't valid.")
         elif self.numpy == b"file":
             raise ValueError("The numpy file isn't set. Call set_files() to set it.")
         else:
@@ -129,7 +161,7 @@ class ImageListInput(BaseListModel):
 
     __root__: List[ImageInput]
 
-    def set_files(self, files):
+    def set_files(self, files: List[bytes]):
         """
         Set the files for the images.
 
@@ -147,11 +179,14 @@ class ImageListInput(BaseListModel):
             )
             raise ValidationError([error], self.__class__)
         for image, file in zip(self.__root__, files):
-            image.set_files(file)
+            image.set_file(file)
 
-    def convert_input_to_object(self):
+    def convert_input_to_object(self) -> List[Image]:
         """
         Convert the list of image inputs to a list of image objects.
+
+        Returns:
+            List[Image]: the list of image objects corresponding to the image inputs
         """
         return [image.convert_input_to_object() for image in self.__root__]
 
