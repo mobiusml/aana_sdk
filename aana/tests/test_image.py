@@ -157,13 +157,13 @@ def test_save_image(mock_download_file):
         image.cleanup()
 
 
-def test_cleanup():
+def test_cleanup(mock_download_file):
     """
     Test that cleanup works.
     """
 
     try:
-        url = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+        url = "http://example.com/Starry_Night.jpeg"
         image = Image(url=url, save_on_disc=True)
         assert image.path.exists()
     finally:

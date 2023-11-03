@@ -97,7 +97,7 @@ class HFBlip2Deployment(BaseDeployment):
         Generate captions for the given images.
 
         Args:
-            images (List[ImageInput]): the images
+            images (List[Image]): the images
 
         Returns:
             Dict[str, Any]: the dictionary with one key "captions"
@@ -117,7 +117,7 @@ class HFBlip2Deployment(BaseDeployment):
         This method is called by the batch processor.
 
         Args:
-            images (List[ImageInput]): the images
+            images (List[Image]): the images
 
         Returns:
             Dict[str, Any]: the dictionary with one key "captions"
