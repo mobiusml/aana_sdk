@@ -57,6 +57,19 @@ class AbstractImageLibrary:
         """
         raise NotImplementedError
 
+    @classmethod
+    def write_bytes(cls, img: np.ndarray) -> bytes:
+        """
+        Write bytes using the image library.
+
+        Args:
+            img (np.ndarray): The image to write.
+
+        Returns:
+            bytes: The image as bytes.
+        """
+        raise NotImplementedError
+
 
 class OpenCVWrapper(AbstractImageLibrary):
     """
@@ -105,6 +118,21 @@ class OpenCVWrapper(AbstractImageLibrary):
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite(str(path), img)
 
+    @classmethod
+    def write_bytes(cls, img: np.ndarray) -> bytes:
+        """
+        Write bytes using OpenCV.
+
+        Args:
+            img (np.ndarray): The image to write.
+
+        Returns:
+            bytes: The image as bytes.
+        """
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        _, buffer = cv2.imencode(".bmp", img)
+        return buffer.tobytes()
+
 
 @dataclass
 class Image:
@@ -127,7 +155,24 @@ class Image:
         """
         Save the image on disc after initialization if save_on_disc is True.
         """
-        if self.save_image:
+        # check that at least one of 'path', 'url', 'content' or 'numpy' is provided
+        if not any(
+            [
+                self.path is not None,
+                self.url is not None,
+                self.content is not None,
+                self.numpy is not None,
+            ]
+        ):
+            raise ValueError(
+                "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
+            )
+
+        # check if path exists if provided
+        if self.path and not self.path.exists():
+            raise FileNotFoundError(f"Image file not found: {self.path}")
+
+        if self.save_on_disc:
             self.save_image()
 
     def save_image(self):
@@ -171,7 +216,9 @@ class Image:
         Args:
             file_path (Path): The path of the file to write.
         """
-        self.image_lib.write_file(file_path, self.load_numpy_from_content())
+        assert self.content is not None
+        with open(file_path, "wb") as f:
+            f.write(self.content)
 
     def save_from_numpy(self, file_path: Path):
         """
@@ -310,7 +357,8 @@ class Image:
         Returns:
             bytes: The content of the image as bytes.
         """
-        raise NotImplementedError
+        assert self.numpy is not None
+        return self.image_lib.write_bytes(self.numpy)
 
     def load_content_from_path(self) -> bytes:
         """
