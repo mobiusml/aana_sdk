@@ -7,12 +7,10 @@ import uuid
 import cv2
 
 import numpy as np
+from aana.configs.settings import settings
 
 from aana.exceptions.general import ImageReadingException
 from aana.utils.general import download_file
-
-
-TMP_DATA_DIR = Path("/tmp/aana/data")
 
 
 class AbstractImageLibrary:
@@ -192,7 +190,7 @@ class Image:
         if self.path:
             return
 
-        file_dir = TMP_DATA_DIR / "images"
+        file_dir = settings.tmp_data_dir / "images"
         file_dir.mkdir(parents=True, exist_ok=True)
         file_path = file_dir / (self.image_id + ".bmp")
 
