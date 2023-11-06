@@ -26,3 +26,25 @@ class InferenceException(BaseException):
         # See https://bugs.python.org/issue32696#msg310963 for more info
         # TODO: check if there is a better way to do this
         return (self.__class__, (self.model_name,))
+
+
+class MultipleFileUploadNotAllowed(BaseException):
+    """
+    Exception raised when multiple inputs require file upload.
+
+    Attributes:
+        input_name -- name of the input
+    """
+
+    def __init__(self, input_name: str):
+        """
+        Initialize the exception.
+
+        Args:
+            input_name (str): name of the input that caused the exception
+        """
+        self.input_name = input_name
+        super().__init__()
+
+    def __reduce__(self):
+        return (self.__class__, (self.input_name,))
