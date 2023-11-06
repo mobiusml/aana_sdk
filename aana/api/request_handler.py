@@ -25,19 +25,19 @@ class RequestHandler:
         """
         Args:
             deployments (Dict): The dictionary of deployments.
-                It is passed to the context to the pipeline so the pipeline can access the deployments handles.
+                It is passed to the context to the pipeline
+                so the pipeline can access the deployments handles.
         """
 
         self.context = context
         self.endpoints = endpoints
         self.pipeline = Pipeline(pipeline_nodes, context)
 
-        self.custom_schemas = {}
+        self.custom_schemas: Dict[str, Dict] = {}
         for endpoint in self.endpoints:
-            endpoint.register(app=app, pipeline=self.pipeline)
-            # get schema for endpoint to add to openapi schema
-            schema = endpoint.get_request_schema(self.pipeline)
-            self.custom_schemas[endpoint.name] = schema
+            endpoint.register(
+                app=app, pipeline=self.pipeline, custom_schemas=self.custom_schemas
+            )
 
         app.openapi = self.custom_openapi
         self.ready = True
