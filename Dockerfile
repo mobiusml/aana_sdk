@@ -23,11 +23,15 @@ COPY . /app
 # Install the package with poetry
 RUN sh install.sh
 
+# Prepare the startup script
+RUN chmod +x startup.sh
+
 # Disable buffering for stdout and stderr to get the logs in real time
 ENV PYTHONUNBUFFERED=1
 
 # Expose the desired port
 EXPOSE 8000
 
-# Set the command to run the SDK when the container starts
-CMD ["poetry", "run", "serve", "run", "--port", "8000", "--host", "0.0.0.0", "aana.main:server"]
+# Run the startup script, TARGET can be set with environment variables
+ENV TARGET=llama2
+CMD ["/app/startup.sh"]

@@ -1,3 +1,5 @@
+[![Python package](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml/badge.svg)](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml)
+
 # Aana
 
 Aana is a multi-model SDK for deploying and serving machine learning models.
@@ -28,8 +30,10 @@ sh install.sh
 5. Run the SDK.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 poetry run serve run --port 8000 --host 0.0.0.0 aana.main:server
+CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 --target llama2
 ```
+
+The target parameter specifies the set of endpoints to deploy.
 
 The first run might take a while because the models will be downloaded from Google Drive and cached.
 
@@ -66,8 +70,10 @@ docker build -t aana:0.1.0 .
 4. Run the Docker container.
 
 ```bash
-docker run --rm --init -p 8000:8000 --gpus all -e CUDA_VISIBLE_DEVICES=0 -v aana_cache:/root/.aana -v aana_hf_cache:/root/.cache/huggingface --name aana_instance aana:0.1.0
+docker run --rm --init -p 8000:8000 --gpus all -e TARGET="llama2" -e CUDA_VISIBLE_DEVICES=0 -v aana_cache:/root/.aana -v aana_hf_cache:/root/.cache/huggingface --name aana_instance aana:0.1.0
 ```
+
+Use the environment variable TARGET to specify the set of endpoints to deploy.
 
 The first run might take a while because the models will be downloaded from Google Drive and cached. The models will be stored in the `aana_cache` volume. The HuggingFace models will be stored in the `aana_hf_cache` volume. If you want to remove the cached models, remove the volume.
 
