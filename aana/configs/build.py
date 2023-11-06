@@ -2,12 +2,9 @@ from typing import Dict
 
 from mobius_pipeline.node.node_definition import NodeDefinition
 from mobius_pipeline.pipeline.output_graph import OutputGraph
-from aana.configs.endpoints import endpoints
-from aana.configs.pipeline import nodes
-from aana.configs.deployments import deployments
 
 
-def get_configuration(target: str, endpoints=endpoints, nodes=nodes, deployments=deployments) -> Dict:
+def get_configuration(target: str, endpoints, nodes, deployments) -> Dict:
     """
     Returns the configuration for the specified target.
 
@@ -36,7 +33,9 @@ def get_configuration(target: str, endpoints=endpoints, nodes=nodes, deployments
 
     # Check if target is valid
     if target not in endpoints:
-        raise ValueError(f"Invalid target: {target}. Valid targets: {', '.join(endpoints.keys())}")
+        raise ValueError(
+            f"Invalid target: {target}. Valid targets: {', '.join(endpoints.keys())}"
+        )
 
     # Find the endpoints that are to be deployed
     target_endpoints = endpoints[target]

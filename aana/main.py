@@ -20,8 +20,16 @@ def run():
     from ray import serve
     from aana.api.request_handler import RequestHandler
     from aana.configs.build import get_configuration
+    from aana.configs.endpoints import endpoints as all_endpoints
+    from aana.configs.pipeline import nodes as all_nodes
+    from aana.configs.deployments import deployments as all_deployments
 
-    configuration = get_configuration(args.target)
+    configuration = get_configuration(
+        args.target,
+        endpoints=all_endpoints,
+        nodes=all_nodes,
+        deployments=all_deployments,
+    )
     endpoints = configuration["endpoints"]
     pipeline_nodes = configuration["nodes"]
     deployments = configuration["deployments"]
@@ -36,7 +44,8 @@ def run():
     }
     try:
         server = RequestHandler.bind(endpoints, pipeline_nodes, context)
-        handle = serve.run(server, port=args.port, host=args.host)
+        serve.run(server, port=args.port, host=args.host)
+        # TODO: add logging
         print("Deployed Serve app successfully.")
         while True:
             time.sleep(10)
