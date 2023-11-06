@@ -7,6 +7,18 @@ from pydantic import ValidationError
 from aana.models.pydantic.image_input import ImageInput, ImageListInput
 
 
+@pytest.fixture
+def mock_download_file(mocker):
+    """
+    Mock download_file.
+    """
+    mock = mocker.patch("aana.models.core.image.download_file", autospec=True)
+    path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    content = path.read_bytes()
+    mock.return_value = content
+    return mock
+
+
 def test_new_imageinput_success():
     """
     Test that ImageInput can be created successfully.
@@ -127,7 +139,7 @@ def test_imageinput_set_files():
         image_input.set_files(files)
 
 
-def test_imageinput_convert_input_to_object():
+def test_imageinput_convert_input_to_object(mock_download_file):
     """
     Test that ImageInput can be converted to Image.
     """
@@ -139,7 +151,7 @@ def test_imageinput_convert_input_to_object():
     finally:
         image_object.cleanup()
 
-    url = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+    url = "http://example.com/Starry_Night.jpeg"
     image_input = ImageInput(url=url)
     try:
         image_object = image_input.convert_input_to_object()
