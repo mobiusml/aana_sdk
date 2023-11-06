@@ -30,7 +30,7 @@ sh install.sh
 5. Run the SDK.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 -- target llama2
+CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 --target llama2
 ```
 
 The target parameter specifies the set of endpoints to deploy.

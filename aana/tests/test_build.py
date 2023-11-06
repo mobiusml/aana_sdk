@@ -114,47 +114,30 @@ endpoints = {
 }
 
 
-def test_get_configuration_success():
+@pytest.mark.parametrize(
+    "target, expected_nodes, expected_deployments",
+    [
+        ("lowercase", ["text", "lowercase"], {"Lowercase": "Lowercase"}),
+        ("uppercase", ["text", "uppercase"], {"Uppercase": "Uppercase"}),
+        (
+            "both",
+            ["text", "lowercase", "uppercase"],
+            {"Lowercase": "Lowercase", "Uppercase": "Uppercase"},
+        ),
+    ],
+)
+def test_get_configuration_success(target, expected_nodes, expected_deployments):
     """
-    Test if get_configuration returns the correct configuration
+    Test if get_configuration returns the correct configuration for various targets
     """
+    configuration = get_configuration(target, endpoints, nodes, deployments)
+    assert configuration["endpoints"] == endpoints[target]
 
-    # Test lowercase target
-
-    configuration = get_configuration("lowercase", endpoints, nodes, deployments)
-    assert configuration["endpoints"] == endpoints["lowercase"]
-    # nodes should have "text" and "lowercase"
     node_names = [node["name"] for node in configuration["nodes"]]
-    assert "text" in node_names
-    assert "lowercase" in node_names
-    # deployments should have "Lowercase"
-    assert configuration["deployments"] == {"Lowercase": "Lowercase"}
+    for expected_node in expected_nodes:
+        assert expected_node in node_names
 
-    # Test uppercase target
-
-    configuration = get_configuration("uppercase", endpoints, nodes, deployments)
-    assert configuration["endpoints"] == endpoints["uppercase"]
-    # nodes should have "text" and "uppercase"
-    node_names = [node["name"] for node in configuration["nodes"]]
-    assert "text" in node_names
-    assert "uppercase" in node_names
-    # deployments should have "Uppercase"
-    assert configuration["deployments"] == {"Uppercase": "Uppercase"}
-
-    # Test both target
-
-    configuration = get_configuration("both", endpoints, nodes, deployments)
-    assert configuration["endpoints"] == endpoints["both"]
-    # nodes should have "text", "lowercase" and "uppercase"
-    node_names = [node["name"] for node in configuration["nodes"]]
-    assert "text" in node_names
-    assert "lowercase" in node_names
-    assert "uppercase" in node_names
-    # deployments should have "Lowercase" and "Uppercase"
-    assert configuration["deployments"] == {
-        "Lowercase": "Lowercase",
-        "Uppercase": "Uppercase",
-    }
+    assert configuration["deployments"] == expected_deployments
 
 
 def test_get_configuration_invalid_target():
