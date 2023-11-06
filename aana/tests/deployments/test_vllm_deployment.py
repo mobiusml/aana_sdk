@@ -6,6 +6,7 @@ from ray import serve
 
 from aana.configs.deployments import deployments
 from aana.models.pydantic.sampling_params import SamplingParams
+from aana.tests.utils import is_gpu_available
 
 ALLOWED_LEVENSTEIN_ERROR_RATE = 0.1
 
@@ -15,6 +16,11 @@ def expected_output(name):
         return (
             "  Elon Musk is a South African-born entrepreneur, inventor, and business magnate. "
             "He is best known for his revolutionary ideas"
+        )
+    if name == "vllm_deployment_zephyr_7b_beta":
+        return (
+            "\n\nElon Musk is an entrepreneur, business magnate, and investor. "
+            "He is the founder, CEO, and Chief Designer of SpaceX"
         )
     else:
         raise ValueError(f"Unknown deployment name: {name}")
@@ -49,6 +55,7 @@ def compare_texts(expected_text: str, text: str):
     )
 
 
+@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
 async def test_vllm_deployments():
     for name, deployment in deployments.items():
