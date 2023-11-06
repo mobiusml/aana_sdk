@@ -94,7 +94,7 @@ class Endpoint:
 
     def generate_model_name(self, suffix: str) -> str:
         """
-        Generate a Pydantic model name based oon a given suffix.
+        Generate a Pydantic model name based on a given suffix.
 
         Parameters:
             suffix (str): Suffix for the model name (e.g. "Request", "Response").
@@ -237,7 +237,6 @@ class Endpoint:
         self,
         pipeline: Pipeline,
         RequestModel: Type[BaseModel],
-        ResponseModel: Type[BaseModel],
         file_upload_field: Optional[FileUploadField] = None,
     ):
         async def route_func_body(body: str, files: Optional[List[UploadFile]] = None):
@@ -293,13 +292,16 @@ class Endpoint:
 
         return route_func
 
-    def register(self, app: FastAPI, pipeline: Pipeline):
+    def register(
+        self, app: FastAPI, pipeline: Pipeline, custom_schemas: Dict[str, Dict]
+    ):
         """
-        Register an endpoint to the FastAPI app.
+        Register an endpoint to the FastAPI app and add schemas to the custom schemas dictionary.
 
         Parameters:
             app (FastAPI): FastAPI app to register the endpoint to.
             pipeline (Pipeline): Pipeline to register the endpoint to.
+            custom_schemas (Dict[str, Dict]): Dictionary of custom schemas.
         """
         input_sockets, output_sockets = pipeline.get_sockets(self.outputs)
         RequestModel = self.get_request_model(input_sockets)
@@ -308,7 +310,6 @@ class Endpoint:
         route_func = self.create_endpoint_func(
             pipeline=pipeline,
             RequestModel=RequestModel,
-            ResponseModel=ResponseModel,
             file_upload_field=file_upload_field,
         )
         app.post(
@@ -321,11 +322,7 @@ class Endpoint:
                 400: {"model": ExceptionResponseModel},
             },
         )(route_func)
-
-    def get_request_schema(self, pipeline: Pipeline):
-        input_sockets, _ = pipeline.get_sockets(self.outputs)
-        RequestModel = self.get_request_model(input_sockets)
-        return RequestModel.schema()
+        custom_schemas[self.name] = RequestModel.schema()
 
 
 def add_custom_schemas_to_openapi_schema(
@@ -354,11 +351,11 @@ def add_custom_schemas_to_openapi_schema(
         dict: The openapi schema with the custom schemas added.
     """
 
+    if "definitions" not in openapi_schema:
+        openapi_schema["definitions"] = {}
     for schema_name, schema in custom_schemas.items():
         # if we have a definitions then we need to move them out to the top level of the schema
         if "definitions" in schema:
-            if "definitions" not in openapi_schema:
-                openapi_schema["definitions"] = {}
             openapi_schema["definitions"].update(schema["definitions"])
             del schema["definitions"]
         openapi_schema["components"]["schemas"][f"Body_{schema_name}"]["properties"][
