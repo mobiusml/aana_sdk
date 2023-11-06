@@ -1,4 +1,3 @@
-from typing import Any, Dict, Type
 from mobius_pipeline.exceptions import BaseException
 from typing import TYPE_CHECKING
 
@@ -20,9 +19,8 @@ class InferenceException(BaseException):
         Args:
             model_name (str): name of the model that caused the exception
         """
-        super().__init__()
+        super().__init__(model_name=model_name)
         self.model_name = model_name
-        self.extra["model_name"] = model_name
 
     def __reduce__(self):
         # This method is called when the exception is pickled
@@ -47,9 +45,8 @@ class MultipleFileUploadNotAllowed(BaseException):
         Args:
             input_name (str): name of the input that caused the exception
         """
-        super().__init__()
+        super().__init__(input_name=input_name)
         self.input_name = input_name
-        self.extra["input_name"] = input_name
 
     def __reduce__(self):
         return (self.__class__, (self.input_name,))
@@ -70,9 +67,8 @@ class ImageReadingException(BaseException):
         Args:
             image (Image): the image that caused the exception
         """
-        super().__init__()
+        super().__init__(image=image)
         self.image = image
-        self.extra["image"] = image
 
     def __reduce__(self):
         return (self.__class__, (self.image,))
@@ -93,9 +89,8 @@ class DownloadException(BaseException):
         Args:
             url (str): the URL of the file that caused the exception
         """
-        super().__init__()
+        super().__init__(url=url)
         self.url = url
-        self.extra["url"] = url
 
     def __reduce__(self):
         return (self.__class__, (self.url,))
