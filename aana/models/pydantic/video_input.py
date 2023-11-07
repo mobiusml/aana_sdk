@@ -111,7 +111,7 @@ class VideoInput(BaseModel):
                 "The content of the video isn't set. Please upload files and call set_files()."
             )
         return Video(
-            path=Path(self.path),
+            path=Path(self.path) if self.path is not None else None,
             url=self.url,
             content=self.content,
             video_id=self.video_id,
