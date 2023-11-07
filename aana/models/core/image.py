@@ -134,6 +134,20 @@ class OpenCVWrapper(AbstractImageLibrary):
 
 @dataclass
 class Image:
+    """
+    A class representing an image.
+
+    At least one of 'path', 'url', 'content' or 'numpy' must be provided.
+    If 'save_on_disk' is True, the image will be saved on disc automatically.
+
+    Attributes:
+        path (Path): The file path of the image.
+        url (str): The URL of the image.
+        content (bytes): The content of the image in bytes (image file as bytes).
+        numpy (np.ndarray): The image as a numpy array.
+        image_id (str): The ID of the image, generated automatically.
+    """
+
     path: Optional[Path] = None  # The file path of the image.
     url: Optional[str] = None  # The URL of the image.
     content: Optional[
@@ -142,8 +156,8 @@ class Image:
     numpy: Optional[np.ndarray] = None  # The image as a numpy array.
     image_id: Optional[str] = field(
         default_factory=lambda: str(uuid.uuid4())
-    )  # The ID of the image, generated automatically
-    save_on_disc: bool = True  # Whether to save the image on disc or not
+    )  # The ID of the image, generated automatically if not provided
+    save_on_disk: bool = True  # Whether to save the image on disc or not
     image_lib: Type[
         AbstractImageLibrary
     ] = OpenCVWrapper  # The image library to use, TODO: add support for PIL and allow to choose the library
@@ -151,7 +165,9 @@ class Image:
 
     def __post_init__(self):
         """
-        Save the image on disc after initialization if save_on_disc is True.
+        Post-initialization method.
+
+        Perform checks and save the image on disc if needed.
         """
         # check that at least one of 'path', 'url', 'content' or 'numpy' is provided
         if not any(
@@ -170,10 +186,10 @@ class Image:
         if self.path and not self.path.exists():
             raise FileNotFoundError(f"Image file not found: {self.path}")
 
-        if self.save_on_disc:
-            self.save_image()
+        if self.save_on_disk:
+            self.save()
 
-    def save_image(self):
+    def save(self):
         """
         Save the image on disc.
         If the image is already available on disc, do nothing.
@@ -428,6 +444,5 @@ class Image:
 
         Remove the image from disc if it was saved by the class.
         """
-        # Remove the image from disc if it was saved by the class
-        if self.saved and self.path and os.path.exists(self.path):
-            os.remove(self.path)
+        if self.saved and self.path:
+            self.path.unlink(missing_ok=True)

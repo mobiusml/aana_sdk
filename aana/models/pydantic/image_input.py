@@ -151,7 +151,7 @@ class ImageInput(BaseModel):
         file_upload_description = "Upload image file."
 
 
-class ImageListInput(BaseListModel):
+class ImageInputList(BaseListModel):
     """
     A pydantic model for a list of images to be used as input.
 
