@@ -3,6 +3,7 @@ This file contains the pipeline configuration for the aana application.
 It is used to generate the pipeline and the API endpoints.
 """
 
+from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
@@ -185,6 +186,7 @@ nodes = [
                 "name": "captions_hf_blip2_opt_2_7b",
                 "key": "captions",
                 "path": "image_batch.images.[*].caption_hf_blip2_opt_2_7b",
+                "data_model": CaptionsList,
             }
         ],
     },
@@ -260,6 +262,7 @@ nodes = [
                 "name": "video_captions_hf_blip2_opt_2_7b",
                 "key": "captions",
                 "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
+                "data_model": VideoCaptionsList,
             }
         ],
     },
