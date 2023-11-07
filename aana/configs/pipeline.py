@@ -242,4 +242,25 @@ nodes = [
             },
         ],
     },
+    {
+        "name": "hf_blip2_opt_2_7b_video",
+        "type": "ray_deployment",
+        "deployment_name": "hf_blip2_deployment_opt_2_7b",
+        "method": "generate_captions",
+        "flatten_by": "video_batch.videos.[*].frames.[*]",
+        "inputs": [
+            {
+                "name": "frames",
+                "key": "images",
+                "path": "video_batch.videos.[*].frames.[*].image",
+            }
+        ],
+        "outputs": [
+            {
+                "name": "video_captions_hf_blip2_opt_2_7b",
+                "key": "captions",
+                "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
+            }
+        ],
+    },
 ]
