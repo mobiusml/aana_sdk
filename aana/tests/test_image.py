@@ -9,7 +9,7 @@ def load_numpy_from_image_bytes(content: bytes) -> np.ndarray:
     """
     Load a numpy array from image bytes.
     """
-    image = Image(content=content, save_on_disc=False)
+    image = Image(content=content, save_on_disk=False)
     return image.get_numpy()
 
 
@@ -32,7 +32,7 @@ def test_image(mock_download_file):
 
     try:
         path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
-        image = Image(path=path, save_on_disc=False)
+        image = Image(path=path, save_on_disk=False)
         assert image.path == path
         assert image.content is None
         assert image.numpy is None
@@ -49,7 +49,7 @@ def test_image(mock_download_file):
 
     try:
         url = "http://example.com/Starry_Night.jpeg"
-        image = Image(url=url, save_on_disc=False)
+        image = Image(url=url, save_on_disk=False)
         assert image.path is None
         assert image.content is None
         assert image.numpy is None
@@ -67,7 +67,7 @@ def test_image(mock_download_file):
     try:
         path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
         content = path.read_bytes()
-        image = Image(content=content, save_on_disc=False)
+        image = Image(content=content, save_on_disk=False)
         assert image.path is None
         assert image.content == content
         assert image.numpy is None
@@ -84,7 +84,7 @@ def test_image(mock_download_file):
 
     try:
         numpy = np.random.rand(100, 100, 3).astype(np.uint8)
-        image = Image(numpy=numpy, save_on_disc=False)
+        image = Image(numpy=numpy, save_on_disk=False)
         assert image.path is None
         assert image.content is None
         assert np.array_equal(image.numpy, numpy)
@@ -116,7 +116,7 @@ def test_save_image(mock_download_file):
 
     try:
         path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
-        image = Image(path=path, save_on_disc=True)
+        image = Image(path=path, save_on_disk=True)
         assert image.path == path
         assert image.content is None
         assert image.numpy is None
@@ -124,10 +124,12 @@ def test_save_image(mock_download_file):
         assert image.path.exists()
     finally:
         image.cleanup()
+    # if image is provided as a path, cleanup() should NOT delete the image
+    assert image.path.exists()
 
     try:
         url = "http://example.com/Starry_Night.jpeg"
-        image = Image(url=url, save_on_disc=True)
+        image = Image(url=url, save_on_disk=True)
         assert image.content is None
         assert image.numpy is None
         assert image.url == url
@@ -138,7 +140,7 @@ def test_save_image(mock_download_file):
     try:
         path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
         content = path.read_bytes()
-        image = Image(content=content, save_on_disc=True)
+        image = Image(content=content, save_on_disk=True)
         assert image.content == content
         assert image.numpy is None
         assert image.url is None
@@ -148,7 +150,7 @@ def test_save_image(mock_download_file):
 
     try:
         numpy = np.random.rand(100, 100, 3).astype(np.uint8)
-        image = Image(numpy=numpy, save_on_disc=True)
+        image = Image(numpy=numpy, save_on_disk=True)
         assert image.content is None
         assert np.array_equal(image.numpy, numpy)
         assert image.url is None
@@ -164,7 +166,7 @@ def test_cleanup(mock_download_file):
 
     try:
         url = "http://example.com/Starry_Night.jpeg"
-        image = Image(url=url, save_on_disc=True)
+        image = Image(url=url, save_on_disk=True)
         assert image.path.exists()
     finally:
         image.cleanup()
@@ -176,7 +178,7 @@ def test_at_least_one_input():
     Test that at least one input is provided.
     """
     with pytest.raises(ValueError):
-        Image(save_on_disc=False)
+        Image(save_on_disk=False)
 
     with pytest.raises(ValueError):
-        Image(save_on_disc=True)
+        Image(save_on_disk=True)

@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import numpy as np
 from pydantic import ValidationError
-from aana.models.pydantic.image_input import ImageInput, ImageListInput
+from aana.models.pydantic.image_input import ImageInput, ImageInputList
 
 
 @pytest.fixture
@@ -217,7 +217,7 @@ def test_imagelistinput():
         ImageInput(numpy=b"file"),
     ]
 
-    image_list_input = ImageListInput(__root__=images)
+    image_list_input = ImageInputList(__root__=images)
     assert image_list_input.__root__ == images
     assert len(image_list_input) == len(images)
     assert image_list_input[0] == images[0]
@@ -237,7 +237,7 @@ def test_imagelistinput_set_files():
         ImageInput(numpy=b"file"),
     ]
 
-    image_list_input = ImageListInput(__root__=images)
+    image_list_input = ImageInputList(__root__=images)
     image_list_input.set_files(files)
 
     assert image_list_input[0].content == files[0]
