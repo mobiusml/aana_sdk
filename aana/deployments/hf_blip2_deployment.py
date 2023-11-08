@@ -83,7 +83,7 @@ class HFBlip2Deployment(BaseDeployment):
         # Load the model and processor for BLIP2 from HuggingFace
         self.model_id = config_obj.model
         self.dtype = config_obj.dtype
-        self.torch_dtype = Dtype.to_torch(self.dtype)
+        self.torch_dtype = self.dtype.to_torch()
         self.model = Blip2ForConditionalGeneration.from_pretrained(
             self.model_id, torch_dtype=self.torch_dtype
         )
