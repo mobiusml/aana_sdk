@@ -1,12 +1,14 @@
 from enum import Enum
-from typing import Any, Dict
+from typing import Any, Dict, List
 from faster_whisper import WhisperModel
 from pydantic import BaseModel, Field
 from ray import serve
 import torch
 
 from aana.deployments.base_deployment import BaseDeployment
+from aana.exceptions.general import InferenceException
 from aana.models.core.video import Video
+from aana.models.pydantic.asr_output import AsrOutput
 from aana.models.pydantic.whisper_params import WhisperParams
 
 
@@ -99,6 +101,7 @@ class WhisperDeployment(BaseDeployment):
 
         config_obj = WhisperConfig(**config)
         self.model_size = config_obj.model_size
+        self.model_name = "whisper_" + self.model_size
         self.compute_type = config_obj.compute_type
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = WhisperModel(
@@ -106,14 +109,56 @@ class WhisperDeployment(BaseDeployment):
         )
 
     # TODO: add audio support
-    async def transcribe(self, media: Video, params: WhisperParams):
+    async def transcribe(
+        self, media: Video, params: WhisperParams = WhisperParams()
+    ) -> Dict[str, AsrOutput]:
         """
         Transcribe the media with the whisper model.
 
         Args:
             media (Video): The media to transcribe.
             params (WhisperParams): The parameters for the whisper model.
+
+        Returns:
+            Dict[str, Any]: The transcription output as a dictionary:
+                - asr_output (AsrOutput): The ASR output.
+
+        Raises:
+            InferenceException: If the inference fails.
         """
 
         media_path: str = str(media.path)
-        segments, info = self.model.transcribe(media_path, **params.dict())
+        try:
+            segments, info = self.model.transcribe(media_path, **params.dict())
+        except Exception as e:
+            raise InferenceException(self.model_name) from e
+        asr_output = AsrOutput.from_whisper(segments, info)
+        return {
+            "asr_output": asr_output,
+        }
+
+    async def transcribe_batch(
+        self, media: List[Video], params: WhisperParams = WhisperParams()
+    ) -> Dict[str, List[AsrOutput]]:
+        """
+        Transcribe the batch of media with the whisper model.
+
+        Args:
+            media (List[Video]): The batch of media to transcribe.
+            params (WhisperParams): The parameters for the whisper model.
+
+        Returns:
+            Dict[str, List[AsrOutput]]: The transcription outputs for each media as a dictionary:
+                - asr_output (List[AsrOutput]): The ASR outputs.
+
+        Raises:
+            InferenceException: If the inference fails.
+        """
+
+        asr_outputs = []
+        for m in media:
+            output = await self.transcribe(m, params)
+            asr_outputs.append(output["asr_output"])
+        return {
+            "asr_outputs": asr_outputs,
+        }
