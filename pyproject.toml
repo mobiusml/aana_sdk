@@ -22,6 +22,7 @@ transformers = "^4.34.1"
 opencv-python = "^4.8.1.78"
 pytest-mock = "^3.12.0"
 decord = "^0.6.0"
+faster-whisper = "^0.9.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
