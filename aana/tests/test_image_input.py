@@ -242,3 +242,11 @@ def test_imagelistinput_set_files():
 
     assert image_list_input[0].content == files[0]
     assert image_list_input[1].numpy == files[1]
+
+
+def test_imagelistinput_non_empty():
+    """
+    Test that ImageListInput must not be empty.
+    """
+    with pytest.raises(ValidationError):
+        ImageListInput(__root__=[])
