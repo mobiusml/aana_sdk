@@ -2,7 +2,7 @@ import io
 from pathlib import Path
 import numpy as np
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Field, ValidationError, root_validator
+from pydantic import BaseModel, Field, ValidationError, root_validator, validator
 from pydantic.error_wrappers import ErrorWrapper
 
 from aana.models.core.image import Image
@@ -27,7 +27,9 @@ class ImageInput(BaseModel):
     """
 
     path: Optional[str] = Field(None, description="The file path of the image.")
-    url: Optional[str] = Field(None, description="The URL of the image.")
+    url: Optional[str] = Field(
+        None, description="The URL of the image."
+    )  # TODO: validate url
     content: Optional[bytes] = Field(
         None,
         description=(
@@ -160,6 +162,24 @@ class ImageListInput(BaseListModel):
     """
 
     __root__: List[ImageInput]
+
+    @validator("__root__", pre=True)
+    def check_non_empty(cls, v: List[ImageInput]) -> List[ImageInput]:
+        """
+        Check that the list of images isn't empty.
+
+        Args:
+            v (List[ImageInput]): the list of images
+
+        Returns:
+            List[ImageInput]: the list of images
+
+        Raises:
+            ValueError: if the list of images is empty
+        """
+        if len(v) == 0:
+            raise ValueError("The list of images must not be empty.")
+        return v
 
     def set_files(self, files: List[bytes]):
         """
