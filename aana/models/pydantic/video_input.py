@@ -18,7 +18,7 @@ class VideoInput(BaseModel):
     the video will be loaded from the files uploaded to the endpoint.
 
     Attributes:
-        video_id (str): the ID of the video. If not provided, it will be generated automatically.
+        media_id (str): the ID of the video. If not provided, it will be generated automatically.
         path (str): the file path of the video
         url (str): the URL of the video
         content (bytes): the content of the video in bytes
@@ -33,7 +33,7 @@ class VideoInput(BaseModel):
             "Set this field to 'file' to upload files to the endpoint."
         ),
     )
-    video_id: str = Field(
+    media_id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
@@ -114,7 +114,7 @@ class VideoInput(BaseModel):
             path=Path(self.path) if self.path is not None else None,
             url=self.url,
             content=self.content,
-            video_id=self.video_id,
+            media_id=self.media_id,
         )
 
     class Config:

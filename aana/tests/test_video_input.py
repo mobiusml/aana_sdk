@@ -10,7 +10,7 @@ def mock_download_file(mocker):
     """
     Mock download_file.
     """
-    mock = mocker.patch("aana.models.core.video.download_file", autospec=True)
+    mock = mocker.patch("aana.models.core.media.download_file", autospec=True)
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     content = path.read_bytes()
     mock.return_value = content
