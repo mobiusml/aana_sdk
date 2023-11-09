@@ -30,7 +30,7 @@ async def test_hf_blip2_deployments():
         handle = ray_setup(deployment)
 
         path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
-        image = Image(path=path, save_on_disc=False)
+        image = Image(path=path, save_on_disk=False)
 
         images = [image] * 8
 

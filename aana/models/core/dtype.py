@@ -32,13 +32,14 @@ class Dtype(str, Enum):
         Raises:
             ValueError: if the dtype is unknown
         """
-        if self.value == self.AUTO:
-            return "auto"
-        elif self.value == self.FLOAT32:
-            return torch.float32
-        elif self.value == self.FLOAT16:
-            return torch.float16
-        elif self.value == self.INT8:
-            return torch.int8
-        else:
-            raise ValueError(f"Unknown dtype: {self}")
+        match self.value:
+            case self.AUTO:
+                return "auto"
+            case self.FLOAT32:
+                return torch.float32
+            case self.FLOAT16:
+                return torch.float16
+            case self.INT8:
+                return torch.int8
+            case _:
+                raise ValueError(f"Unknown dtype: {self}")

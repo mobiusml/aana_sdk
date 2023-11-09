@@ -8,7 +8,7 @@ class Settings(BaseSettings):
 
     """
 
-    tmp_data_dir: Path = Path("/tmp/aana/data")
+    tmp_data_dir: Path = Path("/tmp/aana_data")
 
 
 settings = Settings()
