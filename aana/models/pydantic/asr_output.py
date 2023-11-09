@@ -13,6 +13,10 @@ from aana.models.pydantic.base import BaseListModel
 class Timestamp(BaseModel):
     """
     Pydantic schema for Timestamp.
+
+    Attributes:
+        start (float): Start time
+        end (float): End time
     """
 
     start: float = Field(ge=0.0, description="Start time")
@@ -27,6 +31,11 @@ class Timestamp(BaseModel):
 class AsrWord(BaseModel):
     """
     Pydantic schema for Word from ASR model.
+
+    Attributes:
+        word (str): The word text
+        timestamp (Timestamp): Timestamp of the word
+        alignment_confidence (float): Alignment confidence of the word
     """
 
     word: str = Field(description="The word text")
@@ -55,6 +64,13 @@ class AsrWord(BaseModel):
 class AsrSegment(BaseModel):
     """
     Pydantic schema for Segment from ASR model.
+
+    Attributes:
+        text (str): The text of the segment (transcript/translation)
+        timestamp (Timestamp): Timestamp of the segment
+        confidence (float): Confidence of the segment
+        no_speech_confidence (float): Chance of being a silence segment
+        words (Optional[List[AsrWord]]): List of words in the segment
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
@@ -64,7 +80,7 @@ class AsrSegment(BaseModel):
         ge=0.0, le=1.0, description="Chance of being a silence segment"
     )
     words: Optional[List[AsrWord]] = Field(
-        description="List of words in the segment", default=None
+        description="List of words in the segment", default_factory=list
     )
 
     @classmethod
@@ -77,7 +93,7 @@ class AsrSegment(BaseModel):
         if whisper_segment.words:
             words = [AsrWord.from_whisper(word) for word in whisper_segment.words]
         else:
-            words = None
+            words = []
 
         return cls(
             text=whisper_segment.text,
