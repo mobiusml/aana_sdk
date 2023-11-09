@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TypedDict
 from pydantic import BaseModel, Field, validator
 from ray import serve
 import torch
@@ -48,6 +48,17 @@ class HFBlip2Config(BaseModel):
         return value
 
 
+class CaptioningOutput(TypedDict):
+    """
+    The output of the captioning model.
+
+    Attributes:
+        captions (List[str]): the list of captions
+    """
+
+    captions: List[str]
+
+
 @serve.deployment
 class HFBlip2Deployment(BaseDeployment):
     """
@@ -92,7 +103,7 @@ class HFBlip2Deployment(BaseDeployment):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model.to(self.device)
 
-    async def generate_captions(self, **kwargs) -> Dict[str, Any]:
+    async def generate_captions(self, **kwargs) -> CaptioningOutput:
         """
         Generate captions for the given images.
 
@@ -100,7 +111,7 @@ class HFBlip2Deployment(BaseDeployment):
             images (List[Image]): the images
 
         Returns:
-            Dict[str, Any]: the dictionary with one key "captions"
+            CaptioningOutput: the dictionary with one key "captions"
                             and the list of captions for the images as value
 
         Raises:
@@ -110,7 +121,7 @@ class HFBlip2Deployment(BaseDeployment):
         # The actual inference is done in _generate_captions()
         return await self.batch_processor.process(kwargs)
 
-    def _generate_captions(self, images: List[Image]) -> Dict[str, Any]:
+    def _generate_captions(self, images: List[Image]) -> CaptioningOutput:
         """
         Generate captions for the given images.
 
@@ -120,7 +131,7 @@ class HFBlip2Deployment(BaseDeployment):
             images (List[Image]): the images
 
         Returns:
-            Dict[str, Any]: the dictionary with one key "captions"
+            CaptioningOutput: the dictionary with one key "captions"
                             and the list of captions for the images as value
 
         Raises:
@@ -141,6 +152,6 @@ class HFBlip2Deployment(BaseDeployment):
             generated_texts = [
                 generated_text.strip() for generated_text in generated_texts
             ]
-            return {"captions": generated_texts}
+            return CaptioningOutput(captions=generated_texts)
         except Exception as e:
             raise InferenceException(self.model_id) from e
