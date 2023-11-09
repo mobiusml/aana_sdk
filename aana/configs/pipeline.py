@@ -3,7 +3,11 @@ This file contains the pipeline configuration for the aana application.
 It is used to generate the pipeline and the API endpoints.
 """
 
-from aana.models.pydantic.asr_output import AsrOutputList
+from aana.models.pydantic.asr_output import (
+    AsrSegmentsList,
+    AsrTranscriptionInfoList,
+    AsrTranscriptionList,
+)
 from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
@@ -282,11 +286,23 @@ nodes = [
         ],
         "outputs": [
             {
+                "name": "video_transcriptions_segments_whisper_medium",
+                "key": "segments",
+                "path": "video_batch.videos.[*].segments",
+                "data_model": AsrSegmentsList,
+            },
+            {
+                "name": "video_transcriptions_info_whisper_medium",
+                "key": "transcription_info",
+                "path": "video_batch.videos.[*].transcription_info",
+                "data_model": AsrTranscriptionInfoList,
+            },
+            {
                 "name": "video_transcriptions_whisper_medium",
-                "key": "asr_outputs",
-                "path": "video_batch.videos.[*].asr_output",
-                "data_model": AsrOutputList,
-            }
+                "key": "transcription",
+                "path": "video_batch.videos.[*].transcription",
+                "data_model": AsrTranscriptionList,
+            },
         ],
     },
 ]
