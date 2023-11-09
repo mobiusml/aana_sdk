@@ -1,5 +1,6 @@
 import io
 from pathlib import Path
+import uuid
 import numpy as np
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field, ValidationError, root_validator
@@ -41,6 +42,10 @@ class ImageInput(BaseModel):
             "The image as a numpy array. "
             "Set this field to 'file' to upload files to the endpoint."
         ),
+    )
+    media_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="The ID of the image. If not provided, it will be generated automatically.",
     )
 
     def set_file(self, file: bytes):
@@ -133,6 +138,7 @@ class ImageInput(BaseModel):
             url=self.url,
             content=self.content,
             numpy=numpy,
+            media_id=self.media_id,
         )
 
     class Config:
