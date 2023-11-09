@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union, cast
 from faster_whisper import WhisperModel
 from pydantic import BaseModel, Field
 from ray import serve
@@ -8,7 +8,11 @@ import torch
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
 from aana.models.core.video import Video
-from aana.models.pydantic.asr_output import AsrOutput
+from aana.models.pydantic.asr_output import (
+    AsrSegment,
+    AsrTranscription,
+    AsrTranscriptionInfo,
+)
 from aana.models.pydantic.whisper_params import WhisperParams
 
 
@@ -111,7 +115,7 @@ class WhisperDeployment(BaseDeployment):
     # TODO: add audio support
     async def transcribe(
         self, media: Video, params: WhisperParams = WhisperParams()
-    ) -> Dict[str, AsrOutput]:
+    ) -> Dict[str, Union[List[AsrSegment], AsrTranscriptionInfo, AsrTranscription]]:
         """
         Transcribe the media with the whisper model.
 
@@ -120,8 +124,11 @@ class WhisperDeployment(BaseDeployment):
             params (WhisperParams): The parameters for the whisper model.
 
         Returns:
-            Dict[str, Any]: The transcription output as a dictionary:
-                - asr_output (AsrOutput): The ASR output.
+            Dict[str, Union[List[AsrSegment], AsrTranscriptionInfo, AsrTranscription]]:
+                The transcription output as a dictionary:
+                    segments (List[AsrSegment]): The ASR segments.
+                    transcription_info (AsrTranscriptionInfo): The ASR transcription info.
+                    transcription (AsrTranscription): The ASR transcription.
 
         Raises:
             InferenceException: If the inference fails.
@@ -132,14 +139,25 @@ class WhisperDeployment(BaseDeployment):
             segments, info = self.model.transcribe(media_path, **params.dict())
         except Exception as e:
             raise InferenceException(self.model_name) from e
-        asr_output = AsrOutput.from_whisper(segments, info)
+
+        asr_segments = [AsrSegment.from_whisper(seg) for seg in segments]
+        asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
+        transcription = "".join([seg.text for seg in asr_segments])
+        asr_transcription = AsrTranscription(text=transcription)
         return {
-            "asr_output": asr_output,
+            "segments": asr_segments,
+            "transcription_info": asr_transcription_info,
+            "transcription": asr_transcription,
         }
 
     async def transcribe_batch(
         self, media: List[Video], params: WhisperParams = WhisperParams()
-    ) -> Dict[str, List[AsrOutput]]:
+    ) -> Dict[
+        str,
+        Union[
+            List[List[AsrSegment]], List[AsrTranscriptionInfo], List[AsrTranscription]
+        ],
+    ]:
         """
         Transcribe the batch of media with the whisper model.
 
@@ -148,17 +166,26 @@ class WhisperDeployment(BaseDeployment):
             params (WhisperParams): The parameters for the whisper model.
 
         Returns:
-            Dict[str, List[AsrOutput]]: The transcription outputs for each media as a dictionary:
-                - asr_output (List[AsrOutput]): The ASR outputs.
+            Dict[str, Union[List[List[AsrSegment]], List[AsrTranscriptionInfo], List[AsrTranscription]]]:
+                The transcription output as a dictionary:
+                    segments (List[List[AsrSegment]]): The ASR segments for each media.
+                    transcription_info (List[AsrTranscriptionInfo]): The ASR transcription info for each media.
+                    transcription (List[AsrTranscription]): The ASR transcription for each media.
 
         Raises:
             InferenceException: If the inference fails.
         """
 
-        asr_outputs = []
+        segments: List[List[AsrSegment]] = []
+        infos: List[AsrTranscriptionInfo] = []
+        transcriptions: List[AsrTranscription] = []
         for m in media:
             output = await self.transcribe(m, params)
-            asr_outputs.append(output["asr_output"])
+            segments.append(cast(List[AsrSegment], output["segments"]))
+            infos.append(cast(AsrTranscriptionInfo, output["transcription_info"]))
+            transcriptions.append(cast(AsrTranscription, output["transcription"]))
         return {
-            "asr_outputs": asr_outputs,
+            "segments": segments,
+            "transcription_info": infos,
+            "transcription": transcriptions,
         }

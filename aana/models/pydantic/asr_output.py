@@ -121,42 +121,66 @@ class AsrTranscriptionInfo(BaseModel):
         }
 
 
-class AsrOutput(BaseModel):
+class AsrTranscription(BaseModel):
     """
-    Pydantic schema for ASR output.
+    Pydantic schema for Transcription/Translation.
     """
 
-    segments: List[AsrSegment] = Field(description="List of segments")
-    transcription_info: AsrTranscriptionInfo = Field(description="Transcription info")
-
-    @classmethod
-    def from_whisper(
-        cls,
-        segments: List[WhisperSegment],
-        transcription_info: WhisperTranscriptionInfo,
-    ) -> "AsrOutput":
-        """
-        Convert Whisper output to ASR output.
-        """
-        return cls(
-            segments=[AsrSegment.from_whisper(seg) for seg in segments],
-            transcription_info=AsrTranscriptionInfo.from_whisper(transcription_info),
-        )
+    text: str = Field(description="The text of the transcription/translation")
 
     class Config:
         schema_extra = {
-            "description": "ASR output",
+            "description": "Transcription/Translation",
         }
 
 
-class AsrOutputList(BaseListModel):
+class AsrSegments(BaseListModel):
     """
-    Pydantic schema for the list of ASR outputs.
+    Pydantic schema for the list of ASR segments.
     """
 
-    __root__: List[AsrOutput]
+    __root__: List[AsrSegment]
 
     class Config:
         schema_extra = {
-            "description": "List of ASR outputs",
+            "description": "List of ASR segments",
+        }
+
+
+class AsrSegmentsList(BaseListModel):
+    """
+    Pydantic schema for the list of lists of ASR segments.
+    """
+
+    __root__: List[AsrSegments]
+
+    class Config:
+        schema_extra = {
+            "description": "List of lists of ASR segments",
+        }
+
+
+class AsrTranscriptionInfoList(BaseListModel):
+    """
+    Pydantic schema for the list of ASR transcription info.
+    """
+
+    __root__: List[AsrTranscriptionInfo]
+
+    class Config:
+        schema_extra = {
+            "description": "List of ASR transcription info",
+        }
+
+
+class AsrTranscriptionList(BaseListModel):
+    """
+    Pydantic schema for the list of ASR transcription.
+    """
+
+    __root__: List[AsrTranscription]
+
+    class Config:
+        schema_extra = {
+            "description": "List of ASR transcription",
         }
