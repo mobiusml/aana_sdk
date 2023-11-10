@@ -3,6 +3,7 @@ This file contains the pipeline configuration for the aana application.
 It is used to generate the pipeline and the API endpoints.
 """
 
+from aana.models.pydantic.image_input import ImageListInput
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
 
@@ -15,6 +16,16 @@ from aana.models.pydantic.sampling_params import SamplingParams
 #     vllm_llama2_7b_chat_output: str
 #     vllm_zephyr_7b_beta_output_stream: str
 #     vllm_zephyr_7b_beta_output: str
+#     image_batch: ImageBatch
+#
+# class ImageBatch:
+#     images: list[Image]
+#
+# class Image:
+#     image: ImageInput
+#     caption_hf_blip2_opt_2_7b: str
+
+# pipeline configuration
 
 
 nodes = [
@@ -83,7 +94,7 @@ nodes = [
             }
         ],
     },
-        {
+    {
         "name": "vllm_stream_zephyr_7b_beta",
         "type": "ray_deployment",
         "deployment_name": "vllm_deployment_zephyr_7b_beta",
@@ -124,6 +135,40 @@ nodes = [
                 "name": "vllm_zephyr_7b_beta_output",
                 "key": "text",
                 "path": "vllm_zephyr_7b_beta_output",
+            }
+        ],
+    },
+    {
+        "name": "images",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "images",
+                "key": "images",
+                "path": "image_batch.images.[*].image",
+                "data_model": ImageListInput,
+            }
+        ],
+    },
+    {
+        "name": "hf_blip2_opt_2_7b",
+        "type": "ray_deployment",
+        "deployment_name": "hf_blip2_deployment_opt_2_7b",
+        "method": "generate_batch",
+        "inputs": [
+            {
+                "name": "images",
+                "key": "images",
+                "path": "image_batch.images.[*].image",
+                "data_model": ImageListInput,
+            }
+        ],
+        "outputs": [
+            {
+                "name": "captions_hf_blip2_opt_2_7b",
+                "key": "captions",
+                "path": "image_batch.images.[*].caption_hf_blip2_opt_2_7b",
             }
         ],
     },
