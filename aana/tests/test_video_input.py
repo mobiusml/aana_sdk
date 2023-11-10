@@ -176,3 +176,11 @@ def test_videolistinput_set_files():
     video_list_input = VideoInputList(__root__=videos)
     with pytest.raises(ValidationError):
         video_list_input.set_files(files)
+
+
+def test_videolistinput_non_empty():
+    """
+    Test that VideoListInput must not be empty.
+    """
+    with pytest.raises(ValidationError):
+        VideoInputList(__root__=[])

@@ -172,7 +172,7 @@ nodes = [
         "name": "hf_blip2_opt_2_7b",
         "type": "ray_deployment",
         "deployment_name": "hf_blip2_deployment_opt_2_7b",
-        "method": "generate_captions",
+        "method": "generate_batch",
         "inputs": [
             {
                 "name": "images",
@@ -248,7 +248,7 @@ nodes = [
         "name": "hf_blip2_opt_2_7b_video",
         "type": "ray_deployment",
         "deployment_name": "hf_blip2_deployment_opt_2_7b",
-        "method": "generate_captions",
+        "method": "generate_batch",
         "flatten_by": "video_batch.videos.[*].frames.[*]",
         "inputs": [
             {

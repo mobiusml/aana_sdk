@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional, TypedDict
 from pydantic import BaseModel, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
@@ -32,6 +32,28 @@ class VLLMConfig(BaseModel):
     gpu_memory_utilization: float
     default_sampling_params: SamplingParams
     max_model_len: Optional[int] = Field(default=None)
+
+
+class LLMOutput(TypedDict):
+    """
+    The output of the LLM model.
+
+    Attributes:
+        text (str): the generated text
+    """
+
+    text: str
+
+
+class LLMBatchOutput(TypedDict):
+    """
+    The output of the LLM model for a batch of inputs.
+
+    Attributes:
+        texts (List[str]): the list of generated texts
+    """
+
+    texts: List[str]
 
 
 @serve.deployment
@@ -78,7 +100,9 @@ class VLLMDeployment(BaseDeployment):
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
 
-    async def generate_stream(self, prompt: str, sampling_params: SamplingParams):
+    async def generate_stream(
+        self, prompt: str, sampling_params: SamplingParams
+    ) -> AsyncGenerator[LLMOutput, None]:
         """
         Generate completion for the given prompt and stream the results.
 
@@ -87,7 +111,7 @@ class VLLMDeployment(BaseDeployment):
             sampling_params (SamplingParams): the sampling parameters
 
         Yields:
-            dict: the generated text
+            LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         prompt = str(prompt)
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
@@ -108,7 +132,7 @@ class VLLMDeployment(BaseDeployment):
             num_returned = 0
             async for request_output in results_generator:
                 text_output = request_output.outputs[0].text[num_returned:]
-                yield {"text": text_output}
+                yield LLMOutput(text=text_output)
                 num_returned += len(text_output)
         except GeneratorExit as e:
             # If the generator is cancelled, we need to cancel the request
@@ -118,7 +142,7 @@ class VLLMDeployment(BaseDeployment):
         except Exception as e:
             raise InferenceException(model_name=self.model) from e
 
-    async def generate(self, prompt: str, sampling_params: SamplingParams):
+    async def generate(self, prompt: str, sampling_params: SamplingParams) -> LLMOutput:
         """
         Generate completion for the given prompt.
 
@@ -127,14 +151,16 @@ class VLLMDeployment(BaseDeployment):
             sampling_params (SamplingParams): the sampling parameters
 
         Returns:
-            dict: the generated text
+            LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         generated_text = ""
         async for chunk in self.generate_stream(prompt, sampling_params):
             generated_text += chunk["text"]
-        return {"text": generated_text}
+        return LLMOutput(text=generated_text)
 
-    async def generate_batch(self, prompts: List[str], sampling_params: SamplingParams):
+    async def generate_batch(
+        self, prompts: List[str], sampling_params: SamplingParams
+    ) -> LLMBatchOutput:
         """
         Generate completion for the batch of prompts.
 
@@ -143,11 +169,12 @@ class VLLMDeployment(BaseDeployment):
             sampling_params (SamplingParams): the sampling parameters
 
         Returns:
-            dict: the generated texts
+            LLMBatchOutput: the dictionary with the key "texts"
+                            and the list of generated texts as the value
         """
         texts = []
         for prompt in prompts:
             text = await self.generate(prompt, sampling_params)
             texts.append(text["text"])
 
-        return {"texts": texts}
+        return LLMBatchOutput(texts=texts)

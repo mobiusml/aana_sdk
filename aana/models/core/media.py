@@ -28,7 +28,7 @@ class Media:
     path: Optional[Path] = None
     url: Optional[str] = None
     content: Optional[bytes] = None
-    media_id: Optional[str] = field(default_factory=lambda: str(uuid.uuid4()))
+    media_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     save_on_disk: bool = True
     is_saved: bool = False
 
