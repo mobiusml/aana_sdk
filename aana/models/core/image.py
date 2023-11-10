@@ -31,7 +31,7 @@ class AbstractImageLibrary:
         raise NotImplementedError
 
     @classmethod
-    def read_bytes(cls, content: bytes) -> np.ndarray:
+    def read_from_bytes(cls, content: bytes) -> np.ndarray:
         """
         Read bytes using the image library.
 
@@ -55,7 +55,7 @@ class AbstractImageLibrary:
         raise NotImplementedError
 
     @classmethod
-    def write_bytes(cls, img: np.ndarray) -> bytes:
+    def write_to_bytes(cls, img: np.ndarray) -> bytes:
         """
         Write bytes using the image library.
 
@@ -89,7 +89,7 @@ class OpenCVWrapper(AbstractImageLibrary):
         return img
 
     @classmethod
-    def read_bytes(cls, content: bytes) -> np.ndarray:
+    def read_from_bytes(cls, content: bytes) -> np.ndarray:
         """
         Read bytes using OpenCV.
 
@@ -116,7 +116,7 @@ class OpenCVWrapper(AbstractImageLibrary):
         cv2.imwrite(str(path), img)
 
     @classmethod
-    def write_bytes(cls, img: np.ndarray) -> bytes:
+    def write_to_bytes(cls, img: np.ndarray) -> bytes:
         """
         Write bytes using OpenCV.
 
@@ -259,7 +259,7 @@ class Image(Media):
             ImageReadingException: If there is an error reading the image.
         """
         try:
-            self.numpy = self.image_lib.read_bytes(img_bytes)
+            self.numpy = self.image_lib.read_from_bytes(img_bytes)
         except Exception as e:
             raise ImageReadingException(self) from e
 
@@ -310,7 +310,7 @@ class Image(Media):
         Load the content of the image from numpy.
         """
         assert self.numpy is not None
-        self.content = self.image_lib.write_bytes(self.numpy)
+        self.content = self.image_lib.write_to_bytes(self.numpy)
 
     def __repr__(self) -> str:
         """

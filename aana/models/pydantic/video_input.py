@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel, Field, ValidationError, root_validator
+from pydantic import BaseModel, Field, ValidationError, root_validator, validator
 from pydantic.error_wrappers import ErrorWrapper
 from aana.models.core.video import Video
 
@@ -143,6 +143,24 @@ class VideoInputList(BaseListModel):
     """
 
     __root__: List[VideoInput]
+
+    @validator("__root__", pre=True)
+    def check_non_empty(cls, v: List[VideoInput]) -> List[VideoInput]:
+        """
+        Check that the list of videos isn't empty.
+
+        Args:
+            v (List[VideoInput]): the list of videos
+
+        Returns:
+            List[VideoInput]: the list of videos
+
+        Raises:
+            ValueError: if the list of videos is empty
+        """
+        if len(v) == 0:
+            raise ValueError("The list of videos must not be empty.")
+        return v
 
     def set_files(self, files: List[bytes]):
         """

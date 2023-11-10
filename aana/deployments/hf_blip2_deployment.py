@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TypedDict
 from pydantic import BaseModel, Field, validator
 from ray import serve
 import torch
@@ -48,6 +48,28 @@ class HFBlip2Config(BaseModel):
         return value
 
 
+class CaptioningOutput(TypedDict):
+    """
+    The output of the captioning model.
+
+    Attributes:
+        caption (str): the caption
+    """
+
+    caption: str
+
+
+class CaptioningBatchOutput(TypedDict):
+    """
+    The output of the captioning model.
+
+    Attributes:
+        captions (List[str]): the list of captions
+    """
+
+    captions: List[str]
+
+
 @serve.deployment
 class HFBlip2Deployment(BaseDeployment):
     """
@@ -71,11 +93,11 @@ class HFBlip2Deployment(BaseDeployment):
         # and process them in parallel
         self.batch_size = config_obj.batch_size
         self.num_processing_threads = config_obj.num_processing_threads
-        # The actual inference is done in _generate_captions()
+        # The actual inference is done in _generate()
         # We use lambda because BatchProcessor expects dict as input
-        # and we use **kwargs to unpack the dict into named arguments for _generate_captions()
+        # and we use **kwargs to unpack the dict into named arguments for _generate()
         self.batch_processor = BatchProcessor(
-            process_batch=lambda request: self._generate_captions(**request),
+            process_batch=lambda request: self._generate(**request),
             batch_size=self.batch_size,
             num_threads=self.num_processing_threads,
         )
@@ -83,7 +105,7 @@ class HFBlip2Deployment(BaseDeployment):
         # Load the model and processor for BLIP2 from HuggingFace
         self.model_id = config_obj.model
         self.dtype = config_obj.dtype
-        self.torch_dtype = Dtype.to_torch(self.dtype)
+        self.torch_dtype = self.dtype.to_torch()
         self.model = Blip2ForConditionalGeneration.from_pretrained(
             self.model_id, torch_dtype=self.torch_dtype
         )
@@ -92,7 +114,26 @@ class HFBlip2Deployment(BaseDeployment):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model.to(self.device)
 
-    async def generate_captions(self, **kwargs) -> Dict[str, Any]:
+    async def generate(self, image: Image) -> CaptioningOutput:
+        """
+        Generate captions for the given image.
+
+        Args:
+            image (Image): the image
+
+        Returns:
+            CaptioningOutput: the dictionary with one key "captions"
+                            and the list of captions for the image as value
+
+        Raises:
+            InferenceException: if the inference fails
+        """
+        captions: CaptioningBatchOutput = await self.batch_processor.process(
+            {"images": [image]}
+        )
+        return CaptioningOutput(caption=captions["captions"][0])
+
+    async def generate_batch(self, **kwargs) -> CaptioningBatchOutput:
         """
         Generate captions for the given images.
 
@@ -100,17 +141,17 @@ class HFBlip2Deployment(BaseDeployment):
             images (List[Image]): the images
 
         Returns:
-            Dict[str, Any]: the dictionary with one key "captions"
+            CaptioningBatchOutput: the dictionary with one key "captions"
                             and the list of captions for the images as value
 
         Raises:
             InferenceException: if the inference fails
         """
         # Call the batch processor to process the requests
-        # The actual inference is done in _generate_captions()
+        # The actual inference is done in _generate()
         return await self.batch_processor.process(kwargs)
 
-    def _generate_captions(self, images: List[Image]) -> Dict[str, Any]:
+    def _generate(self, images: List[Image]) -> CaptioningBatchOutput:
         """
         Generate captions for the given images.
 
@@ -120,7 +161,7 @@ class HFBlip2Deployment(BaseDeployment):
             images (List[Image]): the images
 
         Returns:
-            Dict[str, Any]: the dictionary with one key "captions"
+            CaptioningBatchOutput: the dictionary with one key "captions"
                             and the list of captions for the images as value
 
         Raises:
@@ -141,6 +182,6 @@ class HFBlip2Deployment(BaseDeployment):
             generated_texts = [
                 generated_text.strip() for generated_text in generated_texts
             ]
-            return {"captions": generated_texts}
+            return CaptioningBatchOutput(captions=generated_texts)
         except Exception as e:
             raise InferenceException(self.model_id) from e

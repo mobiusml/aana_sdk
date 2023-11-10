@@ -5,7 +5,7 @@ from aana.configs.settings import Settings
 def test_default_tmp_data_dir():
     """Test that the default temporary data directory is set correctly."""
     settings = Settings()
-    assert settings.tmp_data_dir == Path("/tmp/aana/data")
+    assert settings.tmp_data_dir == Path("/tmp/aana_data")
 
 
 def test_custom_tmp_data_dir(monkeypatch):

@@ -124,7 +124,7 @@ def test_image_path_not_exist():
 
 def test_save_image(mock_download_file):
     """
-    Test that save_on_disc works.
+    Test that save_on_disk works.
     """
 
     try:
