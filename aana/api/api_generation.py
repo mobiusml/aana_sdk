@@ -256,8 +256,8 @@ class Endpoint:
                 field_value = getattr(data, field_name)
                 # check if it has a method convert_to_entities
                 # if it does, call it to convert the model to an entity
-                if hasattr(field_value, "convert_to_entity"):
-                    field_value = field_value.convert_to_entity()
+                if hasattr(field_value, "convert_input_to_object"):
+                    field_value = field_value.convert_input_to_object()
                 data_dict[field_name] = field_value
 
             if self.output_filter:

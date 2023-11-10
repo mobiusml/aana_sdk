@@ -1,14 +1,11 @@
 import random
 import pytest
-import rapidfuzz
 import ray
 from ray import serve
 
 from aana.configs.deployments import deployments
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.tests.utils import is_gpu_available
-
-ALLOWED_LEVENSTEIN_ERROR_RATE = 0.1
+from aana.tests.utils import compare_texts, is_gpu_available
 
 
 def expected_output(name):
@@ -36,29 +33,14 @@ def ray_setup(deployment):
     return handle
 
 
-def compare_texts(expected_text: str, text: str):
-    """
-    Compare two texts using Levenshtein distance.
-    The error rate is allowed to be less than ALLOWED_LEVENSTEIN_ERROR_RATE.
-
-    Args:
-        expected_text (str): the expected text
-        text (str): the actual text
-
-    Raises:
-        AssertionError: if the error rate is too high
-    """
-    dist = rapidfuzz.distance.Levenshtein.distance(text, expected_text)
-    assert dist < len(expected_text) * ALLOWED_LEVENSTEIN_ERROR_RATE, (
-        expected_text,
-        text,
-    )
-
-
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
 async def test_vllm_deployments():
     for name, deployment in deployments.items():
+        # skip if not a VLLM deployment
+        if deployment.name != "VLLMDeployment":
+            continue
+
         handle = ray_setup(deployment)
 
         # test generate method

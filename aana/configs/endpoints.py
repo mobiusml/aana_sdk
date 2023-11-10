@@ -18,4 +18,12 @@ endpoints = {
             outputs=["vllm_zephyr_7b_beta_output"],
         )
     ],
+    "blip2": [
+        Endpoint(
+            name="blip2_generate",
+            path="/blip2/generate_captions",
+            summary="Generate captions using BLIP2 OPT-2.7B",
+            outputs=["captions_hf_blip2_opt_2_7b"],
+        )
+    ],
 }
