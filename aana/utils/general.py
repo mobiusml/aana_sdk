@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from pydantic import BaseModel
 import requests
@@ -51,3 +51,23 @@ def download_file(url: str) -> bytes:
     except Exception as e:
         raise DownloadException(url) from e
     return response.content
+
+
+def serialize_pydantic(data: Any) -> Any:
+    """
+    Serialize all Pydantic objects in the structured data.
+
+    Args:
+        data (Any): the structured data
+
+    Returns:
+        Any: the same structured data with Pydantic objects converted to dictionaries
+    """
+    if isinstance(data, BaseModel):
+        return data.dict()
+    elif isinstance(data, list):
+        return [serialize_pydantic(item) for item in data]
+    elif isinstance(data, dict):
+        return {key: serialize_pydantic(value) for key, value in data.items()}
+    else:
+        return data  # return as is for non-Pydantic types

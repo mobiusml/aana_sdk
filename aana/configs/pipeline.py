@@ -14,6 +14,7 @@ from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.models.pydantic.video_input import VideoInputList
 from aana.models.pydantic.video_params import VideoParams
+from aana.models.pydantic.whisper_params import WhisperParams
 
 # container data model
 # we don't enforce this data model for now but it's a good reference for writing paths and flatten_by
@@ -272,6 +273,19 @@ nodes = [
         ],
     },
     {
+        "name": "whisper_params",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "whisper_params",
+                "key": "whisper_params",
+                "path": "video_batch.whisper_params",
+                "data_model": WhisperParams,
+            }
+        ],
+    },
+    {
         "name": "whisper_medium_transcribe_videos",
         "type": "ray_deployment",
         "deployment_name": "whisper_deployment_medium",
@@ -282,7 +296,13 @@ nodes = [
                 "key": "media",
                 "path": "video_batch.videos.[*].video",
                 "data_model": VideoInputList,
-            }
+            },
+            {
+                "name": "whisper_params",
+                "key": "params",
+                "path": "video_batch.whisper_params",
+                "data_model": WhisperParams,
+            },
         ],
         "outputs": [
             {
