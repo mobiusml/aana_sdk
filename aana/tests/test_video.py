@@ -1,7 +1,11 @@
 from importlib import resources
 from pathlib import Path
 import pytest
+from aana.configs.settings import settings
+from aana.exceptions.general import DownloadException
 from aana.models.core.video import Video
+from aana.models.pydantic.video_input import VideoInput, YoutubeVideoInput
+from aana.utils.video import download_youtube_video
 
 
 @pytest.fixture
@@ -139,3 +143,44 @@ def test_at_least_one_input():
 
     with pytest.raises(ValueError):
         Video(save_on_disk=True)
+
+
+def test_download_youtube_video():
+    """
+    Test that download_youtube_video works for both VideoInput and YoutubeVideoInput.
+    """
+    # Test VideoInput
+    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    video_input = VideoInput(path=str(path))
+    video = download_youtube_video(video_input)
+    assert isinstance(video, Video)
+    assert video.path == path
+    assert video.content is None
+    assert video.url is None
+
+    # Test YoutubeVideoInput
+    youtube_url = "https://www.youtube.com/watch?v=yModCU1OVHY"
+    tmp_dir = settings.tmp_data_dir
+    youtube_video_dir = tmp_dir / "youtube_videos"
+    expected_path = youtube_video_dir / "yModCU1OVHY.mp4"
+    # remove the file if it exists
+    expected_path.unlink(missing_ok=True)
+
+    try:
+        youtube_video_input = YoutubeVideoInput(youtube_url=youtube_url)
+        video = download_youtube_video(youtube_video_input)
+        assert isinstance(video, Video)
+        assert video.path == expected_path
+        assert video.path is not None
+        assert video.path.exists()
+        assert video.content is None
+        assert video.url is None
+    finally:
+        if video and video.path:
+            video.path.unlink(missing_ok=True)
+
+    # Test YoutubeVideoInput with invalid youtube_url
+    youtube_url = "https://www.youtube.com/watch?v=invalid_url"
+    youtube_video_input = YoutubeVideoInput(youtube_url=youtube_url)
+    with pytest.raises(DownloadException):
+        download_youtube_video(youtube_video_input)
