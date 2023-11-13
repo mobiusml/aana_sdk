@@ -1,10 +1,15 @@
+from pathlib import Path
 from typing import Any, Dict
 import decord
 import numpy as np
-from aana.exceptions.general import VideoReadingException
+import yt_dlp
+from aana.configs.settings import settings
+from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
 from aana.models.core.video import Video
+from aana.models.pydantic.video_input import VideoInput, YoutubeVideoInput
 from aana.models.pydantic.video_params import VideoParams
+from yt_dlp.utils import DownloadError
 
 
 def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
@@ -52,3 +57,44 @@ def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
         "timestamps": timestamps,
         "duration": duration,
     }
+
+
+def download_youtube_video(video: VideoInput | YoutubeVideoInput) -> Video:
+    """
+    Downloads youtube videos for YoutubeVideoInput.
+    If video is VideoInput, create a Video object from it directly.
+
+    Args:
+        video (VideoInput | YoutubeVideoInput)
+
+    Returns:
+        Video: the video object
+    """
+    if isinstance(video, VideoInput):
+        return video.convert_input_to_object()
+    elif isinstance(video, YoutubeVideoInput):
+        tmp_dir = settings.tmp_data_dir
+        youtube_video_dir = tmp_dir / "youtube_videos"
+
+        ydl_options = {
+            "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
+            "outtmpl": f"{youtube_video_dir}/%(id)s.%(ext)s",
+            "extract_flat": True,
+            "hls_prefer_native": True,
+            "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
+        }
+        try:
+            with yt_dlp.YoutubeDL(ydl_options) as ydl:
+                info = ydl.extract_info(video.youtube_url, download=False)
+                path = Path(ydl.prepare_filename(info))
+                if not path.exists():
+                    ydl.download([video.youtube_url])
+                if not path.exists():
+                    raise DownloadException(video.youtube_url)
+                return Video(path=path)
+        except DownloadError as e:
+            raise DownloadException(video.youtube_url) from e
+    else:
+        raise ValueError(
+            f"video must be VideoInput or YoutubeVideoInput, got {type(video)}"
+        )

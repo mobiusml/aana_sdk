@@ -2,7 +2,12 @@ from importlib import resources
 from pathlib import Path
 import pytest
 from pydantic import ValidationError
-from aana.models.pydantic.video_input import VideoInput, VideoInputList
+from aana.models.pydantic.video_input import (
+    VideoInput,
+    VideoInputList,
+    VideoOrYoutubeVideoInputList,
+    YoutubeVideoInput,
+)
 
 
 @pytest.fixture
@@ -184,3 +189,110 @@ def test_videolistinput_non_empty():
     """
     with pytest.raises(ValidationError):
         VideoInputList(__root__=[])
+
+
+def test_youtubevideoinput_success():
+    """
+    Test that YoutubeVideoInput can be created successfully.
+    """
+    youtube_input = YoutubeVideoInput(
+        youtube_url="https://www.youtube.com/watch?v=yModCU1OVHY"
+    )
+    assert youtube_input.youtube_url == "https://www.youtube.com/watch?v=yModCU1OVHY"
+
+    youtube_input = YoutubeVideoInput(
+        youtube_url="http://www.youtube.com/watch?v=yModCU1OVHY"
+    )
+    assert youtube_input.youtube_url == "http://www.youtube.com/watch?v=yModCU1OVHY"
+
+    youtube_input = YoutubeVideoInput(youtube_url="https://youtu.be/yModCU1OVHY")
+    assert youtube_input.youtube_url == "https://youtu.be/yModCU1OVHY"
+
+    youtube_input = YoutubeVideoInput(youtube_url="http://youtu.be/yModCU1OVHY")
+    assert youtube_input.youtube_url == "http://youtu.be/yModCU1OVHY"
+
+
+def test_youtubevideoinput_missing_url():
+    """
+    Test that a missing youtube URL raises a TypeError.
+    """
+    with pytest.raises(ValidationError):
+        YoutubeVideoInput()
+
+
+def test_videooryoutubevideoinputlist_success():
+    """
+    Test that VideoOrYoutubeVideoInputList can be created successfully.
+    """
+    videos = [
+        VideoInput(path="video.mp4"),
+        YoutubeVideoInput(youtube_url="https://www.youtube.com/watch?v=yModCU1OVHY"),
+    ]
+
+    video_list_input = VideoOrYoutubeVideoInputList(__root__=videos)
+    assert video_list_input.__root__ == videos
+    assert len(video_list_input) == len(videos)
+    assert video_list_input[0] == videos[0]
+    assert video_list_input[1] == videos[1]
+
+
+def test_videooryoutubevideoinputlist_set_files():
+    """
+    Test that the files can be set for the video list.
+    """
+    files = [b"video data", b"another video data"]
+
+    videos = [
+        VideoInput(content=b"file"),
+        VideoInput(content=b"file"),
+    ]
+
+    video_list_input = VideoOrYoutubeVideoInputList(__root__=videos)
+    video_list_input.set_files(files)
+    for i, video in enumerate(video_list_input):
+        assert video.content == files[i]
+
+    # If the number of files is not the same as the number of videos,
+    # an error should be raised.
+    files = [b"video data", b"another video data", b"yet another video data"]
+    video_list_input = VideoOrYoutubeVideoInputList(__root__=videos)
+    with pytest.raises(ValidationError):
+        video_list_input.set_files(files)
+
+    files = []
+    video_list_input = VideoOrYoutubeVideoInputList(__root__=videos)
+    with pytest.raises(ValidationError):
+        video_list_input.set_files(files)
+
+
+def test_videooryoutubevideoinputlist_non_empty():
+    """
+    Test that VideoOrYoutubeVideoInputList must not be empty.
+    """
+    with pytest.raises(ValidationError):
+        VideoOrYoutubeVideoInputList(__root__=[])
+
+
+def test_videooryoutubevideoinputlist_invalid_input():
+    """
+    Test that VideoOrYoutubeVideoInputList raises an error for invalid input.
+    """
+    with pytest.raises(ValidationError):
+        VideoOrYoutubeVideoInputList(__root__=[1, 2, 3])
+
+
+def test_videooryoutubevideoinputlist_convert_input_to_object():
+    """
+    Test that VideoOrYoutubeVideoInputList can be converted to a list of video inputs.
+    """
+    videos = [
+        VideoInput(path="video.mp4"),
+        YoutubeVideoInput(youtube_url="https://www.youtube.com/watch?v=yModCU1OVHY"),
+    ]
+
+    video_list_input = VideoOrYoutubeVideoInputList(__root__=videos)
+    video_inputs = video_list_input.convert_input_to_object()
+    assert isinstance(video_inputs, list)
+    assert len(video_inputs) == len(videos)
+    assert isinstance(video_inputs[0], VideoInput)
+    assert isinstance(video_inputs[1], YoutubeVideoInput)
