@@ -53,11 +53,14 @@ select = [
     "UP", "PTH", "TRY",  # pyupgrade, pathlib, tryceratops
     "D", "NPY", "RUF"  # pydocstyle, numpy, misc Ruff
 ]
-ignore = []
-fixable = ["ALL"] # or "ALL"
+ignore = ["D100", "D104"]  # require module-level docstrings
+fixable = ["ALL"]
 unfixable = []
 target-version = "py310"
 line-length = 88
+
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.ruff.pydocstyle]
 convention = "google"  # Accepts: "google", "numpy", or "pep257".
