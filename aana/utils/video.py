@@ -1,13 +1,19 @@
-from typing import Any, Dict
 import decord
 import numpy as np
 from aana.exceptions.general import VideoReadingException
 from aana.models.core.image import Image
 from aana.models.core.video import Video
 from aana.models.pydantic.video_params import VideoParams
+from typing import List, TypedDict
 
 
-def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
+class FramesDict(TypedDict):
+    frames: List[Image]
+    timestamps: List[float]
+    duration: float
+
+
+def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
     """
     Extract frames from a video using decord.
 
@@ -16,7 +22,7 @@ def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
         params (VideoParams): the parameters of the video extraction
 
     Returns:
-        Dict[str, Any]: a dictionary containing the extracted frames, timestamps, and duration
+        FramesDict: a dictionary containing the extracted frames, timestamps, and duration
     """
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
@@ -47,8 +53,4 @@ def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
         img = Image(numpy=frame)
         frames.append(img)
 
-    return {
-        "frames": frames,
-        "timestamps": timestamps,
-        "duration": duration,
-    }
+    return FramesDict(frames=frames, timestamps=timestamps, duration=duration)
