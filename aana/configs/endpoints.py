@@ -29,7 +29,7 @@ endpoints = {
             name="blip2_video_generate",
             path="/video/generate_captions",
             summary="Generate captions for videos using BLIP2 OPT-2.7B",
-            outputs=["video_captions_hf_blip2_opt_2_7b"],
+            outputs=["video_captions_hf_blip2_opt_2_7b", "timestamps"],
         ),
     ],
     "video": [

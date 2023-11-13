@@ -7,7 +7,7 @@ from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.models.pydantic.video_input import VideoInputList
+from aana.models.pydantic.video_input import VideoOrYoutubeVideoInputList
 from aana.models.pydantic.video_params import VideoParams
 
 # container data model
@@ -190,6 +190,19 @@ nodes = [
             }
         ],
     },
+    # {
+    #     "name": "videos",
+    #     "type": "input",
+    #     "inputs": [],
+    #     "outputs": [
+    #         {
+    #             "name": "videos",
+    #             "key": "videos",
+    #             "path": "video_batch.videos.[*].video",
+    #             "data_model": VideoInputList,
+    #         }
+    #     ],
+    # },
     {
         "name": "videos",
         "type": "input",
@@ -198,9 +211,31 @@ nodes = [
             {
                 "name": "videos",
                 "key": "videos",
-                "path": "video_batch.videos.[*].video",
-                "data_model": VideoInputList,
+                "path": "video_batch.videos.[*].video_input",
+                "data_model": VideoOrYoutubeVideoInputList,
             }
+        ],
+    },
+    {
+        "name": "youtube_download",
+        "type": "ray_task",
+        "function": "aana.utils.video.download_youtube_video",
+        "batched": True,
+        "flatten_by": "video_batch.videos.[*]",
+        "dict_output": False,
+        "inputs": [
+            {
+                "name": "videos",
+                "key": "video",
+                "path": "video_batch.videos.[*].video_input",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_objects",
+                "key": "output",
+                "path": "video_batch.videos.[*].video",
+            },
         ],
     },
     {
@@ -223,7 +258,11 @@ nodes = [
         "batched": True,
         "flatten_by": "video_batch.videos.[*]",
         "inputs": [
-            {"name": "videos", "key": "video", "path": "video_batch.videos.[*].video"},
+            {
+                "name": "video_objects",
+                "key": "video",
+                "path": "video_batch.videos.[*].video",
+            },
             {"name": "video_params", "key": "params", "path": "video_batch.params"},
         ],
         "outputs": [
