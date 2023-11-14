@@ -1,8 +1,10 @@
 from mobius_pipeline.exceptions import BaseException
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from aana.models.core.image import Image
+    from aana.models.core.video import Video
 
 
 class InferenceException(BaseException):
@@ -94,3 +96,36 @@ class DownloadException(BaseException):
 
     def __reduce__(self):
         return (self.__class__, (self.url,))
+
+
+class VideoException(BaseException):
+    """
+    Exception raised when working with videos.
+
+    Attributes:
+        video (Video): the video that caused the exception
+    """
+
+    def __init__(self, video: "Video"):
+        """
+        Initialize the exception.
+
+        Args:
+            video (Video): the video that caused the exception
+        """
+        super().__init__(video=video)
+        self.video = video
+
+    def __reduce__(self):
+        return (self.__class__, (self.video,))
+
+
+class VideoReadingException(VideoException):
+    """
+    Exception raised when there is an error reading a video.
+
+    Attributes:
+        video (Video): the video that caused the exception
+    """
+
+    pass

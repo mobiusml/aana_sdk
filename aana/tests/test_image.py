@@ -16,13 +16,26 @@ def load_numpy_from_image_bytes(content: bytes) -> np.ndarray:
 @pytest.fixture
 def mock_download_file(mocker):
     """
-    Mock download_file.
+    Mock download_file function in both media and image modules.
     """
-    mock = mocker.patch("aana.models.core.image.download_file", autospec=True)
+    # Path to the file to be used as mock return value
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
     content = path.read_bytes()
-    mock.return_value = content
-    return mock
+
+    # Mock for aana.models.core.media.download_file
+    mock_media_download = mocker.patch(
+        "aana.models.core.media.download_file", autospec=True
+    )
+    mock_media_download.return_value = content
+
+    # Mock for aana.models.core.image.download_file
+    mock_image_download = mocker.patch(
+        "aana.models.core.image.download_file", autospec=True
+    )
+    mock_image_download.return_value = content
+
+    # Return both mocks in case you need them in your tests
+    return mock_media_download, mock_image_download
 
 
 def test_image(mock_download_file):
@@ -124,6 +137,8 @@ def test_save_image(mock_download_file):
         assert image.path.exists()
     finally:
         image.cleanup()
+    # if image is provided as a path, cleanup() should NOT delete the image
+    assert image.path.exists()
 
     try:
         url = "http://example.com/Starry_Night.jpeg"

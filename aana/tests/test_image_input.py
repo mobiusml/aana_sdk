@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import numpy as np
 from pydantic import ValidationError
-from aana.models.pydantic.image_input import ImageInput, ImageListInput
+from aana.models.pydantic.image_input import ImageInput, ImageInputList
 
 
 @pytest.fixture
@@ -34,6 +34,14 @@ def test_new_imageinput_success():
 
     image_input = ImageInput(numpy=b"file")
     assert image_input.numpy == b"file"
+
+
+def test_imageinput_invalid_media_id():
+    """
+    Test that ImageInput can't be created if media_id is invalid.
+    """
+    with pytest.raises(ValidationError):
+        ImageInput(path="image.png", media_id="")
 
 
 def test_imageinput_check_only_one_field():
@@ -217,7 +225,7 @@ def test_imagelistinput():
         ImageInput(numpy=b"file"),
     ]
 
-    image_list_input = ImageListInput(__root__=images)
+    image_list_input = ImageInputList(__root__=images)
     assert image_list_input.__root__ == images
     assert len(image_list_input) == len(images)
     assert image_list_input[0] == images[0]
@@ -237,7 +245,7 @@ def test_imagelistinput_set_files():
         ImageInput(numpy=b"file"),
     ]
 
-    image_list_input = ImageListInput(__root__=images)
+    image_list_input = ImageInputList(__root__=images)
     image_list_input.set_files(files)
 
     assert image_list_input[0].content == files[0]
@@ -246,7 +254,7 @@ def test_imagelistinput_set_files():
 
 def test_imagelistinput_non_empty():
     """
-    Test that ImageListInput must not be empty.
+    Test that ImageInputList must not be empty.
     """
     with pytest.raises(ValidationError):
-        ImageListInput(__root__=[])
+        ImageInputList(__root__=[])

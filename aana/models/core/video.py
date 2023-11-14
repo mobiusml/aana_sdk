@@ -1,0 +1,55 @@
+from dataclasses import dataclass
+import hashlib
+from aana.models.core.media import Media
+
+
+@dataclass
+class Video(Media):
+    """
+    A class representing a video.
+
+    At least one of 'path', 'url', or 'content' must be provided.
+    If 'save_on_disk' is True, the video will be saved on disk automatically.
+
+    Attributes:
+        path (Path): the path to the video file
+        url (str): the URL of the video
+        content (bytes): the content of the video in bytes
+        media_id (str): the ID of the video. If not provided, it will be generated automatically.
+    """
+
+    def validate(self):
+        """
+        Validate the video.
+        """
+        # validate the parent class
+        super().validate()
+
+        # check that at least one of 'path', 'url' or 'content' is provided
+        if not any(
+            [
+                self.path is not None,
+                self.url is not None,
+                self.content is not None,
+            ]
+        ):
+            raise ValueError(
+                "At least one of 'path', 'url' or 'content' must be provided."
+            )
+
+    def __repr__(self) -> str:
+        """
+        Get the representation of the video.
+
+        Use md5 hash for the content of the video if it is available.
+
+        Returns:
+            str: the representation of the video
+        """
+        content_hash = hashlib.md5(self.content).hexdigest() if self.content else None
+        return (
+            f"Video(path={self.path}, "
+            f"url={self.url}, "
+            f"content={content_hash}, "
+            f"media_id={self.media_id})"
+        )

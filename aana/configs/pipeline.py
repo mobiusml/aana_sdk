@@ -3,9 +3,12 @@ This file contains the pipeline configuration for the aana application.
 It is used to generate the pipeline and the API endpoints.
 """
 
-from aana.models.pydantic.image_input import ImageListInput
+from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
+from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
+from aana.models.pydantic.video_input import VideoInputList
+from aana.models.pydantic.video_params import VideoParams
 
 # container data model
 # we don't enforce this data model for now but it's a good reference for writing paths and flatten_by
@@ -17,6 +20,7 @@ from aana.models.pydantic.sampling_params import SamplingParams
 #     vllm_zephyr_7b_beta_output_stream: str
 #     vllm_zephyr_7b_beta_output: str
 #     image_batch: ImageBatch
+#     video_batch: VideoBatch
 #
 # class ImageBatch:
 #     images: list[Image]
@@ -24,6 +28,19 @@ from aana.models.pydantic.sampling_params import SamplingParams
 # class Image:
 #     image: ImageInput
 #     caption_hf_blip2_opt_2_7b: str
+#
+# class VideoBatch:
+#     videos: list[Video]
+#     params: VideoParams
+# class Video:
+#     video: VideoInput
+#     frames: Frame
+#     timestamps: Timestamps
+#     duration: float
+# class Frame:
+#     image: Image
+#     caption_hf_blip2_opt_2_7b: str
+
 
 # pipeline configuration
 
@@ -147,7 +164,7 @@ nodes = [
                 "name": "images",
                 "key": "images",
                 "path": "image_batch.images.[*].image",
-                "data_model": ImageListInput,
+                "data_model": ImageInputList,
             }
         ],
     },
@@ -161,7 +178,7 @@ nodes = [
                 "name": "images",
                 "key": "images",
                 "path": "image_batch.images.[*].image",
-                "data_model": ImageListInput,
+                "data_model": ImageInputList,
             }
         ],
         "outputs": [
@@ -169,6 +186,83 @@ nodes = [
                 "name": "captions_hf_blip2_opt_2_7b",
                 "key": "captions",
                 "path": "image_batch.images.[*].caption_hf_blip2_opt_2_7b",
+                "data_model": CaptionsList,
+            }
+        ],
+    },
+    {
+        "name": "videos",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "videos",
+                "key": "videos",
+                "path": "video_batch.videos.[*].video",
+                "data_model": VideoInputList,
+            }
+        ],
+    },
+    {
+        "name": "video_params",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "video_params",
+                "key": "video_params",
+                "path": "video_batch.params",
+                "data_model": VideoParams,
+            }
+        ],
+    },
+    {
+        "name": "frame_extraction",
+        "type": "ray_task",
+        "function": "aana.utils.video.extract_frames_decord",
+        "batched": True,
+        "flatten_by": "video_batch.videos.[*]",
+        "inputs": [
+            {"name": "videos", "key": "video", "path": "video_batch.videos.[*].video"},
+            {"name": "video_params", "key": "params", "path": "video_batch.params"},
+        ],
+        "outputs": [
+            {
+                "name": "frames",
+                "key": "frames",
+                "path": "video_batch.videos.[*].frames.[*].image",
+            },
+            {
+                "name": "timestamps",
+                "key": "timestamps",
+                "path": "video_batch.videos.[*].timestamp",
+            },
+            {
+                "name": "duration",
+                "key": "duration",
+                "path": "video_batch.videos.[*].duration",
+            },
+        ],
+    },
+    {
+        "name": "hf_blip2_opt_2_7b_video",
+        "type": "ray_deployment",
+        "deployment_name": "hf_blip2_deployment_opt_2_7b",
+        "method": "generate_batch",
+        "flatten_by": "video_batch.videos.[*].frames.[*]",
+        "inputs": [
+            {
+                "name": "frames",
+                "key": "images",
+                "path": "video_batch.videos.[*].frames.[*].image",
+            }
+        ],
+        "outputs": [
+            {
+                "name": "video_captions_hf_blip2_opt_2_7b",
+                "key": "captions",
+                "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
+                "data_model": VideoCaptionsList,
             }
         ],
     },
