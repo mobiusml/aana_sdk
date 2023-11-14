@@ -50,6 +50,24 @@ class ImageInput(BaseModel):
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
 
+    @validator("media_id")
+    def media_id_must_not_be_empty(cls, media_id):
+        """
+        Validates that the media_id is not an empty string.
+
+        Args:
+            media_id (str): The value of the media_id field.
+
+        Raises:
+            ValueError: If the media_id is an empty string.
+
+        Returns:
+            str: The non-empty media_id value.
+        """
+        if media_id == "":
+            raise ValueError("media_id cannot be an empty string")
+        return media_id
+
     def set_file(self, file: bytes):
         """
         If 'content' or 'numpy' is set to 'file',

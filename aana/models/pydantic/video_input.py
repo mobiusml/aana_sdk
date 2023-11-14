@@ -38,6 +38,24 @@ class VideoInput(BaseModel):
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
 
+    @validator("media_id")
+    def media_id_must_not_be_empty(cls, media_id):
+        """
+        Validates that the media_id is not an empty string.
+
+        Args:
+            media_id (str): The value of the media_id field.
+
+        Raises:
+            ValueError: If the media_id is an empty string.
+
+        Returns:
+            str: The non-empty media_id value.
+        """
+        if media_id == "":
+            raise ValueError("media_id cannot be an empty string")
+        return media_id
+
     @root_validator
     def check_only_one_field(cls, values):
         """
@@ -145,12 +163,12 @@ class VideoInputList(BaseListModel):
     __root__: List[VideoInput]
 
     @validator("__root__", pre=True)
-    def check_non_empty(cls, v: List[VideoInput]) -> List[VideoInput]:
+    def check_non_empty(cls, videos: List[VideoInput]) -> List[VideoInput]:
         """
         Check that the list of videos isn't empty.
 
         Args:
-            v (List[VideoInput]): the list of videos
+            videos (List[VideoInput]): the list of videos
 
         Returns:
             List[VideoInput]: the list of videos
@@ -158,9 +176,9 @@ class VideoInputList(BaseListModel):
         Raises:
             ValueError: if the list of videos is empty
         """
-        if len(v) == 0:
+        if len(videos) == 0:
             raise ValueError("The list of videos must not be empty.")
-        return v
+        return videos
 
     def set_files(self, files: List[bytes]):
         """
