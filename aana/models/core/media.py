@@ -11,7 +11,7 @@ from aana.utils.general import download_file
 @dataclass
 class Media:
     """
-    A base class representing a media.
+        A base class representing a media file.
 
     It is used to represent images, medias, and audio files.
 
