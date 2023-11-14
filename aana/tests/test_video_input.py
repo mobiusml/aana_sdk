@@ -36,6 +36,14 @@ def test_new_videoinput_success():
     assert video_input.content == b"file"
 
 
+def test_videoinput_invalid_media_id():
+    """
+    Test that VideoInput can't be created if media_id is invalid.
+    """
+    with pytest.raises(ValidationError):
+        VideoInput(path="video.mp4", media_id="")
+
+
 def test_videoinput_check_only_one_field():
     """
     Test that exactly one of 'path', 'url', or 'content' is provided.
@@ -136,9 +144,9 @@ def test_videoinput_convert_input_to_object(mock_download_file):
         video_object.cleanup()
 
 
-def test_videolistinput():
+def test_videoinputlist():
     """
-    Test that VideoListInput can be created successfully.
+    Test that VideoInputList can be created successfully.
     """
     videos = [
         VideoInput(path="video.mp4"),
@@ -154,7 +162,7 @@ def test_videolistinput():
     assert video_list_input[2] == videos[2]
 
 
-def test_videolistinput_set_files():
+def test_videoinputlist_set_files():
     """
     Test that the files can be set for the video list.
     """
@@ -183,9 +191,9 @@ def test_videolistinput_set_files():
         video_list_input.set_files(files)
 
 
-def test_videolistinput_non_empty():
+def test_videoinputlist_non_empty():
     """
-    Test that VideoListInput must not be empty.
+    Test that videoinputlist must not be empty.
     """
     with pytest.raises(ValidationError):
         VideoInputList(__root__=[])
