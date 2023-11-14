@@ -8,7 +8,14 @@ endpoints = {
             path="/llm/generate",
             summary="Generate text using LLaMa2 7B Chat",
             outputs=["vllm_llama2_7b_chat_output"],
-        )
+        ),
+        Endpoint(
+            name="llm_generate_stream",
+            path="/llm/generate_stream",
+            summary="Generate text using LLaMa2 7B Chat (streaming)",
+            outputs=["vllm_llama2_7b_chat_output_stream"],
+            streaming=True,
+        ),
     ],
     "zephyr": [
         Endpoint(
