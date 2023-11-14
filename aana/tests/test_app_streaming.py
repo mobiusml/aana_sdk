@@ -1,5 +1,6 @@
 import json
-import random
+from sys import prefix
+import time
 from typing import AsyncGenerator
 import pytest
 import ray
@@ -77,7 +78,7 @@ endpoints = [
 
 
 @pytest.fixture(scope="session")
-def ray_setup():
+def ray_setup(request):
     """
     Setup the Ray environment and serve the endpoints.
 
@@ -87,10 +88,11 @@ def ray_setup():
     """
     ray.init(ignore_reinit_error=True)
     server = RequestHandler.bind(endpoints, nodes, context)
-    # random port from 30000 to 40000
-    port = random.randint(30000, 40000)
-    handle = serve.run(server, port=port)
-    return handle, port
+    port = 34422
+    test_name = request.node.name
+    route_prefix = f"/{test_name}"
+    handle = serve.run(server, port=port, name=test_name, route_prefix=route_prefix)
+    return handle, port, route_prefix
 
 
 def test_app_streaming(ray_setup):
@@ -98,10 +100,10 @@ def test_app_streaming(ray_setup):
     Test the Ray Serve app with streaming enabled.
     """
 
-    handle, port = ray_setup
+    handle, port, route_prefix = ray_setup
 
     # Check that the server is ready
-    response = requests.get(f"http://localhost:{port}/api/ready")
+    response = requests.get(f"http://localhost:{port}{route_prefix}/api/ready")
     assert response.status_code == 200
     assert response.json() == {"ready": True}
 
@@ -109,7 +111,7 @@ def test_app_streaming(ray_setup):
     text = "Hello World, this is a test."
     data = {"text": text}
     response = requests.post(
-        f"http://localhost:{port}/lowercase",
+        f"http://localhost:{port}{route_prefix}/lowercase",
         data={"body": json.dumps(data)},
         stream=True,
     )
