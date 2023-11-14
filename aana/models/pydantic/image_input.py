@@ -1,5 +1,6 @@
 import io
 from pathlib import Path
+import uuid
 import numpy as np
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field, ValidationError, root_validator, validator
@@ -44,6 +45,28 @@ class ImageInput(BaseModel):
             "Set this field to 'file' to upload files to the endpoint."
         ),
     )
+    media_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="The ID of the image. If not provided, it will be generated automatically.",
+    )
+
+    @validator("media_id")
+    def media_id_must_not_be_empty(cls, media_id):
+        """
+        Validates that the media_id is not an empty string.
+
+        Args:
+            media_id (str): The value of the media_id field.
+
+        Raises:
+            ValueError: If the media_id is an empty string.
+
+        Returns:
+            str: The non-empty media_id value.
+        """
+        if media_id == "":
+            raise ValueError("media_id cannot be an empty string")
+        return media_id
 
     def set_file(self, file: bytes):
         """
@@ -135,6 +158,7 @@ class ImageInput(BaseModel):
             url=self.url,
             content=self.content,
             numpy=numpy,
+            media_id=self.media_id,
         )
 
     class Config:
@@ -153,7 +177,7 @@ class ImageInput(BaseModel):
         file_upload_description = "Upload image file."
 
 
-class ImageListInput(BaseListModel):
+class ImageInputList(BaseListModel):
     """
     A pydantic model for a list of images to be used as input.
 
