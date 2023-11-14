@@ -1,5 +1,6 @@
 import json
 import random
+from typing import AsyncGenerator
 import pytest
 import ray
 from ray import serve
@@ -15,17 +16,21 @@ class Lowercase:
     and returns the lowercase version of it.
     """
 
-    async def lower(self, text: str) -> dict:
+    async def lower_stream(self, text: str) -> AsyncGenerator[dict, None]:
         """
-        Lowercase the text.
+        Lowercase the text and yield the lowercase text in chunks of 4 characters.
 
         Args:
             text (str): The text to lowercase
 
-        Returns:
-            dict: The lowercase text
+        Yields:
+            dict: The lowercase text in chunks of 4 characters
         """
-        return {"text": [t.lower() for t in text]}
+
+        chunk_size = 4
+        for i in range(0, len(text), chunk_size):
+            t = text[i : i + chunk_size]
+            yield {"text": t.lower()}
 
 
 nodes = [
@@ -33,19 +38,21 @@ nodes = [
         "name": "text",
         "type": "input",
         "inputs": [],
-        "outputs": [{"name": "text", "key": "text", "path": "texts.[*].text"}],
+        "outputs": [{"name": "text", "key": "text", "path": "text"}],
     },
     {
         "name": "lowercase",
         "type": "ray_deployment",
         "deployment_name": "Lowercase",
-        "method": "lower",
-        "inputs": [{"name": "text", "key": "text", "path": "texts.[*].text"}],
+        "data_type": "generator",
+        "generator_path": "text",
+        "method": "lower_stream",
+        "inputs": [{"name": "text", "key": "text", "path": "text"}],
         "outputs": [
             {
                 "name": "lowercase_text",
                 "key": "text",
-                "path": "texts.[*].lowercase_text",
+                "path": "lowercase_text",
             }
         ],
     },
@@ -64,6 +71,7 @@ endpoints = [
         path="/lowercase",
         summary="Lowercase text",
         outputs=["lowercase_text"],
+        streaming=True,
     )
 ]
 
@@ -85,10 +93,11 @@ def ray_setup():
     return handle, port
 
 
-def test_app(ray_setup):
+def test_app_streaming(ray_setup):
     """
-    Test the Ray Serve app.
+    Test the Ray Serve app with streaming enabled.
     """
+
     handle, port = ray_setup
 
     # Check that the server is ready
@@ -97,10 +106,27 @@ def test_app(ray_setup):
     assert response.json() == {"ready": True}
 
     # Test lowercase endpoint
-    data = {"text": ["Hello World!", "This is a test."]}
+    text = "Hello World, this is a test."
+    data = {"text": text}
     response = requests.post(
-        f"http://localhost:{port}/lowercase", data={"body": json.dumps(data)}
+        f"http://localhost:{port}/lowercase",
+        data={"body": json.dumps(data)},
+        stream=True,
     )
     assert response.status_code == 200
-    lowercase_text = response.json().get("lowercase_text")
-    assert lowercase_text == ["hello world!", "this is a test."]
+
+    lowercase_text = ""
+    offset = 0
+    for chunk in response.iter_content(chunk_size=None):
+        json_data = json.loads(chunk)
+        lowercase_text_chunk = json_data["lowercase_text"]
+        lowercase_text += lowercase_text_chunk
+
+        chunk_size = len(lowercase_text_chunk)
+        expected_chunk = text[offset : offset + chunk_size]
+
+        assert lowercase_text_chunk == expected_chunk.lower()
+
+        offset += chunk_size
+
+    assert lowercase_text == text.lower()
