@@ -22,13 +22,9 @@ class Dtype(str, Enum):
     FLOAT16 = "float16"
     INT8 = "int8"
 
-    @classmethod
-    def to_torch(cls, dtype: "Dtype") -> Union[torch.dtype, str]:
+    def to_torch(self) -> Union[torch.dtype, str]:
         """
-        Convert a dtype to a torch dtype.
-
-        Args:
-            dtype (Dtype): the dtype
+        Convert the instance's dtype to a torch dtype.
 
         Returns:
             Union[torch.dtype, str]: the torch dtype or "auto"
@@ -36,14 +32,14 @@ class Dtype(str, Enum):
         Raises:
             ValueError: if the dtype is unknown
         """
-
-        if dtype == cls.AUTO:
-            return "auto"
-        elif dtype == cls.FLOAT32:
-            return torch.float32
-        elif dtype == cls.FLOAT16:
-            return torch.float16
-        elif dtype == cls.INT8:
-            return torch.int8
-        else:
-            raise ValueError(f"Unknown dtype: {dtype}")
+        match self.value:
+            case self.AUTO:
+                return "auto"
+            case self.FLOAT32:
+                return torch.float32
+            case self.FLOAT16:
+                return torch.float16
+            case self.INT8:
+                return torch.int8
+            case _:
+                raise ValueError(f"Unknown dtype: {self}")

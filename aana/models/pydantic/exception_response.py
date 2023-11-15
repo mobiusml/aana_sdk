@@ -9,7 +9,7 @@ class ExceptionResponseModel(BaseModel):
     Attributes:
         error (str): The error that occurred.
         message (str): The message of the error.
-        data (Optional[Dict]): The extra data that helps to debug the error.
+        data (Optional[Any]): The extra data that helps to debug the error.
         stacktrace (Optional[str]): The stacktrace of the error.
     """
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel, Field, ValidationError, root_validator
+from pydantic import BaseModel, Field, ValidationError, root_validator, validator
 from pydantic.error_wrappers import ErrorWrapper
 from aana.models.core.video import Video
 
@@ -18,14 +18,16 @@ class VideoInput(BaseModel):
     the video will be loaded from the files uploaded to the endpoint.
 
     Attributes:
-        video_id (str): the ID of the video. If not provided, it will be generated automatically.
+        media_id (str): the ID of the video. If not provided, it will be generated automatically.
         path (str): the file path of the video
-        url (str): the URL of the video
+        url (str): the URL of the video (supports YouTube videos)
         content (bytes): the content of the video in bytes
     """
 
     path: Optional[str] = Field(None, description="The file path of the video.")
-    url: Optional[str] = Field(None, description="The URL of the video.")
+    url: Optional[str] = Field(
+        None, description="The URL of the video (supports YouTube videos)."
+    )
     content: Optional[bytes] = Field(
         None,
         description=(
@@ -33,10 +35,47 @@ class VideoInput(BaseModel):
             "Set this field to 'file' to upload files to the endpoint."
         ),
     )
-    video_id: str = Field(
+    media_id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
+
+    @validator("url")
+    def check_url(cls, url: str) -> str:
+        """
+        Check that the URL is valid and supported.
+
+        Right now, we support normal URLs and youtube URLs.
+
+        Args:
+            url (str): the URL
+
+        Returns:
+            str: the valid URL
+
+        Raises:
+            ValueError: if the URL is invalid or unsupported
+        """
+        # TODO: implement the youtube URL validation
+        return url
+
+    @validator("media_id")
+    def media_id_must_not_be_empty(cls, media_id):
+        """
+        Validates that the media_id is not an empty string.
+
+        Args:
+            media_id (str): The value of the media_id field.
+
+        Raises:
+            ValueError: If the media_id is an empty string.
+
+        Returns:
+            str: The non-empty media_id value.
+        """
+        if media_id == "":
+            raise ValueError("media_id cannot be an empty string")
+        return media_id
 
     @root_validator
     def check_only_one_field(cls, values):
@@ -114,7 +153,7 @@ class VideoInput(BaseModel):
             path=Path(self.path) if self.path is not None else None,
             url=self.url,
             content=self.content,
-            video_id=self.video_id,
+            media_id=self.media_id,
         )
 
     class Config:
@@ -144,6 +183,24 @@ class VideoInputList(BaseListModel):
 
     __root__: List[VideoInput]
 
+    @validator("__root__", pre=True)
+    def check_non_empty(cls, videos: List[VideoInput]) -> List[VideoInput]:
+        """
+        Check that the list of videos isn't empty.
+
+        Args:
+            videos (List[VideoInput]): the list of videos
+
+        Returns:
+            List[VideoInput]: the list of videos
+
+        Raises:
+            ValueError: if the list of videos is empty
+        """
+        if len(videos) == 0:
+            raise ValueError("The list of videos must not be empty.")
+        return videos
+
     def set_files(self, files: List[bytes]):
         """
         Set the files for the videos.
@@ -164,14 +221,14 @@ class VideoInputList(BaseListModel):
         for video, file in zip(self.__root__, files):
             video.set_file(file)
 
-    def convert_input_to_object(self) -> List[Video]:
+    def convert_input_to_object(self) -> List[VideoInput]:
         """
-        Convert the list of video inputs to a list of video objects.
+        Convert the VideoInputList to a list of video inputs.
 
         Returns:
-            List[Video]: the list of video objects corresponding to the video inputs
+            List[VideoInput]: the list of video inputs
         """
-        return [video.convert_input_to_object() for video in self.__root__]
+        return self.__root__
 
     class Config:
         schema_extra = {

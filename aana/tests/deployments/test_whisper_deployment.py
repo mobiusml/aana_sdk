@@ -43,9 +43,10 @@ def ray_setup(deployment):
     # Setup ray environment and serve
     ray.init(ignore_reinit_error=True)
     app = deployment.bind()
-    # random port from 30000 to 40000
-    port = random.randint(30000, 40000)
-    handle = serve.run(app, port=port)
+    port = 34422
+    test_name = deployment.name
+    route_prefix = f"/{test_name}"
+    handle = serve.run(app, port=port, name=test_name, route_prefix=route_prefix)
     return handle
 
 
