@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Tuple, Type, Any, List, Optional
+from typing import AsyncGenerator, Dict, Tuple, Type, Any, List, Optional
 from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.responses import StreamingResponse
 from mobius_pipeline.pipeline.pipeline import Pipeline
 from mobius_pipeline.node.socket import Socket
 from pydantic import Field, create_model, BaseModel, parse_raw_as
@@ -13,7 +14,7 @@ from aana.models.pydantic.exception_response import ExceptionResponseModel
 
 async def run_pipeline(
     pipeline: Pipeline, data: Dict, required_outputs: List[str]
-) -> Dict[str, float]:
+) -> Dict[str, Any]:
     """
     This function is used to run a Mobius Pipeline.
     It creates a container from the data, runs the pipeline and returns the output.
@@ -24,7 +25,7 @@ async def run_pipeline(
         required_outputs (List[str]): The required outputs of the pipeline.
 
     Returns:
-        dict[str, float]: The output of the pipeline and the execution time of the pipeline.
+        dict[str, Any]: The output of the pipeline and the execution time of the pipeline.
     """
 
     # create a container from the data
@@ -36,6 +37,29 @@ async def run_pipeline(
     )
     output["execution_time"] = execution_time
     return output
+
+
+async def run_pipeline_streaming(
+    pipeline: Pipeline, data: dict, required_outputs: list[str]
+) -> AsyncGenerator[dict[str, Any], None]:
+    """
+    This function is used to run a Mobius Pipeline as a generator.
+    It creates a container from the data, runs the pipeline as a generator and yields the output.
+
+    Args:
+        pipeline (Pipeline): The pipeline to run.
+        data (dict): The data to create the container from.
+        required_outputs (List[str]): The required outputs of the pipeline.
+
+    Yields:
+        dict[str, Any]: The output of the pipeline and the execution time of the pipeline.
+    """
+    # create a container from the data
+    container = pipeline.parse_dict(data)
+
+    # run the pipeline
+    async for output in pipeline.run_generator(container, required_outputs):
+        yield output
 
 
 @dataclass
@@ -279,8 +303,17 @@ class Endpoint:
                 del data_dict[self.output_filter.name]
 
             # run the pipeline
-            output = await run_pipeline(pipeline, data_dict, outputs)
-            return AanaJSONResponse(content=output)
+            if self.streaming:
+                async def generator_wrapper():
+                    """
+                    Serializes the output of the generator using ORJSONResponseCustom
+                    """
+                    async for output in run_pipeline_streaming(pipeline, data_dict, outputs):
+                        yield AanaJSONResponse(content=output).body
+                return StreamingResponse(generator_wrapper(), media_type="application/json")
+            else:
+                output = await run_pipeline(pipeline, data_dict, outputs)
+                return AanaJSONResponse(content=output)
 
         if file_upload_field:
             files = File(None, description=file_upload_field.description)

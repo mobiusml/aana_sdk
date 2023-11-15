@@ -36,6 +36,14 @@ def test_new_imageinput_success():
     assert image_input.numpy == b"file"
 
 
+def test_imageinput_invalid_media_id():
+    """
+    Test that ImageInput can't be created if media_id is invalid.
+    """
+    with pytest.raises(ValidationError):
+        ImageInput(path="image.png", media_id="")
+
+
 def test_imageinput_check_only_one_field():
     """
     Test that exactly one of 'path', 'url', 'content', or 'numpy' is provided.
@@ -242,3 +250,11 @@ def test_imagelistinput_set_files():
 
     assert image_list_input[0].content == files[0]
     assert image_list_input[1].numpy == files[1]
+
+
+def test_imagelistinput_non_empty():
+    """
+    Test that ImageInputList must not be empty.
+    """
+    with pytest.raises(ValidationError):
+        ImageInputList(__root__=[])

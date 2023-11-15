@@ -3,20 +3,24 @@ import numpy as np
 
 from aana.utils.batch_processor import BatchProcessor
 
+NUM_IMAGES = 5
+IMAGE_SIZE = 100
+FEATURE_SIZE = 10
+
 
 @pytest.fixture
 def images():
-    return np.array([np.random.rand(100, 100) for _ in range(5)])  # 5 images
+    return np.array([np.random.rand(IMAGE_SIZE, IMAGE_SIZE) for _ in range(NUM_IMAGES)])
 
 
 @pytest.fixture
 def texts():
-    return ["text1", "text2", "text3", "text4", "text5"]
+    return [f"text{i}" for i in range(NUM_IMAGES)]
 
 
 @pytest.fixture
 def features():
-    return np.random.rand(5, 10)  # 5 features of size 10
+    return np.random.rand(NUM_IMAGES, FEATURE_SIZE)
 
 
 @pytest.fixture
@@ -40,7 +44,8 @@ def test_batch_iterator(request_batch, process_batch):
     )
 
     batches = list(processor.batch_iterator(request_batch))
-    assert len(batches) == 3  # We expect 3 batches with a batch_size of 2 for 5 items
+    # We expect 3 batches with a batch_size of 2 for 5 items
+    assert len(batches) == NUM_IMAGES // batch_size + 1
     assert all(
         len(batch["texts"]) == batch_size for batch in batches[:-1]
     )  # All but the last should have batch_size items
@@ -59,11 +64,11 @@ async def test_process_batches(request_batch, process_batch):
 
     result = await processor.process(request_batch)
     # Ensure all texts are processed
-    assert len(result["texts"]) == 5
+    assert len(result["texts"]) == NUM_IMAGES
     # Check if images are concatenated properly
-    assert result["images"].shape == (5, 100, 100)
+    assert result["images"].shape == (NUM_IMAGES, IMAGE_SIZE, IMAGE_SIZE)
     # Check if features are concatenated properly
-    assert result["features"].shape == (5, 10)
+    assert result["features"].shape == (NUM_IMAGES, FEATURE_SIZE)
 
 
 def test_merge_outputs(request_batch, process_batch):

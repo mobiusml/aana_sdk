@@ -39,7 +39,8 @@ from aana.models.pydantic.whisper_params import WhisperParams
 #     videos: list[Video]
 #     params: VideoParams
 # class Video:
-#     video: VideoInput
+#     video_input: VideoInput
+#     video: VideoObject
 #     frames: Frame
 #     timestamps: Timestamps
 #     duration: float
@@ -178,7 +179,7 @@ nodes = [
         "name": "hf_blip2_opt_2_7b",
         "type": "ray_deployment",
         "deployment_name": "hf_blip2_deployment_opt_2_7b",
-        "method": "generate_captions",
+        "method": "generate_batch",
         "inputs": [
             {
                 "name": "images",
@@ -204,9 +205,31 @@ nodes = [
             {
                 "name": "videos",
                 "key": "videos",
-                "path": "video_batch.videos.[*].video",
+                "path": "video_batch.videos.[*].video_input",
                 "data_model": VideoInputList,
             }
+        ],
+    },
+    {
+        "name": "download_video",
+        "type": "ray_task",
+        "function": "aana.utils.video.download_video",
+        "batched": True,
+        "flatten_by": "video_batch.videos.[*]",
+        "dict_output": False,
+        "inputs": [
+            {
+                "name": "videos",
+                "key": "video_input",
+                "path": "video_batch.videos.[*].video_input",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_objects",
+                "key": "output",
+                "path": "video_batch.videos.[*].video",
+            },
         ],
     },
     {
@@ -229,7 +252,11 @@ nodes = [
         "batched": True,
         "flatten_by": "video_batch.videos.[*]",
         "inputs": [
-            {"name": "videos", "key": "video", "path": "video_batch.videos.[*].video"},
+            {
+                "name": "video_objects",
+                "key": "video",
+                "path": "video_batch.videos.[*].video",
+            },
             {"name": "video_params", "key": "params", "path": "video_batch.params"},
         ],
         "outputs": [
@@ -254,7 +281,7 @@ nodes = [
         "name": "hf_blip2_opt_2_7b_video",
         "type": "ray_deployment",
         "deployment_name": "hf_blip2_deployment_opt_2_7b",
-        "method": "generate_captions",
+        "method": "generate_batch",
         "flatten_by": "video_batch.videos.[*].frames.[*]",
         "inputs": [
             {
@@ -292,10 +319,9 @@ nodes = [
         "method": "transcribe_batch",
         "inputs": [
             {
-                "name": "videos",
+                "name": "video_objects",
                 "key": "media",
                 "path": "video_batch.videos.[*].video",
-                "data_model": VideoInputList,
             },
             {
                 "name": "whisper_params",
