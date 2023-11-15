@@ -1,15 +1,14 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import hashlib
-import os
 from pathlib import Path
 from typing import Optional, Type
-import uuid
 import cv2
 
 import numpy as np
 from aana.configs.settings import settings
 
 from aana.exceptions.general import ImageReadingException
+from aana.models.core.media import Media
 from aana.utils.general import download_file
 
 
@@ -32,7 +31,7 @@ class AbstractImageLibrary:
         raise NotImplementedError
 
     @classmethod
-    def read_bytes(cls, content: bytes) -> np.ndarray:
+    def read_from_bytes(cls, content: bytes) -> np.ndarray:
         """
         Read bytes using the image library.
 
@@ -56,7 +55,7 @@ class AbstractImageLibrary:
         raise NotImplementedError
 
     @classmethod
-    def write_bytes(cls, img: np.ndarray) -> bytes:
+    def write_to_bytes(cls, img: np.ndarray) -> bytes:
         """
         Write bytes using the image library.
 
@@ -90,7 +89,7 @@ class OpenCVWrapper(AbstractImageLibrary):
         return img
 
     @classmethod
-    def read_bytes(cls, content: bytes) -> np.ndarray:
+    def read_from_bytes(cls, content: bytes) -> np.ndarray:
         """
         Read bytes using OpenCV.
 
@@ -117,7 +116,7 @@ class OpenCVWrapper(AbstractImageLibrary):
         cv2.imwrite(str(path), img)
 
     @classmethod
-    def write_bytes(cls, img: np.ndarray) -> bytes:
+    def write_to_bytes(cls, img: np.ndarray) -> bytes:
         """
         Write bytes using OpenCV.
 
@@ -133,42 +132,33 @@ class OpenCVWrapper(AbstractImageLibrary):
 
 
 @dataclass
-class Image:
+class Image(Media):
     """
     A class representing an image.
 
     At least one of 'path', 'url', 'content' or 'numpy' must be provided.
-    If 'save_on_disk' is True, the image will be saved on disc automatically.
+    If 'save_on_disk' is True, the image will be saved on disk automatically.
 
     Attributes:
         path (Path): The file path of the image.
         url (str): The URL of the image.
         content (bytes): The content of the image in bytes (image file as bytes).
         numpy (np.ndarray): The image as a numpy array.
-        image_id (str): The ID of the image, generated automatically.
+        media_id (str): The ID of the image, generated automatically if not provided.
     """
 
-    path: Optional[Path] = None  # The file path of the image.
-    url: Optional[str] = None  # The URL of the image.
-    content: Optional[
-        bytes
-    ] = None  # The content of the image in bytes (image file as bytes).
     numpy: Optional[np.ndarray] = None  # The image as a numpy array.
-    image_id: Optional[str] = field(
-        default_factory=lambda: str(uuid.uuid4())
-    )  # The ID of the image, generated automatically if not provided
-    save_on_disk: bool = True  # Whether to save the image on disc or not
     image_lib: Type[
         AbstractImageLibrary
     ] = OpenCVWrapper  # The image library to use, TODO: add support for PIL and allow to choose the library
-    saved: bool = False  # Whether the image is saved on disc by the class or not (used for cleanup)
 
-    def __post_init__(self):
+    def validate(self):
         """
-        Post-initialization method.
+        Validate the image.
+        """
+        # validate the parent class
+        super().validate()
 
-        Perform checks and save the image on disc if needed.
-        """
         # check that at least one of 'path', 'url', 'content' or 'numpy' is provided
         if not any(
             [
@@ -182,22 +172,15 @@ class Image:
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
 
-        # check if path exists if provided
-        if self.path and not self.path.exists():
-            raise FileNotFoundError(f"Image file not found: {self.path}")
-
-        if self.save_on_disk:
-            self.save()
-
     def save(self):
         """
-        Save the image on disc.
-        If the image is already available on disc, do nothing.
-        If the image represented as a byte string, save it on disc.
-        If the image is represented as a URL, download it and save it on disc.
-        If the image is represented as a numpy array, convert it to BMP and save it on disc.
+        Save the image on disk.
+        If the image is already available on disk, do nothing.
+        If the image represented as a byte string, save it on disk.
+        If the image is represented as a URL, download it and save it on disk.
+        If the image is represented as a numpy array, convert it to BMP and save it on disk.
 
-        First check if the image is already available on disc, then content, then url, then numpy
+        First check if the image is already available on disk, then content, then url, then numpy
         to avoid unnecessary operations (e.g. downloading the image or converting it to BMP).
 
         Raises:
@@ -206,9 +189,9 @@ class Image:
         if self.path:
             return
 
-        file_dir = settings.tmp_data_dir / "images"
-        file_dir.mkdir(parents=True, exist_ok=True)
-        file_path = file_dir / (self.image_id + ".bmp")
+        image_dir = settings.image_dir
+        image_dir.mkdir(parents=True, exist_ok=True)
+        file_path = image_dir / (self.media_id + ".bmp")
 
         if self.content:
             self.save_from_content(file_path)
@@ -221,22 +204,11 @@ class Image:
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
         self.path = file_path
-        self.saved = True
-
-    def save_from_content(self, file_path: Path):
-        """
-        Save the image from content on disc.
-
-        Args:
-            file_path (Path): The path of the file to write.
-        """
-        assert self.content is not None
-        with open(file_path, "wb") as f:
-            f.write(self.content)
+        self.is_saved = True
 
     def save_from_numpy(self, file_path: Path):
         """
-        Save the image from numpy on disc.
+        Save the image from numpy on disk.
 
         Args:
             file_path (Path): The path of the file to write.
@@ -244,22 +216,11 @@ class Image:
         assert self.numpy is not None
         self.image_lib.write_file(file_path, self.numpy)
 
-    def save_from_url(self, file_path: Path):
-        """
-        Save the image from URL on disc.
-
-        Args:
-            file_path (Path): The path of the file to write.
-        """
-        self.image_lib.write_file(file_path, self.load_numpy_from_url())
-
     def get_numpy(self) -> np.ndarray:
         """
         Load the image as a numpy array.
-
         Returns:
             np.ndarray: The image as a numpy array.
-
         Raises:
             ValueError: If none of 'path', 'url', 'content' or 'numpy' is provided.
             ImageReadingException: If there is an error reading the image.
@@ -267,141 +228,89 @@ class Image:
         if self.numpy is not None:
             return self.numpy
         elif self.path:
-            self.numpy = self.load_numpy_from_path()
+            self.load_numpy_from_path()
         elif self.url:
-            self.numpy = self.load_numpy_from_url()
+            self.load_numpy_from_url()
         elif self.content:
-            self.numpy = self.load_numpy_from_content()
+            self.load_numpy_from_content()
         else:
             raise ValueError(
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
+        assert self.numpy is not None
         return self.numpy
 
-    def load_numpy_from_path(self) -> np.ndarray:
+    def load_numpy_from_path(self):
         """
         Load the image as a numpy array from a path.
-
-        Returns:
-            np.ndarray: The image as a numpy array.
-
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
         assert self.path is not None
         try:
-            numpy = self.image_lib.read_file(self.path)
+            self.numpy = self.image_lib.read_file(self.path)
         except Exception as e:
             raise ImageReadingException(self) from e
-        return numpy
 
-    def load_numpy_from_image_bytes(self, img_bytes: bytes) -> np.ndarray:
+    def load_numpy_from_image_bytes(self, img_bytes: bytes):
         """
         Load the image as a numpy array from image bytes (downloaded from URL or read from file).
-
-        Returns:
-            np.ndarray: The image as a numpy array.
-
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
         try:
-            numpy = self.image_lib.read_bytes(img_bytes)
+            self.numpy = self.image_lib.read_from_bytes(img_bytes)
         except Exception as e:
             raise ImageReadingException(self) from e
-        return numpy
 
-    def load_numpy_from_url(self) -> np.ndarray:
+    def load_numpy_from_url(self):
         """
         Load the image as a numpy array from a URL.
-
-        Returns:
-            np.ndarray: The image as a numpy array.
-
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
         assert self.url is not None
         content: bytes = download_file(self.url)
-        return self.load_numpy_from_image_bytes(content)
+        self.load_numpy_from_image_bytes(content)
 
-    def load_numpy_from_content(self) -> np.ndarray:
+    def load_numpy_from_content(self):
         """
         Load the image as a numpy array from content.
-
-        Returns:
-            np.ndarray: The image as a numpy array.
-
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
         assert self.content is not None
-        return self.load_numpy_from_image_bytes(self.content)
+        self.load_numpy_from_image_bytes(self.content)
 
     def get_content(self) -> bytes:
         """
         Get the content of the image as bytes.
-
         Returns:
             bytes: The content of the image as bytes.
-
         Raises:
             ValueError: If none of 'path', 'url', 'content' or 'numpy' is provided.
         """
         if self.content:
             return self.content
         elif self.path:
-            self.content = self.load_content_from_path()
+            self.load_content_from_path()
         elif self.url:
-            self.content = self.load_content_from_url()
+            self.load_content_from_url()
         elif self.numpy is not None:
-            self.content = self.load_content_from_numpy()
+            self.load_content_from_numpy()
         else:
             raise ValueError(
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
+        assert self.content is not None
         return self.content
 
-    def load_content_from_numpy(self) -> bytes:
+    def load_content_from_numpy(self):
         """
         Load the content of the image from numpy.
-
-        Note: This method is not implemented yet.
-
-        Returns:
-            bytes: The content of the image as bytes.
         """
         assert self.numpy is not None
-        return self.image_lib.write_bytes(self.numpy)
-
-    def load_content_from_path(self) -> bytes:
-        """
-        Load the content of the image from the path.
-
-        Returns:
-            bytes: The content of the image as bytes.
-
-        Raises:
-            FileNotFoundError: If the image file does not exist.
-        """
-        assert self.path is not None
-        with open(self.path, "rb") as f:
-            content = f.read()
-        return content
-
-    def load_content_from_url(self) -> bytes:
-        """
-        Load the content of the image from the URL using requests.
-
-        Returns:
-            bytes: The content of the image as bytes.
-
-        Raises:
-            DownloadException: If there is an error downloading the image.
-        """
-        assert self.url is not None
-        content = download_file(self.url)
-        return content
+        self.content = self.image_lib.write_to_bytes(self.numpy)
 
     def __repr__(self) -> str:
         """
@@ -426,23 +335,5 @@ class Image:
             f"url={self.url}, "
             f"content={content_hash}, "
             f"numpy={numpy_repr}, "
-            f"image_id={self.image_id})"
+            f"media_id={self.media_id})"
         )
-
-    def __str__(self) -> str:
-        """
-        Get the string representation of the image.
-
-        Returns:
-            str: The string representation of the image.
-        """
-        return self.__repr__()
-
-    def cleanup(self):
-        """
-        Cleanup the image.
-
-        Remove the image from disc if it was saved by the class.
-        """
-        if self.saved and self.path:
-            self.path.unlink(missing_ok=True)

@@ -33,6 +33,9 @@ jobs:
     - name: Update PATH
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
     - name: Install dependencies
-      run: poetry install
+      run: |
+        poetry install
+        sudo apt-get update
+        sudo apt-get install ffmpeg
     - name: Test with pytest
-      run: poetry run pytest 
+      run: poetry run pytest

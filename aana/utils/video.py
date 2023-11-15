@@ -1,13 +1,25 @@
-from typing import Any, Dict
+from pathlib import Path
 import decord
 import numpy as np
-from aana.exceptions.general import VideoReadingException
+import yt_dlp
+from yt_dlp.utils import DownloadError
+from typing import List, TypedDict
+from aana.configs.settings import settings
+from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
 from aana.models.core.video import Video
+from aana.models.core.video_source import VideoSource
+from aana.models.pydantic.video_input import VideoInput
 from aana.models.pydantic.video_params import VideoParams
 
 
-def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
+class FramesDict(TypedDict):
+    frames: List[Image]
+    timestamps: List[float]
+    duration: float
+
+
+def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
     """
     Extract frames from a video using decord.
 
@@ -16,7 +28,7 @@ def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
         params (VideoParams): the parameters of the video extraction
 
     Returns:
-        Dict[str, Any]: a dictionary containing the extracted frames, timestamps, and duration
+        FramesDict: a dictionary containing the extracted frames, timestamps, and duration
     """
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
@@ -47,8 +59,46 @@ def extract_frames_decord(video: Video, params: VideoParams) -> Dict[str, Any]:
         img = Image(numpy=frame)
         frames.append(img)
 
-    return {
-        "frames": frames,
-        "timestamps": timestamps,
-        "duration": duration,
-    }
+    return FramesDict(frames=frames, timestamps=timestamps, duration=duration)
+
+
+def download_video(video_input: VideoInput) -> Video:
+    """
+    Downloads videos for a VideoInput object.
+
+    Args:
+        video_input (VideoInput): the video input to download
+
+    Returns:
+        Video: the video object
+    """
+    if video_input.url is not None:
+        video_source: VideoSource = VideoSource.from_url(video_input.url)
+        if video_source == VideoSource.YOUTUBE:
+            youtube_video_dir = settings.youtube_video_dir
+
+            ydl_options = {
+                "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
+                "outtmpl": f"{youtube_video_dir}/%(id)s.%(ext)s",
+                "extract_flat": True,
+                "hls_prefer_native": True,
+                "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
+            }
+            try:
+                with yt_dlp.YoutubeDL(ydl_options) as ydl:
+                    info = ydl.extract_info(video_input.url, download=False)
+                    path = Path(ydl.prepare_filename(info))
+                    if not path.exists():
+                        ydl.download([video_input.url])
+                    if not path.exists():
+                        raise DownloadException(video_input.url)
+                    return Video(path=path)
+            except DownloadError as e:
+                raise DownloadException(video_input.url) from e
+        elif video_source == VideoSource.AUTO:
+            video = Video(url=video_input.url, save_on_disk=True)
+            return video
+        else:
+            raise NotImplementedError(f"Download for {video_source} not implemented")
+    else:
+        return video_input.convert_input_to_object()
