@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 import numpy as np
 from pydantic import BaseModel, Field
 from faster_whisper.transcribe import (
@@ -8,24 +8,7 @@ from faster_whisper.transcribe import (
 )
 
 from aana.models.pydantic.base import BaseListModel
-
-
-class Timestamp(BaseModel):
-    """
-    Pydantic schema for Timestamp.
-
-    Attributes:
-        start (float): Start time
-        end (float): End time
-    """
-
-    start: float = Field(ge=0.0, description="Start time")
-    end: float = Field(ge=0.0, description="End time")
-
-    class Config:
-        schema_extra = {
-            "description": "Timestamp",
-        }
+from aana.models.pydantic.timestamp import Timestamp
 
 
 class AsrWord(BaseModel):
@@ -70,7 +53,7 @@ class AsrSegment(BaseModel):
         timestamp (Timestamp): Timestamp of the segment
         confidence (float): Confidence of the segment
         no_speech_confidence (float): Chance of being a silence segment
-        words (Optional[List[AsrWord]]): List of words in the segment
+        words (List[AsrWord]): List of words in the segment
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
@@ -79,7 +62,7 @@ class AsrSegment(BaseModel):
     no_speech_confidence: float = Field(
         ge=0.0, le=1.0, description="Chance of being a silence segment"
     )
-    words: Optional[List[AsrWord]] = Field(
+    words: List[AsrWord] = Field(
         description="List of words in the segment", default_factory=list
     )
 

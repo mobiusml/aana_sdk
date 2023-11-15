@@ -320,7 +320,7 @@ nodes = [
         "inputs": [
             {
                 "name": "video_objects",
-                "key": "media",
+                "key": "media_batch",
                 "path": "video_batch.videos.[*].video",
             },
             {

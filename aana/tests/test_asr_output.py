@@ -9,8 +9,8 @@ from aana.models.pydantic.asr_output import (
     AsrSegment,
     AsrTranscriptionInfo,
     AsrWord,
-    Timestamp,
 )
+from aana.models.pydantic.timestamp import Timestamp
 
 
 def test_asr_segment_from_whisper():
