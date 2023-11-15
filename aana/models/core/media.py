@@ -68,9 +68,9 @@ class Media:
         if self.path:
             return
 
-        file_dir = settings.tmp_data_dir / "medias"
-        file_dir.mkdir(parents=True, exist_ok=True)
-        file_path = file_dir / (self.media_id + ".mp4")
+        image_dir = settings.image_dir
+        image_dir.mkdir(parents=True, exist_ok=True)
+        file_path = image_dir / (self.media_id + ".mp4")
 
         if self.content:
             self.save_from_content(file_path)
