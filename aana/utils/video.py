@@ -8,7 +8,8 @@ from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
 from aana.models.core.video import Video
-from aana.models.pydantic.video_input import VideoInput, YoutubeVideoInput
+from aana.models.core.video_source import VideoSource
+from aana.models.pydantic.video_input import VideoInput
 from aana.models.pydantic.video_params import VideoParams
 
 
@@ -61,42 +62,43 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
     return FramesDict(frames=frames, timestamps=timestamps, duration=duration)
 
 
-def download_youtube_video(video: VideoInput | YoutubeVideoInput) -> Video:
+def download_video(video_input: VideoInput) -> Video:
     """
-    Downloads youtube videos for YoutubeVideoInput.
-    If video is VideoInput, create a Video object from it directly.
+    Downloads videos for a VideoInput object.
 
     Args:
-        video (VideoInput | YoutubeVideoInput)
+        video_input (VideoInput): the video input to download
 
     Returns:
         Video: the video object
     """
-    if isinstance(video, VideoInput):
-        return video.convert_input_to_object()
-    elif isinstance(video, YoutubeVideoInput):
-        tmp_dir = settings.tmp_data_dir
-        youtube_video_dir = tmp_dir / "youtube_videos"
+    if video_input.url is not None:
+        video_source: VideoSource = VideoSource.from_url(video_input.url)
+        if video_source == VideoSource.YOUTUBE:
+            youtube_video_dir = settings.youtube_video_dir
 
-        ydl_options = {
-            "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
-            "outtmpl": f"{youtube_video_dir}/%(id)s.%(ext)s",
-            "extract_flat": True,
-            "hls_prefer_native": True,
-            "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
-        }
-        try:
-            with yt_dlp.YoutubeDL(ydl_options) as ydl:
-                info = ydl.extract_info(video.youtube_url, download=False)
-                path = Path(ydl.prepare_filename(info))
-                if not path.exists():
-                    ydl.download([video.youtube_url])
-                if not path.exists():
-                    raise DownloadException(video.youtube_url)
-                return Video(path=path)
-        except DownloadError as e:
-            raise DownloadException(video.youtube_url) from e
+            ydl_options = {
+                "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
+                "outtmpl": f"{youtube_video_dir}/%(id)s.%(ext)s",
+                "extract_flat": True,
+                "hls_prefer_native": True,
+                "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
+            }
+            try:
+                with yt_dlp.YoutubeDL(ydl_options) as ydl:
+                    info = ydl.extract_info(video_input.url, download=False)
+                    path = Path(ydl.prepare_filename(info))
+                    if not path.exists():
+                        ydl.download([video_input.url])
+                    if not path.exists():
+                        raise DownloadException(video_input.url)
+                    return Video(path=path)
+            except DownloadError as e:
+                raise DownloadException(video_input.url) from e
+        elif video_source == VideoSource.AUTO:
+            video = Video(url=video_input.url, save_on_disk=True)
+            return video
+        else:
+            raise NotImplementedError(f"Download for {video_source} not implemented")
     else:
-        raise ValueError(
-            f"video must be VideoInput or YoutubeVideoInput, got {type(video)}"
-        )
+        return video_input.convert_input_to_object()

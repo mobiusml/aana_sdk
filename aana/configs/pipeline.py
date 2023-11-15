@@ -7,7 +7,7 @@ from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.models.pydantic.video_input import VideoOrYoutubeVideoInputList
+from aana.models.pydantic.video_input import VideoInputList
 from aana.models.pydantic.video_params import VideoParams
 
 # container data model
@@ -33,7 +33,8 @@ from aana.models.pydantic.video_params import VideoParams
 #     videos: list[Video]
 #     params: VideoParams
 # class Video:
-#     video: VideoInput
+#     video_input: VideoInput
+#     video: VideoObject
 #     frames: Frame
 #     timestamps: Timestamps
 #     duration: float
@@ -190,19 +191,6 @@ nodes = [
             }
         ],
     },
-    # {
-    #     "name": "videos",
-    #     "type": "input",
-    #     "inputs": [],
-    #     "outputs": [
-    #         {
-    #             "name": "videos",
-    #             "key": "videos",
-    #             "path": "video_batch.videos.[*].video",
-    #             "data_model": VideoInputList,
-    #         }
-    #     ],
-    # },
     {
         "name": "videos",
         "type": "input",
@@ -212,21 +200,21 @@ nodes = [
                 "name": "videos",
                 "key": "videos",
                 "path": "video_batch.videos.[*].video_input",
-                "data_model": VideoOrYoutubeVideoInputList,
+                "data_model": VideoInputList,
             }
         ],
     },
     {
-        "name": "youtube_download",
+        "name": "download_video",
         "type": "ray_task",
-        "function": "aana.utils.video.download_youtube_video",
+        "function": "aana.utils.video.download_video",
         "batched": True,
         "flatten_by": "video_batch.videos.[*]",
         "dict_output": False,
         "inputs": [
             {
                 "name": "videos",
-                "key": "video",
+                "key": "video_input",
                 "path": "video_batch.videos.[*].video_input",
             },
         ],
