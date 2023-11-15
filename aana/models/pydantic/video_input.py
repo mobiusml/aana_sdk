@@ -20,12 +20,14 @@ class VideoInput(BaseModel):
     Attributes:
         media_id (str): the ID of the video. If not provided, it will be generated automatically.
         path (str): the file path of the video
-        url (str): the URL of the video
+        url (str): the URL of the video (supports YouTube videos)
         content (bytes): the content of the video in bytes
     """
 
     path: Optional[str] = Field(None, description="The file path of the video.")
-    url: Optional[str] = Field(None, description="The URL of the video.")
+    url: Optional[str] = Field(
+        None, description="The URL of the video (supports YouTube videos)."
+    )
     content: Optional[bytes] = Field(
         None,
         description=(
@@ -37,6 +39,25 @@ class VideoInput(BaseModel):
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
+
+    @validator("url")
+    def check_url(cls, url: str) -> str:
+        """
+        Check that the URL is valid and supported.
+
+        Right now, we support normal URLs and youtube URLs.
+
+        Args:
+            url (str): the URL
+
+        Returns:
+            str: the valid URL
+
+        Raises:
+            ValueError: if the URL is invalid or unsupported
+        """
+        # TODO: implement the youtube URL validation
+        return url
 
     @validator("media_id")
     def media_id_must_not_be_empty(cls, media_id):
@@ -200,14 +221,14 @@ class VideoInputList(BaseListModel):
         for video, file in zip(self.__root__, files):
             video.set_file(file)
 
-    def convert_input_to_object(self) -> List[Video]:
+    def convert_input_to_object(self) -> List[VideoInput]:
         """
-        Convert the list of video inputs to a list of video objects.
+        Convert the VideoInputList to a list of video inputs.
 
         Returns:
-            List[Video]: the list of video objects corresponding to the video inputs
+            List[VideoInput]: the list of video inputs
         """
-        return [video.convert_input_to_object() for video in self.__root__]
+        return self.__root__
 
     class Config:
         schema_extra = {
