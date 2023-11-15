@@ -8,7 +8,7 @@ WORKDIR /app
 ENV DEBIAN_FRONTEND=non-interactive
 
 # Install required libraries, tools, and Python3
-RUN apt-get update && apt-get install -y libgl1 libglib2.0-0 curl git python3.10 python3.10-dev python3-pip python3.10-venv
+RUN apt-get update && apt-get install -y libgl1 libglib2.0-0 ffmpeg curl git python3.10 python3.10-dev python3-pip python3.10-venv
 
 # Install poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
