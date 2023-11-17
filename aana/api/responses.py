@@ -1,6 +1,34 @@
 from typing import Any, Optional
 from fastapi.responses import JSONResponse
 import orjson
+from pydantic import BaseModel
+
+
+def json_serializer_default(obj: Any) -> Any:
+    """
+    Default function for json serializer to handle pydantic models.
+
+    If json serializer does not know how to serialize an object, it calls the default function.
+
+    If we see that the object is a pydantic model,
+    we call the dict method to get the dictionary representation of the model
+    that json serializer can deal with.
+
+    If the object is not a pydantic model, we raise a TypeError.
+
+    Args:
+        obj (Any): The object to serialize.
+
+    Returns:
+        Any: The serializable object.
+
+    Raises:
+        TypeError: If the object is not a pydantic model.
+    """
+
+    if isinstance(obj, BaseModel):
+        return obj.dict()
+    raise TypeError
 
 
 class AanaJSONResponse(JSONResponse):
@@ -23,4 +51,6 @@ class AanaJSONResponse(JSONResponse):
         """
         Override the render method to use orjson.dumps instead of json.dumps.
         """
-        return orjson.dumps(content, option=self.option)
+        return orjson.dumps(
+            content, option=self.option, default=json_serializer_default
+        )

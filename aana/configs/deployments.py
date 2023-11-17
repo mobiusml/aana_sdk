@@ -1,5 +1,11 @@
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+from aana.deployments.whisper_deployment import (
+    WhisperComputeType,
+    WhisperConfig,
+    WhisperDeployment,
+    WhisperModelSize,
+)
 from aana.models.core.dtype import Dtype
 from aana.models.pydantic.sampling_params import SamplingParams
 
@@ -43,6 +49,15 @@ deployments = {
             dtype=Dtype.FLOAT16,
             batch_size=2,
             num_processing_threads=2,
+        ).dict(),
+    ),
+    "whisper_deployment_medium": WhisperDeployment.options(
+        num_replicas=1,
+        max_concurrent_queries=1000,
+        ray_actor_options={"num_gpus": 0.5},
+        user_config=WhisperConfig(
+            model_size=WhisperModelSize.MEDIUM,
+            compute_type=WhisperComputeType.FLOAT16,
         ).dict(),
     ),
 }
