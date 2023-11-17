@@ -47,4 +47,16 @@ endpoints = {
             outputs=["timestamps", "duration"],
         )
     ],
+    "whisper": [
+        Endpoint(
+            name="whisper_transcribe",
+            path="/video/transcribe",
+            summary="Transcribe a video using Whisper Medium",
+            outputs=[
+                "video_transcriptions_whisper_medium",
+                "video_transcriptions_segments_whisper_medium",
+                "video_transcriptions_info_whisper_medium",
+            ],
+        )
+    ],
 }
