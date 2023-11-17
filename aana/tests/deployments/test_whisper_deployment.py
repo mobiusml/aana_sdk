@@ -10,7 +10,7 @@ from aana.configs.deployments import deployments
 from aana.models.core.video import Video
 from aana.models.pydantic.whisper_params import WhisperParams
 from aana.tests.utils import is_gpu_available, LevenshteinOperator
-from aana.utils.general import serialize_pydantic
+from aana.utils.general import pydantic_to_dict
 
 EPSILON = 0.01
 
@@ -84,7 +84,7 @@ async def test_whisper_deployment(video_file):
         output = await handle.transcribe.remote(
             media=video, params=WhisperParams(word_timestamps=True)
         )
-        output = serialize_pydantic(output)
+        output = pydantic_to_dict(output)
 
         compare_transcriptions(expected_output, output)
 
@@ -93,7 +93,7 @@ async def test_whisper_deployment(video_file):
         batch_output = await handle.transcribe_batch.remote(
             media=videos, params=WhisperParams(word_timestamps=True)
         )
-        batch_output = serialize_pydantic(batch_output)
+        batch_output = pydantic_to_dict(batch_output)
 
         for i in range(len(videos)):
             output = {k: v[i] for k, v in batch_output.items()}
