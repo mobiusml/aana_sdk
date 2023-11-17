@@ -5,7 +5,7 @@
     "segments": [
         {
             "text": " Now I want to return to the conservation of mechanical energy.",
-            "timestamp": {
+            "time_interval": {
                 "start": 0.0,
                 "end": 4.94
             },
@@ -14,7 +14,7 @@
             "words": [
                 {
                     "word": " Now",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 0.0,
                         "end": 0.24
                     },
@@ -22,7 +22,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 0.24,
                         "end": 0.36
                     },
@@ -30,7 +30,7 @@
                 },
                 {
                     "word": " want",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 0.36,
                         "end": 0.62
                     },
@@ -38,7 +38,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 0.62,
                         "end": 1.4
                     },
@@ -46,7 +46,7 @@
                 },
                 {
                     "word": " return",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 1.4,
                         "end": 2.2
                     },
@@ -54,7 +54,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 2.2,
                         "end": 2.56
                     },
@@ -62,7 +62,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 2.56,
                         "end": 2.74
                     },
@@ -70,7 +70,7 @@
                 },
                 {
                     "word": " conservation",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 2.74,
                         "end": 3.34
                     },
@@ -78,7 +78,7 @@
                 },
                 {
                     "word": " of",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 3.34,
                         "end": 3.72
                     },
@@ -86,7 +86,7 @@
                 },
                 {
                     "word": " mechanical",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 3.72,
                         "end": 4.32
                     },
@@ -94,7 +94,7 @@
                 },
                 {
                     "word": " energy.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 4.32,
                         "end": 4.94
                     },
@@ -104,7 +104,7 @@
         },
         {
             "text": " I have here a pendulum.",
-            "timestamp": {
+            "time_interval": {
                 "start": 6.48,
                 "end": 9.1
             },
@@ -113,7 +113,7 @@
             "words": [
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 6.48,
                         "end": 6.78
                     },
@@ -121,7 +121,7 @@
                 },
                 {
                     "word": " have",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 6.78,
                         "end": 6.98
                     },
@@ -129,7 +129,7 @@
                 },
                 {
                     "word": " here",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 6.98,
                         "end": 7.56
                     },
@@ -137,7 +137,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 7.56,
                         "end": 8.68
                     },
@@ -145,7 +145,7 @@
                 },
                 {
                     "word": " pendulum.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 8.68,
                         "end": 9.1
                     },
@@ -155,7 +155,7 @@
         },
         {
             "text": " I have an object that weighs 15 kilograms",
-            "timestamp": {
+            "time_interval": {
                 "start": 10.2,
                 "end": 12.2
             },
@@ -164,7 +164,7 @@
             "words": [
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 10.2,
                         "end": 10.3
                     },
@@ -172,7 +172,7 @@
                 },
                 {
                     "word": " have",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 10.3,
                         "end": 10.44
                     },
@@ -180,7 +180,7 @@
                 },
                 {
                     "word": " an",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 10.44,
                         "end": 10.6
                     },
@@ -188,7 +188,7 @@
                 },
                 {
                     "word": " object",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 10.6,
                         "end": 10.9
                     },
@@ -196,7 +196,7 @@
                 },
                 {
                     "word": " that",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 10.9,
                         "end": 11.1
                     },
@@ -204,7 +204,7 @@
                 },
                 {
                     "word": " weighs",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 11.1,
                         "end": 11.26
                     },
@@ -212,7 +212,7 @@
                 },
                 {
                     "word": " 15",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 11.26,
                         "end": 11.72
                     },
@@ -220,7 +220,7 @@
                 },
                 {
                     "word": " kilograms",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 11.72,
                         "end": 12.2
                     },
@@ -230,7 +230,7 @@
         },
         {
             "text": " and I can lift it up one meter, which I have done now.",
-            "timestamp": {
+            "time_interval": {
                 "start": 12.2,
                 "end": 15.4
             },
@@ -239,7 +239,7 @@
             "words": [
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 12.2,
                         "end": 12.36
                     },
@@ -247,7 +247,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 12.36,
                         "end": 12.48
                     },
@@ -255,7 +255,7 @@
                 },
                 {
                     "word": " can",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 12.48,
                         "end": 12.72
                     },
@@ -263,7 +263,7 @@
                 },
                 {
                     "word": " lift",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 12.72,
                         "end": 12.86
                     },
@@ -271,7 +271,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 12.86,
                         "end": 13.04
                     },
@@ -279,7 +279,7 @@
                 },
                 {
                     "word": " up",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 13.04,
                         "end": 13.4
                     },
@@ -287,7 +287,7 @@
                 },
                 {
                     "word": " one",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 13.4,
                         "end": 13.88
                     },
@@ -295,7 +295,7 @@
                 },
                 {
                     "word": " meter,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 13.88,
                         "end": 14.18
                     },
@@ -303,7 +303,7 @@
                 },
                 {
                     "word": " which",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 14.26,
                         "end": 14.42
                     },
@@ -311,7 +311,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 14.42,
                         "end": 14.54
                     },
@@ -319,7 +319,7 @@
                 },
                 {
                     "word": " have",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 14.54,
                         "end": 14.72
                     },
@@ -327,7 +327,7 @@
                 },
                 {
                     "word": " done",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 14.72,
                         "end": 14.84
                     },
@@ -335,7 +335,7 @@
                 },
                 {
                     "word": " now.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 14.84,
                         "end": 15.4
                     },
@@ -345,7 +345,7 @@
         },
         {
             "text": " That means I've done work. MGH is the work I have done, believe me.",
-            "timestamp": {
+            "time_interval": {
                 "start": 15.4,
                 "end": 19.82
             },
@@ -354,7 +354,7 @@
             "words": [
                 {
                     "word": " That",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 15.4,
                         "end": 15.8
                     },
@@ -362,7 +362,7 @@
                 },
                 {
                     "word": " means",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 15.8,
                         "end": 16.0
                     },
@@ -370,7 +370,7 @@
                 },
                 {
                     "word": " I've",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 16.0,
                         "end": 16.2
                     },
@@ -378,7 +378,7 @@
                 },
                 {
                     "word": " done",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 16.2,
                         "end": 16.42
                     },
@@ -386,7 +386,7 @@
                 },
                 {
                     "word": " work.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 16.42,
                         "end": 17.04
                     },
@@ -394,7 +394,7 @@
                 },
                 {
                     "word": " MGH",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 17.62,
                         "end": 18.12
                     },
@@ -402,7 +402,7 @@
                 },
                 {
                     "word": " is",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 18.12,
                         "end": 18.4
                     },
@@ -410,7 +410,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 18.4,
                         "end": 18.54
                     },
@@ -418,7 +418,7 @@
                 },
                 {
                     "word": " work",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 18.54,
                         "end": 18.66
                     },
@@ -426,7 +426,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 18.66,
                         "end": 18.84
                     },
@@ -434,7 +434,7 @@
                 },
                 {
                     "word": " have",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 18.84,
                         "end": 19.04
                     },
@@ -442,7 +442,7 @@
                 },
                 {
                     "word": " done,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 19.04,
                         "end": 19.28
                     },
@@ -450,7 +450,7 @@
                 },
                 {
                     "word": " believe",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 19.36,
                         "end": 19.62
                     },
@@ -458,7 +458,7 @@
                 },
                 {
                     "word": " me.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 19.62,
                         "end": 19.82
                     },
@@ -468,7 +468,7 @@
         },
         {
             "text": " I've increased the potential energy of this object.",
-            "timestamp": {
+            "time_interval": {
                 "start": 20.02,
                 "end": 22.46
             },
@@ -477,7 +477,7 @@
             "words": [
                 {
                     "word": " I've",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 20.02,
                         "end": 20.38
                     },
@@ -485,7 +485,7 @@
                 },
                 {
                     "word": " increased",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 20.38,
                         "end": 20.7
                     },
@@ -493,7 +493,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 20.7,
                         "end": 20.86
                     },
@@ -501,7 +501,7 @@
                 },
                 {
                     "word": " potential",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 20.86,
                         "end": 21.3
                     },
@@ -509,7 +509,7 @@
                 },
                 {
                     "word": " energy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 21.3,
                         "end": 21.6
                     },
@@ -517,7 +517,7 @@
                 },
                 {
                     "word": " of",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 21.6,
                         "end": 21.74
                     },
@@ -525,7 +525,7 @@
                 },
                 {
                     "word": " this",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 21.74,
                         "end": 21.96
                     },
@@ -533,7 +533,7 @@
                 },
                 {
                     "word": " object.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 21.96,
                         "end": 22.46
                     },
@@ -543,7 +543,7 @@
         },
         {
             "text": " 15 times 10 is about 150 joules.",
-            "timestamp": {
+            "time_interval": {
                 "start": 23.06,
                 "end": 25.74
             },
@@ -552,7 +552,7 @@
             "words": [
                 {
                     "word": " 15",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 23.06,
                         "end": 23.42
                     },
@@ -560,7 +560,7 @@
                 },
                 {
                     "word": " times",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 23.42,
                         "end": 23.76
                     },
@@ -568,7 +568,7 @@
                 },
                 {
                     "word": " 10",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 23.76,
                         "end": 24.14
                     },
@@ -576,7 +576,7 @@
                 },
                 {
                     "word": " is",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 24.14,
                         "end": 24.36
                     },
@@ -584,7 +584,7 @@
                 },
                 {
                     "word": " about",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 24.36,
                         "end": 24.64
                     },
@@ -592,7 +592,7 @@
                 },
                 {
                     "word": " 150",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 24.64,
                         "end": 25.1
                     },
@@ -600,7 +600,7 @@
                 },
                 {
                     "word": " joules.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 25.1,
                         "end": 25.74
                     },
@@ -610,7 +610,7 @@
         },
         {
             "text": " If I let it fall, then that will be converted to kinetic energy.",
-            "timestamp": {
+            "time_interval": {
                 "start": 26.46,
                 "end": 30.9
             },
@@ -619,7 +619,7 @@
             "words": [
                 {
                     "word": " If",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 26.46,
                         "end": 26.7
                     },
@@ -627,7 +627,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 26.7,
                         "end": 26.84
                     },
@@ -635,7 +635,7 @@
                 },
                 {
                     "word": " let",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 26.84,
                         "end": 26.96
                     },
@@ -643,7 +643,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 26.96,
                         "end": 27.2
                     },
@@ -651,7 +651,7 @@
                 },
                 {
                     "word": " fall,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 27.2,
                         "end": 27.68
                     },
@@ -659,7 +659,7 @@
                 },
                 {
                     "word": " then",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 28.3,
                         "end": 28.68
                     },
@@ -667,7 +667,7 @@
                 },
                 {
                     "word": " that",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 28.68,
                         "end": 29.2
                     },
@@ -675,7 +675,7 @@
                 },
                 {
                     "word": " will",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 29.2,
                         "end": 29.4
                     },
@@ -683,7 +683,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 29.4,
                         "end": 29.62
                     },
@@ -691,7 +691,7 @@
                 },
                 {
                     "word": " converted",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 29.62,
                         "end": 29.92
                     },
@@ -699,7 +699,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 29.92,
                         "end": 30.1
                     },
@@ -707,7 +707,7 @@
                 },
                 {
                     "word": " kinetic",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 30.1,
                         "end": 30.44
                     },
@@ -715,7 +715,7 @@
                 },
                 {
                     "word": " energy.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 30.44,
                         "end": 30.9
                     },
@@ -725,7 +725,7 @@
         },
         {
             "text": " If I would let it swing from one meter height",
-            "timestamp": {
+            "time_interval": {
                 "start": 31.719999999999995,
                 "end": 36.8
             },
@@ -734,7 +734,7 @@
             "words": [
                 {
                     "word": " If",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 31.719999999999995,
                         "end": 32.16
                     },
@@ -742,7 +742,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 32.16,
                         "end": 32.28
                     },
@@ -750,7 +750,7 @@
                 },
                 {
                     "word": " would",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 32.28,
                         "end": 32.44
                     },
@@ -758,7 +758,7 @@
                 },
                 {
                     "word": " let",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 32.44,
                         "end": 32.58
                     },
@@ -766,7 +766,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 32.58,
                         "end": 32.82
                     },
@@ -774,7 +774,7 @@
                 },
                 {
                     "word": " swing",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 32.82,
                         "end": 33.48
                     },
@@ -782,7 +782,7 @@
                 },
                 {
                     "word": " from",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 33.48,
                         "end": 35.8
                     },
@@ -790,7 +790,7 @@
                 },
                 {
                     "word": " one",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 35.8,
                         "end": 36.02
                     },
@@ -798,7 +798,7 @@
                 },
                 {
                     "word": " meter",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 36.02,
                         "end": 36.22
                     },
@@ -806,7 +806,7 @@
                 },
                 {
                     "word": " height",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 36.22,
                         "end": 36.8
                     },
@@ -816,7 +816,7 @@
         },
         {
             "text": " and you would be there and it would hit you, you'd be dead.",
-            "timestamp": {
+            "time_interval": {
                 "start": 36.8,
                 "end": 40.06
             },
@@ -825,7 +825,7 @@
             "words": [
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 36.8,
                         "end": 37.32
                     },
@@ -833,7 +833,7 @@
                 },
                 {
                     "word": " you",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 37.32,
                         "end": 37.42
                     },
@@ -841,7 +841,7 @@
                 },
                 {
                     "word": " would",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 37.42,
                         "end": 37.6
                     },
@@ -849,7 +849,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 37.6,
                         "end": 37.82
                     },
@@ -857,7 +857,7 @@
                 },
                 {
                     "word": " there",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 37.82,
                         "end": 37.96
                     },
@@ -865,7 +865,7 @@
                 },
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 37.96,
                         "end": 38.02
                     },
@@ -873,7 +873,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 38.02,
                         "end": 38.14
                     },
@@ -881,7 +881,7 @@
                 },
                 {
                     "word": " would",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 38.14,
                         "end": 38.32
                     },
@@ -889,7 +889,7 @@
                 },
                 {
                     "word": " hit",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 38.32,
                         "end": 38.5
                     },
@@ -897,7 +897,7 @@
                 },
                 {
                     "word": " you,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 38.5,
                         "end": 39.04
                     },
@@ -905,7 +905,7 @@
                 },
                 {
                     "word": " you'd",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 39.12,
                         "end": 39.34
                     },
@@ -913,7 +913,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 39.34,
                         "end": 39.5
                     },
@@ -921,7 +921,7 @@
                 },
                 {
                     "word": " dead.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 39.5,
                         "end": 40.06
                     },
@@ -931,7 +931,7 @@
         },
         {
             "text": " 150 joules is enough to kill you.",
-            "timestamp": {
+            "time_interval": {
                 "start": 40.92,
                 "end": 43.04
             },
@@ -940,7 +940,7 @@
             "words": [
                 {
                     "word": " 150",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 40.92,
                         "end": 41.36
                     },
@@ -948,7 +948,7 @@
                 },
                 {
                     "word": " joules",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 41.36,
                         "end": 41.72
                     },
@@ -956,7 +956,7 @@
                 },
                 {
                     "word": " is",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 41.72,
                         "end": 41.94
                     },
@@ -964,7 +964,7 @@
                 },
                 {
                     "word": " enough",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 41.94,
                         "end": 42.1
                     },
@@ -972,7 +972,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 42.1,
                         "end": 42.26
                     },
@@ -980,7 +980,7 @@
                 },
                 {
                     "word": " kill",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 42.26,
                         "end": 42.48
                     },
@@ -988,7 +988,7 @@
                 },
                 {
                     "word": " you.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 42.48,
                         "end": 43.04
                     },
@@ -998,7 +998,7 @@
         },
         {
             "text": " They use these devices.",
-            "timestamp": {
+            "time_interval": {
                 "start": 44.32,
                 "end": 45.76
             },
@@ -1007,7 +1007,7 @@
             "words": [
                 {
                     "word": " They",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 44.32,
                         "end": 44.58
                     },
@@ -1015,7 +1015,7 @@
                 },
                 {
                     "word": " use",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 44.58,
                         "end": 44.8
                     },
@@ -1023,7 +1023,7 @@
                 },
                 {
                     "word": " these",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 44.8,
                         "end": 45.04
                     },
@@ -1031,7 +1031,7 @@
                 },
                 {
                     "word": " devices.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 45.04,
                         "end": 45.76
                     },
@@ -1041,7 +1041,7 @@
         },
         {
             "text": " They're called a wrecker ball.",
-            "timestamp": {
+            "time_interval": {
                 "start": 45.76,
                 "end": 47.3
             },
@@ -1050,7 +1050,7 @@
             "words": [
                 {
                     "word": " They're",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 45.76,
                         "end": 46.26
                     },
@@ -1058,7 +1058,7 @@
                 },
                 {
                     "word": " called",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 46.26,
                         "end": 46.4
                     },
@@ -1066,7 +1066,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 46.4,
                         "end": 46.72
                     },
@@ -1074,7 +1074,7 @@
                 },
                 {
                     "word": " wrecker",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 46.72,
                         "end": 46.92
                     },
@@ -1082,7 +1082,7 @@
                 },
                 {
                     "word": " ball.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 46.92,
                         "end": 47.3
                     },
@@ -1092,7 +1092,7 @@
         },
         {
             "text": " They use them to demolish buildings.",
-            "timestamp": {
+            "time_interval": {
                 "start": 47.94,
                 "end": 49.52
             },
@@ -1101,7 +1101,7 @@
             "words": [
                 {
                     "word": " They",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 47.94,
                         "end": 48.14
                     },
@@ -1109,7 +1109,7 @@
                 },
                 {
                     "word": " use",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 48.14,
                         "end": 48.36
                     },
@@ -1117,7 +1117,7 @@
                 },
                 {
                     "word": " them",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 48.36,
                         "end": 48.52
                     },
@@ -1125,7 +1125,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 48.52,
                         "end": 48.68
                     },
@@ -1133,7 +1133,7 @@
                 },
                 {
                     "word": " demolish",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 48.68,
                         "end": 49.02
                     },
@@ -1141,7 +1141,7 @@
                 },
                 {
                     "word": " buildings.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 49.02,
                         "end": 49.52
                     },
@@ -1151,7 +1151,7 @@
         },
         {
             "text": " You lift up a very heavy object, even heavier than this,",
-            "timestamp": {
+            "time_interval": {
                 "start": 50.38,
                 "end": 54.12
             },
@@ -1160,7 +1160,7 @@
             "words": [
                 {
                     "word": " You",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 50.38,
                         "end": 50.8
                     },
@@ -1168,7 +1168,7 @@
                 },
                 {
                     "word": " lift",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 50.8,
                         "end": 51.06
                     },
@@ -1176,7 +1176,7 @@
                 },
                 {
                     "word": " up",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 51.06,
                         "end": 51.56
                     },
@@ -1184,7 +1184,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 51.56,
                         "end": 51.72
                     },
@@ -1192,7 +1192,7 @@
                 },
                 {
                     "word": " very",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 51.72,
                         "end": 52.02
                     },
@@ -1200,7 +1200,7 @@
                 },
                 {
                     "word": " heavy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 52.02,
                         "end": 52.18
                     },
@@ -1208,7 +1208,7 @@
                 },
                 {
                     "word": " object,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 52.18,
                         "end": 52.68
                     },
@@ -1216,7 +1216,7 @@
                 },
                 {
                     "word": " even",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 52.92,
                         "end": 53.18
                     },
@@ -1224,7 +1224,7 @@
                 },
                 {
                     "word": " heavier",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 53.18,
                         "end": 53.42
                     },
@@ -1232,7 +1232,7 @@
                 },
                 {
                     "word": " than",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 53.42,
                         "end": 53.62
                     },
@@ -1240,7 +1240,7 @@
                 },
                 {
                     "word": " this,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 53.62,
                         "end": 54.12
                     },
@@ -1250,7 +1250,7 @@
         },
         {
             "text": " and then you let it go, you swing it,",
-            "timestamp": {
+            "time_interval": {
                 "start": 54.5,
                 "end": 69.75999999999999
             },
@@ -1259,7 +1259,7 @@
             "words": [
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 54.5,
                         "end": 54.92
                     },
@@ -1267,7 +1267,7 @@
                 },
                 {
                     "word": " then",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 54.92,
                         "end": 55.56
                     },
@@ -1275,7 +1275,7 @@
                 },
                 {
                     "word": " you",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 55.56,
                         "end": 55.92
                     },
@@ -1283,7 +1283,7 @@
                 },
                 {
                     "word": " let",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 55.92,
                         "end": 56.04
                     },
@@ -1291,7 +1291,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 56.04,
                         "end": 56.26
                     },
@@ -1299,7 +1299,7 @@
                 },
                 {
                     "word": " go,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 56.26,
                         "end": 56.44
                     },
@@ -1307,7 +1307,7 @@
                 },
                 {
                     "word": " you",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 56.46,
                         "end": 56.72
                     },
@@ -1315,7 +1315,7 @@
                 },
                 {
                     "word": " swing",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 56.72,
                         "end": 56.9
                     },
@@ -1323,7 +1323,7 @@
                 },
                 {
                     "word": " it,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 56.9,
                         "end": 69.75999999999999
                     },
@@ -1333,7 +1333,7 @@
         },
         {
             "text": " and it breaks a building.",
-            "timestamp": {
+            "time_interval": {
                 "start": 69.76,
                 "end": 71.38
             },
@@ -1342,7 +1342,7 @@
             "words": [
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 69.76,
                         "end": 70.56
                     },
@@ -1350,7 +1350,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 70.56,
                         "end": 70.66
                     },
@@ -1358,7 +1358,7 @@
                 },
                 {
                     "word": " breaks",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 70.66,
                         "end": 70.94
                     },
@@ -1366,7 +1366,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 70.94,
                         "end": 71.1
                     },
@@ -1374,7 +1374,7 @@
                 },
                 {
                     "word": " building.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 71.1,
                         "end": 71.38
                     },
@@ -1384,7 +1384,7 @@
         },
         {
             "text": " And that's the whole idea of wrecking.",
-            "timestamp": {
+            "time_interval": {
                 "start": 71.58,
                 "end": 73.92
             },
@@ -1393,7 +1393,7 @@
             "words": [
                 {
                     "word": " And",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 71.58,
                         "end": 71.72
                     },
@@ -1401,7 +1401,7 @@
                 },
                 {
                     "word": " that's",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 71.72,
                         "end": 71.98
                     },
@@ -1409,7 +1409,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 71.98,
                         "end": 72.02
                     },
@@ -1417,7 +1417,7 @@
                 },
                 {
                     "word": " whole",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 72.02,
                         "end": 72.2
                     },
@@ -1425,7 +1425,7 @@
                 },
                 {
                     "word": " idea",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 72.2,
                         "end": 72.84
                     },
@@ -1433,7 +1433,7 @@
                 },
                 {
                     "word": " of",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 72.84,
                         "end": 73.42
                     },
@@ -1441,7 +1441,7 @@
                 },
                 {
                     "word": " wrecking.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 73.42,
                         "end": 73.92
                     },
@@ -1451,7 +1451,7 @@
         },
         {
             "text": " So you are using then the conversion",
-            "timestamp": {
+            "time_interval": {
                 "start": 75.44,
                 "end": 78.12
             },
@@ -1460,7 +1460,7 @@
             "words": [
                 {
                     "word": " So",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 75.44,
                         "end": 75.84
                     },
@@ -1468,7 +1468,7 @@
                 },
                 {
                     "word": " you",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 75.84,
                         "end": 76.04
                     },
@@ -1476,7 +1476,7 @@
                 },
                 {
                     "word": " are",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 76.04,
                         "end": 76.18
                     },
@@ -1484,7 +1484,7 @@
                 },
                 {
                     "word": " using",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 76.18,
                         "end": 76.46
                     },
@@ -1492,7 +1492,7 @@
                 },
                 {
                     "word": " then",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 76.46,
                         "end": 77.06
                     },
@@ -1500,7 +1500,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 77.06,
                         "end": 77.48
                     },
@@ -1508,7 +1508,7 @@
                 },
                 {
                     "word": " conversion",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 77.48,
                         "end": 78.12
                     },
@@ -1518,7 +1518,7 @@
         },
         {
             "text": " of gravitational potential energy to kinetic energy.",
-            "timestamp": {
+            "time_interval": {
                 "start": 78.12,
                 "end": 83.12
             },
@@ -1527,7 +1527,7 @@
             "words": [
                 {
                     "word": " of",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 78.12,
                         "end": 79.64
                     },
@@ -1535,7 +1535,7 @@
                 },
                 {
                     "word": " gravitational",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 79.64,
                         "end": 80.12
                     },
@@ -1543,7 +1543,7 @@
                 },
                 {
                     "word": " potential",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 80.12,
                         "end": 80.68
                     },
@@ -1551,7 +1551,7 @@
                 },
                 {
                     "word": " energy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 80.68,
                         "end": 81.18
                     },
@@ -1559,7 +1559,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 81.18,
                         "end": 82.08
                     },
@@ -1567,7 +1567,7 @@
                 },
                 {
                     "word": " kinetic",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 82.08,
                         "end": 82.62
                     },
@@ -1575,7 +1575,7 @@
                 },
                 {
                     "word": " energy.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 82.62,
                         "end": 83.12
                     },
@@ -1585,7 +1585,7 @@
         },
         {
             "text": " Now, I am such a strong believer",
-            "timestamp": {
+            "time_interval": {
                 "start": 83.12,
                 "end": 86.78
             },
@@ -1594,7 +1594,7 @@
             "words": [
                 {
                     "word": " Now,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 83.12,
                         "end": 84.36
                     },
@@ -1602,7 +1602,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 84.38,
                         "end": 85.3
                     },
@@ -1610,7 +1610,7 @@
                 },
                 {
                     "word": " am",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 85.3,
                         "end": 85.58
                     },
@@ -1618,7 +1618,7 @@
                 },
                 {
                     "word": " such",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 85.58,
                         "end": 85.78
                     },
@@ -1626,7 +1626,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 85.78,
                         "end": 86.08
                     },
@@ -1634,7 +1634,7 @@
                 },
                 {
                     "word": " strong",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 86.08,
                         "end": 86.32
                     },
@@ -1642,7 +1642,7 @@
                 },
                 {
                     "word": " believer",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 86.32,
                         "end": 86.78
                     },
@@ -1652,7 +1652,7 @@
         },
         {
             "text": " of the conservation of mechanical energy",
-            "timestamp": {
+            "time_interval": {
                 "start": 86.78,
                 "end": 91.64
             },
@@ -1661,7 +1661,7 @@
             "words": [
                 {
                     "word": " of",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 86.78,
                         "end": 88.02
                     },
@@ -1669,7 +1669,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 88.02,
                         "end": 89.02
                     },
@@ -1677,7 +1677,7 @@
                 },
                 {
                     "word": " conservation",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 89.02,
                         "end": 89.76
                     },
@@ -1685,7 +1685,7 @@
                 },
                 {
                     "word": " of",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 89.76,
                         "end": 90.5
                     },
@@ -1693,7 +1693,7 @@
                 },
                 {
                     "word": " mechanical",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 90.5,
                         "end": 90.92
                     },
@@ -1701,7 +1701,7 @@
                 },
                 {
                     "word": " energy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 90.92,
                         "end": 91.64
                     },
@@ -1711,7 +1711,7 @@
         },
         {
             "text": " that I am willing to put my life on the line.",
-            "timestamp": {
+            "time_interval": {
                 "start": 91.64,
                 "end": 96.38
             },
@@ -1720,7 +1720,7 @@
             "words": [
                 {
                     "word": " that",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 91.64,
                         "end": 92.36
                     },
@@ -1728,7 +1728,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 92.36,
                         "end": 92.58
                     },
@@ -1736,7 +1736,7 @@
                 },
                 {
                     "word": " am",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 92.58,
                         "end": 92.74
                     },
@@ -1744,7 +1744,7 @@
                 },
                 {
                     "word": " willing",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 92.74,
                         "end": 93.14
                     },
@@ -1752,7 +1752,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 93.14,
                         "end": 93.96
                     },
@@ -1760,7 +1760,7 @@
                 },
                 {
                     "word": " put",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 93.96,
                         "end": 94.14
                     },
@@ -1768,7 +1768,7 @@
                 },
                 {
                     "word": " my",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 94.14,
                         "end": 94.38
                     },
@@ -1776,7 +1776,7 @@
                 },
                 {
                     "word": " life",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 94.38,
                         "end": 95.04
                     },
@@ -1784,7 +1784,7 @@
                 },
                 {
                     "word": " on",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 95.04,
                         "end": 95.56
                     },
@@ -1792,7 +1792,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 95.56,
                         "end": 95.7
                     },
@@ -1800,7 +1800,7 @@
                 },
                 {
                     "word": " line.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 95.7,
                         "end": 96.38
                     },
@@ -1810,7 +1810,7 @@
         },
         {
             "text": " If I release that bob from a certain height,",
-            "timestamp": {
+            "time_interval": {
                 "start": 97.64000000000001,
                 "end": 103.34
             },
@@ -1819,7 +1819,7 @@
             "words": [
                 {
                     "word": " If",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 97.64000000000001,
                         "end": 98.68
                     },
@@ -1827,7 +1827,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 98.68,
                         "end": 99.06
                     },
@@ -1835,7 +1835,7 @@
                 },
                 {
                     "word": " release",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 99.06,
                         "end": 99.84
                     },
@@ -1843,7 +1843,7 @@
                 },
                 {
                     "word": " that",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 99.84,
                         "end": 100.86
                     },
@@ -1851,7 +1851,7 @@
                 },
                 {
                     "word": " bob",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 100.86,
                         "end": 101.2
                     },
@@ -1859,7 +1859,7 @@
                 },
                 {
                     "word": " from",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 101.2,
                         "end": 102.3
                     },
@@ -1867,7 +1867,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 102.3,
                         "end": 102.56
                     },
@@ -1875,7 +1875,7 @@
                 },
                 {
                     "word": " certain",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 102.56,
                         "end": 102.82
                     },
@@ -1883,7 +1883,7 @@
                 },
                 {
                     "word": " height,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 102.82,
                         "end": 103.34
                     },
@@ -1893,7 +1893,7 @@
         },
         {
             "text": " then that bob can never come back",
-            "timestamp": {
+            "time_interval": {
                 "start": 104.84000000000002,
                 "end": 107.9
             },
@@ -1902,7 +1902,7 @@
             "words": [
                 {
                     "word": " then",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 104.84000000000002,
                         "end": 105.44000000000001
                     },
@@ -1910,7 +1910,7 @@
                 },
                 {
                     "word": " that",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 105.44000000000001,
                         "end": 106.04
                     },
@@ -1918,7 +1918,7 @@
                 },
                 {
                     "word": " bob",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 106.04,
                         "end": 106.3
                     },
@@ -1926,7 +1926,7 @@
                 },
                 {
                     "word": " can",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 106.3,
                         "end": 106.58
                     },
@@ -1934,7 +1934,7 @@
                 },
                 {
                     "word": " never",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 106.58,
                         "end": 107.04
                     },
@@ -1942,7 +1942,7 @@
                 },
                 {
                     "word": " come",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 107.04,
                         "end": 107.46
                     },
@@ -1950,7 +1950,7 @@
                 },
                 {
                     "word": " back",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 107.46,
                         "end": 107.9
                     },
@@ -1960,7 +1960,7 @@
         },
         {
             "text": " to a point where the height is any larger.",
-            "timestamp": {
+            "time_interval": {
                 "start": 107.9,
                 "end": 111.22
             },
@@ -1969,7 +1969,7 @@
             "words": [
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 107.9,
                         "end": 108.44
                     },
@@ -1977,7 +1977,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 108.44,
                         "end": 108.62
                     },
@@ -1985,7 +1985,7 @@
                 },
                 {
                     "word": " point",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 108.62,
                         "end": 109.02
                     },
@@ -1993,7 +1993,7 @@
                 },
                 {
                     "word": " where",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 109.02,
                         "end": 109.7
                     },
@@ -2001,7 +2001,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 109.7,
                         "end": 109.92
                     },
@@ -2009,7 +2009,7 @@
                 },
                 {
                     "word": " height",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 109.92,
                         "end": 110.22
                     },
@@ -2017,7 +2017,7 @@
                 },
                 {
                     "word": " is",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 110.22,
                         "end": 110.54
                     },
@@ -2025,7 +2025,7 @@
                 },
                 {
                     "word": " any",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 110.54,
                         "end": 110.84
                     },
@@ -2033,7 +2033,7 @@
                 },
                 {
                     "word": " larger.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 110.84,
                         "end": 111.22
                     },
@@ -2043,7 +2043,7 @@
         },
         {
             "text": " If I release it from this height and it swings,",
-            "timestamp": {
+            "time_interval": {
                 "start": 111.9,
                 "end": 115.36
             },
@@ -2052,7 +2052,7 @@
             "words": [
                 {
                     "word": " If",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 111.9,
                         "end": 112.08
                     },
@@ -2060,7 +2060,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 112.08,
                         "end": 112.36
                     },
@@ -2068,7 +2068,7 @@
                 },
                 {
                     "word": " release",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 112.36,
                         "end": 112.62
                     },
@@ -2076,7 +2076,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 112.62,
                         "end": 112.78
                     },
@@ -2084,7 +2084,7 @@
                 },
                 {
                     "word": " from",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 112.78,
                         "end": 112.96
                     },
@@ -2092,7 +2092,7 @@
                 },
                 {
                     "word": " this",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 112.96,
                         "end": 113.18
                     },
@@ -2100,7 +2100,7 @@
                 },
                 {
                     "word": " height",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 113.18,
                         "end": 113.7
                     },
@@ -2108,7 +2108,7 @@
                 },
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 113.7,
                         "end": 114.5
                     },
@@ -2116,7 +2116,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 114.5,
                         "end": 114.72
                     },
@@ -2124,7 +2124,7 @@
                 },
                 {
                     "word": " swings,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 114.72,
                         "end": 115.36
                     },
@@ -2134,7 +2134,7 @@
         },
         {
             "text": " then when it reaches here it could not be higher.",
-            "timestamp": {
+            "time_interval": {
                 "start": 116.24,
                 "end": 118.62
             },
@@ -2143,7 +2143,7 @@
             "words": [
                 {
                     "word": " then",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 116.24,
                         "end": 116.44
                     },
@@ -2151,7 +2151,7 @@
                 },
                 {
                     "word": " when",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 116.44,
                         "end": 116.6
                     },
@@ -2159,7 +2159,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 116.6,
                         "end": 116.82
                     },
@@ -2167,7 +2167,7 @@
                 },
                 {
                     "word": " reaches",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 116.82,
                         "end": 117.12
                     },
@@ -2175,7 +2175,7 @@
                 },
                 {
                     "word": " here",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 117.12,
                         "end": 117.44
                     },
@@ -2183,7 +2183,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 117.44,
                         "end": 117.56
                     },
@@ -2191,7 +2191,7 @@
                 },
                 {
                     "word": " could",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 117.56,
                         "end": 117.82
                     },
@@ -2199,7 +2199,7 @@
                 },
                 {
                     "word": " not",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 117.82,
                         "end": 118.0
                     },
@@ -2207,7 +2207,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 118.0,
                         "end": 118.2
                     },
@@ -2215,7 +2215,7 @@
                 },
                 {
                     "word": " higher.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 118.2,
                         "end": 118.62
                     },
@@ -2225,7 +2225,7 @@
         },
         {
             "text": " There is a conversion from gravitational potential energy",
-            "timestamp": {
+            "time_interval": {
                 "start": 118.62,
                 "end": 122.06
             },
@@ -2234,7 +2234,7 @@
             "words": [
                 {
                     "word": " There",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 118.62,
                         "end": 119.4
                     },
@@ -2242,7 +2242,7 @@
                 },
                 {
                     "word": " is",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 119.4,
                         "end": 119.62
                     },
@@ -2250,7 +2250,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 119.62,
                         "end": 119.86
                     },
@@ -2258,7 +2258,7 @@
                 },
                 {
                     "word": " conversion",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 119.86,
                         "end": 120.2
                     },
@@ -2266,7 +2266,7 @@
                 },
                 {
                     "word": " from",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 120.2,
                         "end": 120.66
                     },
@@ -2274,7 +2274,7 @@
                 },
                 {
                     "word": " gravitational",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 120.66,
                         "end": 121.2
                     },
@@ -2282,7 +2282,7 @@
                 },
                 {
                     "word": " potential",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 121.2,
                         "end": 121.74
                     },
@@ -2290,7 +2290,7 @@
                 },
                 {
                     "word": " energy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 121.74,
                         "end": 122.06
                     },
@@ -2300,7 +2300,7 @@
         },
         {
             "text": " to kinetic energy back to gravitational potential energy",
-            "timestamp": {
+            "time_interval": {
                 "start": 122.06,
                 "end": 125.1
             },
@@ -2309,7 +2309,7 @@
             "words": [
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 122.06,
                         "end": 122.26
                     },
@@ -2317,7 +2317,7 @@
                 },
                 {
                     "word": " kinetic",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 122.26,
                         "end": 122.64
                     },
@@ -2325,7 +2325,7 @@
                 },
                 {
                     "word": " energy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 122.64,
                         "end": 123.0
                     },
@@ -2333,7 +2333,7 @@
                 },
                 {
                     "word": " back",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 123.0,
                         "end": 123.26
                     },
@@ -2341,7 +2341,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 123.26,
                         "end": 123.82
                     },
@@ -2349,7 +2349,7 @@
                 },
                 {
                     "word": " gravitational",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 123.82,
                         "end": 124.34
                     },
@@ -2357,7 +2357,7 @@
                 },
                 {
                     "word": " potential",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 124.34,
                         "end": 124.8
                     },
@@ -2365,7 +2365,7 @@
                 },
                 {
                     "word": " energy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 124.8,
                         "end": 125.1
                     },
@@ -2375,7 +2375,7 @@
         },
         {
             "text": " and it will come to a stop here.",
-            "timestamp": {
+            "time_interval": {
                 "start": 125.1,
                 "end": 126.56
             },
@@ -2384,7 +2384,7 @@
             "words": [
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 125.1,
                         "end": 125.16
                     },
@@ -2392,7 +2392,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 125.16,
                         "end": 125.34
                     },
@@ -2400,7 +2400,7 @@
                 },
                 {
                     "word": " will",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 125.34,
                         "end": 125.5
                     },
@@ -2408,7 +2408,7 @@
                 },
                 {
                     "word": " come",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 125.5,
                         "end": 125.66
                     },
@@ -2416,7 +2416,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 125.66,
                         "end": 125.92
                     },
@@ -2424,7 +2424,7 @@
                 },
                 {
                     "word": " a",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 125.92,
                         "end": 126.0
                     },
@@ -2432,7 +2432,7 @@
                 },
                 {
                     "word": " stop",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 126.0,
                         "end": 126.18
                     },
@@ -2440,7 +2440,7 @@
                 },
                 {
                     "word": " here.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 126.18,
                         "end": 126.56
                     },
@@ -2450,7 +2450,7 @@
         },
         {
             "text": " And when it swings back,",
-            "timestamp": {
+            "time_interval": {
                 "start": 126.56,
                 "end": 128.02
             },
@@ -2459,7 +2459,7 @@
             "words": [
                 {
                     "word": " And",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 126.56,
                         "end": 126.88
                     },
@@ -2467,7 +2467,7 @@
                 },
                 {
                     "word": " when",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 126.88,
                         "end": 127.04
                     },
@@ -2475,7 +2475,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 127.04,
                         "end": 127.22
                     },
@@ -2483,7 +2483,7 @@
                 },
                 {
                     "word": " swings",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 127.22,
                         "end": 127.44
                     },
@@ -2491,7 +2491,7 @@
                 },
                 {
                     "word": " back,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 127.44,
                         "end": 128.02
                     },
@@ -2501,7 +2501,7 @@
         },
         {
             "text": " it should not be able to reach any higher,",
-            "timestamp": {
+            "time_interval": {
                 "start": 128.02,
                 "end": 131.26
             },
@@ -2510,7 +2510,7 @@
             "words": [
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 128.02,
                         "end": 128.54
                     },
@@ -2518,7 +2518,7 @@
                 },
                 {
                     "word": " should",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 128.54,
                         "end": 128.78
                     },
@@ -2526,7 +2526,7 @@
                 },
                 {
                     "word": " not",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 128.78,
                         "end": 128.96
                     },
@@ -2534,7 +2534,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 128.96,
                         "end": 129.18
                     },
@@ -2542,7 +2542,7 @@
                 },
                 {
                     "word": " able",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 129.18,
                         "end": 129.38
                     },
@@ -2550,7 +2550,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 129.38,
                         "end": 129.62
                     },
@@ -2558,7 +2558,7 @@
                 },
                 {
                     "word": " reach",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 129.62,
                         "end": 130.22
                     },
@@ -2566,7 +2566,7 @@
                 },
                 {
                     "word": " any",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 130.22,
                         "end": 130.66
                     },
@@ -2574,7 +2574,7 @@
                 },
                 {
                     "word": " higher,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 130.66,
                         "end": 131.26
                     },
@@ -2584,7 +2584,7 @@
         },
         {
             "text": " provided that I do not give this object",
-            "timestamp": {
+            "time_interval": {
                 "start": 132.02,
                 "end": 135.42
             },
@@ -2593,7 +2593,7 @@
             "words": [
                 {
                     "word": " provided",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 132.02,
                         "end": 132.44
                     },
@@ -2601,7 +2601,7 @@
                 },
                 {
                     "word": " that",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 132.44,
                         "end": 133.74
                     },
@@ -2609,7 +2609,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 133.74,
                         "end": 134.08
                     },
@@ -2617,7 +2617,7 @@
                 },
                 {
                     "word": " do",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 134.08,
                         "end": 134.26
                     },
@@ -2625,7 +2625,7 @@
                 },
                 {
                     "word": " not",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 134.26,
                         "end": 134.42
                     },
@@ -2633,7 +2633,7 @@
                 },
                 {
                     "word": " give",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 134.42,
                         "end": 134.6
                     },
@@ -2641,7 +2641,7 @@
                 },
                 {
                     "word": " this",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 134.6,
                         "end": 134.86
                     },
@@ -2649,7 +2649,7 @@
                 },
                 {
                     "word": " object",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 134.86,
                         "end": 135.42
                     },
@@ -2659,7 +2659,7 @@
         },
         {
             "text": " an initial speed when I stand here.",
-            "timestamp": {
+            "time_interval": {
                 "start": 135.42,
                 "end": 138.2
             },
@@ -2668,7 +2668,7 @@
             "words": [
                 {
                     "word": " an",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 135.42,
                         "end": 136.04
                     },
@@ -2676,7 +2676,7 @@
                 },
                 {
                     "word": " initial",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 136.04,
                         "end": 136.38
                     },
@@ -2684,7 +2684,7 @@
                 },
                 {
                     "word": " speed",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 136.38,
                         "end": 136.78
                     },
@@ -2692,7 +2692,7 @@
                 },
                 {
                     "word": " when",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 136.78,
                         "end": 136.98
                     },
@@ -2700,7 +2700,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 136.98,
                         "end": 137.28
                     },
@@ -2708,7 +2708,7 @@
                 },
                 {
                     "word": " stand",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 137.28,
                         "end": 137.46
                     },
@@ -2716,7 +2716,7 @@
                 },
                 {
                     "word": " here.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 137.46,
                         "end": 138.2
                     },
@@ -2726,7 +2726,7 @@
         },
         {
             "text": " I trust the conservation of mechanical energy for 100%.",
-            "timestamp": {
+            "time_interval": {
                 "start": 139.32,
                 "end": 145.02
             },
@@ -2735,7 +2735,7 @@
             "words": [
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 139.32,
                         "end": 140.16
                     },
@@ -2743,7 +2743,7 @@
                 },
                 {
                     "word": " trust",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 140.16,
                         "end": 140.82
                     },
@@ -2751,7 +2751,7 @@
                 },
                 {
                     "word": " the",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 140.82,
                         "end": 141.68
                     },
@@ -2759,7 +2759,7 @@
                 },
                 {
                     "word": " conservation",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 141.68,
                         "end": 142.12
                     },
@@ -2767,7 +2767,7 @@
                 },
                 {
                     "word": " of",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 142.12,
                         "end": 142.32
                     },
@@ -2775,7 +2775,7 @@
                 },
                 {
                     "word": " mechanical",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 142.32,
                         "end": 142.74
                     },
@@ -2783,7 +2783,7 @@
                 },
                 {
                     "word": " energy",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 142.74,
                         "end": 143.38
                     },
@@ -2791,7 +2791,7 @@
                 },
                 {
                     "word": " for",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 143.38,
                         "end": 143.88
                     },
@@ -2799,7 +2799,7 @@
                 },
                 {
                     "word": " 100%.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 143.88,
                         "end": 145.02
                     },
@@ -2809,7 +2809,7 @@
         },
         {
             "text": " I may not trust myself.",
-            "timestamp": {
+            "time_interval": {
                 "start": 145.52,
                 "end": 147.44
             },
@@ -2818,7 +2818,7 @@
             "words": [
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 145.52,
                         "end": 145.96
                     },
@@ -2826,7 +2826,7 @@
                 },
                 {
                     "word": " may",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 145.96,
                         "end": 146.18
                     },
@@ -2834,7 +2834,7 @@
                 },
                 {
                     "word": " not",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 146.18,
                         "end": 146.36
                     },
@@ -2842,7 +2842,7 @@
                 },
                 {
                     "word": " trust",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 146.36,
                         "end": 146.6
                     },
@@ -2850,7 +2850,7 @@
                 },
                 {
                     "word": " myself.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 146.6,
                         "end": 147.44
                     },
@@ -2860,7 +2860,7 @@
         },
         {
             "text": " I'm going to release this object,",
-            "timestamp": {
+            "time_interval": {
                 "start": 149.68,
                 "end": 151.56
             },
@@ -2869,7 +2869,7 @@
             "words": [
                 {
                     "word": " I'm",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 149.68,
                         "end": 150.12
                     },
@@ -2877,7 +2877,7 @@
                 },
                 {
                     "word": " going",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 150.12,
                         "end": 150.24
                     },
@@ -2885,7 +2885,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 150.24,
                         "end": 150.52
                     },
@@ -2893,7 +2893,7 @@
                 },
                 {
                     "word": " release",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 150.52,
                         "end": 150.74
                     },
@@ -2901,7 +2901,7 @@
                 },
                 {
                     "word": " this",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 150.74,
                         "end": 151.0
                     },
@@ -2909,7 +2909,7 @@
                 },
                 {
                     "word": " object,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 151.0,
                         "end": 151.56
                     },
@@ -2919,7 +2919,7 @@
         },
         {
             "text": " and I hope I will be able to do it at zero speed",
-            "timestamp": {
+            "time_interval": {
                 "start": 152.2,
                 "end": 155.34
             },
@@ -2928,7 +2928,7 @@
             "words": [
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 152.2,
                         "end": 152.32
                     },
@@ -2936,7 +2936,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 152.32,
                         "end": 152.52
                     },
@@ -2944,7 +2944,7 @@
                 },
                 {
                     "word": " hope",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 152.52,
                         "end": 152.68
                     },
@@ -2952,7 +2952,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 152.68,
                         "end": 152.8
                     },
@@ -2960,7 +2960,7 @@
                 },
                 {
                     "word": " will",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 152.8,
                         "end": 152.98
                     },
@@ -2968,7 +2968,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 152.98,
                         "end": 153.12
                     },
@@ -2976,7 +2976,7 @@
                 },
                 {
                     "word": " able",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 153.12,
                         "end": 153.34
                     },
@@ -2984,7 +2984,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 153.34,
                         "end": 153.5
                     },
@@ -2992,7 +2992,7 @@
                 },
                 {
                     "word": " do",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 153.5,
                         "end": 153.62
                     },
@@ -3000,7 +3000,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 153.62,
                         "end": 153.82
                     },
@@ -3008,7 +3008,7 @@
                 },
                 {
                     "word": " at",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 153.82,
                         "end": 154.04
                     },
@@ -3016,7 +3016,7 @@
                 },
                 {
                     "word": " zero",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 154.04,
                         "end": 154.42
                     },
@@ -3024,7 +3024,7 @@
                 },
                 {
                     "word": " speed",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 154.42,
                         "end": 155.34
                     },
@@ -3034,7 +3034,7 @@
         },
         {
             "text": " so that when it comes back",
-            "timestamp": {
+            "time_interval": {
                 "start": 155.82,
                 "end": 157.3
             },
@@ -3043,7 +3043,7 @@
             "words": [
                 {
                     "word": " so",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 155.82,
                         "end": 156.26
                     },
@@ -3051,7 +3051,7 @@
                 },
                 {
                     "word": " that",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 156.26,
                         "end": 156.4
                     },
@@ -3059,7 +3059,7 @@
                 },
                 {
                     "word": " when",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 156.4,
                         "end": 156.54
                     },
@@ -3067,7 +3067,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 156.54,
                         "end": 156.66
                     },
@@ -3075,7 +3075,7 @@
                 },
                 {
                     "word": " comes",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 156.66,
                         "end": 156.94
                     },
@@ -3083,7 +3083,7 @@
                 },
                 {
                     "word": " back",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 156.94,
                         "end": 157.3
                     },
@@ -3093,7 +3093,7 @@
         },
         {
             "text": " it may touch my chin, but it may not crush my chin.",
-            "timestamp": {
+            "time_interval": {
                 "start": 157.3,
                 "end": 160.84
             },
@@ -3102,7 +3102,7 @@
             "words": [
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 157.3,
                         "end": 157.42
                     },
@@ -3110,7 +3110,7 @@
                 },
                 {
                     "word": " may",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 157.42,
                         "end": 157.68
                     },
@@ -3118,7 +3118,7 @@
                 },
                 {
                     "word": " touch",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 157.68,
                         "end": 157.96
                     },
@@ -3126,7 +3126,7 @@
                 },
                 {
                     "word": " my",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 157.96,
                         "end": 158.3
                     },
@@ -3134,7 +3134,7 @@
                 },
                 {
                     "word": " chin,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 158.3,
                         "end": 158.74
                     },
@@ -3142,7 +3142,7 @@
                 },
                 {
                     "word": " but",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 159.08,
                         "end": 159.28
                     },
@@ -3150,7 +3150,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 159.28,
                         "end": 159.4
                     },
@@ -3158,7 +3158,7 @@
                 },
                 {
                     "word": " may",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 159.4,
                         "end": 159.6
                     },
@@ -3166,7 +3166,7 @@
                 },
                 {
                     "word": " not",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 159.6,
                         "end": 159.8
                     },
@@ -3174,7 +3174,7 @@
                 },
                 {
                     "word": " crush",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 159.8,
                         "end": 160.02
                     },
@@ -3182,7 +3182,7 @@
                 },
                 {
                     "word": " my",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 160.02,
                         "end": 160.32
                     },
@@ -3190,7 +3190,7 @@
                 },
                 {
                     "word": " chin.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 160.32,
                         "end": 160.84
                     },
@@ -3200,7 +3200,7 @@
         },
         {
             "text": " I want you to be extremely quiet because this is no joke.",
-            "timestamp": {
+            "time_interval": {
                 "start": 162.74,
                 "end": 165.74
             },
@@ -3209,7 +3209,7 @@
             "words": [
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 162.74,
                         "end": 162.84
                     },
@@ -3217,7 +3217,7 @@
                 },
                 {
                     "word": " want",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 162.84,
                         "end": 163.06
                     },
@@ -3225,7 +3225,7 @@
                 },
                 {
                     "word": " you",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 163.06,
                         "end": 163.18
                     },
@@ -3233,7 +3233,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 163.18,
                         "end": 163.32
                     },
@@ -3241,7 +3241,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 163.32,
                         "end": 163.56
                     },
@@ -3249,7 +3249,7 @@
                 },
                 {
                     "word": " extremely",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 163.56,
                         "end": 163.94
                     },
@@ -3257,7 +3257,7 @@
                 },
                 {
                     "word": " quiet",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 163.94,
                         "end": 164.46
                     },
@@ -3265,7 +3265,7 @@
                 },
                 {
                     "word": " because",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 164.46,
                         "end": 164.74
                     },
@@ -3273,7 +3273,7 @@
                 },
                 {
                     "word": " this",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 164.74,
                         "end": 164.92
                     },
@@ -3281,7 +3281,7 @@
                 },
                 {
                     "word": " is",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 164.92,
                         "end": 165.12
                     },
@@ -3289,7 +3289,7 @@
                 },
                 {
                     "word": " no",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 165.12,
                         "end": 165.32
                     },
@@ -3297,7 +3297,7 @@
                 },
                 {
                     "word": " joke.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 165.32,
                         "end": 165.74
                     },
@@ -3307,7 +3307,7 @@
         },
         {
             "text": " If I don't succeed in giving it zero speed,",
-            "timestamp": {
+            "time_interval": {
                 "start": 166.72,
                 "end": 169.98
             },
@@ -3316,7 +3316,7 @@
             "words": [
                 {
                     "word": " If",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 166.72,
                         "end": 166.88
                     },
@@ -3324,7 +3324,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 166.88,
                         "end": 167.38
                     },
@@ -3332,7 +3332,7 @@
                 },
                 {
                     "word": " don't",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 167.38,
                         "end": 167.68
                     },
@@ -3340,7 +3340,7 @@
                 },
                 {
                     "word": " succeed",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 167.68,
                         "end": 168.24
                     },
@@ -3348,7 +3348,7 @@
                 },
                 {
                     "word": " in",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 168.24,
                         "end": 168.58
                     },
@@ -3356,7 +3356,7 @@
                 },
                 {
                     "word": " giving",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 168.58,
                         "end": 168.76
                     },
@@ -3364,7 +3364,7 @@
                 },
                 {
                     "word": " it",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 168.76,
                         "end": 169.04
                     },
@@ -3372,7 +3372,7 @@
                 },
                 {
                     "word": " zero",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 169.04,
                         "end": 169.32
                     },
@@ -3380,7 +3380,7 @@
                 },
                 {
                     "word": " speed,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 169.32,
                         "end": 169.98
                     },
@@ -3390,7 +3390,7 @@
         },
         {
             "text": " then this will be my last lecture.",
-            "timestamp": {
+            "time_interval": {
                 "start": 170.36,
                 "end": 172.5
             },
@@ -3399,7 +3399,7 @@
             "words": [
                 {
                     "word": " then",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 170.36,
                         "end": 170.8
                     },
@@ -3407,7 +3407,7 @@
                 },
                 {
                     "word": " this",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 170.8,
                         "end": 171.4
                     },
@@ -3415,7 +3415,7 @@
                 },
                 {
                     "word": " will",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 171.4,
                         "end": 171.54
                     },
@@ -3423,7 +3423,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 171.54,
                         "end": 171.68
                     },
@@ -3431,7 +3431,7 @@
                 },
                 {
                     "word": " my",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 171.68,
                         "end": 171.82
                     },
@@ -3439,7 +3439,7 @@
                 },
                 {
                     "word": " last",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 171.82,
                         "end": 172.12
                     },
@@ -3447,7 +3447,7 @@
                 },
                 {
                     "word": " lecture.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 172.12,
                         "end": 172.5
                     },
@@ -3457,7 +3457,7 @@
         },
         {
             "text": " I will close my eyes. I don't want to see this.",
-            "timestamp": {
+            "time_interval": {
                 "start": 174.32,
                 "end": 177.34
             },
@@ -3466,7 +3466,7 @@
             "words": [
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 174.32,
                         "end": 174.88
                     },
@@ -3474,7 +3474,7 @@
                 },
                 {
                     "word": " will",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 174.88,
                         "end": 175.14
                     },
@@ -3482,7 +3482,7 @@
                 },
                 {
                     "word": " close",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 175.14,
                         "end": 175.42
                     },
@@ -3490,7 +3490,7 @@
                 },
                 {
                     "word": " my",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 175.42,
                         "end": 175.72
                     },
@@ -3498,7 +3498,7 @@
                 },
                 {
                     "word": " eyes.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 175.72,
                         "end": 175.98
                     },
@@ -3506,7 +3506,7 @@
                 },
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 176.02,
                         "end": 176.08
                     },
@@ -3514,7 +3514,7 @@
                 },
                 {
                     "word": " don't",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 176.08,
                         "end": 176.32
                     },
@@ -3522,7 +3522,7 @@
                 },
                 {
                     "word": " want",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 176.32,
                         "end": 176.44
                     },
@@ -3530,7 +3530,7 @@
                 },
                 {
                     "word": " to",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 176.44,
                         "end": 176.54
                     },
@@ -3538,7 +3538,7 @@
                 },
                 {
                     "word": " see",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 176.54,
                         "end": 176.72
                     },
@@ -3546,7 +3546,7 @@
                 },
                 {
                     "word": " this.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 176.72,
                         "end": 177.34
                     },
@@ -3556,7 +3556,7 @@
         },
         {
             "text": " So please be very quiet.",
-            "timestamp": {
+            "time_interval": {
                 "start": 178.08,
                 "end": 179.86
             },
@@ -3565,7 +3565,7 @@
             "words": [
                 {
                     "word": " So",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 178.08,
                         "end": 178.5
                     },
@@ -3573,7 +3573,7 @@
                 },
                 {
                     "word": " please",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 178.5,
                         "end": 178.74
                     },
@@ -3581,7 +3581,7 @@
                 },
                 {
                     "word": " be",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 178.74,
                         "end": 178.96
                     },
@@ -3589,7 +3589,7 @@
                 },
                 {
                     "word": " very",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 178.96,
                         "end": 179.32
                     },
@@ -3597,7 +3597,7 @@
                 },
                 {
                     "word": " quiet.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 179.32,
                         "end": 179.86
                     },
@@ -3607,7 +3607,7 @@
         },
         {
             "text": " I almost didn't sleep all night.",
-            "timestamp": {
+            "time_interval": {
                 "start": 181.78,
                 "end": 183.9
             },
@@ -3616,7 +3616,7 @@
             "words": [
                 {
                     "word": " I",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 181.78,
                         "end": 182.3
                     },
@@ -3624,7 +3624,7 @@
                 },
                 {
                     "word": " almost",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 182.3,
                         "end": 182.58
                     },
@@ -3632,7 +3632,7 @@
                 },
                 {
                     "word": " didn't",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 182.58,
                         "end": 182.82
                     },
@@ -3640,7 +3640,7 @@
                 },
                 {
                     "word": " sleep",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 182.82,
                         "end": 183.1
                     },
@@ -3648,7 +3648,7 @@
                 },
                 {
                     "word": " all",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 183.1,
                         "end": 183.34
                     },
@@ -3656,7 +3656,7 @@
                 },
                 {
                     "word": " night.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 183.34,
                         "end": 183.9
                     },
@@ -3666,7 +3666,7 @@
         },
         {
             "text": " Three, two, one, zero.",
-            "timestamp": {
+            "time_interval": {
                 "start": 185.07999999999998,
                 "end": 188.38
             },
@@ -3675,7 +3675,7 @@
             "words": [
                 {
                     "word": " Three,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 185.07999999999998,
                         "end": 185.85999999999999
                     },
@@ -3683,7 +3683,7 @@
                 },
                 {
                     "word": " two,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 185.85999999999999,
                         "end": 186.64
                     },
@@ -3691,7 +3691,7 @@
                 },
                 {
                     "word": " one,",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 186.74,
                         "end": 187.28
                     },
@@ -3699,7 +3699,7 @@
                 },
                 {
                     "word": " zero.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 188.38,
                         "end": 188.38
                     },
@@ -3709,7 +3709,7 @@
         },
         {
             "text": " Physics works and I'm still alive.",
-            "timestamp": {
+            "time_interval": {
                 "start": 201.0,
                 "end": 202.7
             },
@@ -3718,7 +3718,7 @@
             "words": [
                 {
                     "word": " Physics",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 201.0,
                         "end": 201.22
                     },
@@ -3726,7 +3726,7 @@
                 },
                 {
                     "word": " works",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 201.22,
                         "end": 201.72
                     },
@@ -3734,7 +3734,7 @@
                 },
                 {
                     "word": " and",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 201.72,
                         "end": 201.96
                     },
@@ -3742,7 +3742,7 @@
                 },
                 {
                     "word": " I'm",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 201.96,
                         "end": 202.22
                     },
@@ -3750,7 +3750,7 @@
                 },
                 {
                     "word": " still",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 202.22,
                         "end": 202.42
                     },
@@ -3758,7 +3758,7 @@
                 },
                 {
                     "word": " alive.",
-                    "timestamp": {
+                    "time_interval": {
                         "start": 202.42,
                         "end": 202.7
                     },
