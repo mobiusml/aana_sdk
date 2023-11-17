@@ -1,3 +1,4 @@
+from deepdiff.operator import BaseOperator
 import rapidfuzz
 
 from aana.tests.const import ALLOWED_LEVENSTEIN_ERROR_RATE
@@ -33,3 +34,11 @@ def compare_texts(expected_text: str, text: str):
         expected_text,
         text,
     )
+
+
+class LevenshteinOperator(BaseOperator):
+    def give_up_diffing(self, level, diff_instance) -> bool:
+        dist = rapidfuzz.distance.Levenshtein.distance(level.t1, level.t2)
+        if dist < len(level.t1) * ALLOWED_LEVENSTEIN_ERROR_RATE:
+            return True
+        return False
