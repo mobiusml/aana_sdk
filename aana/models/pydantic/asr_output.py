@@ -6,9 +6,10 @@ from faster_whisper.transcribe import (
     Word as WhisperWord,
     TranscriptionInfo as WhisperTranscriptionInfo,
 )
+from aana.models.pydantic import time_interval
 
 from aana.models.pydantic.base import BaseListModel
-from aana.models.pydantic.timestamp import Timestamp
+from aana.models.pydantic.time_interval import TimeInterval
 
 
 class AsrWord(BaseModel):
@@ -17,12 +18,12 @@ class AsrWord(BaseModel):
 
     Attributes:
         word (str): The word text
-        timestamp (Timestamp): Timestamp of the word
+        time_interval (TimeInterval): Time interval of the word
         alignment_confidence (float): Alignment confidence of the word
     """
 
     word: str = Field(description="The word text")
-    timestamp: Timestamp = Field(description="Timestamp of the word")
+    time_interval: TimeInterval = Field(description="Time interval of the word")
     alignment_confidence: float = Field(
         ge=0.0, le=1.0, description="Alignment confidence of the word"
     )
@@ -34,7 +35,7 @@ class AsrWord(BaseModel):
         """
         return cls(
             word=whisper_word.word,
-            timestamp=Timestamp(start=whisper_word.start, end=whisper_word.end),
+            time_interval=TimeInterval(start=whisper_word.start, end=whisper_word.end),
             alignment_confidence=whisper_word.probability,
         )
 
@@ -50,14 +51,14 @@ class AsrSegment(BaseModel):
 
     Attributes:
         text (str): The text of the segment (transcript/translation)
-        timestamp (Timestamp): Timestamp of the segment
+        time_interval (TimeInterval): Time interval of the segment
         confidence (float): Confidence of the segment
         no_speech_confidence (float): Chance of being a silence segment
         words (List[AsrWord]): List of words in the segment
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
-    timestamp: Timestamp = Field(description="Timestamp of the segment")
+    time_interval: TimeInterval = Field(description="Time interval of the segment")
     confidence: float = Field(ge=0.0, le=1.0, description="Confidence of the segment")
     no_speech_confidence: float = Field(
         ge=0.0, le=1.0, description="Chance of being a silence segment"
@@ -71,7 +72,9 @@ class AsrSegment(BaseModel):
         """
         Convert WhisperSegment to AsrSegment.
         """
-        timestamp = Timestamp(start=whisper_segment.start, end=whisper_segment.end)
+        time_interval = TimeInterval(
+            start=whisper_segment.start, end=whisper_segment.end
+        )
         confidence = np.exp(whisper_segment.avg_logprob)
         if whisper_segment.words:
             words = [AsrWord.from_whisper(word) for word in whisper_segment.words]
@@ -80,7 +83,7 @@ class AsrSegment(BaseModel):
 
         return cls(
             text=whisper_segment.text,
-            timestamp=timestamp,
+            time_interval=time_interval,
             confidence=confidence,
             no_speech_confidence=whisper_segment.no_speech_prob,
             words=words,

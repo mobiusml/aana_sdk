@@ -1,3 +1,4 @@
+import collections.abc
 from pydantic import BaseModel, Field, validator
 from typing import Optional, Union, List, Tuple
 
@@ -12,7 +13,10 @@ class WhisperParams(BaseModel):
         beam_size (int): Size of the beam for decoding.
         best_of (int): Number of best candidate sentences to consider.
         temperature (Union[float, List[float], Tuple[float, ...]]): Controls the sampling
-            randomness, with a sequence of values indicating fallback temperatures.
+            randomness.  It can be a tuple of temperatures,
+            which will be successively used upon failures according to either
+            [compression_ratio_threshold](https://github.com/guillaumekln/faster-whisper/blob/5a0541ea7d054aa3716ac492491de30158c20057/faster_whisper/transcribe.py#L216) or
+            [log_prob_threshold](https://github.com/guillaumekln/faster-whisper/blob/5a0541ea7d054aa3716ac492491de30158c20057/faster_whisper/transcribe.py#L218C23-L218C23).
         word_timestamps (bool): Whether to extract word-level timestamps.
         vad_filter (bool): Whether to enable voice activity detection to filter non-speech.
     """
@@ -27,7 +31,7 @@ class WhisperParams(BaseModel):
     best_of: int = Field(
         default=5, ge=1, description="Number of best candidate sentences to consider."
     )
-    temperature: Union[float, List[float], Tuple[float, ...]] = Field(
+    temperature: float | collections.abc.Sequence[float] = Field(
         default=(0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
         description=(
             "Temperature for sampling. A single value or a sequence indicating fallback temperatures."

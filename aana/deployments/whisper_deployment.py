@@ -20,15 +20,18 @@ class WhisperComputeType(str, Enum):
     """
     The data type used by whisper models.
 
+    See [cTranslate2 docs on quantization](https://opennmt.net/CTranslate2/quantization.html#quantize-on-model-conversion)
+    for more information.
+
     Available types:
-        - INT8 (int8)
-        - INT8_FLOAT32 (int8_float32)
-        - INT8_FLOAT16 (int8_float16)
-        - INT8_BFLOAT16 (int8_bfloat16)
-        - INT16 (int16)
-        - FLOAT16 (float16)
-        - BFLOAT16 (bfloat16)
-        - FLOAT32 (float32)
+        - INT8
+        - INT8_FLOAT32
+        - INT8_FLOAT16
+        - INT8_BFLOAT16
+        - INT16
+        - FLOAT16
+        - BFLOAT16
+        - FLOAT32
     """
 
     INT8 = "int8"
@@ -46,17 +49,17 @@ class WhisperModelSize(str, Enum):
     The whisper model.
 
     Available models:
-        - TINY (tiny)
-        - TINY_EN (tiny.en)
-        - BASE (base)
-        - BASE_EN (base.en)
-        - SMALL (small)
-        - SMALL_EN (small.en)
-        - MEDIUM (medium)
-        - MEDIUM_EN (medium.en)
-        - LARGE_V1 (large-v1)
-        - LARGE_V2 (large-v2)
-        - LARGE (large)
+        - TINY
+        - TINY_EN
+        - BASE
+        - BASE_EN
+        - SMALL
+        - SMALL_EN
+        - MEDIUM
+        - MEDIUM_EN
+        - LARGE_V1
+        - LARGE_V2
+        - LARGE
     """
 
     TINY = "tiny"

@@ -10,7 +10,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionInfo,
     AsrWord,
 )
-from aana.models.pydantic.timestamp import Timestamp
+from aana.models.pydantic.time_interval import TimeInterval
 
 
 def test_asr_segment_from_whisper():
@@ -34,7 +34,7 @@ def test_asr_segment_from_whisper():
     asr_segment = AsrSegment.from_whisper(whisper_segment)
 
     assert asr_segment.text == "hello world"
-    assert asr_segment.timestamp == Timestamp(
+    assert asr_segment.time_interval == TimeInterval(
         start=whisper_segment.start, end=whisper_segment.end
     )
     assert asr_segment.confidence == np.exp(whisper_segment.avg_logprob)
@@ -79,5 +79,5 @@ def test_asr_word_from_whisper():
     asr_word = AsrWord.from_whisper(word)
 
     assert asr_word.word == "hello"
-    assert asr_word.timestamp == Timestamp(start=word.start, end=word.end)
+    assert asr_word.time_interval == TimeInterval(start=word.start, end=word.end)
     assert asr_word.alignment_confidence == word.probability

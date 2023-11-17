@@ -53,9 +53,9 @@ def download_file(url: str) -> bytes:
     return response.content
 
 
-def serialize_pydantic(data: Any) -> Any:
+def pydantic_to_dict(data: Any) -> Any:
     """
-    Serialize all Pydantic objects in the structured data.
+    Convert all Pydantic objects in the structured data.
 
     Args:
         data (Any): the structured data
@@ -66,8 +66,8 @@ def serialize_pydantic(data: Any) -> Any:
     if isinstance(data, BaseModel):
         return data.dict()
     elif isinstance(data, list):
-        return [serialize_pydantic(item) for item in data]
+        return [pydantic_to_dict(item) for item in data]
     elif isinstance(data, dict):
-        return {key: serialize_pydantic(value) for key, value in data.items()}
+        return {key: pydantic_to_dict(value) for key, value in data.items()}
     else:
         return data  # return as is for non-Pydantic types
