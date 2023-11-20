@@ -1,5 +1,6 @@
-import pytest
+# ruff: noqa: S101, NPY002 TODO
 import numpy as np
+import pytest
 
 from aana.utils.batch_processor import BatchProcessor
 
@@ -10,34 +11,36 @@ FEATURE_SIZE = 10
 
 @pytest.fixture
 def images():
+    """Gets random-data "images" for use in tests."""
     return np.array([np.random.rand(IMAGE_SIZE, IMAGE_SIZE) for _ in range(NUM_IMAGES)])
 
 
 @pytest.fixture
 def texts():
+    """Gets random-data "texts" for use in tests."""
     return [f"text{i}" for i in range(NUM_IMAGES)]
 
 
 @pytest.fixture
 def features():
+    """Gets random data "feature vectors" for use in tests."""
     return np.random.rand(NUM_IMAGES, FEATURE_SIZE)
 
 
 @pytest.fixture
 def request_batch(images, texts, features):
+    """Sample request batch for use in tests."""
     return {"images": images, "texts": texts, "features": features}
 
 
 @pytest.fixture
 def process_batch():
-    # Dummy processing function that just returns the batch
+    """Dummy processing function that just returns the batch."""
     return lambda batch: batch
 
 
 def test_batch_iterator(request_batch, process_batch):
-    """
-    Test batch iterator.
-    """
+    """Test batch iterator."""
     batch_size = 2
     processor = BatchProcessor(
         process_batch=process_batch, batch_size=batch_size, num_threads=2
@@ -54,9 +57,7 @@ def test_batch_iterator(request_batch, process_batch):
 
 @pytest.mark.asyncio
 async def test_process_batches(request_batch, process_batch):
-    """
-    Test processing of batches.
-    """
+    """Test processing of batches."""
     batch_size = 2
     processor = BatchProcessor(
         process_batch=process_batch, batch_size=batch_size, num_threads=2
@@ -72,8 +73,7 @@ async def test_process_batches(request_batch, process_batch):
 
 
 def test_merge_outputs(request_batch, process_batch):
-    """
-    Test merging of outputs from multiple batches.
+    """Test merging of outputs from multiple batches.
 
     images and features should be concatenated into numpy arrays because they are numpy arrays.
     texts should be concatenated because they are lists.

@@ -1,12 +1,10 @@
 from enum import Enum
-from typing import Union
 
 import torch
 
 
 class Dtype(str, Enum):
-    """
-    Data types.
+    """Data types.
 
     Possible values are "auto", "float32", "float16", and "int8".
 
@@ -22,9 +20,8 @@ class Dtype(str, Enum):
     FLOAT16 = "float16"
     INT8 = "int8"
 
-    def to_torch(self) -> Union[torch.dtype, str]:
-        """
-        Convert the instance's dtype to a torch dtype.
+    def to_torch(self) -> torch.dtype | str:
+        """Convert the instance's dtype to a torch dtype.
 
         Returns:
             Union[torch.dtype, str]: the torch dtype or "auto"
@@ -42,4 +39,4 @@ class Dtype(str, Enum):
             case self.INT8:
                 return torch.int8
             case _:
-                raise ValueError(f"Unknown dtype: {self}")
+                raise ValueError(f"Unknown dtype: {self}")  # noqa: TRY003

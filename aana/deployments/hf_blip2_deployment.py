@@ -1,10 +1,11 @@
-from typing import Any, Dict, List, TypedDict
+from typing import Any, TypedDict
+
+import torch
 from pydantic import BaseModel, Field, validator
 from ray import serve
-import torch
-from transformers import Blip2Processor, Blip2ForConditionalGeneration
-from aana.deployments.base_deployment import BaseDeployment
+from transformers import Blip2ForConditionalGeneration, Blip2Processor
 
+from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
 from aana.models.core.dtype import Dtype
 from aana.models.core.image import Image
@@ -12,8 +13,7 @@ from aana.utils.batch_processor import BatchProcessor
 
 
 class HFBlip2Config(BaseModel):
-    """
-    The configuration for the BLIP2 deployment with HuggingFace models.
+    """The configuration for the BLIP2 deployment with HuggingFace models.
 
     Attributes:
         model (str): the model ID on HuggingFace
@@ -29,8 +29,7 @@ class HFBlip2Config(BaseModel):
 
     @validator("dtype", pre=True, always=True)
     def validate_dtype(cls, value: Dtype) -> Dtype:
-        """
-        Validate the data type. For BLIP2 only "float32" and "float16" are supported.
+        """Validate the data type. For BLIP2 only "float32" and "float16" are supported.
 
         Args:
             value (Dtype): the data type
@@ -42,15 +41,14 @@ class HFBlip2Config(BaseModel):
             ValueError: if the data type is not supported
         """
         if value not in {Dtype.AUTO, Dtype.FLOAT32, Dtype.FLOAT16}:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 f"Invalid dtype: {value}. BLIP2 only supports 'auto', 'float32', and 'float16'."
             )
         return value
 
 
 class CaptioningOutput(TypedDict):
-    """
-    The output of the captioning model.
+    """The output of the captioning model.
 
     Attributes:
         caption (str): the caption
@@ -60,25 +58,21 @@ class CaptioningOutput(TypedDict):
 
 
 class CaptioningBatchOutput(TypedDict):
-    """
-    The output of the captioning model.
+    """The output of the captioning model.
 
     Attributes:
         captions (List[str]): the list of captions
     """
 
-    captions: List[str]
+    captions: list[str]
 
 
 @serve.deployment
 class HFBlip2Deployment(BaseDeployment):
-    """
-    Deployment to serve BLIP2 models using HuggingFace.
-    """
+    """Deployment to serve BLIP2 models using HuggingFace."""
 
-    async def apply_config(self, config: Dict[str, Any]):
-        """
-        Apply the configuration.
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
 
         The method is called when the deployment is created or updated.
 
@@ -86,7 +80,6 @@ class HFBlip2Deployment(BaseDeployment):
 
         The configuration should conform to the HFBlip2Config schema.
         """
-
         config_obj = HFBlip2Config(**config)
 
         # Create the batch processor to split the requests into batches
@@ -115,8 +108,7 @@ class HFBlip2Deployment(BaseDeployment):
         self.model.to(self.device)
 
     async def generate(self, image: Image) -> CaptioningOutput:
-        """
-        Generate captions for the given image.
+        """Generate captions for the given image.
 
         Args:
             image (Image): the image
@@ -134,11 +126,12 @@ class HFBlip2Deployment(BaseDeployment):
         return CaptioningOutput(caption=captions["captions"][0])
 
     async def generate_batch(self, **kwargs) -> CaptioningBatchOutput:
-        """
-        Generate captions for the given images.
+        """Generate captions for the given images.
 
         Args:
             images (List[Image]): the images
+            **kwargs (dict[str, Any]): keywordarguments to pass to the
+                batch processor.
 
         Returns:
             CaptioningBatchOutput: the dictionary with one key "captions"
@@ -151,9 +144,8 @@ class HFBlip2Deployment(BaseDeployment):
         # The actual inference is done in _generate()
         return await self.batch_processor.process(kwargs)
 
-    def _generate(self, images: List[Image]) -> CaptioningBatchOutput:
-        """
-        Generate captions for the given images.
+    def _generate(self, images: list[Image]) -> CaptioningBatchOutput:
+        """Generate captions for the given images.
 
         This method is called by the batch processor.
 
@@ -167,9 +159,8 @@ class HFBlip2Deployment(BaseDeployment):
         Raises:
             InferenceException: if the inference fails
         """
-        numpy_images = []
-        for image in images:
-            numpy_images.append(image.get_numpy())  # loading images
+        # Loading images
+        numpy_images = [im.get_numpy() for im in images]
         inputs = self.processor(numpy_images, return_tensors="pt").to(
             self.device, self.torch_dtype
         )

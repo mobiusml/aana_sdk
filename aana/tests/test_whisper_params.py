@@ -1,10 +1,11 @@
+# ruff: noqa: S101
 import pytest
+
 from aana.models.pydantic.whisper_params import WhisperParams
 
 
 def test_whisper_params_default():
-    """
-    Test the default values of WhisperParams object.
+    """Test the default values of WhisperParams object.
 
     Keeping the default parameters of a function or object is important
     in case other code relies on them.
@@ -32,9 +33,7 @@ def test_whisper_params_default():
 def test_whisper_params(
     language, beam_size, best_of, temperature, word_timestamps, vad_filter
 ):
-    """
-    Test function for the WhisperParams class with valid parameters.
-    """
+    """Test function for the WhisperParams class with valid parameters."""
     params = WhisperParams(
         language=language,
         beam_size=beam_size,
@@ -62,9 +61,6 @@ def test_whisper_params(
     ],
 )
 def test_whisper_params_invalid_temperature(temperature):
-    """
-    Test function to check if ValueError is raised
-    when invalid temperature is passed to WhisperParams constructor.
-    """
+    """Check ValueError raised if temperature is invalid."""
     with pytest.raises(ValueError):
         WhisperParams(temperature=temperature)
