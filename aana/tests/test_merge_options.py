@@ -44,5 +44,5 @@ def test_merged_options_type_mismatch():
     default = MyOptions(field1="default1", field2=2, field3=True)
     to_merge = AnotherOptions(another_field="test")
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         merged_options(default, to_merge)
