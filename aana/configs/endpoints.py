@@ -1,6 +1,5 @@
 from aana.api.api_generation import Endpoint
 
-
 endpoints = {
     "llama2": [
         Endpoint(

@@ -1,11 +1,14 @@
-from concurrent.futures import ThreadPoolExecutor
-from typing import Callable, Dict, List, Any, Iterator
 import asyncio
+from collections.abc import Callable, Iterator
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any
+
 import numpy as np
 
 
 class BatchProcessor:
-    """
+    """Class for parallel processing data in chunks.
+
     The BatchProcessor class encapsulates the logic required to take a large collection of data,
     split it into manageable batches, process these batches in parallel, and then combine the results
     into a single cohesive output.
@@ -32,7 +35,8 @@ class BatchProcessor:
     """
 
     def __init__(self, process_batch: Callable, batch_size: int, num_threads: int):
-        """
+        """Constructor.
+
         Args:
             process_batch (Callable): Function that processes each batch.
             batch_size (int): Size of the batches.
@@ -43,13 +47,12 @@ class BatchProcessor:
         self.pool = ThreadPoolExecutor(num_threads)
 
     def __del__(self):
-        """
-        Destructor that shuts down the thread pool when the instance is destroyed.
-        """
+        """Destructor that shuts down the thread pool when the instance is destroyed."""
         self.pool.shutdown()
 
-    def batch_iterator(self, request: Dict[str, Any]) -> Iterator[Dict[str, List[Any]]]:
-        """
+    def batch_iterator(self, request: dict[str, Any]) -> Iterator[dict[str, list[Any]]]:
+        """Converts request into an iterator of batches.
+
         Iterates over the input request, breaking it into smaller batches for processing.
         Each batch is a dictionary with the same keys as the input request, but the values
         are sublists containing only the elements for that batch.
@@ -65,14 +68,14 @@ class BatchProcessor:
             # 3rd iteration: {'images': [img5], 'texts': ['text5']}
 
         Args:
-            request (Dict[str, List[Any]]): The request data to split into batches.
+            request (dict[str, list[Any]]): The request data to split into batches.
 
         Yields:
-            Iterator[Dict[str, List[Any]]]: An iterator over the batched requests.
+            Iterator[dict[str, list[Any]]]: An iterator over the batched requests.
         """
         lengths = [len(value) for value in request.values()]
         if len(set(lengths)) > 1:
-            raise ValueError("All inputs must have the same length")
+            raise ValueError("All inputs must have the same length")  # noqa: TRY003
 
         total_batches = (max(lengths) + self.batch_size - 1) // self.batch_size
         for i in range(total_batches):
@@ -80,8 +83,9 @@ class BatchProcessor:
             end = start + self.batch_size
             yield {key: value[start:end] for key, value in request.items()}
 
-    async def process(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """
+    async def process(self, request: dict[str, Any]) -> dict[str, Any]:
+        """Process a request.
+
         Splits the input request into batches, processes each batch in parallel, and then merges
         the results into a single dictionary.
 
@@ -99,9 +103,10 @@ class BatchProcessor:
         outputs = await asyncio.gather(*futures)
         return self.merge_outputs(outputs)
 
-    def merge_outputs(self, outputs: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Merges processed batch outputs into a single dictionary. It handles various data types
+    def merge_outputs(self, outputs: list[dict[str, Any]]) -> dict[str, Any]:
+        """Merge output.
+
+        Combine processed batch outputs into a single dictionary. It handles various data types
         by extending lists, updating dictionaries, and concatenating numpy arrays.
 
         Example:
@@ -117,10 +122,10 @@ class BatchProcessor:
             # }
 
         Args:
-            outputs (List[Dict[str, Any]]): List of outputs from the processed batches.
+            outputs (list[dict[str, Any]]): List of outputs from the processed batches.
 
         Returns:
-            Dict[str, Any]: The merged result.
+            dict[str, Any]: The merged result.
         """
         merged_output = {}
         for output in outputs:

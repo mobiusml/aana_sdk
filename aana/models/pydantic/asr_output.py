@@ -1,20 +1,23 @@
-from typing import List
+from types import MappingProxyType  # for immutable dictionary
+
 import numpy as np
-from pydantic import BaseModel, Field
 from faster_whisper.transcribe import (
     Segment as WhisperSegment,
-    Word as WhisperWord,
+)
+from faster_whisper.transcribe import (
     TranscriptionInfo as WhisperTranscriptionInfo,
 )
-from aana.models.pydantic import time_interval
+from faster_whisper.transcribe import (
+    Word as WhisperWord,
+)
 
 from aana.models.pydantic.base import BaseListModel
 from aana.models.pydantic.time_interval import TimeInterval
+from pydantic import BaseModel, Field
 
 
 class AsrWord(BaseModel):
-    """
-    Pydantic schema for Word from ASR model.
+    """Pydantic schema for Word from ASR model.
 
     Attributes:
         word (str): The word text
@@ -30,9 +33,7 @@ class AsrWord(BaseModel):
 
     @classmethod
     def from_whisper(cls, whisper_word: WhisperWord) -> "AsrWord":
-        """
-        Convert WhisperWord to AsrWord.
-        """
+        """Convert WhisperWord to AsrWord."""
         return cls(
             word=whisper_word.word,
             time_interval=TimeInterval(start=whisper_word.start, end=whisper_word.end),
@@ -40,14 +41,15 @@ class AsrWord(BaseModel):
         )
 
     class Config:
-        schema_extra = {
-            "description": "Word",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "Word",
+            }
+        )
 
 
 class AsrSegment(BaseModel):
-    """
-    Pydantic schema for Segment from ASR model.
+    """Pydantic schema for Segment from ASR model.
 
     Attributes:
         text (str): The text of the segment (transcript/translation)
@@ -63,15 +65,13 @@ class AsrSegment(BaseModel):
     no_speech_confidence: float = Field(
         ge=0.0, le=1.0, description="Chance of being a silence segment"
     )
-    words: List[AsrWord] = Field(
+    words: list[AsrWord] = Field(
         description="List of words in the segment", default_factory=list
     )
 
     @classmethod
     def from_whisper(cls, whisper_segment: WhisperSegment) -> "AsrSegment":
-        """
-        Convert WhisperSegment to AsrSegment.
-        """
+        """Convert WhisperSegment to AsrSegment."""
         time_interval = TimeInterval(
             start=whisper_segment.start, end=whisper_segment.end
         )
@@ -90,15 +90,15 @@ class AsrSegment(BaseModel):
         )
 
     class Config:
-        schema_extra = {
-            "description": "Segment",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "Segment",
+            }
+        )
 
 
 class AsrTranscriptionInfo(BaseModel):
-    """
-    Pydantic schema for TranscriptionInfo.
-    """
+    """Pydantic schema for TranscriptionInfo."""
 
     language: str = Field(description="Language of the transcription")
     language_confidence: float = Field(
@@ -109,80 +109,80 @@ class AsrTranscriptionInfo(BaseModel):
     def from_whisper(
         cls, transcription_info: WhisperTranscriptionInfo
     ) -> "AsrTranscriptionInfo":
-        """
-        Convert WhisperTranscriptionInfo to AsrTranscriptionInfo.
-        """
+        """Convert WhisperTranscriptionInfo to AsrTranscriptionInfo."""
         return cls(
             language=transcription_info.language,
             language_confidence=transcription_info.language_probability,
         )
 
     class Config:
-        schema_extra = {
-            "description": "Transcription info",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "Transcription info",
+            }
+        )
 
 
 class AsrTranscription(BaseModel):
-    """
-    Pydantic schema for Transcription/Translation.
-    """
+    """Pydantic schema for Transcription/Translation."""
 
     text: str = Field(description="The text of the transcription/translation")
 
     class Config:
-        schema_extra = {
-            "description": "Transcription/Translation",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "Transcription/Translation",
+            }
+        )
 
 
 class AsrSegments(BaseListModel):
-    """
-    Pydantic schema for the list of ASR segments.
-    """
+    """Pydantic schema for the list of ASR segments."""
 
-    __root__: List[AsrSegment]
+    __root__: list[AsrSegment]
 
     class Config:
-        schema_extra = {
-            "description": "List of ASR segments",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "List of ASR segments",
+            }
+        )
 
 
 class AsrSegmentsList(BaseListModel):
-    """
-    Pydantic schema for the list of lists of ASR segments.
-    """
+    """Pydantic schema for the list of lists of ASR segments."""
 
-    __root__: List[AsrSegments]
+    __root__: list[AsrSegments]
 
     class Config:
-        schema_extra = {
-            "description": "List of lists of ASR segments",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "List of lists of ASR segments",
+            }
+        )
 
 
 class AsrTranscriptionInfoList(BaseListModel):
-    """
-    Pydantic schema for the list of ASR transcription info.
-    """
+    """Pydantic schema for the list of ASR transcription info."""
 
-    __root__: List[AsrTranscriptionInfo]
+    __root__: list[AsrTranscriptionInfo]
 
     class Config:
-        schema_extra = {
-            "description": "List of ASR transcription info",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "List of ASR transcription info",
+            }
+        )
 
 
 class AsrTranscriptionList(BaseListModel):
-    """
-    Pydantic schema for the list of ASR transcription.
-    """
+    """Pydantic schema for the list of ASR transcription."""
 
-    __root__: List[AsrTranscription]
+    __root__: list[AsrTranscription]
 
     class Config:
-        schema_extra = {
-            "description": "List of ASR transcription",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "List of ASR transcription",
+            }
+        )

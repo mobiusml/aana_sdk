@@ -1,10 +1,9 @@
-from enum import Enum
 import re
+from enum import Enum
 
 
 class VideoSource(str, Enum):
-    """
-    Video sources.
+    """Video sources.
 
     Possible values are "auto" and "youtube".
 
@@ -18,8 +17,7 @@ class VideoSource(str, Enum):
 
     @classmethod
     def from_url(cls, url: str) -> "VideoSource":
-        """
-        Get the video source from a URL.
+        """Get the video source from a URL.
 
         Args:
             url (str): the URL
@@ -27,7 +25,6 @@ class VideoSource(str, Enum):
         Returns:
             VideoSource: the video source
         """
-
         # TODO: Check that the URL is valid
 
         youtube_pattern = r"^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtube\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)$"

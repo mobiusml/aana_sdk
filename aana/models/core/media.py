@@ -1,8 +1,7 @@
-from dataclasses import dataclass, field
 import hashlib
-from pathlib import Path
-from typing import Optional
 import uuid
+from dataclasses import dataclass, field
+from pathlib import Path
 
 from aana.configs.settings import settings
 from aana.utils.general import download_file
@@ -10,8 +9,7 @@ from aana.utils.general import download_file
 
 @dataclass
 class Media:
-    """
-        A base class representing a media file.
+    """A base class representing a media file.
 
     It is used to represent images, medias, and audio files.
 
@@ -25,28 +23,25 @@ class Media:
         media_id (str): the ID of the media. If not provided, it will be generated automatically.
     """
 
-    path: Optional[Path] = None
-    url: Optional[str] = None
-    content: Optional[bytes] = None
+    path: Path | None = None
+    url: str | None = None
+    content: bytes | None = None
     media_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     save_on_disk: bool = True
     is_saved: bool = False
 
     def validate(self):
-        """
-        Validate the media.
-        """
+        """Validate the media."""
         # check that path is a Path object
-        if self.path:
-            assert isinstance(self.path, Path)
+        if self.path and not isinstance(self.path, Path):
+            raise ValueError(self.path)
 
         # check if path exists if provided
         if self.path and not self.path.exists():
-            raise FileNotFoundError(f"File '{self.path}' does not exist.")
+            raise FileNotFoundError(f"File '{self.path}' does not exist.")  # noqa: TRY003
 
     def __post_init__(self):
-        """
-        Post-initialization.
+        """Post-initialization.
 
         Perform checks and save the media on disk if needed.
         """
@@ -56,8 +51,8 @@ class Media:
             self.save()
 
     def save(self):
-        """
-        Save the media on disk.
+        """Save the media on disk.
+
         If the media is already available on disk, do nothing.
         If the media represented as a byte string, save it on disk
         If the media is represented as a URL, download it and save it on disk.
@@ -77,15 +72,14 @@ class Media:
         elif self.url:
             self.save_from_url(file_path)
         else:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', or 'content' must be provided."
             )
         self.path = file_path
         self.is_saved = True
 
     def save_from_bytes(self, file_path: Path, content: bytes):
-        """
-        Save the media from bytes.
+        """Save the media from bytes.
 
         Args:
             file_path (Path): the path to save the media to
@@ -94,18 +88,16 @@ class Media:
         file_path.write_bytes(content)
 
     def save_from_content(self, file_path: Path):
-        """
-        Save the media from the content.
+        """Save the media from the content.
 
         Args:
             file_path (Path): the path to save the media to
         """
-        assert self.content is not None
+        assert self.content is not None  # noqa: S101
         self.save_from_bytes(file_path, self.content)
 
     def save_from_url(self, file_path):
-        """
-        Save the media from the URL.
+        """Save the media from the URL.
 
         Args:
             file_path (Path): the path to save the media to
@@ -113,13 +105,12 @@ class Media:
         Raises:
             DownloadError: if the media can't be downloaded
         """
-        assert self.url is not None
+        assert self.url is not None  # noqa: S101
         content: bytes = download_file(self.url)
         self.save_from_bytes(file_path, content)
 
     def get_content(self) -> bytes:
-        """
-        Get the content of the media as bytes.
+        """Get the content of the media as bytes.
 
         Returns:
             bytes: the content of the media
@@ -134,39 +125,39 @@ class Media:
         elif self.url:
             self.load_content_from_url()
         else:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', or 'content' must be provided."
             )
-        assert self.content is not None
+        assert self.content is not None  # noqa: S101
         return self.content
 
     def load_content_from_path(self):
-        """
-        Load the content of the media from the path.
-        """
-        assert self.path is not None
+        """Load the content of the media from the path."""
+        assert self.path is not None  # noqa: S101
         self.content = self.path.read_bytes()
 
     def load_content_from_url(self):
-        """
-        Load the content of the media from the URL.
+        """Load the content of the media from the URL.
 
         Raises:
             DownloadError: if the media can't be downloaded
         """
-        assert self.url is not None
+        assert self.url is not None  # noqa: S101
         self.content = download_file(self.url)
 
     def __repr__(self) -> str:
-        """
-        Get the representation of the media.
+        """Get the representation of the media.
 
         Use md5 hash for the content of the media if it is available.
 
         Returns:
             str: the representation of the media
         """
-        content_hash = hashlib.md5(self.content).hexdigest() if self.content else None
+        content_hash = (
+            hashlib.md5(self.content, usedforsecurity=False).hexdigest()
+            if self.content
+            else None
+        )
         return (
             f"Media(path={self.path}, "
             f"url={self.url}, "
@@ -175,8 +166,7 @@ class Media:
         )
 
     def __str__(self) -> str:
-        """
-        Get the string representation of the media.
+        """Get the string representation of the media.
 
         Returns:
             str: the string representation of the media
@@ -184,8 +174,7 @@ class Media:
         return self.__repr__()
 
     def cleanup(self):
-        """
-        Cleanup the media.
+        """Cleanup the media.
 
         If the media is saved on disk by the class, delete it.
         """
