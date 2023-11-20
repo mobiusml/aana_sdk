@@ -1,6 +1,9 @@
+# ruff: noqa: S101
 from importlib import resources
 from pathlib import Path
+
 import pytest
+
 from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException
 from aana.models.core.video import Video
@@ -10,9 +13,7 @@ from aana.utils.video import download_video
 
 @pytest.fixture
 def mock_download_file(mocker):
-    """
-    Mock download_file.
-    """
+    """Mock download_file."""
     mock = mocker.patch("aana.models.core.media.download_file", autospec=True)
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     content = path.read_bytes()
@@ -21,9 +22,7 @@ def mock_download_file(mocker):
 
 
 def test_video(mock_download_file):
-    """
-    Test that the video can be created from path, url, or content.
-    """
+    """Test that the video can be created from path, url, or content."""
     # Test creation from a path
     try:
         path = resources.path("aana.tests.files.videos", "squirrel.mp4")
@@ -65,18 +64,14 @@ def test_video(mock_download_file):
 
 
 def test_video_path_not_exist():
-    """
-    Test that the video can't be created from path if the path doesn't exist.
-    """
+    """Test that the video can't be created from path if the path doesn't exist."""
     path = Path("path/to/video_that_does_not_exist.mp4")
     with pytest.raises(FileNotFoundError):
         Video(path=path)
 
 
 def test_save_video(mock_download_file):
-    """
-    Test that save_on_disk works for video.
-    """
+    """Test that save_on_disk works for video."""
     # Test that the video is saved to disk when save_on_disk is True
     try:
         path = resources.path("aana.tests.files.videos", "squirrel.mp4")
@@ -112,9 +107,7 @@ def test_save_video(mock_download_file):
 
 
 def test_cleanup(mock_download_file):
-    """
-    Test that cleanup works for video.
-    """
+    """Test that cleanup works for video."""
     try:
         url = "http://example.com/squirrel.mp4"
         video = Video(url=url, save_on_disk=True)
@@ -135,9 +128,7 @@ def test_cleanup(mock_download_file):
 
 
 def test_at_least_one_input():
-    """
-    Test that at least one input is provided for video.
-    """
+    """Test that at least one input is provided for video."""
     with pytest.raises(ValueError):
         Video(save_on_disk=False)
 
@@ -146,9 +137,7 @@ def test_at_least_one_input():
 
 
 def test_download_video(mock_download_file):
-    """
-    Test download_video.
-    """
+    """Test download_video."""
     # Test VideoInput
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     video_input = VideoInput(path=str(path))

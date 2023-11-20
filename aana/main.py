@@ -3,11 +3,15 @@ import sys
 import time
 import traceback
 
+DEFAULT_PORT = 8000
+DEFAULT_HOST = "0.0.0.0"  # noqa: S104
+
 
 def run():
+    """Runs the application."""
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--port", type=int, default=8000)
-    arg_parser.add_argument("--host", type=str, default="0.0.0.0")
+    arg_parser.add_argument("--port", type=int, default=DEFAULT_PORT)
+    arg_parser.add_argument("--host", type=str, default=DEFAULT_HOST)
     arg_parser.add_argument(
         "--target",
         type=str,
@@ -18,11 +22,12 @@ def run():
 
     import ray
     from ray import serve
+
     from aana.api.request_handler import RequestHandler
     from aana.configs.build import get_configuration
+    from aana.configs.deployments import deployments as all_deployments
     from aana.configs.endpoints import endpoints as all_endpoints
     from aana.configs.pipeline import nodes as all_nodes
-    from aana.configs.deployments import deployments as all_deployments
 
     configuration = get_configuration(
         args.target,

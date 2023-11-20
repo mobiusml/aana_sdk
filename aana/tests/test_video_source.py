@@ -1,12 +1,9 @@
-from operator import not_
-import pytest
+# ruff: noqa: S101
 from aana.models.core.video_source import VideoSource
 
 
 def test_video_source_from_url():
-    """
-    Test that VideoSource.from_url returns the correct VideoSource for a given URL.
-    """
+    """Test that VideoSource.from_url returns the correct VideoSource for a given URL."""
     # Test a YouTube URL
     valid_youtube_urls = [
         "https://youtube.com/watch?v=yModCU1OVHY",

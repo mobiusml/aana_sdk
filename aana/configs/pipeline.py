@@ -1,5 +1,5 @@
-"""
-This file contains the pipeline configuration for the aana application.
+"""Pipeline configuration for the aana application.
+
 It is used to generate the pipeline and the API endpoints.
 """
 

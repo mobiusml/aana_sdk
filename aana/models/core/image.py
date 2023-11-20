@@ -1,26 +1,22 @@
-from dataclasses import dataclass
 import hashlib
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Type
+
 import cv2
-
 import numpy as np
-from aana.configs.settings import settings
 
+from aana.configs.settings import settings
 from aana.exceptions.general import ImageReadingException
 from aana.models.core.media import Media
 from aana.utils.general import download_file
 
 
 class AbstractImageLibrary:
-    """
-    Abstract class for image libraries.
-    """
+    """Abstract class for image libraries."""
 
     @classmethod
     def read_file(cls, path: Path) -> np.ndarray:
-        """
-        Read a file using the image library.
+        """Read a file using the image library.
 
         Args:
             path (Path): The path of the file to read.
@@ -32,8 +28,7 @@ class AbstractImageLibrary:
 
     @classmethod
     def read_from_bytes(cls, content: bytes) -> np.ndarray:
-        """
-        Read bytes using the image library.
+        """Read bytes using the image library.
 
         Args:
             content (bytes): The content of the file to read.
@@ -45,8 +40,7 @@ class AbstractImageLibrary:
 
     @classmethod
     def write_file(cls, path: Path, img: np.ndarray):
-        """
-        Write a file using the image library.
+        """Write a file using the image library.
 
         Args:
             path (Path): The path of the file to write.
@@ -56,8 +50,7 @@ class AbstractImageLibrary:
 
     @classmethod
     def write_to_bytes(cls, img: np.ndarray) -> bytes:
-        """
-        Write bytes using the image library.
+        """Write bytes using the image library.
 
         Args:
             img (np.ndarray): The image to write.
@@ -69,14 +62,11 @@ class AbstractImageLibrary:
 
 
 class OpenCVWrapper(AbstractImageLibrary):
-    """
-    Wrapper class for OpenCV functions.
-    """
+    """Wrapper class for OpenCV functions."""
 
     @classmethod
     def read_file(cls, path: Path) -> np.ndarray:
-        """
-        Read a file using OpenCV.
+        """Read a file using OpenCV.
 
         Args:
             path (Path): The path of the file to read.
@@ -90,8 +80,7 @@ class OpenCVWrapper(AbstractImageLibrary):
 
     @classmethod
     def read_from_bytes(cls, content: bytes) -> np.ndarray:
-        """
-        Read bytes using OpenCV.
+        """Read bytes using OpenCV.
 
         Args:
             content (bytes): The content of the file to read.
@@ -105,8 +94,7 @@ class OpenCVWrapper(AbstractImageLibrary):
 
     @classmethod
     def write_file(cls, path: Path, img: np.ndarray):
-        """
-        Write a file using OpenCV.
+        """Write a file using OpenCV.
 
         Args:
             path (Path): The path of the file to write.
@@ -117,8 +105,7 @@ class OpenCVWrapper(AbstractImageLibrary):
 
     @classmethod
     def write_to_bytes(cls, img: np.ndarray) -> bytes:
-        """
-        Write bytes using OpenCV.
+        """Write bytes using OpenCV.
 
         Args:
             img (np.ndarray): The image to write.
@@ -133,8 +120,7 @@ class OpenCVWrapper(AbstractImageLibrary):
 
 @dataclass
 class Image(Media):
-    """
-    A class representing an image.
+    """A class representing an image.
 
     At least one of 'path', 'url', 'content' or 'numpy' must be provided.
     If 'save_on_disk' is True, the image will be saved on disk automatically.
@@ -147,15 +133,13 @@ class Image(Media):
         media_id (str): The ID of the image, generated automatically if not provided.
     """
 
-    numpy: Optional[np.ndarray] = None  # The image as a numpy array.
-    image_lib: Type[
+    numpy: np.ndarray | None = None  # The image as a numpy array.
+    image_lib: type[
         AbstractImageLibrary
     ] = OpenCVWrapper  # The image library to use, TODO: add support for PIL and allow to choose the library
 
     def validate(self):
-        """
-        Validate the image.
-        """
+        """Validate the image."""
         # validate the parent class
         super().validate()
 
@@ -168,13 +152,13 @@ class Image(Media):
                 self.numpy is not None,
             ]
         ):
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
 
     def save(self):
-        """
-        Save the image on disk.
+        """Save the image on disk.
+
         If the image is already available on disk, do nothing.
         If the image represented as a byte string, save it on disk.
         If the image is represented as a URL, download it and save it on disk.
@@ -200,27 +184,27 @@ class Image(Media):
         elif self.url:
             self.save_from_url(file_path)
         else:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
         self.path = file_path
         self.is_saved = True
 
     def save_from_numpy(self, file_path: Path):
-        """
-        Save the image from numpy on disk.
+        """Save the image from numpy on disk.
 
         Args:
             file_path (Path): The path of the file to write.
         """
-        assert self.numpy is not None
+        assert self.numpy is not None  # noqa: S101 TODO
         self.image_lib.write_file(file_path, self.numpy)
 
     def get_numpy(self) -> np.ndarray:
-        """
-        Load the image as a numpy array.
+        """Load the image as a numpy array.
+
         Returns:
             np.ndarray: The image as a numpy array.
+
         Raises:
             ValueError: If none of 'path', 'url', 'content' or 'numpy' is provided.
             ImageReadingException: If there is an error reading the image.
@@ -234,27 +218,27 @@ class Image(Media):
         elif self.content:
             self.load_numpy_from_content()
         else:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
-        assert self.numpy is not None
+        assert self.numpy is not None  # noqa: S101
         return self.numpy
 
     def load_numpy_from_path(self):
-        """
-        Load the image as a numpy array from a path.
+        """Load the image as a numpy array from a path.
+
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
-        assert self.path is not None
+        assert self.path is not None  # noqa: S101
         try:
             self.numpy = self.image_lib.read_file(self.path)
         except Exception as e:
             raise ImageReadingException(self) from e
 
     def load_numpy_from_image_bytes(self, img_bytes: bytes):
-        """
-        Load the image as a numpy array from image bytes (downloaded from URL or read from file).
+        """Load the image as a numpy array from image bytes (downloaded from URL or read from file).
+
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
@@ -264,29 +248,30 @@ class Image(Media):
             raise ImageReadingException(self) from e
 
     def load_numpy_from_url(self):
-        """
-        Load the image as a numpy array from a URL.
+        """Load the image as a numpy array from a URL.
+
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
-        assert self.url is not None
+        assert self.url is not None  # noqa: S101
         content: bytes = download_file(self.url)
         self.load_numpy_from_image_bytes(content)
 
     def load_numpy_from_content(self):
-        """
-        Load the image as a numpy array from content.
+        """Load the image as a numpy array from content.
+
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
-        assert self.content is not None
+        assert self.content is not None  # noqa: S101
         self.load_numpy_from_image_bytes(self.content)
 
     def get_content(self) -> bytes:
-        """
-        Get the content of the image as bytes.
+        """Get the content of the image as bytes.
+
         Returns:
             bytes: The content of the image as bytes.
+
         Raises:
             ValueError: If none of 'path', 'url', 'content' or 'numpy' is provided.
         """
@@ -299,22 +284,19 @@ class Image(Media):
         elif self.numpy is not None:
             self.load_content_from_numpy()
         else:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
-        assert self.content is not None
+        assert self.content is not None  # noqa: S101
         return self.content
 
     def load_content_from_numpy(self):
-        """
-        Load the content of the image from numpy.
-        """
-        assert self.numpy is not None
+        """Load the content of the image from numpy."""
+        assert self.numpy is not None  # noqa: S101
         self.content = self.image_lib.write_to_bytes(self.numpy)
 
     def __repr__(self) -> str:
-        """
-        Get the representation of the image.
+        """Get the representation of the image.
 
         Use md5 hash for the content of the image if it is available.
 
@@ -323,10 +305,16 @@ class Image(Media):
         Returns:
             str: The representation of the image.
         """
-        content_hash = hashlib.md5(self.content).hexdigest() if self.content else None
+        content_hash = (
+            hashlib.md5(self.content, usedforsecurity=False).hexdigest()
+            if self.content
+            else None
+        )
         if self.numpy is not None:
-            assert self.numpy is not None
-            numpy_hash = hashlib.md5(self.numpy.tobytes()).hexdigest()
+            assert self.numpy is not None  # noqa: S101
+            numpy_hash = hashlib.md5(
+                self.numpy.tobytes(), usedforsecurity=False
+            ).hexdigest()
             numpy_repr = f"ndarray(shape={self.numpy.shape}, dtype={self.numpy.dtype}, md5={numpy_hash})"
         else:
             numpy_repr = None
