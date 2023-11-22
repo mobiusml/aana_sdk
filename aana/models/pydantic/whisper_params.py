@@ -46,8 +46,11 @@ class WhisperParams(BaseModel):
     )
 
     @validator("temperature")
-    def check_temperature(cls, v):
+    def check_temperature(cls, v: float):
         """Validates a temperature value.
+
+        Arguments:
+            v (float): Value to validate.
 
         Raises:
             ValueError: Temperature is out of range.
