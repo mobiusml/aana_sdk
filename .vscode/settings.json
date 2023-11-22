@@ -1,11 +1,14 @@
 {
+    "notebook.formatOnSave.enabled": true,
     "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff"
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
     },
-    "python.formatting.provider": "none",
     "python.testing.pytestArgs": [
         "aana"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "ruff.fixAll": true,
+    "ruff.organizeImports": true,
 }
