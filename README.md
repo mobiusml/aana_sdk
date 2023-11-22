@@ -88,3 +88,36 @@ The documentation will be available at http://localhost:8000/docs and http://loc
 5. Send a request to the server.
 
 You can find examples in the [demo notebook](notebooks/demo.ipynb).
+
+## Code Standards
+This project uses Ruff for linting and formatting. If you want to 
+manually run Ruff on the codebase, it's
+
+```sh
+ruff check aana
+```
+
+You can automatically fix some issues with the `--fix`
+ and `--unsafe-fixes` options. (Be sure to install the dev 
+ dependencies: `poetry install --with=dev`. )
+
+To run the auto-formatter, it's
+
+```sh
+ruff format aana
+```
+
+If you want to enable this as a local pre-commit hook, additionally
+run the following:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+Depending on your workflow, you may need to ensure that the `ruff` 
+command is available in your default shell. You can also simply run
+`.githooks/pre-commit` manually if you prefer.
+
+For users of VS Code, the included `settings.json` should ensure
+that Ruff problems appear while you edit, and formatting is applied
+automatically on save.
