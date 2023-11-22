@@ -48,10 +48,13 @@ class SamplingParams(BaseModel):
     )
 
     @validator("top_k", always=True, pre=True)
-    def check_top_k(cls, v):
+    def check_top_k(cls, v: int):
         """Validates a top_k argument.
 
         Makes sure it is either -1, or at least 1.
+
+        Arguments:
+            v (int): Value to validate.
 
         Raises:
             ValueError: The value is not valid.

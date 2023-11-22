@@ -137,7 +137,7 @@ class WhisperDeployment(BaseDeployment):
 
     # TODO: add audio support
     async def transcribe(
-        self, media: Video, params: WhisperParams = None
+        self, media: Video, params: WhisperParams | None = None
     ) -> WhisperOutput:
         """Transcribe the media with the whisper model.
 
