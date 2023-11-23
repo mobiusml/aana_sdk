@@ -26,6 +26,9 @@ faster-whisper = "^0.9.0"
 onnxruntime = "1.16.1"
 deepdiff = "^6.7.0"
 yt-dlp = "^2023.10.13"
+qdrant-client = "^1.6.9"
+bitsandbytes = "^0.41.2.post2"
+accelerate = "^0.24.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
