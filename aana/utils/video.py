@@ -51,7 +51,6 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
         # num_fps can be smaller than 1 (e.g. 0.5 means 1 frame every 2 seconds)
         indexes = np.arange(0, num_frames, int(video_fps / num_fps))
     timestamps = video_reader.get_frame_timestamp(indexes)[:, 0].tolist()
-    timestamps.append(duration)
 
     frames_array = video_reader.get_batch(indexes).asnumpy()
     frames = []
