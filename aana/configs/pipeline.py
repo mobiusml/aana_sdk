@@ -12,7 +12,7 @@ from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.models.pydantic.video_input import VideoInputList
+from aana.models.pydantic.video_input import VideoInput, VideoInputList
 from aana.models.pydantic.video_params import VideoParams
 from aana.models.pydantic.whisper_params import WhisperParams
 
@@ -211,7 +211,7 @@ nodes = [
         ],
     },
     {
-        "name": "download_video",
+        "name": "download_videos",
         "type": "ray_task",
         "function": "aana.utils.video.download_video",
         "batched": True,
@@ -278,7 +278,7 @@ nodes = [
         ],
     },
     {
-        "name": "hf_blip2_opt_2_7b_video",
+        "name": "hf_blip2_opt_2_7b_videos",
         "type": "ray_deployment",
         "deployment_name": "hf_blip2_deployment_opt_2_7b",
         "method": "generate_batch",
@@ -292,7 +292,7 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "video_captions_hf_blip2_opt_2_7b",
+                "name": "videos_captions_hf_blip2_opt_2_7b",
                 "key": "captions",
                 "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
                 "data_model": VideoCaptionsList,
@@ -322,6 +322,134 @@ nodes = [
                 "name": "video_objects",
                 "key": "media_batch",
                 "path": "video_batch.videos.[*].video",
+            },
+            {
+                "name": "whisper_params",
+                "key": "params",
+                "path": "video_batch.whisper_params",
+                "data_model": WhisperParams,
+            },
+        ],
+        "outputs": [
+            {
+                "name": "videos_transcriptions_segments_whisper_medium",
+                "key": "segments",
+                "path": "video_batch.videos.[*].segments",
+                "data_model": AsrSegmentsList,
+            },
+            {
+                "name": "videos_transcriptions_info_whisper_medium",
+                "key": "transcription_info",
+                "path": "video_batch.videos.[*].transcription_info",
+                "data_model": AsrTranscriptionInfoList,
+            },
+            {
+                "name": "videos_transcriptions_whisper_medium",
+                "key": "transcription",
+                "path": "video_batch.videos.[*].transcription",
+                "data_model": AsrTranscriptionList,
+            },
+        ],
+    },
+    {
+        "name": "video",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "video",
+                "key": "video",
+                "path": "video.video_input",
+                "data_model": VideoInput,
+            }
+        ],
+    },
+    {
+        "name": "download_video",
+        "type": "ray_task",
+        "function": "aana.utils.video.download_video",
+        "dict_output": False,
+        "inputs": [
+            {
+                "name": "video",
+                "key": "video_input",
+                "path": "video.video_input",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_object",
+                "key": "output",
+                "path": "video.video",
+            },
+        ],
+    },
+    {
+        "name": "generate_frames_for_video",
+        "type": "ray_task",
+        "function": "aana.utils.video.generate_frames_decord",
+        "data_type": "generator",
+        "generator_path": "video",
+        "inputs": [
+            {
+                "name": "video_object",
+                "key": "video",
+                "path": "video.video",
+            },
+            {"name": "video_params", "key": "params", "path": "video_batch.params"},
+        ],
+        "outputs": [
+            {
+                "name": "video_frames",
+                "key": "frames",
+                "path": "video.frames.[*].image",
+            },
+            {
+                "name": "video_timestamps",
+                "key": "timestamps",
+                "path": "video.timestamps",
+            },
+            {
+                "name": "video_duration",
+                "key": "duration",
+                "path": "video.duration",
+            },
+        ],
+    },
+    {
+        "name": "hf_blip2_opt_2_7b_video",
+        "type": "ray_deployment",
+        "deployment_name": "hf_blip2_deployment_opt_2_7b",
+        "method": "generate_batch",
+        "flatten_by": "video.frames.[*]",
+        "inputs": [
+            {
+                "name": "video_frames",
+                "key": "images",
+                "path": "video.frames.[*].image",
+            }
+        ],
+        "outputs": [
+            {
+                "name": "video_captions_hf_blip2_opt_2_7b",
+                "key": "captions",
+                "path": "video.frames.[*].caption_hf_blip2_opt_2_7b",
+                "data_model": VideoCaptionsList,
+            }
+        ],
+    },
+    {
+        "name": "whisper_medium_transcribe_video",
+        "type": "ray_deployment",
+        "deployment_name": "whisper_deployment_medium",
+        "data_type": "generator",
+        "generator_path": "video",
+        "method": "transcribe_stream",
+        "inputs": [
+            {
+                "name": "video_object",
+                "key": "media",
+                "path": "video.video",
             },
             {
                 "name": "whisper_params",

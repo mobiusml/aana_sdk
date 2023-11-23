@@ -147,7 +147,7 @@ class WhisperDeployment(BaseDeployment):
 
     # TODO: add audio support
     async def transcribe(
-        self, media: Video, params: WhisperParams = WhisperParams()
+        self, media: Video, params: WhisperParams | None = None
     ) -> WhisperOutput:
         """
         Transcribe the media with the whisper model.
@@ -165,6 +165,8 @@ class WhisperDeployment(BaseDeployment):
         Raises:
             InferenceException: If the inference fails.
         """
+        if params is None:
+            params = WhisperParams()
 
         media_path: str = str(media.path)
         try:
@@ -182,6 +184,29 @@ class WhisperDeployment(BaseDeployment):
             transcription_info=asr_transcription_info,
             transcription=asr_transcription,
         )
+
+    async def transcribe_stream(
+        self, media: Video, params: WhisperParams | None = None
+    ) -> WhisperOutput:
+        """
+        Transcribe the media with the whisper model in a streaming fashion.
+
+        Right now this is the same as transcribe, but we will add support for
+        streaming in the future to support larger media and to make the ASR more responsive.
+
+        Args:
+            media (Video): The media to transcribe.
+            params (WhisperParams): The parameters for the whisper model.
+
+        Yields:
+            WhisperOutput: The transcription output as a dictionary:
+                segments (List[AsrSegment]): The ASR segments.
+                transcription_info (AsrTranscriptionInfo): The ASR transcription info.
+                transcription (AsrTranscription): The ASR transcription.
+        """
+        # TODO: add streaming support
+        output = await self.transcribe(media, params)
+        yield output
 
     async def transcribe_batch(
         self, media_batch: List[Video], params: WhisperParams = WhisperParams()
