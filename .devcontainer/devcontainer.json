@@ -20,7 +20,7 @@
 		"source=${localEnv:PATH_NAS2:/nas2},target=/nas2,type=bind"
 	],
 
-	"postCreateCommand": "sh ${containerWorkspaceFolder}/install.sh; poetry install --with=dev",
+	"postCreateCommand": "sh ${containerWorkspaceFolder}/install.sh  --with=dev",
 	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
 	"customizations": {
 		"vscode": {

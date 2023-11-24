@@ -1,2 +1,2 @@
 #!/bin/sh
-poetry install
+poetry install $1
