@@ -89,6 +89,17 @@ The documentation will be available at http://localhost:8000/docs and http://loc
 
 You can find examples in the [demo notebook](notebooks/demo.ipynb).
 
+## Developing in a Dev Container
+
+If you are using Visual Studio Code, you can run this repository in a 
+[dev container](https://code.visualstudio.com/docs/devcontainers/containers). This lets you install and 
+run everything you need for the repo in an isolated environment via docker on a host system. 
+Running it somewhere other than a Mobius dev server may cause issues due to the mounts of `/nas` and
+`/nas2` inside the container, but you can specify the environment variables for VS Code `PATH_NAS` and
+`PATH_NAS2` which will override the default locations used for these mount points (otherise they default 
+to look for `/nas` and `/nas2`). You can read more about environment variables for dev containers 
+[here](https://containers.dev/implementors/json_reference/).
+
 ## Code Standards
 This project uses Ruff for linting and formatting. If you want to 
 manually run Ruff on the codebase, it's
