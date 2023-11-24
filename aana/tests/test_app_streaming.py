@@ -1,11 +1,11 @@
+# ruff: noqa: S101, S113
 import json
-from sys import prefix
-import time
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
+
 import pytest
 import ray
-from ray import serve
 import requests
+from ray import serve
 
 from aana.api.api_generation import Endpoint
 from aana.api.request_handler import RequestHandler
@@ -13,13 +13,10 @@ from aana.api.request_handler import RequestHandler
 
 @serve.deployment
 class Lowercase:
-    """Lowercase class is a Ray Serve deployment class that takes a text
-    and returns the lowercase version of it.
-    """
+    """Ray Serve deployment that returns the lowercase version of a text."""
 
     async def lower_stream(self, text: str) -> AsyncGenerator[dict, None]:
-        """
-        Lowercase the text and yield the lowercase text in chunks of 4 characters.
+        """Lowercase the text and yield the lowercase text in chunks of 4 characters.
 
         Args:
             text (str): The text to lowercase
@@ -27,7 +24,6 @@ class Lowercase:
         Yields:
             dict: The lowercase text in chunks of 4 characters
         """
-
         chunk_size = 4
         for i in range(0, len(text), chunk_size):
             t = text[i : i + chunk_size]
@@ -79,8 +75,7 @@ endpoints = [
 
 @pytest.fixture(scope="session")
 def ray_setup(request):
-    """
-    Setup the Ray environment and serve the endpoints.
+    """Setup the Ray environment and serve the endpoints.
 
     Returns:
         tuple: A tuple containing the handle to the Ray Serve app
@@ -96,10 +91,7 @@ def ray_setup(request):
 
 
 def test_app_streaming(ray_setup):
-    """
-    Test the Ray Serve app with streaming enabled.
-    """
-
+    """Test the Ray Serve app with streaming enabled."""
     handle, port, route_prefix = ray_setup
 
     # Check that the server is ready

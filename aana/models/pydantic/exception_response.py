@@ -1,10 +1,10 @@
-from typing import Any, Optional
+from typing import Any
+
 from pydantic import BaseModel, Extra
 
 
 class ExceptionResponseModel(BaseModel):
-    """
-    This class is used to represent an exception response for 400 errors.
+    """This class is used to represent an exception response for 400 errors.
 
     Attributes:
         error (str): The error that occurred.
@@ -15,8 +15,8 @@ class ExceptionResponseModel(BaseModel):
 
     error: str
     message: str
-    data: Optional[Any] = None
-    stacktrace: Optional[str] = None
+    data: Any | None = None
+    stacktrace: str | None = None
 
     class Config:
         extra = Extra.forbid

@@ -1,33 +1,34 @@
+from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import AsyncGenerator, Dict, Tuple, Type, Any, List, Optional
+from typing import Any, Optional
+
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
-from mobius_pipeline.pipeline.pipeline import Pipeline
 from mobius_pipeline.node.socket import Socket
-from pydantic import Field, create_model, BaseModel, parse_raw_as
-from aana.api.responses import AanaJSONResponse
+from mobius_pipeline.pipeline.pipeline import Pipeline
+from pydantic import BaseModel, Field, create_model, parse_raw_as
 
+from aana.api.responses import AanaJSONResponse
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 from aana.models.pydantic.exception_response import ExceptionResponseModel
 
 
 async def run_pipeline(
-    pipeline: Pipeline, data: Dict, required_outputs: List[str]
-) -> Dict[str, Any]:
-    """
-    This function is used to run a Mobius Pipeline.
+    pipeline: Pipeline, data: dict, required_outputs: list[str]
+) -> dict[str, Any]:
+    """This function is used to run a Mobius Pipeline.
+
     It creates a container from the data, runs the pipeline and returns the output.
 
     Args:
         pipeline (Pipeline): The pipeline to run.
         data (dict): The data to create the container from.
-        required_outputs (List[str]): The required outputs of the pipeline.
+        required_outputs (list[str]): The required outputs of the pipeline.
 
     Returns:
         dict[str, Any]: The output of the pipeline and the execution time of the pipeline.
     """
-
     # create a container from the data
     container = pipeline.parse_dict(data)
 
@@ -42,8 +43,8 @@ async def run_pipeline(
 async def run_pipeline_streaming(
     pipeline: Pipeline, data: dict, required_outputs: list[str]
 ) -> AsyncGenerator[dict[str, Any], None]:
-    """
-    This function is used to run a Mobius Pipeline as a generator.
+    """This function is used to run a Mobius Pipeline as a generator.
+
     It creates a container from the data, runs the pipeline as a generator and yields the output.
 
     Args:
@@ -64,8 +65,7 @@ async def run_pipeline_streaming(
 
 @dataclass
 class OutputFilter:
-    """
-    Class used to represent an output filter.
+    """Class used to represent an output filter.
 
     The output filter is a parameter that will be added to the request
     and will allow to choose subset of `outputs` to return.
@@ -81,8 +81,7 @@ class OutputFilter:
 
 @dataclass
 class FileUploadField:
-    """
-    Class used to represent a file upload field.
+    """Class used to represent a file upload field.
 
     Attributes:
         name (str): Name of the field.
@@ -95,8 +94,7 @@ class FileUploadField:
 
 @dataclass
 class Endpoint:
-    """
-    Class used to represent an endpoint.
+    """Class used to represent an endpoint.
 
     Attributes:
         name (str): Name of the endpoint.
@@ -112,13 +110,12 @@ class Endpoint:
     name: str
     path: str
     summary: str
-    outputs: List[str]
-    output_filter: Optional[OutputFilter] = None
+    outputs: list[str]
+    output_filter: OutputFilter | None = None
     streaming: bool = False
 
     def generate_model_name(self, suffix: str) -> str:
-        """
-        Generate a Pydantic model name based on a given suffix.
+        """Generate a Pydantic model name based on a given suffix.
 
         Parameters:
             suffix (str): Suffix for the model name (e.g. "Request", "Response").
@@ -128,9 +125,8 @@ class Endpoint:
         """
         return "".join([word.capitalize() for word in self.name.split("_")]) + suffix
 
-    def socket_to_field(self, socket: Socket) -> Tuple[Any, Any]:
-        """
-        Convert a socket to a Pydantic field.
+    def socket_to_field(self, socket: Socket) -> tuple[Any, Any]:
+        """Convert a socket to a Pydantic field.
 
         Parameters:
             socket (Socket): Socket to convert.
@@ -151,9 +147,8 @@ class Endpoint:
 
         return (data_model, data_model())
 
-    def get_fields(self, sockets: List[Socket]) -> Dict[str, Tuple[Any, Any]]:
-        """
-        Generate fields for the Pydantic model based on the provided sockets.
+    def get_fields(self, sockets: list[Socket]) -> dict[str, tuple[Any, Any]]:
+        """Generate fields for the Pydantic model based on the provided sockets.
 
         Parameters:
             sockets (List[Socket]): List of sockets.
@@ -168,10 +163,9 @@ class Endpoint:
         return fields
 
     def get_file_upload_field(
-        self, input_sockets: List[Socket]
-    ) -> Optional[FileUploadField]:
-        """
-        Get the file upload field for the endpoint.
+        self, input_sockets: list[Socket]
+    ) -> FileUploadField | None:
+        """Get the file upload field for the endpoint.
 
         Parameters:
             input_sockets (List[Socket]): List of input sockets.
@@ -182,7 +176,6 @@ class Endpoint:
         Raises:
             MultipleFileUploadNotAllowed: If multiple inputs require file upload.
         """
-
         file_upload_field = None
         for socket in input_sockets:
             data_model = socket.data_model
@@ -206,9 +199,8 @@ class Endpoint:
                 raise MultipleFileUploadNotAllowed(socket.name)
         return file_upload_field
 
-    def get_output_filter_field(self) -> Optional[Tuple[Any, Any]]:
-        """
-        Get the output filter field for the endpoint.
+    def get_output_filter_field(self) -> tuple[Any, Field] | None:
+        """Get the output filter field for the endpoint.
 
         Returns:
             Optional[Tuple[Any, Field]]: Output filter field or None if not found.
@@ -221,12 +213,11 @@ class Endpoint:
         outputs_enum = Enum(  # type: ignore
             outputs_enum_name, [(output, output) for output in self.outputs], type=str
         )
-        field = (Optional[List[outputs_enum]], Field(None, description=description))
+        field = (Optional[list[outputs_enum]], Field(None, description=description))  # noqa: UP007
         return field
 
-    def get_request_model(self, input_sockets: List[Socket]) -> Type[BaseModel]:
-        """
-        Generate a Pydantic model for the request.
+    def get_request_model(self, input_sockets: list[Socket]) -> type[BaseModel]:
+        """Generate a Pydantic model for the request.
 
         Parameters:
             input_sockets (List[Socket]): List of input sockets.
@@ -242,9 +233,8 @@ class Endpoint:
         RequestModel = create_model(model_name, **input_fields)
         return RequestModel
 
-    def get_response_model(self, output_sockets: List[Socket]) -> Type[BaseModel]:
-        """
-        Generate a Pydantic model for the response.
+    def get_response_model(self, output_sockets: list[Socket]) -> type[BaseModel]:
+        """Generate a Pydantic model for the response.
 
         Parameters:
             output_sockets (List[Socket]): List of output sockets.
@@ -257,13 +247,15 @@ class Endpoint:
         ResponseModel = create_model(model_name, **output_fields)
         return ResponseModel
 
-    def create_endpoint_func(
+    def create_endpoint_func(  # noqa: C901
         self,
         pipeline: Pipeline,
-        RequestModel: Type[BaseModel],
-        file_upload_field: Optional[FileUploadField] = None,
-    ):
-        async def route_func_body(body: str, files: Optional[List[UploadFile]] = None):
+        RequestModel: type[BaseModel],
+        file_upload_field: FileUploadField | None = None,
+    ) -> Callable:
+        """Create a function for routing an endpoint."""
+
+        async def route_func_body(body: str, files: list[UploadFile] | None = None):
             # parse form data as a pydantic model and validate it
             data = parse_raw_as(RequestModel, body)
 
@@ -304,13 +296,17 @@ class Endpoint:
 
             # run the pipeline
             if self.streaming:
+
                 async def generator_wrapper():
-                    """
-                    Serializes the output of the generator using ORJSONResponseCustom
-                    """
-                    async for output in run_pipeline_streaming(pipeline, data_dict, outputs):
+                    """Serializes the output of the generator using ORJSONResponseCustom."""
+                    async for output in run_pipeline_streaming(
+                        pipeline, data_dict, outputs
+                    ):
                         yield AanaJSONResponse(content=output).body
-                return StreamingResponse(generator_wrapper(), media_type="application/json")
+
+                return StreamingResponse(
+                    generator_wrapper(), media_type="application/json"
+                )
             else:
                 output = await run_pipeline(pipeline, data_dict, outputs)
                 return AanaJSONResponse(content=output)
@@ -326,10 +322,9 @@ class Endpoint:
         return route_func
 
     def register(
-        self, app: FastAPI, pipeline: Pipeline, custom_schemas: Dict[str, Dict]
+        self, app: FastAPI, pipeline: Pipeline, custom_schemas: dict[str, dict]
     ):
-        """
-        Register an endpoint to the FastAPI app and add schemas to the custom schemas dictionary.
+        """Register an endpoint to the FastAPI app and add schemas to the custom schemas dictionary.
 
         Parameters:
             app (FastAPI): FastAPI app to register the endpoint to.
@@ -359,10 +354,9 @@ class Endpoint:
 
 
 def add_custom_schemas_to_openapi_schema(
-    openapi_schema: Dict[str, Any], custom_schemas: Dict[str, Any]
-) -> Dict[str, Any]:
-    """
-    Add custom schemas to the openapi schema.
+    openapi_schema: dict[str, Any], custom_schemas: dict[str, Any]
+) -> dict[str, Any]:
+    """Add custom schemas to the openapi schema.
 
     File upload is that FastAPI doesn't support Pydantic models in multipart requests.
     There is a discussion about it on FastAPI discussion forum.
@@ -383,7 +377,6 @@ def add_custom_schemas_to_openapi_schema(
     Returns:
         dict: The openapi schema with the custom schemas added.
     """
-
     if "definitions" not in openapi_schema:
         openapi_schema["definitions"] = {}
     for schema_name, schema in custom_schemas.items():
