@@ -1,3 +1,5 @@
+from types import MappingProxyType
+
 from pydantic import BaseModel
 
 
@@ -7,7 +9,8 @@ class Prompt(BaseModel):
     __root__: str
 
     def __str__(self):
+        """Convert to a string."""
         return self.__root__
 
     class Config:
-        schema_extra = {"description": "A prompt to LLM."}
+        schema_extra = MappingProxyType({"description": "A prompt to LLM."})

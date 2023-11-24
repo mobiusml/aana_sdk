@@ -1,9 +1,10 @@
 import traceback
-from typing import Union
+
 from fastapi import FastAPI, Request
 from mobius_pipeline.exceptions import BaseException
 from pydantic import ValidationError
 from ray.exceptions import RayTaskError
+
 from aana.api.responses import AanaJSONResponse
 from aana.models.pydantic.exception_response import ExceptionResponseModel
 
@@ -12,8 +13,7 @@ app = FastAPI()
 
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(request: Request, exc: ValidationError):
-    """
-    This handler is used to handle pydantic validation errors
+    """This handler is used to handle pydantic validation errors.
 
     Args:
         request (Request): The request object
@@ -22,7 +22,6 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     Returns:
         JSONResponse: JSON response with the error details
     """
-
     return AanaJSONResponse(
         status_code=422,
         content=ExceptionResponseModel(
@@ -33,11 +32,9 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     )
 
 
-def custom_exception_handler(
-    request: Request, exc_raw: Union[BaseException, RayTaskError]
-):
-    """
-    This handler is used to handle custom exceptions raised in the application.
+def custom_exception_handler(request: Request, exc_raw: BaseException | RayTaskError):
+    """This handler is used to handle custom exceptions raised in the application.
+
     BaseException is the base exception for all the exceptions
     from the Mobius Pipeline and Aana application.
     Sometimes custom exception are wrapped into RayTaskError so we need to handle that as well.
@@ -61,7 +58,8 @@ def custom_exception_handler(
         stacktrace = str(exc_raw)
         # get the original exception
         exc: BaseException = exc_raw.cause
-        assert isinstance(exc, BaseException)
+        if not isinstance(exc, BaseException):
+            raise TypeError(exc)
     else:
         # if it is not a RayTaskError
         # then we need to get the stack trace
@@ -86,8 +84,7 @@ def custom_exception_handler(
 
 @app.exception_handler(BaseException)
 async def pipeline_exception_handler(request: Request, exc: BaseException):
-    """
-    This handler is used to handle exceptions raised by the Mobius Pipeline and Aana application.
+    """This handler is used to handle exceptions raised by the Mobius Pipeline and Aana application.
 
     Args:
         request (Request): The request object
@@ -101,8 +98,7 @@ async def pipeline_exception_handler(request: Request, exc: BaseException):
 
 @app.exception_handler(RayTaskError)
 async def ray_task_error_handler(request: Request, exc: RayTaskError):
-    """
-    This handler is used to handle RayTaskError exceptions.
+    """This handler is used to handle RayTaskError exceptions.
 
     Args:
         request (Request): The request object

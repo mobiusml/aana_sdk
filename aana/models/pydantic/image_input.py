@@ -1,18 +1,18 @@
 import io
-from pathlib import Path
 import uuid
+from pathlib import Path
+from types import MappingProxyType
+
 import numpy as np
-from typing import Dict, List, Optional
-from pydantic import BaseModel, Field, ValidationError, root_validator, validator
-from pydantic.error_wrappers import ErrorWrapper
 
 from aana.models.core.image import Image
 from aana.models.pydantic.base import BaseListModel
+from pydantic import BaseModel, Field, ValidationError, root_validator, validator
+from pydantic.error_wrappers import ErrorWrapper
 
 
 class ImageInput(BaseModel):
-    """
-    An image input.
+    """An image input.
 
     Exactly one of 'path', 'url', or 'content' must be provided.
 
@@ -27,18 +27,18 @@ class ImageInput(BaseModel):
         numpy (bytes): the image as a numpy array
     """
 
-    path: Optional[str] = Field(None, description="The file path of the image.")
-    url: Optional[str] = Field(
+    path: str | None = Field(None, description="The file path of the image.")
+    url: str | None = Field(
         None, description="The URL of the image."
     )  # TODO: validate url
-    content: Optional[bytes] = Field(
+    content: bytes | None = Field(
         None,
         description=(
             "The content of the image in bytes. "
             "Set this field to 'file' to upload files to the endpoint."
         ),
     )
-    numpy: Optional[bytes] = Field(
+    numpy: bytes | None = Field(
         None,
         description=(
             "The image as a numpy array. "
@@ -52,8 +52,7 @@ class ImageInput(BaseModel):
 
     @validator("media_id")
     def media_id_must_not_be_empty(cls, media_id):
-        """
-        Validates that the media_id is not an empty string.
+        """Validates that the media_id is not an empty string.
 
         Args:
             media_id (str): The value of the media_id field.
@@ -65,11 +64,12 @@ class ImageInput(BaseModel):
             str: The non-empty media_id value.
         """
         if media_id == "":
-            raise ValueError("media_id cannot be an empty string")
+            raise ValueError("media_id cannot be an empty string")  # noqa: TRY003
         return media_id
 
     def set_file(self, file: bytes):
-        """
+        """Sets the instance internal file data.
+
         If 'content' or 'numpy' is set to 'file',
         the image will be loaded from the file uploaded to the endpoint.
 
@@ -86,13 +86,12 @@ class ImageInput(BaseModel):
         elif self.numpy == b"file":
             self.numpy = file
         else:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "The content or numpy of the image must be 'file' to set files."
             )
 
-    def set_files(self, files: List[bytes]):
-        """
-        Set the files for the image.
+    def set_files(self, files: list[bytes]):
+        """Set the files for the image.
 
         Args:
             files (List[bytes]): the files uploaded to the endpoint
@@ -109,9 +108,8 @@ class ImageInput(BaseModel):
         self.set_file(files[0])
 
     @root_validator
-    def check_only_one_field(cls, values: Dict) -> Dict:
-        """
-        Check that exactly one of 'path', 'url', 'content' or 'numpy' is provided.
+    def check_only_one_field(cls, values: dict) -> dict:
+        """Check that exactly one of 'path', 'url', 'content' or 'numpy' is provided.
 
         Args:
             values (Dict): the values of the fields
@@ -128,14 +126,13 @@ class ImageInput(BaseModel):
             if key in ["path", "url", "content", "numpy"]
         )
         if count != 1:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
         return values
 
     def convert_input_to_object(self) -> Image:
-        """
-        Convert the image input to an image object.
+        """Convert the image input to an image object.
 
         Returns:
             Image: the image object corresponding to the image input
@@ -147,9 +144,9 @@ class ImageInput(BaseModel):
             try:
                 numpy = np.load(io.BytesIO(self.numpy), allow_pickle=False)
             except ValueError:
-                raise ValueError("The numpy file isn't valid.")
+                raise ValueError("The numpy file isn't valid.")  # noqa: TRY003, TRY200, B904 TODO
         elif self.numpy == b"file":
-            raise ValueError("The numpy file isn't set. Call set_files() to set it.")
+            raise ValueError("The numpy file isn't set. Call set_files() to set it.")  # noqa: TRY003
         else:
             numpy = None
 
@@ -162,35 +159,35 @@ class ImageInput(BaseModel):
         )
 
     class Config:
-        schema_extra = {
-            "description": (
-                "An image. \n"
-                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
-                "If 'path' is provided, the image will be loaded from the path. \n"
-                "If 'url' is provided, the image will be downloaded from the url. \n"
-                "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
-            )
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": (
+                    "An image. \n"
+                    "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                    "If 'path' is provided, the image will be loaded from the path. \n"
+                    "If 'url' is provided, the image will be downloaded from the url. \n"
+                    "The 'content' will be loaded automatically "
+                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                )
+            }
+        )
         validate_assignment = True
         file_upload = True
         file_upload_description = "Upload image file."
 
 
 class ImageInputList(BaseListModel):
-    """
-    A pydantic model for a list of images to be used as input.
+    """A pydantic model for a list of images to be used as input.
 
     Only used for the requests, DO NOT use it for anything else.
     Convert it to a list of image objects with convert_input_to_object().
     """
 
-    __root__: List[ImageInput]
+    __root__: list[ImageInput]
 
     @validator("__root__", pre=True)
-    def check_non_empty(cls, v: List[ImageInput]) -> List[ImageInput]:
-        """
-        Check that the list of images isn't empty.
+    def check_non_empty(cls, v: list[ImageInput]) -> list[ImageInput]:
+        """Check that the list of images isn't empty.
 
         Args:
             v (List[ImageInput]): the list of images
@@ -202,12 +199,11 @@ class ImageInputList(BaseListModel):
             ValueError: if the list of images is empty
         """
         if len(v) == 0:
-            raise ValueError("The list of images must not be empty.")
+            raise ValueError("The list of images must not be empty.")  # noqa: TRY003
         return v
 
-    def set_files(self, files: List[bytes]):
-        """
-        Set the files for the images.
+    def set_files(self, files: list[bytes]):
+        """Set the files for the images.
 
         Args:
             files (List[bytes]): the files uploaded to the endpoint
@@ -215,19 +211,17 @@ class ImageInputList(BaseListModel):
         Raises:
             ValidationError: if the number of images and files aren't the same
         """
-
         if len(self.__root__) != len(files):
             error = ErrorWrapper(
                 ValueError("The number of images and files must be the same."),
                 loc=("images",),
             )
             raise ValidationError([error], self.__class__)
-        for image, file in zip(self.__root__, files):
+        for image, file in zip(self.__root__, files, strict=False):
             image.set_file(file)
 
-    def convert_input_to_object(self) -> List[Image]:
-        """
-        Convert the list of image inputs to a list of image objects.
+    def convert_input_to_object(self) -> list[Image]:
+        """Convert the list of image inputs to a list of image objects.
 
         Returns:
             List[Image]: the list of image objects corresponding to the image inputs
@@ -235,15 +229,17 @@ class ImageInputList(BaseListModel):
         return [image.convert_input_to_object() for image in self.__root__]
 
     class Config:
-        schema_extra = {
-            "description": (
-                "A list of images. \n"
-                "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
-                "If 'path' is provided, the image will be loaded from the path. \n"
-                "If 'url' is provided, the image will be downloaded from the url. \n"
-                "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
-            )
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": (
+                    "A list of images. \n"
+                    "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
+                    "If 'path' is provided, the image will be loaded from the path. \n"
+                    "If 'url' is provided, the image will be downloaded from the url. \n"
+                    "The 'content' will be loaded automatically "
+                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                )
+            }
+        )
         file_upload = True
         file_upload_description = "Upload image files."

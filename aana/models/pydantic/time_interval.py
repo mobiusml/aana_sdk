@@ -1,9 +1,10 @@
+from types import MappingProxyType
+
 from pydantic import BaseModel, Field
 
 
 class TimeInterval(BaseModel):
-    """
-    Pydantic schema for TimeInterval.
+    """Pydantic schema for TimeInterval.
 
     Attributes:
         start (float): Start time in seconds
@@ -14,6 +15,8 @@ class TimeInterval(BaseModel):
     end: float = Field(ge=0.0, description="End time in seconds")
 
     class Config:
-        schema_extra = {
-            "description": "Time interval in seconds",
-        }
+        schema_extra = MappingProxyType(
+            {
+                "description": "Time interval in seconds",
+            }
+        )

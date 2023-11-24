@@ -1,11 +1,10 @@
-from typing import Optional
+from types import MappingProxyType
 
 from pydantic import BaseModel, Field, validator
 
 
 class SamplingParams(BaseModel):
-    """
-    A model for sampling parameters of LLM.
+    """A model for sampling parameters of LLM.
 
     Attributes:
         temperature (float): Float that controls the randomness of the sampling. Lower
@@ -18,7 +17,7 @@ class SamplingParams(BaseModel):
         max_tokens (int): The maximum number of tokens to generate.
     """
 
-    temperature: Optional[float] = Field(
+    temperature: float | None = Field(
         default=None,
         ge=0.0,
         description=(
@@ -28,7 +27,7 @@ class SamplingParams(BaseModel):
             "Zero means greedy sampling."
         ),
     )
-    top_p: Optional[float] = Field(
+    top_p: float | None = Field(
         default=None,
         gt=0.0,
         le=1.0,
@@ -37,24 +36,39 @@ class SamplingParams(BaseModel):
             "Must be in (0, 1]. Set to 1 to consider all tokens."
         ),
     )
-    top_k: Optional[int] = Field(
+    top_k: int | None = Field(
         default=None,
         description=(
             "Integer that controls the number of top tokens to consider. "
             "Set to -1 to consider all tokens."
         ),
     )
-    max_tokens: Optional[int] = Field(
+    max_tokens: int | None = Field(
         default=None, ge=1, description="The maximum number of tokens to generate."
     )
 
     @validator("top_k", always=True, pre=True)
-    def check_top_k(cls, v):
+    def check_top_k(cls, v: int):
+        """Validates a top_k argument.
+
+        Makes sure it is either -1, or at least 1.
+
+        Arguments:
+            v (int): Value to validate.
+
+        Raises:
+            ValueError: The value is not valid.
+
+        Returns:
+            The top_k value.
+        """
         if v is None:
             return v
         if v < -1 or v == 0:
-            raise ValueError(f"top_k must be -1 (disable), or at least 1, got {v}.")
+            raise ValueError(f"top_k must be -1 (disable), or at least 1, got {v}.")  # noqa: TRY003
         return v
 
     class Config:
-        schema_extra = {"description": "Sampling parameters for generating text."}
+        schema_extra = MappingProxyType(
+            {"description": "Sampling parameters for generating text."}
+        )
