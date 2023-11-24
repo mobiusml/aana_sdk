@@ -1,4 +1,6 @@
+# ruff: noqa: S101
 from importlib import resources
+
 import pytest
 import ray
 from ray import serve
@@ -9,6 +11,7 @@ from aana.tests.utils import compare_texts, is_gpu_available
 
 
 def ray_setup(deployment):
+    """Setup ray for the test."""
     # Setup ray environment and serve
     ray.init(ignore_reinit_error=True)
     app = deployment.bind()
@@ -26,7 +29,8 @@ def ray_setup(deployment):
     [("Starry_Night.jpeg", "the starry night by vincent van gogh")],
 )
 async def test_hf_blip2_deployments(image_name, expected_text):
-    for name, deployment in deployments.items():
+    """Test HuggingFace BLIP2 deployments."""
+    for deployment in deployments.values():
         # skip if not a VLLM deployment
         if deployment.name != "HFBlip2Deployment":
             continue

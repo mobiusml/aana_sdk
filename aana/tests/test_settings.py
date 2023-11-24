@@ -1,4 +1,6 @@
+# ruff: noqa: S101, S108
 from pathlib import Path
+
 from aana.configs.settings import Settings
 
 

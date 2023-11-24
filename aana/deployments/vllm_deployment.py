@@ -1,11 +1,13 @@
-from typing import Any, AsyncGenerator, Dict, List, Optional, TypedDict
+from collections.abc import AsyncGenerator
+from typing import Any, TypedDict
+
 from pydantic import BaseModel, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
+from vllm.model_executor.utils import set_random_seed
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
-from vllm.model_executor.utils import set_random_seed
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
@@ -14,8 +16,7 @@ from aana.utils.general import merged_options
 
 
 class VLLMConfig(BaseModel):
-    """
-    The configuration of the vLLM deployment.
+    """The configuration of the vLLM deployment.
 
     Attributes:
         model (str): the model name
@@ -27,16 +28,15 @@ class VLLMConfig(BaseModel):
     """
 
     model: str
-    dtype: Optional[str] = Field(default="auto")
-    quantization: Optional[str] = Field(default=None)
+    dtype: str | None = Field(default="auto")
+    quantization: str | None = Field(default=None)
     gpu_memory_utilization: float
     default_sampling_params: SamplingParams
-    max_model_len: Optional[int] = Field(default=None)
+    max_model_len: int | None = Field(default=None)
 
 
 class LLMOutput(TypedDict):
-    """
-    The output of the LLM model.
+    """The output of the LLM model.
 
     Attributes:
         text (str): the generated text
@@ -46,25 +46,21 @@ class LLMOutput(TypedDict):
 
 
 class LLMBatchOutput(TypedDict):
-    """
-    The output of the LLM model for a batch of inputs.
+    """The output of the LLM model for a batch of inputs.
 
     Attributes:
         texts (List[str]): the list of generated texts
     """
 
-    texts: List[str]
+    texts: list[str]
 
 
 @serve.deployment
 class VLLMDeployment(BaseDeployment):
-    """
-    Deployment to serve large language models using vLLM.
-    """
+    """Deployment to serve large language models using vLLM."""
 
-    async def apply_config(self, config: Dict[str, Any]):
-        """
-        Apply the configuration.
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
 
         The method is called when the deployment is created or updated.
 
@@ -103,8 +99,7 @@ class VLLMDeployment(BaseDeployment):
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams
     ) -> AsyncGenerator[LLMOutput, None]:
-        """
-        Generate completion for the given prompt and stream the results.
+        """Generate completion for the given prompt and stream the results.
 
         Args:
             prompt (str): the prompt
@@ -134,17 +129,16 @@ class VLLMDeployment(BaseDeployment):
                 text_output = request_output.outputs[0].text[num_returned:]
                 yield LLMOutput(text=text_output)
                 num_returned += len(text_output)
-        except GeneratorExit as e:
+        except GeneratorExit:
             # If the generator is cancelled, we need to cancel the request
             if request_id is not None:
                 await self.engine.abort(request_id)
-            raise e
+            raise
         except Exception as e:
             raise InferenceException(model_name=self.model) from e
 
     async def generate(self, prompt: str, sampling_params: SamplingParams) -> LLMOutput:
-        """
-        Generate completion for the given prompt.
+        """Generate completion for the given prompt.
 
         Args:
             prompt (str): the prompt
@@ -159,10 +153,9 @@ class VLLMDeployment(BaseDeployment):
         return LLMOutput(text=generated_text)
 
     async def generate_batch(
-        self, prompts: List[str], sampling_params: SamplingParams
+        self, prompts: list[str], sampling_params: SamplingParams
     ) -> LLMBatchOutput:
-        """
-        Generate completion for the batch of prompts.
+        """Generate completion for the batch of prompts.
 
         Args:
             prompts (List[str]): the prompts

@@ -1,17 +1,18 @@
-from importlib import resources
+# ruff: noqa: S101, NPY002
 import io
+from importlib import resources
 from pathlib import Path
-import pytest
+
 import numpy as np
+import pytest
 from pydantic import ValidationError
+
 from aana.models.pydantic.image_input import ImageInput, ImageInputList
 
 
 @pytest.fixture
 def mock_download_file(mocker):
-    """
-    Mock download_file.
-    """
+    """Mock download_file."""
     mock = mocker.patch("aana.models.core.image.download_file", autospec=True)
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
     content = path.read_bytes()
@@ -20,9 +21,7 @@ def mock_download_file(mocker):
 
 
 def test_new_imageinput_success():
-    """
-    Test that ImageInput can be created successfully.
-    """
+    """Test that ImageInput can be created successfully."""
     image_input = ImageInput(path="image.png")
     assert image_input.path == "image.png"
 
@@ -37,17 +36,13 @@ def test_new_imageinput_success():
 
 
 def test_imageinput_invalid_media_id():
-    """
-    Test that ImageInput can't be created if media_id is invalid.
-    """
+    """Test that ImageInput can't be created if media_id is invalid."""
     with pytest.raises(ValidationError):
         ImageInput(path="image.png", media_id="")
 
 
 def test_imageinput_check_only_one_field():
-    """
-    Test that exactly one of 'path', 'url', 'content', or 'numpy' is provided.
-    """
+    """Test that exactly one of 'path', 'url', 'content', or 'numpy' is provided."""
     fields = {
         "path": "image.png",
         "url": "http://image.png",
@@ -86,9 +81,7 @@ def test_imageinput_check_only_one_field():
 
 
 def test_imageinput_set_file():
-    """
-    Test that the file can be set for the image.
-    """
+    """Test that the file can be set for the image."""
     file_content = b"image data"
 
     # If 'content' is set to 'file',
@@ -111,9 +104,7 @@ def test_imageinput_set_file():
 
 
 def test_imageinput_set_files():
-    """
-    Test that the files can be set for the image.
-    """
+    """Test that the files can be set for the image."""
     files = [b"image data"]
 
     # If 'content' is set to 'file',
@@ -148,9 +139,7 @@ def test_imageinput_set_files():
 
 
 def test_imageinput_convert_input_to_object(mock_download_file):
-    """
-    Test that ImageInput can be converted to Image.
-    """
+    """Test that ImageInput can be converted to Image."""
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
     image_input = ImageInput(path=str(path))
     try:
@@ -189,9 +178,7 @@ def test_imageinput_convert_input_to_object(mock_download_file):
 
 
 def test_imageinput_convert_input_to_object_invalid_numpy():
-    """
-    Test that ImageInput can't be converted to Image if numpy is invalid.
-    """
+    """Test that ImageInput can't be converted to Image if numpy is invalid."""
     numpy = np.random.rand(100, 100, 3).astype(np.uint8)
     # convert numpy array to bytes
     buffer = io.BytesIO()
@@ -205,19 +192,14 @@ def test_imageinput_convert_input_to_object_invalid_numpy():
 
 
 def test_imageinput_convert_input_to_object_numpy_not_set():
-    """
-    Test that ImageInput can't be converted to Image if numpy file isn't set with set_file().
-    """
+    """Test that ImageInput can't be converted to Image if numpy file isn't set with set_file()."""
     image_input = ImageInput(numpy=b"file")
     with pytest.raises(ValueError):
         image_input.convert_input_to_object()
 
 
 def test_imagelistinput():
-    """
-    Test that ImageListInput can be created successfully.
-    """
-
+    """Test that ImageListInput can be created successfully."""
     images = [
         ImageInput(path="image.png"),
         ImageInput(url="http://image.png"),
@@ -235,9 +217,7 @@ def test_imagelistinput():
 
 
 def test_imagelistinput_set_files():
-    """
-    Test that the files can be set for the images.
-    """
+    """Test that the files can be set for the images."""
     files = [b"image data 1", b"image data 2"]
 
     images = [
@@ -253,8 +233,6 @@ def test_imagelistinput_set_files():
 
 
 def test_imagelistinput_non_empty():
-    """
-    Test that ImageInputList must not be empty.
-    """
+    """Test that ImageInputList must not be empty."""
     with pytest.raises(ValidationError):
         ImageInputList(__root__=[])

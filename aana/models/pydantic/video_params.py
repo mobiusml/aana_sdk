@@ -1,9 +1,10 @@
+from types import MappingProxyType
+
 from pydantic import BaseModel, Field
 
 
 class VideoParams(BaseModel):
-    """
-    A pydantic model for video parameters.
+    """A pydantic model for video parameters.
 
     Attributes:
         extract_fps (int): the number of frames to extract per second
@@ -27,5 +28,5 @@ class VideoParams(BaseModel):
     )
 
     class Config:
-        schema_extra = {"description": "Video parameters."}
+        schema_extra = MappingProxyType({"description": "Video parameters."})
         validate_assignment = True

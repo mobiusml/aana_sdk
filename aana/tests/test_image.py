@@ -1,23 +1,22 @@
+# ruff: noqa: S101, NPY002
 from importlib import resources
 from pathlib import Path
+
 import numpy as np
 import pytest
+
 from aana.models.core.image import Image
 
 
 def load_numpy_from_image_bytes(content: bytes) -> np.ndarray:
-    """
-    Load a numpy array from image bytes.
-    """
+    """Load a numpy array from image bytes."""
     image = Image(content=content, save_on_disk=False)
     return image.get_numpy()
 
 
 @pytest.fixture
 def mock_download_file(mocker):
-    """
-    Mock download_file function in both media and image modules.
-    """
+    """Mock download_file function in both media and image modules."""
     # Path to the file to be used as mock return value
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
     content = path.read_bytes()
@@ -39,10 +38,7 @@ def mock_download_file(mocker):
 
 
 def test_image(mock_download_file):
-    """
-    Test that the image can be created from path, url, content, or numpy.
-    """
-
+    """Test that the image can be created from path, url, content, or numpy."""
     try:
         path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
         image = Image(path=path, save_on_disk=False)
@@ -114,19 +110,14 @@ def test_image(mock_download_file):
 
 
 def test_image_path_not_exist():
-    """
-    Test that the image can't be created from path if the path doesn't exist.
-    """
+    """Test that the image can't be created from path if the path doesn't exist."""
     path = Path("path/to/image_that_does_not_exist.jpeg")
     with pytest.raises(FileNotFoundError):
         Image(path=path)
 
 
 def test_save_image(mock_download_file):
-    """
-    Test that save_on_disk works.
-    """
-
+    """Test that save_on_disk works."""
     try:
         path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
         image = Image(path=path, save_on_disk=True)
@@ -173,10 +164,7 @@ def test_save_image(mock_download_file):
 
 
 def test_cleanup(mock_download_file):
-    """
-    Test that cleanup works.
-    """
-
+    """Test that cleanup works."""
     try:
         url = "http://example.com/Starry_Night.jpeg"
         image = Image(url=url, save_on_disk=True)
@@ -187,9 +175,7 @@ def test_cleanup(mock_download_file):
 
 
 def test_at_least_one_input():
-    """
-    Test that at least one input is provided.
-    """
+    """Test that at least one input is provided."""
     with pytest.raises(ValueError):
         Image(save_on_disk=False)
 

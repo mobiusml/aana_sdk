@@ -1,16 +1,17 @@
-from typing import Any, Optional
-from unittest.mock import Mock
-from mobius_pipeline.node.socket import Socket
-from mobius_pipeline.pipeline.pipeline import Pipeline
-import pytest
+# ruff: noqa: S101, A003
+from typing import Any
 
-from pydantic import BaseModel, Field, Extra
+import pytest
+from mobius_pipeline.node.socket import Socket
+from pydantic import BaseModel, Extra, Field
 
 from aana.api.api_generation import Endpoint
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 
 
 class InputModel(BaseModel):
+    """Model for a text input."""
+
     input: str = Field(..., description="Input text")
 
     class Config:
@@ -18,12 +19,15 @@ class InputModel(BaseModel):
 
 
 class FileUploadModel(BaseModel):
-    content: Optional[bytes] = Field(
+    """Model for a file upload input."""
+
+    content: bytes | None = Field(
         None,
         description="The content in bytes. Set this field to 'file' to upload files to the endpoint.",
     )
 
     def set_files(self, files):
+        """Set files."""
         if files:
             if isinstance(files, list):
                 files = files[0]
@@ -36,6 +40,8 @@ class FileUploadModel(BaseModel):
 
 
 class OutputModel(BaseModel):
+    """Model for outputs."""
+
     output: str = Field(..., description="Output text")
 
     class Config:
@@ -44,7 +50,6 @@ class OutputModel(BaseModel):
 
 def test_get_request_model():
     """Test the get_request_model function."""
-
     endpoint = Endpoint(
         name="test_endpoint",
         summary="Test endpoint",
@@ -76,7 +81,6 @@ def test_get_request_model():
 
 def test_get_response_model():
     """Test the get_response_model function."""
-
     endpoint = Endpoint(
         name="test_endpoint",
         summary="Test endpoint",
@@ -130,7 +134,6 @@ def test_get_response_model():
 
 def test_get_file_upload_field():
     """Test the get_file_upload_field function."""
-
     endpoint = Endpoint(
         name="test_endpoint",
         summary="Test endpoint",
@@ -155,9 +158,9 @@ def test_get_file_upload_field():
     # Check that the file upload field has the correct description
     assert file_upload_field.description == "Upload image files."
 
+
 def test_get_file_upload_field_multiple_file_uploads():
     """Test the get_file_upload_field function with multiple file uploads."""
-
     endpoint = Endpoint(
         name="test_endpoint",
         summary="Test endpoint",

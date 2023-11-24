@@ -1,3 +1,4 @@
+# ruff: noqa: S101
 import pytest
 import ray
 from ray import serve
@@ -8,6 +9,7 @@ from aana.tests.utils import compare_texts, is_gpu_available
 
 
 def expected_output(name):
+    """Gets expected output for a given vLLM version."""
     if name == "vllm_deployment_llama2_7b_chat":
         return (
             "  Elon Musk is a South African-born entrepreneur, inventor, and business magnate. "
@@ -19,10 +21,11 @@ def expected_output(name):
             "He is the founder, CEO, and Chief Designer of SpaceX"
         )
     else:
-        raise ValueError(f"Unknown deployment name: {name}")
+        raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
 
 
 def ray_setup(deployment):
+    """Setup Ray instance for the test."""
     # Setup ray environment and serve
     ray.init(ignore_reinit_error=True)
     app = deployment.bind()
@@ -36,6 +39,7 @@ def ray_setup(deployment):
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
 async def test_vllm_deployments():
+    """Test VLLM deployments."""
     for name, deployment in deployments.items():
         # skip if not a VLLM deployment
         if deployment.name != "VLLMDeployment":
