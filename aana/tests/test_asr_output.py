@@ -1,22 +1,21 @@
+# ruff: noqa: S101
 import numpy as np
-import pytest
 from faster_whisper.transcribe import (
     Segment as WhisperSegment,
-    Word as WhisperWord,
-    TranscriptionInfo as WhisperTranscriptionInfo,
 )
+from faster_whisper.transcribe import (
+    Word as WhisperWord,
+)
+
 from aana.models.pydantic.asr_output import (
     AsrSegment,
-    AsrTranscriptionInfo,
     AsrWord,
 )
 from aana.models.pydantic.time_interval import TimeInterval
 
 
 def test_asr_segment_from_whisper():
-    """
-    Test function for the AsrSegment class's from_whisper method.
-    """
+    """Test function for the AsrSegment class's from_whisper method."""
     whisper_segment = WhisperSegment(
         id=0,
         seek=0,
@@ -66,9 +65,7 @@ def test_asr_segment_from_whisper():
 
 
 def test_asr_word_from_whisper():
-    """
-    Test function for the AsrWord class's from_whisper method.
-    """
+    """Test function for the AsrWord class's from_whisper method."""
     word = WhisperWord(
         word="hello",
         start=0.0,

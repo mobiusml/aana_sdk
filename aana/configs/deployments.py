@@ -9,7 +9,6 @@ from aana.deployments.whisper_deployment import (
 from aana.models.core.dtype import Dtype
 from aana.models.pydantic.sampling_params import SamplingParams
 
-
 deployments = {
     "vllm_deployment_llama2_7b_chat": VLLMDeployment.options(
         num_replicas=1,

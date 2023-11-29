@@ -1,15 +1,16 @@
+# ruff: noqa: S101
 from importlib import resources
 from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
+
 from aana.models.pydantic.video_input import VideoInput, VideoInputList
 
 
 @pytest.fixture
 def mock_download_file(mocker):
-    """
-    Mock download_file.
-    """
+    """Mock download_file."""
     mock = mocker.patch("aana.models.core.media.download_file", autospec=True)
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     content = path.read_bytes()
@@ -18,9 +19,7 @@ def mock_download_file(mocker):
 
 
 def test_new_videoinput_success():
-    """
-    Test that VideoInput can be created successfully.
-    """
+    """Test that VideoInput can be created successfully."""
     video_input = VideoInput(path="video.mp4")
     assert video_input.path == "video.mp4"
 
@@ -32,17 +31,13 @@ def test_new_videoinput_success():
 
 
 def test_videoinput_invalid_media_id():
-    """
-    Test that VideoInput can't be created if media_id is invalid.
-    """
+    """Test that VideoInput can't be created if media_id is invalid."""
     with pytest.raises(ValidationError):
         VideoInput(path="video.mp4", media_id="")
 
 
 def test_videoinput_check_only_one_field():
-    """
-    Test that exactly one of 'path', 'url', or 'content' is provided.
-    """
+    """Test that exactly one of 'path', 'url', or 'content' is provided."""
     fields = {
         "path": "video.mp4",
         "url": "http://example.com/video.mp4",
@@ -66,9 +61,7 @@ def test_videoinput_check_only_one_field():
 
 
 def test_videoinput_set_file():
-    """
-    Test that the file can be set for the video.
-    """
+    """Test that the file can be set for the video."""
     file_content = b"video data"
     video_input = VideoInput(content=b"file")
     video_input.set_file(file_content)
@@ -82,9 +75,7 @@ def test_videoinput_set_file():
 
 
 def test_videoinput_set_files():
-    """
-    Test that the files can be set for the video.
-    """
+    """Test that the files can be set for the video."""
     files = [b"video data"]
 
     video_input = VideoInput(content=b"file")
@@ -111,9 +102,7 @@ def test_videoinput_set_files():
 
 
 def test_videoinput_convert_input_to_object(mock_download_file):
-    """
-    Test that VideoInput can be converted to Video.
-    """
+    """Test that VideoInput can be converted to Video."""
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     video_input = VideoInput(path=str(path))
     try:
@@ -140,9 +129,7 @@ def test_videoinput_convert_input_to_object(mock_download_file):
 
 
 def test_videoinputlist():
-    """
-    Test that VideoInputList can be created successfully.
-    """
+    """Test that VideoInputList can be created successfully."""
     videos = [
         VideoInput(path="video.mp4"),
         VideoInput(url="http://example.com/video.mp4"),
@@ -158,9 +145,7 @@ def test_videoinputlist():
 
 
 def test_videoinputlist_set_files():
-    """
-    Test that the files can be set for the video list.
-    """
+    """Test that the files can be set for the video list."""
     files = [b"video data", b"another video data"]
 
     videos = [
@@ -187,8 +172,6 @@ def test_videoinputlist_set_files():
 
 
 def test_videoinputlist_non_empty():
-    """
-    Test that videoinputlist must not be empty.
-    """
+    """Test that videoinputlist must not be empty."""
     with pytest.raises(ValidationError):
         VideoInputList(__root__=[])

@@ -1,23 +1,24 @@
+# ruff: noqa: S101
 import json
-from deepdiff import DeepDiff
 from importlib import resources
-import random
+from pathlib import Path
+
 import pytest
 import ray
+from deepdiff import DeepDiff
 from ray import serve
 
 from aana.configs.deployments import deployments
 from aana.models.core.video import Video
 from aana.models.pydantic.whisper_params import WhisperParams
-from aana.tests.utils import is_gpu_available, LevenshteinOperator
+from aana.tests.utils import LevenshteinOperator, is_gpu_available
 from aana.utils.general import pydantic_to_dict
 
 EPSILON = 0.01
 
 
 def compare_transcriptions(expected_transcription, transcription):
-    """
-    Compare two transcriptions.
+    """Compare two transcriptions.
 
     Texts and words are compared using Levenshtein distance.
 
@@ -28,7 +29,6 @@ def compare_transcriptions(expected_transcription, transcription):
     Raises:
         AssertionError: if transcriptions differ too much
     """
-
     diff = DeepDiff(
         expected_transcription,
         transcription,
@@ -40,6 +40,7 @@ def compare_transcriptions(expected_transcription, transcription):
 
 
 def ray_setup(deployment):
+    """Setup Ray instance for the test."""
     # Setup ray environment and serve
     ray.init(ignore_reinit_error=True)
     app = deployment.bind()
@@ -54,11 +55,8 @@ def ray_setup(deployment):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("video_file", ["physicsworks.webm"])
 async def test_whisper_deployment(video_file):
-    """
-    Test whisper deployment.
-    """
-
-    for name, deployment in deployments.items():
+    """Test whisper deployment."""
+    for deployment in deployments.values():
         # skip if not a VLLM deployment
         if deployment.name != "WhisperDeployment":
             continue
@@ -73,9 +71,8 @@ async def test_whisper_deployment(video_file):
         assert (
             expected_output_path.exists()
         ), f"Expected output not found: {expected_output_path}"
-        with expected_output_path as path:
-            with open(path, "r") as f:
-                expected_output = json.load(f)
+        with Path(expected_output_path) as path, path.open() as f:
+            expected_output = json.load(f)
 
         # Test transcribe method
         path = resources.path("aana.tests.files.videos", video_file)

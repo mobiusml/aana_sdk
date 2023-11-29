@@ -1,17 +1,15 @@
 from typing import Any, TypeVar
 
-from pydantic import BaseModel
 import requests
+from pydantic import BaseModel
 
 from aana.exceptions.general import DownloadException
-
 
 OptionType = TypeVar("OptionType", bound=BaseModel)
 
 
 def merged_options(default_options: OptionType, options: OptionType) -> OptionType:
-    """
-    Merge options into default_options.
+    """Merge options into default_options.
 
     Args:
         default_options (OptionType): default options
@@ -24,7 +22,8 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
     if options is None:
         return default_options.copy()
     # options and default_options have to be of the same type
-    assert type(default_options) == type(options)
+    if type(default_options) != type(options):
+        raise ValueError("Option type mismatch.")  # noqa: TRY003
     default_options_dict = default_options.dict()
     for k, v in options.dict().items():
         if v is not None:
@@ -33,8 +32,7 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
 
 
 def download_file(url: str) -> bytes:
-    """
-    Download a file from a URL.
+    """Download a file from a URL.
 
     Args:
         url (str): the URL of the file to download
@@ -43,19 +41,18 @@ def download_file(url: str) -> bytes:
         bytes: the file content
 
     Raises:
-
+        DownloadException: Request does not succeed.
     """
     # TODO: add retries, check status code, etc.
     try:
-        response = requests.get(url)
+        response = requests.get(url)  # noqa: S113 TODO
     except Exception as e:
         raise DownloadException(url) from e
     return response.content
 
 
 def pydantic_to_dict(data: Any) -> Any:
-    """
-    Convert all Pydantic objects in the structured data.
+    """Convert all Pydantic objects in the structured data.
 
     Args:
         data (Any): the structured data

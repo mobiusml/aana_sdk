@@ -16,16 +16,16 @@
 		"gpu": "optional" 
 	},
 	"mounts": [
-		"source=/nas,target=/nas,type=bind",
-		"source=/nas2,target=/nas2,type=bind"
+		"source=${localEnv:PATH_NAS:/nas},target=/nas,type=bind",
+		"source=${localEnv:PATH_NAS2:/nas2},target=/nas2,type=bind"
 	],
 
-	"postCreateCommand": "sh ${containerWorkspaceFolder}/install.sh",
+	"postCreateCommand": "sh ${containerWorkspaceFolder}/install.sh  --with=dev",
 	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-python.black-formatter",
+				"charliermarsh.ruff",
 				"ms-python.python",
 				"ms-python.mypy-type-checker",
 				"ms-toolsai.jupyter"

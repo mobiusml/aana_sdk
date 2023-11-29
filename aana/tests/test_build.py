@@ -1,5 +1,6 @@
-from mobius_pipeline.exceptions import OutputNotFoundException
+# ruff: noqa: S101
 import pytest
+from mobius_pipeline.exceptions import OutputNotFoundException
 
 from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.configs.build import get_configuration
@@ -127,9 +128,7 @@ endpoints = {
     ],
 )
 def test_get_configuration_success(target, expected_nodes, expected_deployments):
-    """
-    Test if get_configuration returns the correct configuration for various targets
-    """
+    """Test if get_configuration returns the correct configuration for various targets."""
     configuration = get_configuration(target, endpoints, nodes, deployments)
     assert configuration["endpoints"] == endpoints[target]
 
@@ -141,29 +140,18 @@ def test_get_configuration_success(target, expected_nodes, expected_deployments)
 
 
 def test_get_configuration_invalid_target():
-    """
-    Test if get_configuration raises an error if the target is invalid
-    """
-
+    """Test if get_configuration raises an error if the target is invalid."""
     with pytest.raises(ValueError):
         get_configuration("invalid_target", endpoints, nodes, deployments)
 
 
 def test_get_configuration_non_existent_output():
-    """
-    Test if get_configuration raises an error
-    if one of the target endpoints has a non-existent output.
-    """
-
+    """Test that error raised if one of the targets has a non-existent output."""
     with pytest.raises(OutputNotFoundException):
         get_configuration("non_existent", endpoints, nodes, deployments)
 
 
 def test_get_configuration_not_defined_deployment():
-    """
-    Test if get_configuration raises an error
-    if one of the target nodes uses a deployment that is not defined.
-    """
-
+    """Test error raised if one of the nodes uses undefined deployment."""
     with pytest.raises(ValueError):
         get_configuration("capitalize", endpoints, nodes, deployments)

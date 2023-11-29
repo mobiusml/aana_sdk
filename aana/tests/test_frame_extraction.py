@@ -1,5 +1,8 @@
-import pytest
+# ruff: noqa: S101
 from importlib import resources
+
+import pytest
+
 from aana.exceptions.general import VideoReadingException
 from aana.models.core.image import Image
 from aana.models.core.video import Video
@@ -18,9 +21,7 @@ from aana.utils.video import extract_frames_decord, generate_frames_decord
 def test_extract_frames_success(
     video_name, extract_fps, fast_mode_enabled, expected_duration, expected_num_frames
 ):
-    """
-    Test that frames can be extracted from a video successfully.
-    """
+    """Test that frames can be extracted from a video successfully."""
     video_path = resources.path("aana.tests.files.videos", video_name)
     video = Video(path=video_path)
     params = VideoParams(extract_fps=extract_fps, fast_mode_enabled=fast_mode_enabled)
@@ -73,9 +74,7 @@ def test_generate_frames_success(
 
 
 def test_extract_frames_failure():
-    """
-    Test that frames cannot be extracted from a non-existent video.
-    """
+    """Test that frames cannot be extracted from a non-existent video."""
     # image file instead of video file will create Video object
     # but will fail in extract_frames_decord
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")

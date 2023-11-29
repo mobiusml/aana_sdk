@@ -1,8 +1,10 @@
+# ruff: noqa: S101, S113
 import json
+
 import pytest
 import ray
-from ray import serve
 import requests
+from ray import serve
 
 from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.api.request_handler import RequestHandler
@@ -10,13 +12,10 @@ from aana.api.request_handler import RequestHandler
 
 @serve.deployment
 class Lowercase:
-    """Lowercase class is a Ray Serve deployment class that takes a text
-    and returns the lowercase version of it.
-    """
+    """Ray deployment that returns the lowercase version of a text."""
 
     async def lower(self, text: str) -> dict:
-        """
-        Lowercase the text.
+        """Lowercase the text.
 
         Args:
             text (str): The text to lowercase
@@ -69,8 +68,7 @@ endpoints = [
 
 @pytest.fixture(scope="session")
 def ray_setup(request):
-    """
-    Setup the Ray environment and serve the endpoints.
+    """Setup the Ray environment and serve the endpoints.
 
     Returns:
         tuple: A tuple containing the handle to the Ray Serve app
@@ -86,9 +84,7 @@ def ray_setup(request):
 
 
 def test_app(ray_setup):
-    """
-    Test the Ray Serve app.
-    """
+    """Test the Ray Serve app."""
     handle, port, route_prefix = ray_setup
 
     # Check that the server is ready
