@@ -5,7 +5,7 @@ import pytest
 from mobius_pipeline.node.socket import Socket
 from pydantic import BaseModel, Extra, Field
 
-from aana.api.api_generation import Endpoint
+from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 
 
@@ -54,7 +54,7 @@ def test_get_request_model():
         name="test_endpoint",
         summary="Test endpoint",
         path="/test_endpoint",
-        outputs=["output"],
+        outputs=[EndpointOutput(name="output", output="output")],
     )
 
     input_sockets = [
@@ -85,7 +85,12 @@ def test_get_response_model():
         name="test_endpoint",
         summary="Test endpoint",
         path="/test_endpoint",
-        outputs=["output", "output_without_datamodel"],
+        outputs=[
+            EndpointOutput(name="output", output="output"),
+            EndpointOutput(
+                name="output_without_datamodel", output="output_without_datamodel"
+            ),
+        ],
     )
 
     output_sockets = [
@@ -113,7 +118,7 @@ def test_get_response_model():
         name="test_endpoint",
         summary="Test endpoint",
         path="/test_endpoint",
-        outputs=["output"],
+        outputs=[EndpointOutput(name="output", output="output")],
     )
 
     output_sockets = [
@@ -138,7 +143,7 @@ def test_get_file_upload_field():
         name="test_endpoint",
         summary="Test endpoint",
         path="/test_endpoint",
-        outputs=["output"],
+        outputs=[EndpointOutput(name="output", output="output")],
     )
 
     input_sockets = [
@@ -165,7 +170,7 @@ def test_get_file_upload_field_multiple_file_uploads():
         name="test_endpoint",
         summary="Test endpoint",
         path="/test_endpoint",
-        outputs=["output"],
+        outputs=[EndpointOutput(name="output", output="output")],
     )
 
     input_sockets = [

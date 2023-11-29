@@ -6,7 +6,7 @@ import ray
 import requests
 from ray import serve
 
-from aana.api.api_generation import Endpoint
+from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.api.request_handler import RequestHandler
 
 
@@ -61,7 +61,7 @@ endpoints = [
         name="lowercase",
         path="/lowercase",
         summary="Lowercase text",
-        outputs=["lowercase_text"],
+        outputs=[EndpointOutput(name="text", output="lowercase_text")],
     )
 ]
 
@@ -99,5 +99,5 @@ def test_app(ray_setup):
         data={"body": json.dumps(data)},
     )
     assert response.status_code == 200
-    lowercase_text = response.json().get("lowercase_text")
+    lowercase_text = response.json().get("text")
     assert lowercase_text == ["hello world!", "this is a test."]
