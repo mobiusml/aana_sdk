@@ -7,7 +7,7 @@ from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
-from pydantic import BaseModel, Field, create_model, parse_raw_as
+from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
 
 from aana.api.responses import AanaJSONResponse
 from aana.exceptions.general import MultipleFileUploadNotAllowed
@@ -93,6 +93,19 @@ class FileUploadField:
 
 
 @dataclass
+class EndpointOutput:
+    """Class used to represent an endpoint output.
+
+    Attributes:
+        name (str): Name of the output that should be returned by the endpoint.
+        output (str): Output of the pipeline that should be returned by the endpoint.
+    """
+
+    name: str
+    output: str
+
+
+@dataclass
 class Endpoint:
     """Class used to represent an endpoint.
 
@@ -100,8 +113,7 @@ class Endpoint:
         name (str): Name of the endpoint.
         path (str): Path of the endpoint.
         summary (str): Description of the endpoint that will be shown in the API documentation.
-        outputs (List[str]): List of required outputs from the pipeline that should be returned
-                                by the endpoint.
+        outputs (List[EndpointOutput]): List of outputs that should be returned by the endpoint.
         output_filter (Optional[OutputFilter]): The parameter will be added to the request and
                                 will allow to choose subset of `outputs` to return.
         streaming (bool): Whether the endpoint outputs a stream of data.
@@ -110,9 +122,17 @@ class Endpoint:
     name: str
     path: str
     summary: str
-    outputs: list[str]
+    outputs: list[EndpointOutput]
     output_filter: OutputFilter | None = None
     streaming: bool = False
+
+    def __post_init__(self):
+        """Post init method.
+
+        Creates dictionaries for fast lookup of outputs.
+        """
+        self.name_to_output = {output.name: output.output for output in self.outputs}
+        self.output_to_name = {output.output: output.name for output in self.outputs}
 
     def generate_model_name(self, suffix: str) -> str:
         """Generate a Pydantic model name based on a given suffix.
@@ -141,25 +161,46 @@ class Endpoint:
             data_model = Any
             return (data_model, Field(None))
 
-        # check if any of the fields are required
-        if any(field.required for field in data_model.__fields__.values()):
+        # try to instantiate the data model
+        # to see if any of the fields are required
+        try:
+            data_model_instance = data_model()
+        except ValidationError:
+            # if we can't instantiate the data model
+            # it means that it has required fields
             return (data_model, ...)
+        else:
+            return (data_model, data_model_instance)
 
-        return (data_model, data_model())
-
-    def get_fields(self, sockets: list[Socket]) -> dict[str, tuple[Any, Any]]:
-        """Generate fields for the Pydantic model based on the provided sockets.
+    def get_input_fields(self, sockets: list[Socket]) -> dict[str, tuple[Any, Any]]:
+        """Generate fields for the request Pydantic model based on the provided sockets.
 
         Parameters:
-            sockets (List[Socket]): List of sockets.
+            sockets (list[Socket]): List of sockets.
 
         Returns:
-            Dict[str, Tuple[Any, Field]]: Dictionary of fields for the Pydantic model.
+            dict[str, tuple[Any, Field]]: Dictionary of fields for the request Pydantic model.
         """
         fields = {}
         for socket in sockets:
             field = self.socket_to_field(socket)
             fields[socket.name] = field
+        return fields
+
+    def get_output_fields(self, sockets: list[Socket]) -> dict[str, tuple[Any, Any]]:
+        """Generate fields for the response Pydantic model based on the provided sockets.
+
+        Parameters:
+            sockets (list[Socket]): List of sockets.
+
+        Returns:
+            dict[str, tuple[Any, Field]]: Dictionary of fields for the response Pydantic model.
+        """
+        fields = {}
+        for socket in sockets:
+            field = self.socket_to_field(socket)
+            name = self.output_to_name[socket.name]
+            fields[name] = field
         return fields
 
     def get_file_upload_field(
@@ -211,7 +252,9 @@ class Endpoint:
         description = self.output_filter.description
         outputs_enum_name = self.generate_model_name("Outputs")
         outputs_enum = Enum(  # type: ignore
-            outputs_enum_name, [(output, output) for output in self.outputs], type=str
+            outputs_enum_name,
+            [(output.name, output.name) for output in self.outputs],
+            type=str,
         )
         field = (Optional[list[outputs_enum]], Field(None, description=description))  # noqa: UP007
         return field
@@ -226,7 +269,7 @@ class Endpoint:
             Type[BaseModel]: Pydantic model for the request.
         """
         model_name = self.generate_model_name("Request")
-        input_fields = self.get_fields(input_sockets)
+        input_fields = self.get_input_fields(input_sockets)
         output_filter_field = self.get_output_filter_field()
         if output_filter_field and self.output_filter:
             input_fields[self.output_filter.name] = output_filter_field
@@ -243,9 +286,28 @@ class Endpoint:
             Type[BaseModel]: Pydantic model for the response.
         """
         model_name = self.generate_model_name("Response")
-        output_fields = self.get_fields(output_sockets)
+        output_fields = self.get_output_fields(output_sockets)
         ResponseModel = create_model(model_name, **output_fields)
         return ResponseModel
+
+    def process_output(self, output: dict[str, Any]) -> dict[str, Any]:
+        """Process the output of the pipeline.
+
+        Maps the output names of the pipeline to the names defined in the endpoint outputs.
+
+        For example, maps videos_captions_hf_blip2_opt_2_7b to captions.
+
+        Args:
+            output (dict): The output of the pipeline.
+
+        Returns:
+            dict: The processed output.
+        """
+        output = {
+            self.output_to_name.get(output_name, output_name): output_value
+            for output_name, output_value in output.items()
+        }
+        return output
 
     def create_endpoint_func(  # noqa: C901
         self,
@@ -285,10 +347,12 @@ class Endpoint:
             if requested_outputs:
                 # get values for requested outputs because it's a list of enums
                 requested_outputs = [output.value for output in requested_outputs]
-                outputs = requested_outputs
+                # map the requested outputs to the actual outputs
+                # for example, videos_captions_hf_blip2_opt_2_7b to captions
+                outputs = [self.name_to_output[output] for output in requested_outputs]
             # otherwise use the required outputs from the config (all outputs endpoint provides)
             else:
-                outputs = self.outputs
+                outputs = [output.output for output in self.outputs]
 
             # remove the output filter parameter from the data
             if self.output_filter and self.output_filter.name in data_dict:
@@ -297,11 +361,12 @@ class Endpoint:
             # run the pipeline
             if self.streaming:
 
-                async def generator_wrapper():
+                async def generator_wrapper() -> AsyncGenerator[bytes, None]:
                     """Serializes the output of the generator using ORJSONResponseCustom."""
                     async for output in run_pipeline_streaming(
                         pipeline, data_dict, outputs
                     ):
+                        output = self.process_output(output)
                         yield AanaJSONResponse(content=output).body
 
                 return StreamingResponse(
@@ -309,6 +374,7 @@ class Endpoint:
                 )
             else:
                 output = await run_pipeline(pipeline, data_dict, outputs)
+                output = self.process_output(output)
                 return AanaJSONResponse(content=output)
 
         if file_upload_field:
@@ -331,7 +397,9 @@ class Endpoint:
             pipeline (Pipeline): Pipeline to register the endpoint to.
             custom_schemas (Dict[str, Dict]): Dictionary of custom schemas.
         """
-        input_sockets, output_sockets = pipeline.get_sockets(self.outputs)
+        input_sockets, output_sockets = pipeline.get_sockets(
+            [output.output for output in self.outputs]
+        )
         RequestModel = self.get_request_model(input_sockets)
         ResponseModel = self.get_response_model(output_sockets)
         file_upload_field = self.get_file_upload_field(input_sockets)

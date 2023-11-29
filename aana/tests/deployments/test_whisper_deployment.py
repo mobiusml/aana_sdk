@@ -74,6 +74,7 @@ async def test_whisper_deployment(video_file):
         with Path(expected_output_path) as path, path.open() as f:
             expected_output = json.load(f)
 
+        # Test transcribe method
         path = resources.path("aana.tests.files.videos", video_file)
         assert path.exists(), f"Video not found: {path}"
         video = Video(path=path)
@@ -85,10 +86,26 @@ async def test_whisper_deployment(video_file):
 
         compare_transcriptions(expected_output, output)
 
+        # Test transcribe_stream method
+        path = resources.path("aana.tests.files.videos", video_file)
+        assert path.exists(), f"Video not found: {path}"
+        video = Video(path=path)
+
+        stream = handle.options(stream=True).transcribe_stream.remote(
+            media=video, params=WhisperParams(word_timestamps=True)
+        )
+        # We only have one chunk now
+        # TODO: test multiple chunks when steaming is implemented properly
+        async for chunk in stream:
+            chunk = await chunk
+            output = pydantic_to_dict(chunk)
+            compare_transcriptions(expected_output, output)
+
+        # Test transcribe_batch method
         videos = [video, video]
 
         batch_output = await handle.transcribe_batch.remote(
-            media=videos, params=WhisperParams(word_timestamps=True)
+            media_batch=videos, params=WhisperParams(word_timestamps=True)
         )
         batch_output = pydantic_to_dict(batch_output)
 
