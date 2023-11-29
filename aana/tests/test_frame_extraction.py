@@ -48,11 +48,11 @@ def test_extract_frames_success(
 def test_generate_frames_success(
     video_name, extract_fps, fast_mode_enabled, expected_duration, expected_num_frames
 ):
-    """
-    Test that generator generate_frames_decord can be used
-    to extract frames from a video successfully.
-    """
+    """Test generate_frames_decord.
 
+    generate_frames_decord is a generator function that yields a dictionary
+    containing the frames, timestamps and duration of the video.
+    """
     video_path = resources.path("aana.tests.files.videos", video_name)
     video = Video(path=video_path)
     params = VideoParams(extract_fps=extract_fps, fast_mode_enabled=fast_mode_enabled)

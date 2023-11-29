@@ -1,7 +1,7 @@
 from typing import Any, TypedDict
 
 import torch
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from ray import serve
 from transformers import Blip2ForConditionalGeneration, Blip2Processor
 
