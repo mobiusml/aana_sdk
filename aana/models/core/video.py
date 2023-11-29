@@ -1,12 +1,12 @@
-from dataclasses import dataclass
 import hashlib
+from dataclasses import dataclass
+
 from aana.models.core.media import Media
 
 
 @dataclass
 class Video(Media):
-    """
-    A class representing a video.
+    """A class representing a video.
 
     At least one of 'path', 'url', or 'content' must be provided.
     If 'save_on_disk' is True, the video will be saved on disk automatically.
@@ -19,9 +19,7 @@ class Video(Media):
     """
 
     def validate(self):
-        """
-        Validate the video.
-        """
+        """Validate the video."""
         # validate the parent class
         super().validate()
 
@@ -33,20 +31,23 @@ class Video(Media):
                 self.content is not None,
             ]
         ):
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url' or 'content' must be provided."
             )
 
     def __repr__(self) -> str:
-        """
-        Get the representation of the video.
+        """Get the representation of the video.
 
         Use md5 hash for the content of the video if it is available.
 
         Returns:
             str: the representation of the video
         """
-        content_hash = hashlib.md5(self.content).hexdigest() if self.content else None
+        content_hash = (
+            hashlib.md5(self.content, usedforsecurity=False).hexdigest()
+            if self.content
+            else None
+        )
         return (
             f"Video(path={self.path}, "
             f"url={self.url}, "

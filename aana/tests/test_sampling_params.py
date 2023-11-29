@@ -1,11 +1,11 @@
+# ruff: noqa: S101
 import pytest
 
 from aana.models.pydantic.sampling_params import SamplingParams
 
+
 def test_valid_sampling_params():
-    """
-    Test valid sampling parameters.
-    """
+    """Test valid sampling parameters."""
     params = SamplingParams(temperature=0.5, top_p=0.9, top_k=10, max_tokens=50)
     assert params.temperature == 0.5
     assert params.top_p == 0.9
@@ -19,34 +19,30 @@ def test_valid_sampling_params():
     assert params.top_k is None
     assert params.max_tokens is None
 
+
 def test_invalid_temperature():
-    """
-    Test invalid temperature values.
-    """
+    """Test invalid temperature values."""
     with pytest.raises(ValueError):
         SamplingParams(temperature=-1.0)
 
+
 def test_invalid_top_p():
-    """
-    Test invalid top_p values.
-    """
+    """Test invalid top_p values."""
     with pytest.raises(ValueError):
         SamplingParams(top_p=0.0)
     with pytest.raises(ValueError):
         SamplingParams(top_p=1.1)
 
+
 def test_invalid_top_k():
-    """
-    Test invalid top_k values.
-    """
+    """Test invalid top_k values."""
     with pytest.raises(ValueError):
         SamplingParams(top_k=0)
     with pytest.raises(ValueError):
         SamplingParams(top_k=-2)
 
+
 def test_invalid_max_tokens():
-    """
-    Test invalid max_tokens values.
-    """
+    """Test invalid max_tokens values."""
     with pytest.raises(ValueError):
         SamplingParams(max_tokens=0)

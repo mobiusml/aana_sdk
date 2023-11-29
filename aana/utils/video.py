@@ -1,9 +1,11 @@
+from collections.abc import Generator
 from pathlib import Path
+from typing import TypedDict
+
 import decord
 import numpy as np
 import yt_dlp
 from yt_dlp.utils import DownloadError
-from typing import Generator, List, TypedDict
 from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
@@ -14,14 +16,15 @@ from aana.models.pydantic.video_params import VideoParams
 
 
 class FramesDict(TypedDict):
-    frames: List[Image]
-    timestamps: List[float]
+    """Represents a set of frames with timestamps and total duration."""
+
+    frames: list[Image]
+    timestamps: list[float]
     duration: float
 
 
 def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
-    """
-    Extract frames from a video using decord.
+    """Extract frames from a video using decord.
 
     Args:
         video (Video): the video to extract frames from
