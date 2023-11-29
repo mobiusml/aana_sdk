@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from collections.abc import AsyncGenerator
 from enum import Enum
-from typing import AsyncGenerator, Dict, Tuple, Type, Any, List, Optional
+from typing import Dict, Tuple, Type, Any, List, Optional
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from mobius_pipeline.pipeline.pipeline import Pipeline
@@ -373,7 +374,7 @@ class Endpoint:
             # run the pipeline
             if self.streaming:
 
-                async def generator_wrapper():
+                async def generator_wrapper() -> AsyncGenerator[str, None]:
                     """
                     Serializes the output of the generator using ORJSONResponseCustom
                     """
