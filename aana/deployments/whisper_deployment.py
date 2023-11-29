@@ -177,8 +177,7 @@ class WhisperDeployment(BaseDeployment):
     async def transcribe_stream(
         self, media: Video, params: WhisperParams | None = None
     ) -> AsyncGenerator[WhisperOutput, None]:
-        """
-        Transcribe the media with the whisper model in a streaming fashion.
+        """Transcribe the media with the whisper model in a streaming fashion.
 
         Right now this is the same as transcribe, but we will add support for
         streaming in the future to support larger media and to make the ASR more responsive.
