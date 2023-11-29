@@ -2,7 +2,7 @@
 import pytest
 from mobius_pipeline.exceptions import OutputNotFoundException
 
-from aana.api.api_generation import Endpoint
+from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.configs.build import get_configuration
 
 nodes = [
@@ -71,7 +71,7 @@ endpoints = {
             name="lowercase",
             path="/lowercase",
             summary="Lowercase text",
-            outputs=["lowercase_text"],
+            outputs=[EndpointOutput(name="lowercase_text", output="lowercase_text")],
         )
     ],
     "uppercase": [
@@ -79,7 +79,7 @@ endpoints = {
             name="uppercase",
             path="/uppercase",
             summary="Uppercase text",
-            outputs=["uppercase_text"],
+            outputs=[EndpointOutput(name="uppercase_text", output="uppercase_text")],
         )
     ],
     "both": [
@@ -87,13 +87,13 @@ endpoints = {
             name="lowercase",
             path="/lowercase",
             summary="Lowercase text",
-            outputs=["lowercase_text"],
+            outputs=[EndpointOutput(name="lowercase_text", output="lowercase_text")],
         ),
         Endpoint(
             name="uppercase",
             path="/uppercase",
             summary="Uppercase text",
-            outputs=["uppercase_text"],
+            outputs=[EndpointOutput(name="uppercase_text", output="uppercase_text")],
         ),
     ],
     "non_existent": [
@@ -101,7 +101,7 @@ endpoints = {
             name="non_existent",
             path="/non_existent",
             summary="Non existent endpoint",
-            outputs=["non_existent"],
+            outputs=[EndpointOutput(name="non_existent", output="non_existent")],
         )
     ],
     "capitalize": [
@@ -109,7 +109,7 @@ endpoints = {
             name="capitalize",
             path="/capitalize",
             summary="Capitalize text",
-            outputs=["capitalize_text"],
+            outputs=[EndpointOutput(name="capitalize_text", output="capitalize_text")],
         )
     ],
 }

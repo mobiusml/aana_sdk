@@ -1,7 +1,7 @@
 from typing import Any, TypedDict
 
 import torch
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from ray import serve
 from transformers import Blip2ForConditionalGeneration, Blip2Processor
 
@@ -26,25 +26,6 @@ class HFBlip2Config(BaseModel):
     dtype: Dtype = Field(default=Dtype.AUTO)
     batch_size: int = Field(default=1)
     num_processing_threads: int = Field(default=1)
-
-    @validator("dtype", pre=True, always=True)
-    def validate_dtype(cls, value: Dtype) -> Dtype:
-        """Validate the data type. For BLIP2 only "float32" and "float16" are supported.
-
-        Args:
-            value (Dtype): the data type
-
-        Returns:
-            Dtype: the validated data type
-
-        Raises:
-            ValueError: if the data type is not supported
-        """
-        if value not in {Dtype.AUTO, Dtype.FLOAT32, Dtype.FLOAT16}:
-            raise ValueError(  # noqa: TRY003
-                f"Invalid dtype: {value}. BLIP2 only supports 'auto', 'float32', and 'float16'."
-            )
-        return value
 
 
 class CaptioningOutput(TypedDict):
@@ -98,10 +79,17 @@ class HFBlip2Deployment(BaseDeployment):
         # Load the model and processor for BLIP2 from HuggingFace
         self.model_id = config_obj.model
         self.dtype = config_obj.dtype
-        self.torch_dtype = self.dtype.to_torch()
+        if self.dtype == Dtype.INT8:
+            load_in_8bit = True
+            self.torch_dtype = Dtype.FLOAT16.to_torch()
+        else:
+            load_in_8bit = False
+            self.torch_dtype = self.dtype.to_torch()
         self.model = Blip2ForConditionalGeneration.from_pretrained(
-            self.model_id, torch_dtype=self.torch_dtype
+            self.model_id, torch_dtype=self.torch_dtype, load_in_8bit=load_in_8bit
         )
+        self.model = torch.compile(self.model)
+        self.model.eval()
         self.processor = Blip2Processor.from_pretrained(self.model_id)
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"

@@ -7,7 +7,7 @@ import ray
 import requests
 from ray import serve
 
-from aana.api.api_generation import Endpoint
+from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.api.request_handler import RequestHandler
 
 
@@ -67,7 +67,7 @@ endpoints = [
         name="lowercase",
         path="/lowercase",
         summary="Lowercase text",
-        outputs=["lowercase_text"],
+        outputs=[EndpointOutput(name="text", output="lowercase_text")],
         streaming=True,
     )
 ]
@@ -113,7 +113,7 @@ def test_app_streaming(ray_setup):
     offset = 0
     for chunk in response.iter_content(chunk_size=None):
         json_data = json.loads(chunk)
-        lowercase_text_chunk = json_data["lowercase_text"]
+        lowercase_text_chunk = json_data["text"]
         lowercase_text += lowercase_text_chunk
 
         chunk_size = len(lowercase_text_chunk)

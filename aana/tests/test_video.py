@@ -138,7 +138,7 @@ def test_at_least_one_input():
 
 def test_download_video(mock_download_file):
     """Test download_video."""
-    # Test VideoInput
+    # Test VideoInput with path
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     video_input = VideoInput(path=str(path))
     video = download_video(video_input)
@@ -147,6 +147,7 @@ def test_download_video(mock_download_file):
     assert video.content is None
     assert video.url is None
 
+    # Test VideoInput with url
     try:
         url = "http://example.com/squirrel.mp4"
         video_input = VideoInput(url=url)
@@ -184,3 +185,9 @@ def test_download_video(mock_download_file):
     youtube_video_input = VideoInput(url=youtube_url)
     with pytest.raises(DownloadException):
         download_video(youtube_video_input)
+
+    # Test Video object as input
+    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    video = Video(path=path)
+    downloaded_video = download_video(video)
+    assert downloaded_video == video

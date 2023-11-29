@@ -39,7 +39,7 @@ def get_configuration(target: str, endpoints, nodes, deployments) -> dict:
     # Target endpoints require the following outputs
     endpoint_outputs = []
     for endpoint in target_endpoints:
-        endpoint_outputs += endpoint.outputs
+        endpoint_outputs += [output.output for output in endpoint.outputs]
 
     # Build the output graph for the whole pipeline
     node_definitions = [NodeDefinition.from_dict(node_dict) for node_dict in nodes]
