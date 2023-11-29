@@ -2,16 +2,16 @@ from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional
+
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
-from pydantic import BaseModel, Field, create_model, parse_raw_as
+from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
 
 from aana.api.responses import AanaJSONResponse
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 from aana.models.pydantic.exception_response import ExceptionResponseModel
-from pydantic import ValidationError
 
 
 async def run_pipeline(
@@ -94,8 +94,7 @@ class FileUploadField:
 
 @dataclass
 class EndpointOutput:
-    """
-    Class used to represent an endpoint output.
+    """Class used to represent an endpoint output.
 
     Attributes:
         name (str): Name of the output that should be returned by the endpoint.
@@ -128,8 +127,7 @@ class Endpoint:
     streaming: bool = False
 
     def __post_init__(self):
-        """
-        Post init method.
+        """Post init method.
 
         Creates dictionaries for fast lookup of outputs.
         """
@@ -167,15 +165,15 @@ class Endpoint:
         # to see if any of the fields are required
         try:
             data_model_instance = data_model()
-            return (data_model, data_model_instance)
         except ValidationError:
             # if we can't instantiate the data model
             # it means that it has required fields
             return (data_model, ...)
+        else:
+            return (data_model, data_model_instance)
 
     def get_input_fields(self, sockets: list[Socket]) -> dict[str, tuple[Any, Any]]:
-        """
-        Generate fields for the request Pydantic model based on the provided sockets.
+        """Generate fields for the request Pydantic model based on the provided sockets.
 
         Parameters:
             sockets (list[Socket]): List of sockets.
@@ -190,8 +188,7 @@ class Endpoint:
         return fields
 
     def get_output_fields(self, sockets: list[Socket]) -> dict[str, tuple[Any, Any]]:
-        """
-        Generate fields for the response Pydantic model based on the provided sockets.
+        """Generate fields for the response Pydantic model based on the provided sockets.
 
         Parameters:
             sockets (list[Socket]): List of sockets.
@@ -294,8 +291,7 @@ class Endpoint:
         return ResponseModel
 
     def process_output(self, output: dict[str, Any]) -> dict[str, Any]:
-        """
-        Process the output of the pipeline.
+        """Process the output of the pipeline.
 
         Maps the output names of the pipeline to the names defined in the endpoint outputs.
 
@@ -366,7 +362,7 @@ class Endpoint:
             if self.streaming:
 
                 async def generator_wrapper() -> AsyncGenerator[bytes, None]:
-                    """Serializes the output of the generator using ORJSONResponseCustom"""
+                    """Serializes the output of the generator using ORJSONResponseCustom."""
                     async for output in run_pipeline_streaming(
                         pipeline, data_dict, outputs
                     ):

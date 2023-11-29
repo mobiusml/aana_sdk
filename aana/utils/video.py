@@ -6,6 +6,7 @@ import decord
 import numpy as np
 import yt_dlp
 from yt_dlp.utils import DownloadError
+
 from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
@@ -67,8 +68,7 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
 def generate_frames_decord(
     video: Video, params: VideoParams, batch_size: int = 8
 ) -> Generator[FramesDict, None, None]:
-    """
-    Generate frames from a video using decord.
+    """Generate frames from a video using decord.
 
     Args:
         video (Video): the video to extract frames from
@@ -79,7 +79,6 @@ def generate_frames_decord(
         FramesDict: a dictionary containing the extracted frames, timestamps,
                     and duration for each batch
     """
-
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
 
@@ -117,8 +116,7 @@ def generate_frames_decord(
 
 
 def download_video(video_input: VideoInput | Video) -> Video:
-    """
-    Downloads videos for a VideoInput object.
+    """Downloads videos for a VideoInput object.
 
     Args:
         video_input (VideoInput): the video input to download
