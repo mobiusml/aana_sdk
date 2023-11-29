@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from enum import Enum
 from typing import Any, Dict, List, TypedDict, cast
 from faster_whisper import WhisperModel
@@ -187,7 +188,7 @@ class WhisperDeployment(BaseDeployment):
 
     async def transcribe_stream(
         self, media: Video, params: WhisperParams | None = None
-    ) -> WhisperOutput:
+    ) -> AsyncGenerator[WhisperOutput, None]:
         """
         Transcribe the media with the whisper model in a streaming fashion.
 
