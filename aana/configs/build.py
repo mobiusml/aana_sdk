@@ -1,12 +1,9 @@
-from typing import Dict
-
 from mobius_pipeline.node.node_definition import NodeDefinition
 from mobius_pipeline.pipeline.output_graph import OutputGraph
 
 
-def get_configuration(target: str, endpoints, nodes, deployments) -> Dict:
-    """
-    Returns the configuration for the specified target.
+def get_configuration(target: str, endpoints, nodes, deployments) -> dict:
+    """Returns the configuration for the specified target.
 
     A target is a set of endpoints that are to be deployed together.
 
@@ -30,10 +27,9 @@ def get_configuration(target: str, endpoints, nodes, deployments) -> Dict:
                 - nodes
                 - deployments
     """
-
     # Check if target is valid
     if target not in endpoints:
-        raise ValueError(
+        raise ValueError(  # noqa: TRY003
             f"Invalid target: {target}. Valid targets: {', '.join(endpoints.keys())}"
         )
 
@@ -73,7 +69,9 @@ def get_configuration(target: str, endpoints, nodes, deployments) -> Dict:
     target_deployments = {}
     for deployment_name in target_deployment_names:
         if deployment_name not in deployments:
-            raise ValueError(f"Deployment {deployment_name} is not defined.")
+            raise ValueError(  # noqa: TRY003
+                f"Deployment {deployment_name} is not defined."
+            )
         target_deployments[deployment_name] = deployments[deployment_name]
 
     return {

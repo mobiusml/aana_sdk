@@ -1,11 +1,11 @@
 import collections.abc
+from types import MappingProxyType
+
 from pydantic import BaseModel, Field, validator
-from typing import Optional, Union, List, Tuple
 
 
 class WhisperParams(BaseModel):
-    """
-    A model for the Whisper audio-to-text model parameters.
+    """A model for the Whisper audio-to-text model parameters.
 
     Attributes:
         language (str): Optional language code such as "en" or "fr".
@@ -21,7 +21,7 @@ class WhisperParams(BaseModel):
         vad_filter (bool): Whether to enable voice activity detection to filter non-speech.
     """
 
-    language: Optional[str] = Field(
+    language: str | None = Field(
         default=None,
         description="Language code such as 'en' or 'fr'. If None, language is auto-detected.",
     )
@@ -46,18 +46,29 @@ class WhisperParams(BaseModel):
     )
 
     @validator("temperature")
-    def check_temperature(cls, v):
+    def check_temperature(cls, v: float):
+        """Validates a temperature value.
+
+        Arguments:
+            v (float): Value to validate.
+
+        Raises:
+            ValueError: Temperature is out of range.
+
+        Returns:
+            Temperature value.
+        """
         if isinstance(v, float) and not 0 <= v <= 1:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "Temperature must be between 0 and 1 when a single float is provided."
             )
-        if isinstance(v, (list, tuple)) and not all(0 <= t <= 1 for t in v):
-            raise ValueError(
+        if isinstance(v, list | tuple) and not all(0 <= t <= 1 for t in v):
+            raise ValueError(  # noqa: TRY003
                 "Each temperature in the sequence must be between 0 and 1."
             )
         return v
 
     class Config:
-        schema_extra = {
-            "description": "Parameters for the Whisper audio-to-text model."
-        }
+        schema_extra = MappingProxyType(
+            {"description": "Parameters for the Whisper audio-to-text model."}
+        )
