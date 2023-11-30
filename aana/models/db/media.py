@@ -18,7 +18,7 @@ class Media(BaseModel, TimeStampEntity):
 
     __tablename__ = "media"
 
-    id: id_type = Column(IdSqlType, primary_key=True)  # noqa: A003
+    id = Column(IdSqlType, primary_key=True)  # noqa: A003
     duration = Column(Float, comment="Media duration in seconds")
     media_type = Column(String, comment="Media type")
 

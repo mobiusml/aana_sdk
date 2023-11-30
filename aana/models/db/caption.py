@@ -10,7 +10,7 @@ class Caption(BaseModel, TimeStampEntity):
 
     __tablename__ = "captions"
 
-    id: id_type = Column(IdSqlType, primary_key=True)  # noqa: A003
+    id = Column(IdSqlType, primary_key=True)  # noqa: A003
     model = Column(String, comment="Name of model used to generate the caption")
     media_id = Column(
         IdSqlType, ForeignKey("media.id"), comment="Foreign key to media table"
