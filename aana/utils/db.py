@@ -29,7 +29,7 @@ def save_media(type: MediaType, duration: float) -> id_type:
         media = Media(duration=duration, type=type)
         repo = MediaRepository(session)
         media = repo.create(media)
-        return media.id
+        return id_type(media.id)
 
 def save_captions(media_id: id_type, captions: VideoCaptionsList) -> list[id_type]:
     """Save captions."""
@@ -37,7 +37,7 @@ def save_captions(media_id: id_type, captions: VideoCaptionsList) -> list[id_typ
         captions_ = [Caption(media_id=media_id, **c.dict()) for c in captions]
         repo = CaptionRepository(session)
         results = repo.create_multiple(captions_)
-        return [c.id for c in results]
+        return [id_type(c.id) for c in results]
     
 
 def save_transcripts(media_id: id_type, transcripts: AsrTranscriptionList) -> list[id_type]:
@@ -46,4 +46,4 @@ def save_transcripts(media_id: id_type, transcripts: AsrTranscriptionList) -> li
         entities = [Transcript(media_id=media_id, **t.dict()) for t in transcripts]
         repo = TranscriptRepository(session)
         entities = repo.create_multiple(entities)
-        return [c.id for c in entities]
+        return [id_type(c.id) for c in entities]
