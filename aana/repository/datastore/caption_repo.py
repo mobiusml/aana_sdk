@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from aana.models.db.caption import Caption
+from aana.models.db import Caption
 from aana.repository.datastore.base import BaseRepository
 
 

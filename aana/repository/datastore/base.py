@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from aana.configs.db import id_type
 from aana.exceptions.database import NotFoundException
-from aana.models.db.base import BaseModel
+from aana.models.db import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
 

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from aana.models.db.media import Media
+from aana.models.db import Media
 from aana.repository.datastore.base import BaseRepository
 
 
