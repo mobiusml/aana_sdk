@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from aana.models.db.transcript import Transcript
+from aana.models.db import Transcript
 from aana.repository.datastore.base import BaseRepository
 
 
