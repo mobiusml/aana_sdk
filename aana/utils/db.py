@@ -2,9 +2,7 @@
 from sqlalchemy.orm import Session
 
 from aana.configs.db import id_type
-from aana.models.db.caption import Caption
-from aana.models.db.media import Media, MediaType
-from aana.models.db.transcript import Transcript
+from aana.models.db import Caption, Media, MediaType, Transcript
 from aana.models.pydantic.asr_output import AsrTranscriptionList
 from aana.models.pydantic.captions import VideoCaptionsList
 from aana.repository.datastore.caption_repo import CaptionRepository
@@ -31,6 +29,7 @@ def save_media(type: MediaType, duration: float) -> id_type:
         media = repo.create(media)
         return id_type(media.id)
 
+
 def save_captions(media_id: id_type, captions: VideoCaptionsList) -> list[id_type]:
     """Save captions."""
     with Session(engine) as session:
@@ -38,9 +37,11 @@ def save_captions(media_id: id_type, captions: VideoCaptionsList) -> list[id_typ
         repo = CaptionRepository(session)
         results = repo.create_multiple(captions_)
         return [id_type(c.id) for c in results]
-    
 
-def save_transcripts(media_id: id_type, transcripts: AsrTranscriptionList) -> list[id_type]:
+
+def save_transcripts(
+    media_id: id_type, transcripts: AsrTranscriptionList
+) -> list[id_type]:
     """Save transcripts."""
     with Session(engine) as session:
         entities = [Transcript(media_id=media_id, **t.dict()) for t in transcripts]

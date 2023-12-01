@@ -132,3 +132,27 @@ command is available in your default shell. You can also simply run
 For users of VS Code, the included `settings.json` should ensure
 that Ruff problems appear while you edit, and formatting is applied
 automatically on save.
+
+
+## Databases
+The project uses two databases: a vector database as well as a tradtional SQL database,
+referred to internally as vectorstore and datastore, respectively.
+
+### Vectorstore
+TBD
+
+### Datastore
+The datastore uses SQLAlchemy as an ORM layer and Alembic for migrations. Before running the project,
+it is necessary to run `alembic upgrade head` to ensure the database exists and has the correct tables
+and columns. If changes are made to the SQLAlchemy models, it is necessary to also create an alembic
+migration that can be run to upgrade the database. The easiest way to do so is as follows:
+
+```bash
+alembic revision --autogenerate -m "<Short description of changes in sentence form.>"
+```
+
+ORM models referenced in the rest of the code should be imported from `aana.models.db` directly,
+not from that model's file for reasons explained in `aana/models/db/__init__.py`. This also means that 
+if you add a new model class, it should be added to `__init__.py` in addition to creating a migration.
+
+Higher level code for interacting with the ORM is available in `aana.repository.data`.
