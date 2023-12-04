@@ -11,5 +11,5 @@
 
 from aana.models.db.base import BaseModel
 from aana.models.db.caption import Caption
-from aana.models.db.media import Media
+from aana.models.db.media import Media, MediaType
 from aana.models.db.transcript import Transcript
