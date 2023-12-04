@@ -15,17 +15,6 @@ def mocked_session(mocker):
     return mocker.MagicMock(spec=Session)
 
 
-@pytest.fixture
-def sqlite_session():
-    """Provides a SQLite session with a temporary file."""
-    db_config = {
-        "datastore_type": "sqlite",
-        "datastore_config": {"path": "/tmp/deleteme.sqlite"},  # noqa: S108
-    }
-    engine = create_database_engine(db_config)
-    return Session(engine)
-
-
 def test_create_media(mocked_session):
     """Tests that media creation behaves as expected."""
     repo = MediaRepository(mocked_session)
