@@ -45,7 +45,7 @@ class BaseRepository(Generic[T]):
     def read(self, item_id: id_type) -> T:
         """Reads a single item by id from the database.
 
-        Arguments:
+        Args:
             item_id (id_type): id of the item to retrieve
 
         Returns:
@@ -62,7 +62,7 @@ class BaseRepository(Generic[T]):
     def delete(self, id: id_type, check: bool = False) -> T | None:
         """Deletes an entity.
 
-        Arguments:
+        Args:
             id (id_type): the id of the item to be deleted.
             check (bool): whether to raise if the entity is not found (defaults to True).
 

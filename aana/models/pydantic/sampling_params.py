@@ -53,7 +53,7 @@ class SamplingParams(BaseModel):
 
         Makes sure it is either -1, or at least 1.
 
-        Arguments:
+        Args:
             v (int): Value to validate.
 
         Raises:
