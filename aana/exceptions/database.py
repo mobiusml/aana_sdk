@@ -9,7 +9,7 @@ class NotFoundException(BaseException):
     def __init__(self, table_name: str, id: id_type):  # noqa: A002
         """Constructor.
 
-        Arguments:
+        Args:
             table_name (str): the name of the table being queried.
             id (id_type): the id of the item to be retrieved.
         """
