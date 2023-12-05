@@ -16,7 +16,7 @@ from aana.repository.datastore.transcript_repo import TranscriptRepository
 def save_media(media_type: MediaType, duration: float) -> id_type:
     """Creates and saves media to datastore.
 
-    Arguments:
+    Args:
         media_type (MediaType): type of media
         duration (float): duration of media
 
