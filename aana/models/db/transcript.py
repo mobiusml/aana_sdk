@@ -2,7 +2,7 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, Float, ForeignKey, String
+from sqlalchemy import CheckConstraint, Column, Float, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from aana.configs.db import IdSqlType, id_type
@@ -22,9 +22,14 @@ class TranscriptEntity(BaseModel, TimeStampEntity):
     __tablename__ = "transcripts"
 
     id = Column(IdSqlType, primary_key=True)  # noqa: A003
-    model = Column(String, comment="Name of model used to generate transcript")
+    model = Column(
+        String, nullable=False, comment="Name of model used to generate transcript"
+    )
     media_id = Column(
-        IdSqlType, ForeignKey("media.id"), comment="Foreign key to media table"
+        IdSqlType,
+        ForeignKey("media.id"),
+        nullable=False,
+        comment="Foreign key to media table",
     )
     transcript = Column(String, comment="Full text transcript of media")
     segments = Column(String, comment="Segments of the transcript")
@@ -32,7 +37,9 @@ class TranscriptEntity(BaseModel, TimeStampEntity):
         String, comment="Language of the transcript as predicted by model"
     )
     language_confidence = Column(
-        Float, comment="Confidence score of language prediction"
+        Float,
+        CheckConstraint("0 <= language_confidence <= 1"),
+        comment="Confidence score of language prediction",
     )
 
     media = relationship("MediaEntity", back_populates="transcripts")

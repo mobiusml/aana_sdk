@@ -1,6 +1,6 @@
 from __future__ import annotations  # Let classes use themselves in type annotations
 
-from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy import CheckConstraint, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from aana.configs.db import IdSqlType, id_type
@@ -14,13 +14,26 @@ class CaptionEntity(BaseModel, TimeStampEntity):
     __tablename__ = "captions"
 
     id = Column(IdSqlType, primary_key=True)  # noqa: A003
-    model = Column(String, comment="Name of model used to generate the caption")
-    media_id = Column(
-        IdSqlType, ForeignKey("media.id"), comment="Foreign key to media table"
+    model = Column(
+        String, nullable=False, comment="Name of model used to generate the caption"
     )
-    frame_id = Column(Integer, comment="The 0-based frame id of media for caption")
+    media_id = Column(
+        IdSqlType,
+        ForeignKey("media.id"),
+        nullable=False,
+        comment="Foreign key to media table",
+    )
+    frame_id = Column(
+        Integer,
+        CheckConstraint("frame_id >= 0"),
+        comment="The 0-based frame id of media for caption",
+    )
     caption = Column(String, comment="Frame caption")
-    timestamp = Column(Float, comment="Frame timestamp in seconds")
+    timestamp = Column(
+        Float,
+        CheckConstraint("timestamp >= 0"),
+        comment="Frame timestamp in seconds",
+    )
 
     media = relationship("MediaEntity", back_populates="captions")
 

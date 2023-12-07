@@ -506,13 +506,13 @@ nodes = [
         "function": "aana.utils.db.save_transcripts_batch",
         "batched": True,
         "flatten_by": "video_batch.videos.[*]",
+        "model_name": "whisper_medium",
         "inputs": [
             {
                 "name": "media_ids",
                 "key": "media_ids",
                 "path": "video_batch.videos.[*].id",
             },
-            {"name": "model_name", "key": "model_name", "path": "model_name"},
             {
                 "name": "video_transcriptions_info_whisper_medium",
                 "key": "transcription_info",
@@ -543,17 +543,12 @@ nodes = [
         "function": "aana.utils.db.save_captions_batch",
         "batched": True,
         "flatten_by": "video_batch.videos.[*]",
+        "model_name": "hf_blip2_opt_2_7b",
         "inputs": [
             {
                 "name": "media_ids",
                 "key": "media_ids",
                 "path": "video_batch.videos.[*].id",
-            },
-            {"name": "model_name", "key": "model_name", "path": "model_name"},
-            {
-                "name": "timestamps",
-                "key": "timestamps",
-                "path": "video_batch.videos.[*].timestamp",
             },
             {
                 "name": "duration",

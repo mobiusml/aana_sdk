@@ -44,7 +44,7 @@ def test_save_media(mock_session):
 
 def test_save_transcripts(mock_session):
     """Tests save transcripts function."""
-    media_ids = [0] * 3
+    media_ids = ["0"] * 3
     models = ["test_model"] * 3
     texts = ("A transcript", "Another transcript", "A third transcript")
     infos = [("en", 0.5), ("de", 0.36), ("fr", 0.99)]
@@ -69,7 +69,7 @@ def test_save_transcripts(mock_session):
 
 def test_save_captions(mock_session):
     """Tests save captions function."""
-    media_ids = [0] * 3
+    media_ids = ["0"] * 3
     models = ["test_model"] * 3
     captions = ["A caption", "Another caption", "A third caption"]
     captions_list = CaptionsList(
