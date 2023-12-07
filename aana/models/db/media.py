@@ -13,7 +13,7 @@ class MediaType(str, Enum):
     VIDEO = "video"
 
 
-class Media(BaseModel, TimeStampEntity):
+class MediaEntity(BaseModel, TimeStampEntity):
     """ORM class for media file (video, etc)."""
 
     __tablename__ = "media"
@@ -21,6 +21,8 @@ class Media(BaseModel, TimeStampEntity):
     id = Column(IdSqlType, primary_key=True)  # noqa: A003
     duration = Column(Float, comment="Media duration in seconds")
     media_type = Column(String, comment="Media type")
+    orig_filename = Column(String, comment="Original filename")
+    orig_url = Column(String, comment="Original URL")
 
-    captions = relationship("Caption", back_populates="media")
-    transcripts = relationship("Transcript", back_populates="media")
+    captions = relationship("CaptionEntity", back_populates="media")
+    transcripts = relationship("TranscriptEntity", back_populates="media")
