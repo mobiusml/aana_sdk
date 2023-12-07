@@ -2,9 +2,13 @@
 from sqlalchemy.orm import Session
 
 from aana.configs.db import id_type
-from aana.models.db import Caption, Media, MediaType, Transcript
-from aana.models.pydantic.asr_output import AsrTranscriptionList
-from aana.models.pydantic.captions import VideoCaptionsList
+from aana.models.db import CaptionEntity, MediaEntity, MediaType, TranscriptEntity
+from aana.models.pydantic.asr_output import (
+    AsrSegments,
+    AsrTranscriptionInfoList,
+    AsrTranscriptionList,
+)
+from aana.models.pydantic.captions import CaptionsList
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.engine import engine
 from aana.repository.datastore.media_repo import MediaRepository
@@ -24,32 +28,47 @@ def save_media(media_type: MediaType, duration: float) -> id_type:
         id_type: datastore id of the inserted Media.
     """
     with Session(engine) as session:
-        media = Media(duration=duration, media_type=media_type)
+        media = MediaEntity(duration=duration, media_type=media_type)
         repo = MediaRepository(session)
         media = repo.create(media)
         return media.id  # type: ignore
 
 
-def save_captions(media_id: id_type, captions: VideoCaptionsList) -> list[id_type]:
+def save_captions_batch(
+    media_ids: list[id_type],
+    model_name: str,
+    captions: CaptionsList,
+    timestamps: list[float],
+) -> list[id_type]:
     """Save captions."""
     with Session(engine) as session:
-        captions_ = [
-            Caption(media_id=media_id, frame_id=i, caption=c)
-            for i, c in enumerate(captions)
+        entities = [
+            CaptionEntity.from_caption_output(model_name, media_id, i, t, c)
+            for i, (media_id, c, t) in enumerate(
+                zip(media_ids, captions, timestamps, strict=True)
+            )
         ]
         repo = CaptionRepository(session)
-        results = repo.create_multiple(captions_)
+        results = repo.create_multiple(entities)
         return [c.id for c in results]  # type: ignore
 
 
-def save_transcripts(
-    media_id: id_type, transcripts: AsrTranscriptionList
+def save_transcripts_batch(
+    model_name: str,
+    media_ids: list[id_type],
+    transcript_info: AsrTranscriptionInfoList,
+    transcripts: AsrTranscriptionList,
+    segments: AsrSegments,
 ) -> list[id_type]:
     """Save transcripts."""
     with Session(engine) as session:
         entities = [
-            Transcript(media_id=media_id, transcript=t.text) for t in transcripts
+            TranscriptEntity.from_asr_output(model_name, media_id, info, txn, seg)
+            for media_id, info, txn, seg in zip(
+                media_ids, transcript_info, transcripts, segments, strict=True
+            )
         ]
+
         repo = TranscriptRepository(session)
         entities = repo.create_multiple(entities)
         return [c.id for c in entities]  # type: ignore

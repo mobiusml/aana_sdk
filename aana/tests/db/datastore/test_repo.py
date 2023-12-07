@@ -3,7 +3,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from aana.configs.db import create_database_engine
-from aana.models.db import Caption, Media, Transcript
+from aana.models.db import CaptionEntity, MediaEntity, TranscriptEntity
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.media_repo import MediaRepository
 from aana.repository.datastore.transcript_repo import TranscriptRepository
@@ -20,7 +20,7 @@ def test_create_media(mocked_session):
     repo = MediaRepository(mocked_session)
     duration = 0.5
     media_type = "video"
-    media = Media(duration=duration, media_type=media_type)
+    media = MediaEntity(duration=duration, media_type=media_type)
     media2 = repo.create(media)
 
     # We need an integreation test to ensure that that the id gets set
@@ -42,8 +42,8 @@ def test_create_caption(mocked_session):
     caption_text = "This is the right caption text."
     frame_id = 32767
     timestamp = 327.6
-    media = Media(duration=duration, media_type=media_type)
-    caption = Caption(
+    media = MediaEntity(duration=duration, media_type=media_type)
+    caption = CaptionEntity(
         media=media,
         model=model_name,
         frame_id=frame_id,
@@ -73,8 +73,8 @@ def test_create_transcript(mocked_session):
     segments = "This is a segments string."
     language = "en"
     language_confidence = 0.5
-    media = Media(duration=duration, media_type=media_type)
-    transcript = Transcript(
+    media = MediaEntity(duration=duration, media_type=media_type)
+    transcript = TranscriptEntity(
         media=media,
         model=model_name,
         transcript=transcript_text,
