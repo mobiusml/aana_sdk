@@ -2,12 +2,12 @@ from enum import Enum
 from os import PathLike
 from typing import TypeAlias, TypedDict
 
-from sqlalchemy import Integer, create_engine
+from sqlalchemy import String, create_engine
 
 # These are here so we can change types in a single place.
 
-id_type: TypeAlias = int
-IdSqlType: TypeAlias = Integer
+id_type: TypeAlias = str
+IdSqlType: TypeAlias = String
 
 
 class SQLiteConfig(TypedDict):

@@ -1,4 +1,7 @@
 # ruff: noqa: A002
+from pathlib import Path
+from urllib.parse import urlparse
+
 from sqlalchemy.orm import Session
 
 from aana.configs.db import id_type
@@ -9,6 +12,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import CaptionsList
+from aana.models.pydantic.video_input import VideoInputList
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.engine import engine
 from aana.repository.datastore.media_repo import MediaRepository
@@ -17,6 +21,34 @@ from aana.repository.datastore.transcript_repo import TranscriptRepository
 
 # Just using raw utility functions like this isn't a permanent solution, but
 # it's good enough for now to validate what we're working on.
+def save_video_batch(video_inputs: VideoInputList) -> list[id_type]:
+    """Saves a batch of videos to datastore."""
+    entities = []
+    for video_input in video_inputs:
+        if video_input.url is not None:
+            orig_url = video_input.url
+            parsed_url = urlparse(orig_url)
+            orig_filename = Path(parsed_url.path).name
+        elif video_input.path is not None:
+            parsed_path = Path(video_input.path)
+            orig_filename = parsed_path.name
+            orig_url = None
+        else:
+            orig_url = None
+            orig_filename = None
+        entity = MediaEntity(
+            id=video_input.media_id,
+            media_type=MediaType.VIDEO,
+            orig_filename=orig_filename,
+            orig_url=orig_url,
+        )
+        entities.append(entity)
+    with Session(engine) as session:
+        repo = MediaRepository(session)
+        results = repo.create_multiple(entities)
+    return [result.id for result in results]  # type: ignore
+
+
 def save_media(media_type: MediaType, duration: float) -> id_type:
     """Creates and saves media to datastore.
 
