@@ -1,8 +1,8 @@
 """Initialize.
 
-Revision ID: d63d3838d344
+Revision ID: 1ab9c6aabdd8
 Revises: 
-Create Date: 2023-12-07 11:58:35.095546
+Create Date: 2023-12-07 14:42:52.006011
 
 """
 from collections.abc import Sequence
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = 'd63d3838d344'
+revision: str = '1ab9c6aabdd8'
 down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -32,8 +32,8 @@ def upgrade() -> None:
     )
     op.create_table('captions',
     sa.Column('id', sa.String(), nullable=False),
-    sa.Column('model', sa.String(), nullable=True, comment='Name of model used to generate the caption'),
-    sa.Column('media_id', sa.String(), nullable=True, comment='Foreign key to media table'),
+    sa.Column('model', sa.String(), nullable=False, comment='Name of model used to generate the caption'),
+    sa.Column('media_id', sa.String(), nullable=False, comment='Foreign key to media table'),
     sa.Column('frame_id', sa.Integer(), nullable=True, comment='The 0-based frame id of media for caption'),
     sa.Column('caption', sa.String(), nullable=True, comment='Frame caption'),
     sa.Column('timestamp', sa.Float(), nullable=True, comment='Frame timestamp in seconds'),
@@ -44,8 +44,8 @@ def upgrade() -> None:
     )
     op.create_table('transcripts',
     sa.Column('id', sa.String(), nullable=False),
-    sa.Column('model', sa.String(), nullable=True, comment='Name of model used to generate transcript'),
-    sa.Column('media_id', sa.String(), nullable=True, comment='Foreign key to media table'),
+    sa.Column('model', sa.String(), nullable=False, comment='Name of model used to generate transcript'),
+    sa.Column('media_id', sa.String(), nullable=False, comment='Foreign key to media table'),
     sa.Column('transcript', sa.String(), nullable=True, comment='Full text transcript of media'),
     sa.Column('segments', sa.String(), nullable=True, comment='Segments of the transcript'),
     sa.Column('language', sa.String(), nullable=True, comment='Language of the transcript as predicted by model'),
