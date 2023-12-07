@@ -3,6 +3,8 @@ import sys
 import time
 import traceback
 
+from aana.configs.db import run_alembic_migrations
+
 DEFAULT_PORT = 8000
 DEFAULT_HOST = "0.0.0.0"  # noqa: S104
 
@@ -28,6 +30,9 @@ def run():
     from aana.configs.deployments import deployments as all_deployments
     from aana.configs.endpoints import endpoints as all_endpoints
     from aana.configs.pipeline import nodes as all_nodes
+    from aana.configs.settings import settings as aana_settings
+
+    run_alembic_migrations(aana_settings)
 
     configuration = get_configuration(
         args.target,

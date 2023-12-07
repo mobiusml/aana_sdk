@@ -1,7 +1,10 @@
 from enum import Enum
 from os import PathLike
+from pathlib import Path
 from typing import TypeAlias, TypedDict
 
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import String, create_engine
 
 # These are here so we can change types in a single place.
@@ -83,3 +86,29 @@ def create_sqlite_engine(config):
     """
     connection_string = f"sqlite:///{config['path']}"
     return create_engine(connection_string)
+
+
+def get_alembic_config(app_config, ini_file_path, alembic_data_path) -> Config:
+    """Produces an alembic config to run migrations programmatically."""
+    engine = create_database_engine(app_config.db_config)
+    alembic_config = Config(ini_file_path)
+    alembic_config.set_main_option('script_location', str(alembic_data_path))
+    config_section = alembic_config.get_section(alembic_config.config_ini_section, {})
+    config_section["sqlalchemy.url"] = engine.url
+
+    return alembic_config
+
+
+def run_alembic_migrations(settings):
+    """Runs alembic migrations before starting up."""
+    # We need the path to aana/alembic and aana/alembic.ini
+    # This is a hack until we need something better.
+    current_path = Path(__file__)
+    aana_root = current_path.parent.parent  # go up two directories
+    if aana_root.name != "aana":  # we are not in the right place
+        raise RuntimeError("Not in right directory, exiting.")
+    ini_file_path = aana_root / "alembic.ini"
+    alembic_data_path = aana_root / "alembic"
+
+    alembic_config = get_alembic_config(settings, ini_file_path, alembic_data_path)
+    command.upgrade(alembic_config, "head")
