@@ -266,6 +266,11 @@ nodes = [
                 "path": "video_batch.videos.[*].frames.[*].image",
             },
             {
+                "name": "frame_ids",
+                "key": "frame_ids",
+                "path": "video_batch.videos.[*].frames.[*].id",
+            },
+            {
                 "name": "timestamps",
                 "key": "timestamps",
                 "path": "video_batch.videos.[*].timestamp",
@@ -561,8 +566,8 @@ nodes = [
                 "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
             },
             {
-                "name": "frame_id",
-                "key": "frame_id",
+                "name": "frame_ids",
+                "key": "frame_ids",
                 "path": "video_batch.videos.[*].frames.[*].id",
             },
         ],

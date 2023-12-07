@@ -62,7 +62,12 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
         img = Image(numpy=frame)
         frames.append(img)
 
-    return FramesDict(frames=frames, timestamps=timestamps, duration=duration)
+    return FramesDict(
+        frames=frames,
+        timestamps=timestamps,
+        duration=duration,
+        frame_ids=range(len(frames)),
+    )
 
 
 def generate_frames_decord(
