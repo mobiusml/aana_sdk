@@ -1,11 +1,14 @@
+from __future__ import annotations  # Let classes use themselves in type annotations
+
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from aana.configs.db import IdSqlType, id_type
 from aana.models.db.base import BaseModel, TimeStampEntity
+from aana.models.pydantic.captions import Caption
 
 
-class Caption(BaseModel, TimeStampEntity):
+class CaptionEntity(BaseModel, TimeStampEntity):
     """ORM model for media captions."""
 
     __tablename__ = "captions"
@@ -19,4 +22,22 @@ class Caption(BaseModel, TimeStampEntity):
     caption = Column(String, comment="Frame caption")
     timestamp = Column(Float, comment="Frame timestamp in seconds")
 
-    media = relationship("Media", back_populates="captions")
+    media = relationship("MediaEntity", back_populates="captions")
+
+    @classmethod
+    def from_caption_output(
+        cls,
+        model_name: str,
+        media_id: id_type,
+        frame_id: int,
+        frame_timestamp: float,
+        caption: Caption,
+    ) -> CaptionEntity:
+        """Converts a Caption pydantic model to a CaptionEntity."""
+        return CaptionEntity(
+            model=model_name,
+            media_id=media_id,
+            frame_id=frame_id,
+            caption=str(caption),
+            timestamp=frame_timestamp,
+        )

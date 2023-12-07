@@ -3,9 +3,16 @@ import pytest
 from sqlalchemy.orm import Session
 
 from aana.models.db import MediaType
-from aana.models.pydantic.asr_output import AsrTranscription, AsrTranscriptionList
+from aana.models.pydantic.asr_output import (
+    AsrSegments,
+    AsrSegmentsList,
+    AsrTranscription,
+    AsrTranscriptionInfo,
+    AsrTranscriptionInfoList,
+    AsrTranscriptionList,
+)
 from aana.models.pydantic.captions import Caption, CaptionsList
-from aana.utils.db import save_captions, save_media, save_transcripts
+from aana.utils.db import save_captions_batch, save_media, save_transcripts_batch
 
 
 @pytest.fixture()
@@ -37,33 +44,47 @@ def test_save_media(mock_session):
 
 def test_save_transcripts(mock_session):
     """Tests save transcripts function."""
-    media_id = 0
-    transcripts_list = AsrTranscriptionList.construct()
-    transcripts_list.__root__ = []
-    for text in ("A transcript", "Another transcript", "A third transcript"):
-        tt = AsrTranscription.construct()
-        tt.text = text
-        transcripts_list.__root__.append(tt)
+    media_ids = [0] * 3
+    models = ["test_model"] * 3
+    texts = ("A transcript", "Another transcript", "A third transcript")
+    infos = [("en", 0.5), ("de", 0.36), ("fr", 0.99)]
+    transcripts = AsrTranscriptionList(
+        __root__=[AsrTranscription(text=text) for text in texts]
+    )
+    transcription_infos = AsrTranscriptionInfoList(
+        __root__=[
+            AsrTranscriptionInfo(language=lang, language_confidence=conf)
+            for lang, conf in infos
+        ]
+    )
+    segments = AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)
+    ids = save_transcripts_batch(
+        media_ids, models, transcription_infos, transcripts, segments
+    )
 
-    ids = save_transcripts(media_id, transcripts_list)
-
-    assert len(ids) == len(transcripts_list)
+    assert len(ids) == len(transcripts) == len(transcription_infos) == len(segments)
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
 
 
 def test_save_captions(mock_session):
     """Tests save captions function."""
-    media_id = 0
-    captions_list = CaptionsList.construct()
-    captions_list.__root__ = []
-    for caption in ["A caption", "Another caption", "A third caption"]:
-        c = Caption.construct()
-        c.__root__ = caption
-        captions_list.__root__.append(c)
+    media_ids = [0] * 3
+    models = ["test_model"] * 3
+    captions = ["A caption", "Another caption", "A third caption"]
+    captions_list = CaptionsList(
+        __root__=[Caption(__root__=caption) for caption in captions]
+    )
+    timestamps = [0.1, 0.2, 0.3]
 
-    ids = save_captions(media_id, captions_list)
+    ids = save_captions_batch(media_ids, models, captions_list, timestamps)
 
-    assert len(ids) == len(captions_list)
+    assert (
+        len(ids)
+        == len(captions_list)
+        == len(timestamps)
+        == len(models)
+        == len(media_ids)
+    )
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()

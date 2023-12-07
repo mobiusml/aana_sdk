@@ -10,6 +10,6 @@
 # (even if not using Pyramid)
 
 from aana.models.db.base import BaseModel
-from aana.models.db.caption import Caption
-from aana.models.db.media import Media, MediaType
-from aana.models.db.transcript import Transcript
+from aana.models.db.caption import CaptionEntity
+from aana.models.db.media import MediaEntity, MediaType
+from aana.models.db.transcript import TranscriptEntity
