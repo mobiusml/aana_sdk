@@ -47,7 +47,7 @@ def upgrade() -> None:
     sa.Column('model', sa.String(), nullable=False, comment='Name of model used to generate transcript'),
     sa.Column('media_id', sa.String(), nullable=False, comment='Foreign key to media table'),
     sa.Column('transcript', sa.String(), nullable=True, comment='Full text transcript of media'),
-    sa.Column('segments', sa.String(), nullable=True, comment='Segments of the transcript'),
+    sa.Column('segments', sa.JSON(), nullable=True, comment='Segments of the transcript'),
     sa.Column('language', sa.String(), nullable=True, comment='Language of the transcript as predicted by model'),
     sa.Column('language_confidence', sa.Float(), nullable=True, comment='Confidence score of language prediction'),
     sa.Column('create_ts', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True, comment='Timestamp when row is inserted'),
