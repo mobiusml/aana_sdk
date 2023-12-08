@@ -1,9 +1,12 @@
+import pickle  # noqa: I001
+from collections import defaultdict
 from collections.abc import Generator
+from math import floor
 from pathlib import Path
 from typing import TypedDict
 
-import decord
 import numpy as np
+import torch, decord  # See https://github.com/dmlc/decord/issues/263  # noqa: F401
 import yt_dlp
 from yt_dlp.utils import DownloadError
 
@@ -12,6 +15,11 @@ from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
 from aana.models.core.video import Video
 from aana.models.core.video_source import VideoSource
+from aana.models.pydantic.asr_output import (
+    AsrSegments,
+    AsrTranscription,
+    AsrTranscriptionInfo,
+)
 from aana.models.pydantic.video_input import VideoInput
 from aana.models.pydantic.video_params import VideoParams
 
@@ -141,18 +149,185 @@ def download_video(video_input: VideoInput | Video) -> Video:
             try:
                 with yt_dlp.YoutubeDL(ydl_options) as ydl:
                     info = ydl.extract_info(video_input.url, download=False)
+                    title = info.get("title", "")
+                    description = info.get("description", "")
                     path = Path(ydl.prepare_filename(info))
                     if not path.exists():
                         ydl.download([video_input.url])
                     if not path.exists():
                         raise DownloadException(video_input.url)
-                    return Video(path=path)
+                    return Video(
+                        path=path,
+                        media_id=video_input.media_id,
+                        title=title,
+                        description=description,
+                    )
             except DownloadError as e:
                 raise DownloadException(video_input.url) from e
         elif video_source == VideoSource.AUTO:
-            video = Video(url=video_input.url, save_on_disk=True)
+            video = Video(
+                url=video_input.url, save_on_disk=True, media_id=video_input.media_id
+            )
             return video
         else:
             raise NotImplementedError(f"Download for {video_source} not implemented")
     else:
         return video_input.convert_input_to_object()
+
+
+def save_transcription(
+    transcription: AsrTranscription,
+    transcription_info: AsrTranscriptionInfo,
+    segments: AsrSegments,
+    video: Video,
+):
+    """Saves the transcription to a file.
+
+    Args:
+        transcription (AsrTranscription): the transcription to save
+        transcription_info (AsrTranscriptionInfo): the transcription info to save
+        segments (AsrSegments): the segments to save
+        media_id (str): the id of the media
+    """
+    print(video)
+    print(transcription)
+    media_id = video.media_id
+    output_dir = settings.tmp_data_dir / "transcriptions"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # dump the transcription to a file as json
+    output_path = Path(output_dir) / f"{media_id}.pkl"
+    with output_path.open("wb") as f:
+        pickle.dump(
+            {
+                "transcription": transcription,
+                "transcription_info": transcription_info,
+                "segments": segments,
+            },
+            f,
+        )
+
+    # output_path = Path(output_dir) / f"{media_id}.txt"
+    # output_path.write_text(transcription.text)
+    return {
+        "path": str(output_path),
+    }
+
+
+def save_video_captions(captions: list[str], timestamps: list[float], video: Video):
+    """Saves the captions to a file.
+
+    Args:
+        captions (list[str]): the captions to save
+        timestamps (list[float]): the timestamps to save
+        video (Video): the video to save the captions for
+    """
+    media_id = video.media_id
+    output_dir = settings.tmp_data_dir / "captions"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # dump the transcription to a file as json
+    output_path = Path(output_dir) / f"{media_id}.pkl"
+    with output_path.open("wb") as f:
+        pickle.dump(
+            {
+                "captions": captions,
+                "timestamps": timestamps,
+            },
+            f,
+        )
+
+    # output_path = Path(output_dir) / f"{media_id}.txt"
+    # output_path.write_text(transcription.text)
+    return {
+        "path": str(output_path),
+    }
+
+
+def save_video_metadata(video: Video):
+    """Saves the metadata of the video to a file.
+
+    Args:
+        video (Video): the video to save the metadata for
+
+    Returns:
+        dict: dictionary containing the path to the saved metadata
+    """
+    media_id = video.media_id
+    output_dir = settings.tmp_data_dir / "video_metadata"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_path = Path(output_dir) / f"{media_id}.pkl"
+    with output_path.open("wb") as f:
+        pickle.dump(
+            {
+                "title": video.title,
+                "description": video.description,
+            },
+            f,
+        )
+    return {
+        "path": str(output_path),
+    }
+
+
+def generate_combined_timeline(
+    video: Video,
+    transcription_segments: AsrSegments,
+    captions: list[str],
+    caption_timestamps: list[float],
+    chunk_size: float = 10.0,
+):
+    """Generates a combined timeline from the ASR segments and the captions.
+
+    Args:
+        video (Video): the video
+        transcription_segments (AsrSegments): the ASR segments
+        captions (list[str]): the captions
+        caption_timestamps (list[float]): the timestamps for the captions
+        chunk_size (float, optional): the chunk size for the combined timeline in seconds. Defaults to 10.0.
+
+    Returns:
+        list[str]: the combined timeline
+    """
+    media_id = video.media_id
+
+    timeline_dict: defaultdict[int, dict[str, list[str]]] = defaultdict(
+        lambda: {"transcription": [], "captions": []}
+    )
+    for segment in transcription_segments:
+        segment_start = segment.time_interval.start
+        chunk_index = floor(segment_start / chunk_size)
+        timeline_dict[chunk_index]["transcription"].append(segment.text)
+
+    if len(captions) != len(caption_timestamps):
+        raise ValueError(  # noqa: TRY003
+            f"Length of captions ({len(captions)}) and timestamps ({len(caption_timestamps)}) do not match"
+        )
+
+    for timestamp, caption in zip(caption_timestamps, captions, strict=True):
+        chunk_index = floor(timestamp / chunk_size)
+        timeline_dict[chunk_index]["captions"].append(caption)
+
+    num_chunks = max(timeline_dict.keys()) + 1
+
+    timeline = [
+        {
+            "start_time": chunk_index * chunk_size,
+            "end_time": (chunk_index + 1) * chunk_size,
+            "audio_transcript": "\n".join(timeline_dict[chunk_index]["transcription"]),
+            "visual_caption": "\n".join(timeline_dict[chunk_index]["captions"]),
+        }
+        for chunk_index in range(num_chunks)
+    ]
+
+    # save the timeline to a file
+    output_dir = settings.tmp_data_dir / "timelines"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = Path(output_dir) / f"{media_id}.pkl"
+
+    with output_path.open("wb") as f:
+        pickle.dump(timeline, f)
+
+    return {
+        "path": str(output_path),
+        "timeline": timeline,
+    }
