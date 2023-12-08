@@ -3,7 +3,6 @@ import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from aana.configs.settings import settings
 from aana.utils.general import download_file
 
 
@@ -29,6 +28,7 @@ class Media:
     media_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     save_on_disk: bool = True
     is_saved: bool = False
+    media_dir: Path | None = None
 
     def validate(self):
         """Validate the media."""
@@ -63,9 +63,12 @@ class Media:
         if self.path:
             return
 
-        image_dir = settings.image_dir
-        image_dir.mkdir(parents=True, exist_ok=True)
-        file_path = image_dir / (self.media_id + ".mp4")
+        if self.media_dir is None:
+            raise ValueError(  # noqa: TRY003
+                "The 'media_dir' isn't defined for this media type."
+            )
+        self.media_dir.mkdir(parents=True, exist_ok=True)
+        file_path = self.media_dir / (self.media_id + ".mp4")
 
         if self.content:
             self.save_from_content(file_path)
