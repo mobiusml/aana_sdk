@@ -1,6 +1,8 @@
 import hashlib
 from dataclasses import dataclass
+from pathlib import Path
 
+from aana.configs.settings import settings
 from aana.models.core.media import Media
 
 
@@ -16,7 +18,14 @@ class Video(Media):
         url (str): the URL of the video
         content (bytes): the content of the video in bytes
         media_id (str): the ID of the video. If not provided, it will be generated automatically.
+        title (str): the title of the video
+        description (str): the description of the video
+        media_dir (Path): the directory to save the video in
     """
+
+    title: str = ""
+    description: str = ""
+    media_dir: Path | None = settings.video_dir
 
     def validate(self):
         """Validate the video."""
@@ -52,5 +61,7 @@ class Video(Media):
             f"Video(path={self.path}, "
             f"url={self.url}, "
             f"content={content_hash}, "
-            f"media_id={self.media_id})"
+            f"media_id={self.media_id}, "
+            f"title={self.title}, "
+            f"description={self.description})"
         )
