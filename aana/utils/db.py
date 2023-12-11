@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from sqlalchemy.orm import Session
 
 from aana.configs.db import id_type
+from aana.models.core.video import Video
 from aana.models.db import CaptionEntity, MediaEntity, MediaType, TranscriptEntity
 from aana.models.pydantic.asr_output import (
     AsrSegments,
@@ -12,7 +13,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import CaptionsList
-from aana.models.pydantic.video_input import VideoInputList
+from aana.models.pydantic.video_params import VideoParams
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.engine import engine
 from aana.repository.datastore.media_repo import MediaRepository
@@ -21,23 +22,25 @@ from aana.repository.datastore.transcript_repo import TranscriptRepository
 
 # Just using raw utility functions like this isn't a permanent solution, but
 # it's good enough for now to validate what we're working on.
-def save_video_batch(video_inputs: VideoInputList) -> list[id_type]:
+def save_video_batch(
+    video_objects: list[Video], video_params: list[VideoParams]
+) -> list[id_type]:
     """Saves a batch of videos to datastore."""
     entities = []
-    for video_input in video_inputs:
-        if video_input.url is not None:
-            orig_url = video_input.url
+    for video_object, _ in zip(video_objects, video_params, strict=True):
+        if video_object.url is not None:
+            orig_url = video_object.url
             parsed_url = urlparse(orig_url)
             orig_filename = Path(parsed_url.path).name
-        elif video_input.path is not None:
-            parsed_path = Path(video_input.path)
+        elif video_object.path is not None:
+            parsed_path = Path(video_object.path)
             orig_filename = parsed_path.name
             orig_url = None
         else:
             orig_url = None
             orig_filename = None
         entity = MediaEntity(
-            id=video_input.media_id,
+            id=video_object.media_id,
             media_type=MediaType.VIDEO,
             orig_filename=orig_filename,
             orig_url=orig_url,
@@ -71,13 +74,14 @@ def save_captions_batch(
     model_name: str,
     captions: CaptionsList,
     timestamps: list[float],
+    frame_ids: list[int],
 ) -> list[id_type]:
     """Save captions."""
     with Session(engine) as session:
         entities = [
-            CaptionEntity.from_caption_output(model_name, media_id, i, t, c)
-            for i, (media_id, c, t) in enumerate(
-                zip(media_ids, captions, timestamps, strict=True)
+            CaptionEntity.from_caption_output(model_name, media_id, frame_id, t, c)
+            for media_id, c, t, frame_id in zip(
+                media_ids, captions, timestamps, frame_ids, strict=True
             )
         ]
         repo = CaptionRepository(session)
