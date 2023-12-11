@@ -38,4 +38,4 @@ jobs:
         sudo apt-get update
         sudo apt-get install ffmpeg
     - name: Test with pytest
-      run: poetry run pytest
+      run: poetry run pytest --import-mode=importlib
