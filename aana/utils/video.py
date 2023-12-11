@@ -1,4 +1,5 @@
-import pickle  # noqa: I001
+import json
+import pickle
 from collections import defaultdict
 from collections.abc import Generator
 from math import floor
@@ -20,6 +21,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscription,
     AsrTranscriptionInfo,
 )
+from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.video_input import VideoInput
 from aana.models.pydantic.video_params import VideoParams
 
@@ -187,7 +189,7 @@ def save_transcription(
         transcription (AsrTranscription): the transcription to save
         transcription_info (AsrTranscriptionInfo): the transcription info to save
         segments (AsrSegments): the segments to save
-        media_id (str): the id of the media
+        video (Video): the video to save the transcription for
     """
     print(video)
     print(transcription)
@@ -331,3 +333,107 @@ def generate_combined_timeline(
         "path": str(output_path),
         "timeline": timeline,
     }
+
+
+def load_video_metadata(media_id: str):
+    """Loads the metadata of the video from a file.
+
+    Args:
+        media_id: the id of the video
+
+    Returns:
+        dict: dictionary containing the metadata
+    """
+    output_dir = settings.tmp_data_dir / "video_metadata"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_path = Path(output_dir) / f"{media_id}.pkl"
+    with output_path.open("rb") as f:
+        metadata = pickle.load(f)  # noqa: S301
+    return metadata
+
+
+def load_video_timeline(media_id: str):
+    """Loads the timeline of the video from a file.
+
+    Args:
+        media_id: the id of the video
+
+    Returns:
+        dict: dictionary containing the timeline
+    """
+    output_dir = settings.tmp_data_dir / "timelines"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_path = Path(output_dir) / f"{media_id}.pkl"
+    with output_path.open("rb") as f:
+        timeline = pickle.load(f)  # noqa: S301
+    return timeline
+
+
+def generate_dialog(metadata: dict, timeline: list[dict], question: str) -> ChatDialog:
+    """Generates a dialog from the metadata and timeline of a video.
+
+    Args:
+        metadata (dict): the metadata of the video
+        timeline (list[dict]): the timeline of the video
+        question (str): the question to ask
+
+    Returns:
+        ChatDialog: the generated dialog
+    """
+    system_prompt_preamble = """You are a helpful, respectful, and honest assistant. Always answer as helpfully as possible, while ensuring safety. You will be provided with a script in json format for a video containing information from visual captions and audio transcripts. Each entry in the script follows the format:
+
+    {{
+    "start_time":"start_time_in_seconds",
+    "end_time": "end_time_in_seconds",
+    "audio_transcript": "the_transcript_from_automatic_speech_recognition_system",
+    "visual_caption": "the_caption_of_the_visuals_using_computer_vision_system"
+    }}
+    Note that the audio_transcript can sometimes be empty.
+
+    Ensure you do not introduce any new named entities in your output and maintain the utmost factual accuracy in your responses.
+
+    In the addition you will be provided with title and description of video extracted.
+    """
+    instruction = (
+        "Provide a short and concise answer to the following user's question. "
+        "Avoid mentioning any details about the script in JSON format. "
+        "For example, a good response would be: 'Based on the analysis, "
+        "here are the most relevant/useful/aesthetic moments.' "
+        "A less effective response would be: "
+        "'Based on the provided visual caption/audio transcript, "
+        "here are the most relevant/useful/aesthetic moments. The user question is "
+    )
+
+    user_prompt_template = (
+        "{instruction}"
+        "Given the timeline of audio and visual activities in the video below "
+        "I want to find out the following: {question}"
+        "The timeline is: "
+        "{timeline_json}"
+        "\n"
+        "The title of the video is {video_title}"
+        "\n"
+        "The description of the video is {video_description}"
+    )
+
+    timeline_json = json.dumps(timeline, indent=4, separators=(",", ": "))
+
+    messages = []
+    messages.append(ChatMessage(content=system_prompt_preamble, role="system"))
+    messages.append(
+        ChatMessage(
+            content=user_prompt_template.format(
+                instruction=instruction,
+                question=question,
+                timeline_json=timeline_json,
+                video_title=metadata["title"],
+                video_description=metadata["description"],
+            ),
+            role="user",
+        )
+    )
+
+    dialog = ChatDialog(messages=messages)
+    return dialog

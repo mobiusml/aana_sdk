@@ -23,6 +23,29 @@ endpoints = {
             ],
             streaming=True,
         ),
+        Endpoint(
+            name="llm_chat",
+            path="/llm/chat",
+            summary="Chat with LLaMa2 7B Chat",
+            outputs=[
+                EndpointOutput(
+                    name="completion", output="vllm_llama2_7b_chat_output_dialog"
+                )
+            ],
+        ),
+        Endpoint(
+            name="llm_chat_stream",
+            path="/llm/chat_stream",
+            summary="Chat with LLaMa2 7B Chat (streaming)",
+            outputs=[
+                EndpointOutput(
+                    name="completion",
+                    output="vllm_llama2_7b_chat_output_dialog_stream",
+                    streaming=True,
+                )
+            ],
+            streaming=True,
+        ),
     ],
     "zephyr": [
         Endpoint(
@@ -188,6 +211,19 @@ endpoints = {
                 EndpointOutput(
                     name="completion",
                     output="vllm_llama2_7b_chat_output_stream",
+                    streaming=True,
+                )
+            ],
+            streaming=True,
+        ),
+        Endpoint(
+            name="video_chat_stream",
+            path="/video/chat_stream",
+            summary="Chat with video using LLaMa2 7B Chat (streaming)",
+            outputs=[
+                EndpointOutput(
+                    name="completion",
+                    output="vllm_llama2_7b_chat_output_dialog_stream_video",
                     streaming=True,
                 )
             ],

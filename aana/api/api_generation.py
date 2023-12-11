@@ -1,17 +1,17 @@
+import traceback
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from enum import Enum
-import traceback
 from typing import Any, Optional
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
-from ray.exceptions import RayTaskError
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
 from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
-from aana.api.app import custom_exception_handler
+from ray.exceptions import RayTaskError
 
+from aana.api.app import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 from aana.models.pydantic.exception_response import ExceptionResponseModel
@@ -56,7 +56,8 @@ async def run_pipeline_streaming(
     Args:
         pipeline (Pipeline): The pipeline to run.
         data (dict): The data to create the container from.
-        required_outputs (List[str]): The required outputs of the pipeline.
+        requested_partial_outputs (list[str]): The required partial outputs of the pipeline that should be streamed.
+        requested_full_outputs (list[str]): The required full outputs of the pipeline that should be returned at the end.
 
     Yields:
         dict[str, Any]: The output of the pipeline and the execution time of the pipeline.
@@ -329,7 +330,7 @@ class Endpoint:
     ) -> Callable:
         """Create a function for routing an endpoint."""
 
-        async def route_func_body(body: str, files: list[UploadFile] | None = None):
+        async def route_func_body(body: str, files: list[UploadFile] | None = None):  # noqa: C901
             # parse form data as a pydantic model and validate it
             data = parse_raw_as(RequestModel, body)
 
