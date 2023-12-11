@@ -7,6 +7,7 @@ import numpy as np
 import yt_dlp
 from yt_dlp.utils import DownloadError
 
+from aana.configs.db import id_type
 from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
@@ -17,11 +18,12 @@ from aana.models.pydantic.video_params import VideoParams
 
 
 class FramesDict(TypedDict):
-    """Represents a set of frames with timestamps and total duration."""
+    """Represents a set of frames with ids, timestamps and total duration."""
 
     frames: list[Image]
     timestamps: list[float]
     duration: float
+    frame_ids: list[id_type]
 
 
 def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
@@ -32,7 +34,7 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
         params (VideoParams): the parameters of the video extraction
 
     Returns:
-        FramesDict: a dictionary containing the extracted frames, timestamps, and duration
+        FramesDict: a dictionary containing the extracted frames, frame_ids, timestamps, and duration
     """
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
