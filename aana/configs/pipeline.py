@@ -12,6 +12,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
+from aana.models.pydantic.chat_message import ChatDialog
 from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
@@ -62,6 +63,19 @@ nodes = [
         "inputs": [],
         "outputs": [
             {"name": "prompt", "key": "prompt", "path": "prompt", "data_model": Prompt}
+        ],
+    },
+    {
+        "name": "dialog",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "dialog",
+                "key": "dialog",
+                "path": "dialog",
+                "data_model": ChatDialog,
+            }
         ],
     },
     {
@@ -118,6 +132,60 @@ nodes = [
                 "name": "vllm_llama2_7b_chat_output",
                 "key": "text",
                 "path": "vllm_llama2_7b_chat_output",
+            }
+        ],
+    },
+    {
+        "name": "vllm_llama2_7b_chat_dialog",
+        "type": "ray_deployment",
+        "deployment_name": "vllm_deployment_llama2_7b_chat",
+        "method": "chat",
+        "inputs": [
+            {
+                "name": "dialog",
+                "key": "dialog",
+                "path": "dialog",
+                "data_model": ChatDialog,
+            },
+            {
+                "name": "sampling_params",
+                "key": "sampling_params",
+                "path": "sampling_params",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "vllm_llama2_7b_chat_output_dialog",
+                "key": "dialog",
+                "path": "vllm_llama2_7b_chat_output_dialog",
+            }
+        ],
+    },
+    {
+        "name": "vllm_llama2_7b_chat_dialog_stream",
+        "type": "ray_deployment",
+        "deployment_name": "vllm_deployment_llama2_7b_chat",
+        "data_type": "generator",
+        "generator_path": "dialog",
+        "method": "chat_stream",
+        "inputs": [
+            {
+                "name": "dialog",
+                "key": "dialog",
+                "path": "dialog",
+                "data_model": ChatDialog,
+            },
+            {
+                "name": "sampling_params",
+                "key": "sampling_params",
+                "path": "sampling_params",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "vllm_llama2_7b_chat_output_dialog_stream",
+                "key": "text",
+                "path": "vllm_llama2_7b_chat_output_dialog_stream",
             }
         ],
     },
@@ -602,6 +670,128 @@ nodes = [
                 "key": "timeline",
                 "path": "video.timeline",
             },
+        ],
+    },
+    {
+        "name": "media_id",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "media_id",
+                "key": "media_id",
+                "path": "media_id",
+            }
+        ],
+    },
+    {
+        "name": "question",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "question",
+                "key": "question",
+                "path": "question",
+            }
+        ],
+    },
+    {
+        "name": "load_video_metadata",
+        "type": "function",
+        "function": "aana.utils.video.load_video_metadata",
+        "dict_output": False,
+        "inputs": [
+            {
+                "name": "media_id",
+                "key": "media_id",
+                "path": "media_id",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_metadata",
+                "key": "output",
+                "path": "video_metadata",
+            },
+        ],
+    },
+    {
+        "name": "load_video_timeline",
+        "type": "function",
+        "function": "aana.utils.video.load_video_timeline",
+        "dict_output": False,
+        "inputs": [
+            {
+                "name": "media_id",
+                "key": "media_id",
+                "path": "media_id",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_timeline",
+                "key": "output",
+                "path": "video_timeline",
+            },
+        ],
+    },
+    {
+        "name": "generate_dialog",
+        "type": "function",
+        "function": "aana.utils.video.generate_dialog",
+        "dict_output": False,
+        "inputs": [
+            {
+                "name": "video_metadata",
+                "key": "metadata",
+                "path": "video_metadata",
+            },
+            {
+                "name": "video_timeline",
+                "key": "timeline",
+                "path": "video_timeline",
+            },
+            {
+                "name": "question",
+                "key": "question",
+                "path": "question",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_chat_dialog",
+                "key": "output",
+                "path": "video_chat_dialog",
+            },
+        ],
+    },
+    {
+        "name": "vllm_llama2_7b_chat_dialog_stream_video",
+        "type": "ray_deployment",
+        "deployment_name": "vllm_deployment_llama2_7b_chat",
+        "data_type": "generator",
+        "generator_path": "dialog",
+        "method": "chat_stream",
+        "inputs": [
+            {
+                "name": "video_chat_dialog",
+                "key": "dialog",
+                "path": "video_chat_dialog",
+                "data_model": ChatDialog,
+            },
+            {
+                "name": "sampling_params",
+                "key": "sampling_params",
+                "path": "sampling_params",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "vllm_llama2_7b_chat_output_dialog_stream_video",
+                "key": "text",
+                "path": "vllm_llama2_7b_chat_output_dialog_stream_video",
+            }
         ],
     },
 ]
