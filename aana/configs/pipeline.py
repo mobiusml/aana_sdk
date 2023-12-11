@@ -554,7 +554,11 @@ nodes = [
                 "key": "captions",
                 "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
             },
-            {"name": "", "key": "", "path": ""},
+            {
+                "name": "timestamps",
+                "key": "timestamps",
+                "path": "video_batch.videos.[*].timestamp",
+            },
             {
                 "name": "frame_ids",
                 "key": "frame_ids",
