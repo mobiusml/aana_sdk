@@ -76,8 +76,9 @@ def test_save_captions(mock_session):
         __root__=[Caption(__root__=caption) for caption in captions]
     )
     timestamps = [0.1, 0.2, 0.3]
+    frame_ids = [0, 1, 2]
 
-    ids = save_captions_batch(media_ids, models, captions_list, timestamps)
+    ids = save_captions_batch(media_ids, models, captions_list, timestamps, frame_ids)
 
     assert (
         len(ids)
@@ -85,6 +86,7 @@ def test_save_captions(mock_session):
         == len(timestamps)
         == len(models)
         == len(media_ids)
+        == len(frame_ids)
     )
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
