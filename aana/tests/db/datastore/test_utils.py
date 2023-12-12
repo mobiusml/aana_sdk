@@ -44,25 +44,33 @@ def test_save_media(mock_session):
 
 def test_save_transcripts(mock_session):
     """Tests save transcripts function."""
-    media_ids = ["0"] * 3
-    models = ["test_model"] * 3
+    media_ids = ["0"]
+    model = "test_model"
     texts = ("A transcript", "Another transcript", "A third transcript")
     infos = [("en", 0.5), ("de", 0.36), ("fr", 0.99)]
-    transcripts = AsrTranscriptionList(
-        __root__=[AsrTranscription(text=text) for text in texts]
+    transcripts = [
+        AsrTranscriptionList(__root__=[AsrTranscription(text=text) for text in texts])
+    ]
+    transcription_infos = [
+        AsrTranscriptionInfoList(
+            __root__=[
+                AsrTranscriptionInfo(language=lang, language_confidence=conf)
+                for lang, conf in infos
+            ]
+        )
+    ]
+    segments = [AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)]
+    result = save_transcripts_batch(
+        model, media_ids, transcription_infos, transcripts, segments
     )
-    transcription_infos = AsrTranscriptionInfoList(
-        __root__=[
-            AsrTranscriptionInfo(language=lang, language_confidence=conf)
-            for lang, conf in infos
-        ]
-    )
-    segments = AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)
-    ids = save_transcripts_batch(
-        media_ids, models, transcription_infos, transcripts, segments
-    )
+    result_ids = result["transcript_ids"]
 
-    assert len(ids) == len(transcripts) == len(transcription_infos) == len(segments)
+    assert (
+        len(result_ids)
+        == len(transcripts[0])
+        == len(transcription_infos[0])
+        == len(segments[0])
+    )
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
 
@@ -83,7 +91,7 @@ def test_save_captions(mock_session):
     )
 
     assert (
-        len(result["caption_id"])
+        len(result["caption_ids"])
         == len(captions_list[0])
         == len(timestamps[0][:-1])
         == len(frame_ids[0])
