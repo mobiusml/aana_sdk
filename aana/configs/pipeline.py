@@ -488,6 +488,7 @@ nodes = [
         "name": "save_video_info",
         "type": "ray_task",
         "function": "aana.utils.db.save_video_batch",
+        "dict_output": True,
         "inputs": [
             {
                 "name": "video_objects",
@@ -507,7 +508,10 @@ nodes = [
         "name": "save_transcripts_medium",
         "type": "ray_task",
         "function": "aana.utils.db.save_transcripts_batch",
-        "model_name": "whisper_medium",
+        "kwargs": {
+            "model_name": "whisper_medium",
+        },
+        "dict_output": True,
         "inputs": [
             {
                 "name": "media_ids",
@@ -532,8 +536,8 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "transcription_id",
-                "key": "transcription_id",
+                "name": "transcription_ids",
+                "key": "transcription_ids",
                 "path": "video_batch.videos.[*].transcription.id",
             }
         ],
@@ -542,7 +546,10 @@ nodes = [
         "name": "save_video_captions_hf_blip2_opt_2_7b",
         "type": "ray_task",
         "function": "aana.utils.db.save_captions_batch",
-        "model_name": "hf_blip2_opt_2_7b",
+        "kwargs": {
+            "model_name": "hf_blip2_opt_2_7b",
+        },
+        "dict_output": True,
         "inputs": [
             {
                 "name": "media_ids",
@@ -551,24 +558,24 @@ nodes = [
             },
             {
                 "name": "video_captions_hf_blip2_opt_2_7b",
-                "key": "captions",
+                "key": "captions_list",
                 "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
             },
             {
                 "name": "timestamps",
-                "key": "timestamps",
+                "key": "timestamps_list",
                 "path": "video_batch.videos.[*].timestamp",
             },
             {
                 "name": "frame_ids",
-                "key": "frame_ids",
+                "key": "frame_ids_list",
                 "path": "video_batch.videos.[*].frames.[*].id",
             },
         ],
         "outputs": [
             {
-                "name": "caption_id",
-                "key": "caption_id",
+                "name": "caption_ids",
+                "key": "caption_ids",
                 "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b.id",
             }
         ],
