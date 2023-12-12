@@ -152,7 +152,12 @@ class AsrTranscription(BaseModel):
 
     def __add__(self, other: "AsrTranscription") -> "AsrTranscription":
         """Sum two transcriptions."""
-        text = self.text + "\n" + other.text
+        if self.text == "":
+            text = other.text
+        elif other.text == "":
+            text = self.text
+        else:
+            text = self.text + "\n" + other.text
         return AsrTranscription(text=text)
 
     class Config:
