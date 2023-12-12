@@ -105,21 +105,31 @@ def save_captions_batch(
 def save_transcripts_batch(
     model_name: str,
     media_ids: list[id_type],
-    transcript_info: AsrTranscriptionInfoList,
-    transcripts: AsrTranscriptionList,
-    segments: AsrSegments,
+    transcript_info_list: list[AsrTranscriptionInfoList],
+    transcripts_list: list[AsrTranscriptionList],
+    segments_list: list[AsrSegments],
 ) -> list[id_type]:
     """Save transcripts."""
+    print(
+        f"{len(media_ids)}\n{len(transcript_info_list)}\n{len(transcripts_list)}\n{len(segments_list)}"
+    )
     with Session(engine) as session:
         entities = [
             TranscriptEntity.from_asr_output(model_name, media_id, info, txn, seg)
-            for media_id, info, txn, seg in zip(
-                media_ids, transcript_info, transcripts, segments, strict=True
+            for media_id, transcript_infos, transcripts, segments in zip(
+                media_ids,
+                transcript_info_list,
+                transcripts_list,
+                segments_list,
+                strict=True,
+            )
+            for info, txn, seg in zip(
+                transcript_infos, transcripts, segments, strict=True
             )
         ]
 
         repo = TranscriptRepository(session)
         entities = repo.create_multiple(entities)
         return {
-            "transcript_id": [c.id for c in entities]  # type: ignore
+            "transcript_ids": [c.id for c in entities]  # type: ignore
         }
