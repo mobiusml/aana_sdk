@@ -69,24 +69,24 @@ def test_save_transcripts(mock_session):
 
 def test_save_captions(mock_session):
     """Tests save captions function."""
-    media_ids = ["0"] * 3
-    models = ["test_model"] * 3
+    media_ids = ["0"]
+    models = "test_model"
     captions = ["A caption", "Another caption", "A third caption"]
-    captions_list = CaptionsList(
-        __root__=[Caption(__root__=caption) for caption in captions]
-    )
-    timestamps = [0.1, 0.2, 0.3]
-    frame_ids = [0, 1, 2]
+    captions_list = [
+        CaptionsList(__root__=[Caption(__root__=caption) for caption in captions])
+    ]
+    timestamps = [[0.1, 0.2, 0.3, 0.4]]
+    frame_ids = [[0, 1, 2]]
 
-    ids = save_captions_batch(media_ids, models, captions_list, timestamps, frame_ids)
+    result = save_captions_batch(
+        media_ids, models, captions_list, timestamps, frame_ids
+    )
 
     assert (
-        len(ids)
-        == len(captions_list)
-        == len(timestamps)
-        == len(models)
-        == len(media_ids)
-        == len(frame_ids)
+        len(result["caption_id"])
+        == len(captions_list[0])
+        == len(timestamps[0][:-1])
+        == len(frame_ids[0])
     )
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
