@@ -50,6 +50,7 @@ endpoints = {
                     name="captions", output="videos_captions_hf_blip2_opt_2_7b"
                 ),
                 EndpointOutput(name="timestamps", output="timestamps"),
+                EndpointOutput(name="caption_ids", output="caption_ids"),
             ],
         ),
     ],

@@ -23,11 +23,11 @@ from aana.repository.datastore.transcript_repo import TranscriptRepository
 # Just using raw utility functions like this isn't a permanent solution, but
 # it's good enough for now to validate what we're working on.
 def save_video_batch(
-    video_objects: list[Video], video_params: list[VideoParams]
+    videos: list[Video],  # , video_params: list[VideoParams]
 ) -> list[id_type]:
     """Saves a batch of videos to datastore."""
     entities = []
-    for video_object, _ in zip(video_objects, video_params, strict=True):
+    for video_object, _ in zip(videos, videos, strict=True):
         if video_object.url is not None:
             orig_url = video_object.url
             parsed_url = urlparse(orig_url)
@@ -49,7 +49,9 @@ def save_video_batch(
     with Session(engine) as session:
         repo = MediaRepository(session)
         results = repo.create_multiple(entities)
-    return [result.id for result in results]  # type: ignore
+        return {
+            "media_ids": [result.id for result in results]  # type: ignore
+        }
 
 
 def save_media(media_type: MediaType, duration: float) -> id_type:
@@ -72,21 +74,32 @@ def save_media(media_type: MediaType, duration: float) -> id_type:
 def save_captions_batch(
     media_ids: list[id_type],
     model_name: str,
-    captions: CaptionsList,
-    timestamps: list[float],
-    frame_ids: list[int],
+    captions_list: list[CaptionsList],
+    timestamps_list: list[list[float]],
+    frame_ids_list: list[list[int]],
 ) -> list[id_type]:
     """Save captions."""
+    print(
+        f"{len(media_ids)}\n{len(timestamps_list[0])}\n{len(list(frame_ids_list[0]))}\n{model_name=}\ncaptions: {len(captions_list[0])}"
+    )
     with Session(engine) as session:
         entities = [
-            CaptionEntity.from_caption_output(model_name, media_id, frame_id, t, c)
-            for media_id, c, t, frame_id in zip(
-                media_ids, captions, timestamps, frame_ids, strict=True
+            CaptionEntity.from_caption_output(
+                model_name, media_id, frame_id, timestamp, caption
+            )
+            for media_id, captions, timestamps, frame_ids in zip(
+                media_ids, captions_list, timestamps_list, frame_ids_list, strict=True
+            )
+            for caption, timestamp, frame_id in zip(
+                captions, timestamps[:-1], frame_ids, strict=True
             )
         ]
         repo = CaptionRepository(session)
         results = repo.create_multiple(entities)
-        return [c.id for c in results]  # type: ignore
+        # return [c.id for c in results]
+        return {
+            "caption_ids": [c.id for c in results]  # type: ignore
+        }
 
 
 def save_transcripts_batch(
@@ -107,4 +120,6 @@ def save_transcripts_batch(
 
         repo = TranscriptRepository(session)
         entities = repo.create_multiple(entities)
-        return [c.id for c in entities]  # type: ignore
+        return {
+            "transcript_id": [c.id for c in entities]  # type: ignore
+        }

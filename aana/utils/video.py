@@ -68,7 +68,7 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
         frames=frames,
         timestamps=timestamps,
         duration=duration,
-        frame_ids=range(len(frames)),
+        frame_ids=list(range(len(frames))),
     )
 
 

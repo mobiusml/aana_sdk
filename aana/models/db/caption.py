@@ -1,5 +1,7 @@
 from __future__ import annotations  # Let classes use themselves in type annotations
 
+import uuid
+
 from sqlalchemy import CheckConstraint, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -48,6 +50,7 @@ class CaptionEntity(BaseModel, TimeStampEntity):
     ) -> CaptionEntity:
         """Converts a Caption pydantic model to a CaptionEntity."""
         return CaptionEntity(
+            id=str(uuid.uuid4()),
             model=model_name,
             media_id=media_id,
             frame_id=frame_id,
