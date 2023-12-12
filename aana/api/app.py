@@ -32,7 +32,9 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     )
 
 
-def custom_exception_handler(request: Request, exc_raw: BaseException | RayTaskError):
+def custom_exception_handler(
+    request: Request | None, exc_raw: BaseException | RayTaskError
+):
     """This handler is used to handle custom exceptions raised in the application.
 
     BaseException is the base exception for all the exceptions
