@@ -7,7 +7,7 @@ from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.model_executor.utils import set_random_seed
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-from vllm.utils import random_uuid
+from vllm.utils import get_gpu_memory, random_uuid
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
@@ -24,7 +24,7 @@ class VLLMConfig(BaseModel):
         model (str): the model name
         dtype (str): the data type (optional, default: "auto")
         quantization (str): the quantization method (optional, default: None)
-        gpu_memory_utilization (float): the GPU memory utilization.
+        gpu_memory_reserved (float): the GPU memory reserved for the model in mb
         default_sampling_params (SamplingParams): the default sampling parameters.
         max_model_len (int): the maximum generated text length in tokens (optional, default: None)
     """
@@ -32,7 +32,7 @@ class VLLMConfig(BaseModel):
     model: str
     dtype: str | None = Field(default="auto")
     quantization: str | None = Field(default=None)
-    gpu_memory_utilization: float
+    gpu_memory_reserved: float
     default_sampling_params: SamplingParams
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
@@ -83,7 +83,7 @@ class VLLMDeployment(BaseDeployment):
         - model: the model name
         - dtype: the data type (optional, default: "auto")
         - quantization: the quantization method (optional, default: None)
-        - gpu_memory_utilization: the GPU memory utilization.
+        - gpu_memory_reserved: the GPU memory reserved for the model in mb
         - default_sampling_params: the default sampling parameters.
         - max_model_len: the maximum generated text length in tokens (optional, default: None)
         - chat_template: the name of the chat template (optional, default: None)
@@ -93,6 +93,11 @@ class VLLMDeployment(BaseDeployment):
         """
         config_obj = VLLMConfig(**config)
         self.model = config_obj.model
+        total_gpu_memory_bytes = get_gpu_memory()
+        total_gpu_memory_mb = total_gpu_memory_bytes / 1024**2
+        self.gpu_memory_utilization = (
+            config_obj.gpu_memory_reserved / total_gpu_memory_mb
+        )
         self.default_sampling_params: SamplingParams = (
             config_obj.default_sampling_params
         )
@@ -101,7 +106,7 @@ class VLLMDeployment(BaseDeployment):
             model=config_obj.model,
             dtype=config_obj.dtype,
             quantization=config_obj.quantization,
-            gpu_memory_utilization=config_obj.gpu_memory_utilization,
+            gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
         )
 

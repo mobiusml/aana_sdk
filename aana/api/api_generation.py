@@ -6,6 +6,7 @@ from typing import Any, Optional
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
+from mobius_pipeline.exceptions import BaseException
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
 from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
@@ -345,10 +346,6 @@ class Endpoint:
             data_dict = {}
             for field_name in data.__fields__:
                 field_value = getattr(data, field_name)
-                # check if it has a method convert_to_entities
-                # if it does, call it to convert the model to an entity
-                # if hasattr(field_value, "convert_input_to_object"):
-                #     field_value = field_value.convert_input_to_object()
                 data_dict[field_name] = field_value
 
             if self.output_filter:
@@ -393,14 +390,10 @@ class Endpoint:
                             output = self.process_output(output)
                             yield AanaJSONResponse(content=output).body
                     except RayTaskError as e:
-                        print(f"Got exception: {e} Type: {type(e)}")
                         yield custom_exception_handler(None, e).body
-                    # except BaseException as e:
-                    #     print(f"Got exception: {e} Type: {type(e)}")
-                    #     yield custom_exception_handler(None, e)
+                    except BaseException as e:
+                        yield custom_exception_handler(None, e)
                     except Exception as e:
-                        print(f"Got exception: {e} Type: {type(e)}")
-                        # yield custom_exception_handler(None, e).body
                         error = e.__class__.__name__
                         stacktrace = traceback.format_exc()
                         yield AanaJSONResponse(

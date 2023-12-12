@@ -1,4 +1,4 @@
-import json
+import json  # noqa: I001
 import pickle
 from collections import defaultdict
 from collections.abc import Generator
@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TypedDict
 
 import numpy as np
-import torch, decord  # See https://github.com/dmlc/decord/issues/263  # noqa: F401
+import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 import yt_dlp
 from yt_dlp.utils import DownloadError
 
