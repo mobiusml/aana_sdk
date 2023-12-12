@@ -20,24 +20,9 @@ deployments = {
             quantization="awq",
             gpu_memory_reserved=10000,
             default_sampling_params=SamplingParams(
-                temperature=1.0, top_p=1.0, top_k=-1, max_tokens=256
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
             ),
             chat_template="llama2",
-        ).dict(),
-    ),
-    "vllm_deployment_zephyr_7b_beta": VLLMDeployment.options(
-        num_replicas=1,
-        max_concurrent_queries=1000,
-        ray_actor_options={"num_gpus": 0.25},
-        user_config=VLLMConfig(
-            model="TheBloke/zephyr-7B-beta-AWQ",
-            dtype="auto",
-            quantization="awq",
-            gpu_memory_reserved=10000,
-            max_model_len=512,
-            default_sampling_params=SamplingParams(
-                temperature=1.0, top_p=1.0, top_k=-1, max_tokens=256
-            ),
         ).dict(),
     ),
     "hf_blip2_deployment_opt_2_7b": HFBlip2Deployment.options(
