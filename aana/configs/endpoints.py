@@ -29,7 +29,7 @@ endpoints = {
             summary="Chat with LLaMa2 7B Chat",
             outputs=[
                 EndpointOutput(
-                    name="completion", output="vllm_llama2_7b_chat_output_dialog"
+                    name="message", output="vllm_llama2_7b_chat_output_message"
                 )
             ],
         ),
@@ -46,16 +46,6 @@ endpoints = {
             ],
             streaming=True,
         ),
-    ],
-    "zephyr": [
-        Endpoint(
-            name="zephyr_generate",
-            path="/llm/generate",
-            summary="Generate text using Zephyr 7B Beta",
-            outputs=[
-                EndpointOutput(name="completion", output="vllm_zephyr_7b_beta_output")
-            ],
-        )
     ],
     "blip2": [
         Endpoint(

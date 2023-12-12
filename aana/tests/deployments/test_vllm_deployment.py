@@ -4,6 +4,7 @@ import ray
 from ray import serve
 
 from aana.configs.deployments import deployments
+from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.tests.utils import compare_texts, is_gpu_available
 
@@ -12,13 +13,8 @@ def expected_output(name):
     """Gets expected output for a given vLLM version."""
     if name == "vllm_deployment_llama2_7b_chat":
         return (
-            "  Elon Musk is a South African-born entrepreneur, inventor, and business magnate. "
-            "He is best known for his revolutionary ideas"
-        )
-    if name == "vllm_deployment_zephyr_7b_beta":
-        return (
-            "\n\nElon Musk is an entrepreneur, business magnate, and investor. "
-            "He is the founder, CEO, and Chief Designer of SpaceX"
+            "  Elon Musk is a South African-born entrepreneur, inventor, "
+            "and business magnate who is best known for his innovative companies in"
         )
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
@@ -45,27 +41,29 @@ async def test_vllm_deployments():
         if deployment.name != "VLLMDeployment":
             continue
 
+        expected_text = expected_output(name)
+
         handle = ray_setup(deployment)
 
         # test generate method
         output = await handle.generate.remote(
             prompt="[INST] Who is Elon Musk? [/INST]",
-            sampling_params=SamplingParams(temperature=1.0, max_tokens=32),
+            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
         )
         text = output["text"]
-        expected_text = expected_output(name)
+
         compare_texts(expected_text, text)
 
         # test generate_stream method
         stream = handle.options(stream=True).generate_stream.remote(
             prompt="[INST] Who is Elon Musk? [/INST]",
-            sampling_params=SamplingParams(temperature=1.0, max_tokens=32),
+            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
         )
         text = ""
         async for chunk in stream:
             chunk = await chunk
             text += chunk["text"]
-        expected_text = expected_output(name)
+
         compare_texts(expected_text, text)
 
         # test generate_batch method
@@ -74,10 +72,42 @@ async def test_vllm_deployments():
                 "[INST] Who is Elon Musk? [/INST]",
                 "[INST] Who is Elon Musk? [/INST]",
             ],
-            sampling_params=SamplingParams(temperature=1.0, max_tokens=32),
+            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
         )
         texts = output["texts"]
-        expected_text = expected_output(name)
 
         for text in texts:
             compare_texts(expected_text, text)
+
+        # test chat method
+        dialog = ChatDialog(
+            messages=[
+                ChatMessage(
+                    role="user",
+                    content="Who is Elon Musk?",
+                )
+            ]
+        )
+        output = await handle.chat.remote(
+            dialog=dialog,
+            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+        )
+
+        response_message = output["message"]
+        assert response_message.role == "assistant"
+        text = response_message.content
+
+        compare_texts(expected_text, text)
+
+        # test chat_stream method
+        stream = handle.options(stream=True).chat_stream.remote(
+            dialog=dialog,
+            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+        )
+
+        text = ""
+        async for chunk in stream:
+            chunk = await chunk
+            text += chunk["text"]
+
+        compare_texts(expected_text, text)

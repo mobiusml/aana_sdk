@@ -9,6 +9,9 @@ from faster_whisper.transcribe import (
 
 from aana.models.pydantic.asr_output import (
     AsrSegment,
+    AsrSegments,
+    AsrTranscription,
+    AsrTranscriptionInfo,
     AsrWord,
 )
 from aana.models.pydantic.time_interval import TimeInterval
@@ -78,3 +81,60 @@ def test_asr_word_from_whisper():
     assert asr_word.word == "hello"
     assert asr_word.time_interval == TimeInterval(start=word.start, end=word.end)
     assert asr_word.alignment_confidence == word.probability
+
+
+def test_sum_asr_transcription_info():
+    """Test function for the sum method of the AsrTranscriptionInfo class."""
+    info_1 = AsrTranscriptionInfo(language="en", language_confidence=0.9)
+    info_2 = AsrTranscriptionInfo(language="de", language_confidence=0.8)
+
+    info_sum = sum([info_1, info_2], AsrTranscriptionInfo())
+
+    assert info_sum.language == "en"
+    assert info_sum.language_confidence == 0.9
+
+    info_1 = AsrTranscriptionInfo(language="en", language_confidence=0.9)
+    info_2 = AsrTranscriptionInfo(language="en", language_confidence=0.5)
+
+    info_sum = sum([info_1, info_2], AsrTranscriptionInfo())
+
+    assert info_sum.language == "en"
+    assert info_sum.language_confidence == 0.7
+
+
+def test_sum_asr_segments():
+    """Test function for the sum method of the AsrSegments class."""
+    whisper_segment = WhisperSegment(
+        id=0,
+        seek=0,
+        tokens=[],
+        temperature=0.0,
+        compression_ratio=0.0,
+        start=0.0,
+        end=1.0,
+        avg_logprob=-0.5,
+        no_speech_prob=0.1,
+        words=[],
+        text="hello world",
+    )
+
+    asr_segment_1 = AsrSegment.from_whisper(whisper_segment)
+    asr_segment_2 = AsrSegment.from_whisper(whisper_segment)
+
+    segment_1 = AsrSegments(__root__=[asr_segment_1] * 3)
+    segment_2 = AsrSegments(__root__=[asr_segment_2] * 3)
+
+    segments = sum([segment_1, segment_2], AsrSegments())
+
+    assert len(segments.__root__) == 6
+    assert segments.__root__ == [asr_segment_1] * 3 + [asr_segment_2] * 3
+
+
+def test_sum_asr_transcription():
+    """Test function for the sum method of the AsrTranscription class."""
+    transcription1 = AsrTranscription(text="Hello world")
+    transcription2 = AsrTranscription(text="Another transcription")
+
+    transcription = sum([transcription1, transcription2], AsrTranscription())
+
+    assert transcription.text == "Hello world\nAnother transcription"

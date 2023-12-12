@@ -27,8 +27,6 @@ from aana.models.pydantic.whisper_params import WhisperParams
 #     sampling_params: SamplingParams
 #     vllm_llama2_7b_chat_output_stream: str
 #     vllm_llama2_7b_chat_output: str
-#     vllm_zephyr_7b_beta_output_stream: str
-#     vllm_zephyr_7b_beta_output: str
 #     image_batch: ImageBatch
 #     video_batch: VideoBatch
 #
@@ -155,9 +153,9 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "vllm_llama2_7b_chat_output_dialog",
-                "key": "dialog",
-                "path": "vllm_llama2_7b_chat_output_dialog",
+                "name": "vllm_llama2_7b_chat_output_message",
+                "key": "message",
+                "path": "vllm_llama2_7b_chat_output_message",
             }
         ],
     },
@@ -186,50 +184,6 @@ nodes = [
                 "name": "vllm_llama2_7b_chat_output_dialog_stream",
                 "key": "text",
                 "path": "vllm_llama2_7b_chat_output_dialog_stream",
-            }
-        ],
-    },
-    {
-        "name": "vllm_stream_zephyr_7b_beta",
-        "type": "ray_deployment",
-        "deployment_name": "vllm_deployment_zephyr_7b_beta",
-        "data_type": "generator",
-        "generator_path": "prompt",
-        "method": "generate_stream",
-        "inputs": [
-            {"name": "prompt", "key": "prompt", "path": "prompt"},
-            {
-                "name": "sampling_params",
-                "key": "sampling_params",
-                "path": "sampling_params",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "vllm_zephyr_7b_beta_output_stream",
-                "key": "text",
-                "path": "vllm_zephyr_7b_beta_output_stream",
-            }
-        ],
-    },
-    {
-        "name": "vllm_zephyr_7b_beta",
-        "type": "ray_deployment",
-        "deployment_name": "vllm_deployment_zephyr_7b_beta",
-        "method": "generate",
-        "inputs": [
-            {"name": "prompt", "key": "prompt", "path": "prompt"},
-            {
-                "name": "sampling_params",
-                "key": "sampling_params",
-                "path": "sampling_params",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "vllm_zephyr_7b_beta_output",
-                "key": "text",
-                "path": "vllm_zephyr_7b_beta_output",
             }
         ],
     },
