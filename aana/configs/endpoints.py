@@ -219,5 +219,13 @@ endpoints = {
             ],
             streaming=True,
         ),
+        Endpoint(
+            name="video_metadata",
+            path="/video/metadata",
+            summary="Load video metadata",
+            outputs=[
+                EndpointOutput(name="metadata", output="video_metadata"),
+            ],
+        ),
     ],
 }

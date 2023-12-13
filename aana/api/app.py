@@ -76,8 +76,9 @@ def custom_exception_handler(
     error = exc.__class__.__name__
     # get the message of the exception
     message = str(exc)
+    status_code = exc.http_status_code if hasattr(exc, "http_status_code") else 400
     return AanaJSONResponse(
-        status_code=400,
+        status_code=status_code,
         content=ExceptionResponseModel(
             error=error, message=message, data=data, stacktrace=stacktrace
         ).dict(),
