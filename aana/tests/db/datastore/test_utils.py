@@ -1,4 +1,6 @@
 # ruff: noqa: S101
+from importlib import resources
+from pathlib import Path
 import pytest
 from sqlalchemy.orm import Session
 from aana.models.core.video import Video
@@ -39,13 +41,15 @@ def mock_session(mocker):
 def test_save_video(mock_session):
     """Tests save media function."""
     media_id = "foobar"
-    video = Video(path="/foo/bar.tar.gz", media_id=media_id)
+    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    video = Video(path=path, media_id=media_id)
     result = save_video_single(video)
 
     assert result["media_id"] == media_id
     assert result["video_id"] is None
-    mock_session.context_var.add.assert_called_twice()
-    mock_session.context_var.commit.assert_called_once()
+    # once each for MediaEntity and VideoEntity
+    assert mock_session.context_var.add.call_count == 2
+    assert mock_session.context_var.commit.call_count == 2
 
 
 def test_save_transcripts_batch(mock_session):

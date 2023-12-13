@@ -3,7 +3,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from aana.configs.db import create_database_engine
-from aana.models.db import CaptionEntity, MediaEntity, TranscriptEntity
+from aana.models.db import CaptionEntity, MediaEntity, TranscriptEntity, VideoEntity
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.media_repo import MediaRepository
 from aana.repository.datastore.transcript_repo import TranscriptRepository
@@ -18,16 +18,16 @@ def mocked_session(mocker):
 def test_create_media(mocked_session):
     """Tests that media creation behaves as expected."""
     repo = MediaRepository(mocked_session)
-    duration = 0.5
     media_type = "video"
-    media = MediaEntity(duration=duration, media_type=media_type)
+    media_id = "foo"
+    media = MediaEntity(id=media_id, media_type=media_type)
     media2 = repo.create(media)
 
     # We need an integreation test to ensure that that the id gets set
     # on creation, because the mocked version won't set it.
     assert media2 == media
-    assert media2.duration == duration
     assert media2.media_type == media_type
+    assert media2.id == media_id
 
     mocked_session.add.assert_called_once_with(media)
     mocked_session.commit.assert_called_once()
@@ -36,15 +36,18 @@ def test_create_media(mocked_session):
 def test_create_caption(mocked_session):
     """Tests caption creation."""
     repo = CaptionRepository(mocked_session)
-    duration = 500.25
+    media_id = "foo"
     media_type = "video"
+    video_duration = 500.25
     model_name = "no_model"
     caption_text = "This is the right caption text."
     frame_id = 32767
     timestamp = 327.6
-    media = MediaEntity(duration=duration, media_type=media_type)
+    media = MediaEntity(id=media_id, media_type=media_type)
+    video = VideoEntity(media_id=media_id, duration=video_duration)
     caption = CaptionEntity(
-        media=media,
+        media_id=media_id,
+        video=video,
         model=model_name,
         frame_id=frame_id,
         caption=caption_text,
@@ -53,7 +56,9 @@ def test_create_caption(mocked_session):
     caption2 = repo.create(caption)
 
     # See above
-    assert caption2.media == media
+    assert caption2.video == video
+    assert caption2.media_id == media_id
+    assert caption2.video_id == video.id
     assert caption2.model == model_name
     assert caption2.frame_id == frame_id
     assert caption2.caption == caption_text
@@ -66,6 +71,7 @@ def test_create_caption(mocked_session):
 def test_create_transcript(mocked_session):
     """Tests transcript creation."""
     repo = TranscriptRepository(mocked_session)
+    media_id = "foo"
     duration = 500.25
     media_type = "video"
     model_name = "no_model"
@@ -73,9 +79,11 @@ def test_create_transcript(mocked_session):
     segments = "This is a segments string."
     language = "en"
     language_confidence = 0.5
-    media = MediaEntity(duration=duration, media_type=media_type)
+    media = MediaEntity(id=media_id, media_type=media_type)
+    video = VideoEntity(media_id=media_id, duration=duration)
     transcript = TranscriptEntity(
-        media=media,
+        media_id=media_id,
+        video=video,
         model=model_name,
         transcript=transcript_text,
         segments=segments,
@@ -85,7 +93,8 @@ def test_create_transcript(mocked_session):
     transcript2 = repo.create(transcript)
 
     # See above
-    assert transcript2.media == media
+    assert transcript2.video_id == video.id
+    assert transcript2.media_id == media.id
     assert transcript2.model == model_name
     assert transcript2.transcript == transcript_text
     assert transcript2.segments == segments
