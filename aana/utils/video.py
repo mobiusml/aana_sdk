@@ -7,7 +7,6 @@ import numpy as np
 import yt_dlp
 from yt_dlp.utils import DownloadError
 
-from aana.configs.db import id_type
 from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.image import Image
@@ -23,7 +22,7 @@ class FramesDict(TypedDict):
     frames: list[Image]
     timestamps: list[float]
     duration: float
-    frame_ids: list[id_type]
+    frame_ids: list[int]
 
 
 def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:

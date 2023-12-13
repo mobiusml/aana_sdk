@@ -9,8 +9,8 @@ from sqlalchemy import String, create_engine
 
 # These are here so we can change types in a single place.
 
-id_type: TypeAlias = str
-IdSqlType: TypeAlias = String
+media_id_type: TypeAlias = str
+MediaIdSqlType: TypeAlias = String
 
 
 class SQLiteConfig(TypedDict):
@@ -92,7 +92,7 @@ def get_alembic_config(app_config, ini_file_path, alembic_data_path) -> Config:
     """Produces an alembic config to run migrations programmatically."""
     engine = create_database_engine(app_config.db_config)
     alembic_config = Config(ini_file_path)
-    alembic_config.set_main_option('script_location', str(alembic_data_path))
+    alembic_config.set_main_option("script_location", str(alembic_data_path))
     config_section = alembic_config.get_section(alembic_config.config_ini_section, {})
     config_section["sqlalchemy.url"] = engine.url
 

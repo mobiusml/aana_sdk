@@ -1,8 +1,8 @@
 # ruff: noqa: S101
 import pytest
 from sqlalchemy.orm import Session
+from aana.models.core.video import Video
 
-from aana.models.db import MediaType
 from aana.models.pydantic.asr_output import (
     AsrSegments,
     AsrSegmentsList,
@@ -12,7 +12,13 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import Caption, CaptionsList
-from aana.utils.db import save_captions_batch, save_media, save_transcripts_batch
+from aana.utils.db import (
+    save_captions_batch,
+    save_video_single,
+    save_transcripts_batch,
+    save_video_captions,
+    save_video_transcripts,
+)
 
 
 @pytest.fixture()
@@ -30,19 +36,19 @@ def mock_session(mocker):
     return session_mock
 
 
-def test_save_media(mock_session):
+def test_save_video(mock_session):
     """Tests save media function."""
-    media_type = MediaType.VIDEO
-    duration = 0.5
+    media_id = "foobar"
+    video = Video(path="/foo/bar.tar.gz", media_id=media_id)
+    result = save_video_single(video)
 
-    media_id = save_media(media_type, duration)
-
-    assert media_id is None
-    mock_session.context_var.add.assert_called_once()
+    assert result["media_id"] == media_id
+    assert result["video_id"] is None
+    mock_session.context_var.add.assert_called_twice()
     mock_session.context_var.commit.assert_called_once()
 
 
-def test_save_transcripts(mock_session):
+def test_save_transcripts_batch(mock_session):
     """Tests save transcripts function."""
     media_ids = ["0"]
     model = "test_model"
@@ -60,22 +66,52 @@ def test_save_transcripts(mock_session):
         )
     ]
     segments = [AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)]
-    result = save_transcripts_batch(
-        model, media_ids, transcription_infos, transcripts, segments
+    with pytest.raises(NotImplementedError):
+        result = save_transcripts_batch(
+            model, media_ids, transcription_infos, transcripts, segments
+        )
+        result_ids = result["transcript_ids"]
+
+        assert (
+            len(result_ids)
+            == len(transcripts[0])
+            == len(transcription_infos[0])
+            == len(segments[0])
+        )
+        mock_session.context_var.add_all.assert_called_once()
+        mock_session.context_var.commit.assert_called_once()
+
+
+def test_save_transcripts_single(mock_session):
+    """Tests save transcripts function."""
+    media_id = "0"
+    video_id = 0
+    model = "test_model"
+    texts = ("A transcript", "Another transcript", "A third transcript")
+    infos = [("en", 0.5), ("de", 0.36), ("fr", 0.99)]
+    transcripts = AsrTranscriptionList(
+        __root__=[AsrTranscription(text=text) for text in texts]
+    )
+    transcription_infos = AsrTranscriptionInfoList(
+        __root__=[
+            AsrTranscriptionInfo(language=lang, language_confidence=conf)
+            for lang, conf in infos
+        ]
+    )
+    segments = AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)
+    result = save_video_transcripts(
+        model, media_id, video_id, transcription_infos, transcripts, segments
     )
     result_ids = result["transcript_ids"]
 
     assert (
-        len(result_ids)
-        == len(transcripts[0])
-        == len(transcription_infos[0])
-        == len(segments[0])
+        len(result_ids) == len(transcripts) == len(transcription_infos) == len(segments)
     )
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
 
 
-def test_save_captions(mock_session):
+def test_save_captions_batch(mock_session):
     """Tests save captions function."""
     media_ids = ["0"]
     models = "test_model"
@@ -85,16 +121,42 @@ def test_save_captions(mock_session):
     ]
     timestamps = [[0.1, 0.2, 0.3, 0.4]]
     frame_ids = [[0, 1, 2]]
+    with pytest.raises(NotImplementedError):
+        result = save_captions_batch(
+            media_ids, models, captions_list, timestamps, frame_ids
+        )
 
-    result = save_captions_batch(
-        media_ids, models, captions_list, timestamps, frame_ids
+        assert (
+            len(result["caption_ids"])
+            == len(captions_list[0])
+            == len(timestamps[0][:-1])
+            == len(frame_ids[0])
+        )
+        mock_session.context_var.add_all.assert_called_once()
+        mock_session.context_var.commit.assert_called_once()
+
+
+def test_save_captions_single(mock_session):
+    """Tests save captions function."""
+    media_id = "0"
+    video_id = 0
+    model_name = "test_model"
+    captions = ["A caption", "Another caption", "A third caption"]
+    captions_list = CaptionsList(
+        __root__=[Caption(__root__=caption) for caption in captions]
+    )
+    timestamps = [0.1, 0.2, 0.3]
+    frame_ids = [0, 1, 2]
+
+    result = save_video_captions(
+        model_name, media_id, video_id, captions_list, timestamps, frame_ids
     )
 
     assert (
         len(result["caption_ids"])
-        == len(captions_list[0])
-        == len(timestamps[0][:-1])
-        == len(frame_ids[0])
+        == len(captions_list)
+        == len(timestamps)
+        == len(frame_ids)
     )
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()

@@ -4,28 +4,35 @@ from urllib.parse import urlparse
 
 from sqlalchemy.orm import Session
 
-from aana.configs.db import id_type
+from aana.configs.db import media_id_type
 from aana.models.core.video import Video
-from aana.models.db import CaptionEntity, MediaEntity, MediaType, TranscriptEntity
+from aana.models.db import (
+    CaptionEntity,
+    MediaEntity,
+    MediaType,
+    TranscriptEntity,
+    VideoEntity,
+)
 from aana.models.pydantic.asr_output import (
     AsrSegments,
     AsrTranscriptionInfoList,
     AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import CaptionsList
-from aana.models.pydantic.video_params import VideoParams
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.engine import engine
 from aana.repository.datastore.media_repo import MediaRepository
 from aana.repository.datastore.transcript_repo import TranscriptRepository
+from aana.repository.datastore.video_repo import VideoRepository
 
 
 # Just using raw utility functions like this isn't a permanent solution, but
 # it's good enough for now to validate what we're working on.
 def save_video_batch(
     videos: list[Video],  # , video_params: list[VideoParams]
-) -> list[id_type]:
+) -> dict:
     """Saves a batch of videos to datastore."""
+    raise NotImplementedError("Needs to be fixed.")
     entities = []
     for video_object, _ in zip(videos, videos, strict=True):
         if video_object.url is not None:
@@ -55,8 +62,8 @@ def save_video_batch(
 
 
 def save_video_single(
-    video: Video,  # , video_params: list[VideoParams]
-) -> id_type:
+    video: Video,
+) -> dict:
     """Saves a batch of videos to datastore."""
     if video.url is not None:
         orig_url = video.url
@@ -69,48 +76,34 @@ def save_video_single(
     else:
         orig_url = None
         orig_filename = None
-    entity = MediaEntity(
-        id=video.media_id,
+    media_entity = MediaEntity(id=video.media_id, media_type=MediaType.VIDEO)
+    video_entity = VideoEntity(
+        media=media_entity,
         media_type=MediaType.VIDEO,
         orig_filename=orig_filename,
         orig_url=orig_url,
     )
     with Session(engine) as session:
-        repo = MediaRepository(session)
-        result = repo.create(entity)
+        media_repo = MediaRepository(session)
+        _ = media_repo.create(media_entity)
+        video_repo = VideoRepository(session)
+        _ = video_repo.create(video_entity)
         return {
-            "media_id": result.id  # type: ignore
+            "media_id": media_entity.id,  # type: ignore
+            "video_id": video_entity.id,
         }
 
 
-def save_media(media_type: MediaType, duration: float) -> id_type:
-    """Creates and saves media to datastore.
-
-    Args:
-        media_type (MediaType): type of media
-        duration (float): duration of media
-
-    Returns:
-        id_type: datastore id of the inserted Media.
-    """
-    with Session(engine) as session:
-        media = MediaEntity(duration=duration, media_type=media_type)
-        repo = MediaRepository(session)
-        media = repo.create(media)
-        return media.id  # type: ignore
-
-
 def save_captions_batch(
-    media_ids: list[id_type],
+    media_ids: list[media_id_type],
     model_name: str,
     captions_list: list[CaptionsList],
     timestamps_list: list[list[float]],
     frame_ids_list: list[list[int]],
-) -> list[id_type]:
+) -> dict:
     """Save captions."""
-    print(
-        f"{len(media_ids)}\n{len(timestamps_list[0])}\n{len(list(frame_ids_list[0]))}\n{model_name=}\ncaptions: {len(captions_list[0])}"
-    )
+    raise NotImplementedError("Needs to be fixed")
+
     with Session(engine) as session:
         entities = [
             CaptionEntity.from_caption_output(
@@ -132,17 +125,18 @@ def save_captions_batch(
 
 
 def save_video_captions(
-    media_id: id_type,
     model_name: str,
+    media_id: media_id_type,
+    video_id: int,
     captions: CaptionsList,
     timestamps: list[float],
     frame_ids: list[int],
-) -> list[id_type]:
+) -> dict:
     """Save captions."""
     with Session(engine) as session:
         entities = [
             CaptionEntity.from_caption_output(
-                model_name, media_id, frame_id, timestamp, caption
+                model_name, media_id, video_id, frame_id, timestamp, caption
             )
             for caption, timestamp, frame_id in zip(
                 captions, timestamps, frame_ids, strict=True
@@ -158,15 +152,13 @@ def save_video_captions(
 
 def save_transcripts_batch(
     model_name: str,
-    media_ids: list[id_type],
+    media_ids: list[media_id_type],
     transcript_info_list: list[AsrTranscriptionInfoList],
     transcripts_list: list[AsrTranscriptionList],
     segments_list: list[AsrSegments],
-) -> list[id_type]:
+) -> dict:
     """Save transcripts."""
-    print(
-        f"{len(media_ids)}\n{len(transcript_info_list)}\n{len(transcripts_list)}\n{len(segments_list)}"
-    )
+    raise NotImplementedError("Needs to be fixed")
     with Session(engine) as session:
         entities = [
             TranscriptEntity.from_asr_output(model_name, media_id, info, txn, seg)
@@ -191,15 +183,18 @@ def save_transcripts_batch(
 
 def save_video_transcripts(
     model_name: str,
-    media_id: id_type,
+    media_id: media_id_type,
+    video_id: int,
     transcript_infos: AsrTranscriptionInfoList,
     transcripts: AsrTranscriptionList,
     segments: AsrSegments,
-) -> list[id_type]:
+) -> dict:
     """Save transcripts."""
     with Session(engine) as session:
         entities = [
-            TranscriptEntity.from_asr_output(model_name, media_id, info, txn, seg)
+            TranscriptEntity.from_asr_output(
+                model_name, media_id, video_id, info, txn, seg
+            )
             for info, txn, seg in zip(
                 transcript_infos, transcripts, segments, strict=True
             )

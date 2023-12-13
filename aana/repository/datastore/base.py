@@ -4,7 +4,7 @@ from typing import Generic, TypeVar
 
 from sqlalchemy.orm import Session
 
-from aana.configs.db import id_type
+from aana.configs.db import media_id_type
 from aana.exceptions.database import NotFoundException
 from aana.models.db import BaseModel
 
@@ -42,11 +42,11 @@ class BaseRepository(Generic[T]):
         self.session.commit()
         return entities
 
-    def read(self, item_id: id_type) -> T:
+    def read(self, item_id: int | media_id_type) -> T:
         """Reads a single item by id from the database.
 
         Args:
-            item_id (id_type): id of the item to retrieve
+            item_id (int): id of the item to retrieve
 
         Returns:
             The corresponding entity from the database if found.
@@ -59,11 +59,11 @@ class BaseRepository(Generic[T]):
             raise NotFoundException(self.table_name, item_id)
         return entity
 
-    def delete(self, id: id_type, check: bool = False) -> T | None:
+    def delete(self, id: int | media_id_type, check: bool = False) -> T | None:
         """Deletes an entity.
 
         Args:
-            id (id_type): the id of the item to be deleted.
+            id (int): the id of the item to be deleted.
             check (bool): whether to raise if the entity is not found (defaults to True).
 
         Returns:
