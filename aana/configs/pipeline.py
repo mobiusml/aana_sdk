@@ -17,6 +17,7 @@ from aana.models.pydantic.image_input import ImageInputList
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.models.pydantic.video_input import VideoInput, VideoInputList
+from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
 from aana.models.pydantic.whisper_params import WhisperParams
 
@@ -667,6 +668,7 @@ nodes = [
                 "name": "video_metadata",
                 "key": "output",
                 "path": "video_metadata",
+                "data_model": VideoMetadata,
             },
         ],
     },
