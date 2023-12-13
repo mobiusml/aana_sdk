@@ -2,10 +2,10 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, Column, Float, ForeignKey, JSON, String
+from sqlalchemy import JSON, CheckConstraint, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from aana.configs.db import IdSqlType, id_type
+from aana.configs.db import MediaIdSqlType, media_id_type
 from aana.models.db.base import BaseModel, TimeStampEntity
 
 if TYPE_CHECKING:
@@ -21,15 +21,21 @@ class TranscriptEntity(BaseModel, TimeStampEntity):
 
     __tablename__ = "transcripts"
 
-    id = Column(IdSqlType, primary_key=True)  # noqa: A003
+    id = Column(Integer, autoincrement=True, primary_key=True)  # noqa: A003
     model = Column(
         String, nullable=False, comment="Name of model used to generate transcript"
     )
     media_id = Column(
-        IdSqlType,
+        MediaIdSqlType,
         ForeignKey("media.id"),
         nullable=False,
         comment="Foreign key to media table",
+    )
+    video_id = Column(
+        Integer,
+        ForeignKey("video.id"),
+        nullable=False,
+        comment="Foreign key to video table",
     )
     transcript = Column(String, comment="Full text transcript of media")
     segments = Column(JSON, comment="Segments of the transcript")
@@ -42,13 +48,14 @@ class TranscriptEntity(BaseModel, TimeStampEntity):
         comment="Confidence score of language prediction",
     )
 
-    media = relationship("MediaEntity", back_populates="transcripts")
+    video = relationship("VideoEntity", back_populates="transcripts")
 
     @classmethod
     def from_asr_output(
         cls,
         model_name: str,
-        media_id: id_type,
+        media_id: media_id_type,
+        video_id: int,
         info: AsrTranscriptionInfo,
         transcription: AsrTranscription,
         segments: AsrSegments,
@@ -57,6 +64,7 @@ class TranscriptEntity(BaseModel, TimeStampEntity):
         return TranscriptEntity(
             model=model_name,
             media_id=media_id,
+            video_id=video_id,
             language=info.language,
             language_confidence=info.language_confidence,
             transcript=transcription.text,

@@ -1,9 +1,8 @@
 from enum import Enum
 
-from sqlalchemy import Column, Float, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer, String
 
-from aana.configs.db import IdSqlType, id_type
+from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseModel, TimeStampEntity
 
 
@@ -14,15 +13,14 @@ class MediaType(str, Enum):
 
 
 class MediaEntity(BaseModel, TimeStampEntity):
-    """ORM class for media file (video, etc)."""
+    """Table for media items."""
 
     __tablename__ = "media"
-
-    id = Column(IdSqlType, primary_key=True)  # noqa: A003
-    duration = Column(Float, comment="Media duration in seconds")
-    media_type = Column(String, comment="Media type")
-    orig_filename = Column(String, comment="Original filename")
-    orig_url = Column(String, comment="Original URL")
-
-    captions = relationship("CaptionEntity", back_populates="media")
-    transcripts = relationship("TranscriptEntity", back_populates="media")
+    id = Column(MediaIdSqlType, primary_key=True)  # noqa: A003
+    media_type = Column(String, comment="The type of media")
+    video_id = Column(
+        Integer,
+        ForeignKey("video.id"),
+        nullable=True,
+        comment="If media_type is `video`, the id of the video this entry represents.",
+    )

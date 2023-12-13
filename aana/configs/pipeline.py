@@ -505,8 +505,13 @@ nodes = [
             {
                 "name": "media_id",
                 "key": "media_id",
+                "path": "video.media_id",
+            },
+            {
+                "name": "video_id",
+                "key": "video_id",
                 "path": "video.id",
-            }
+            },
         ],
     },
     {
@@ -521,6 +526,11 @@ nodes = [
             {
                 "name": "media_id",
                 "key": "media_id",
+                "path": "video.media_id",
+            },
+            {
+                "name": "video_id",
+                "key": "video_id",
                 "path": "video.id",
             },
             {
@@ -559,6 +569,11 @@ nodes = [
             {
                 "name": "media_id",
                 "key": "media_id",
+                "path": "video.media_id",
+            },
+            {
+                "name": "video_id",
+                "key": "video_id",
                 "path": "video.id",
             },
             {
