@@ -83,7 +83,7 @@ def generate_frames_decord(
         batch_size (int): the number of frames to yield at each iteration
 
     Yields:
-        FramesDict: a dictionary containing the extracted frames, timestamps,
+        FramesDict: a dictionary containing the extracted frames, frame ids, timestamps,
                     and duration for each batch
     """
     device = decord.cpu(0)
@@ -118,7 +118,10 @@ def generate_frames_decord(
 
         batch_timestamps = timestamps[i : i + batch_size]
         yield FramesDict(
-            frames=batch_frames, timestamps=batch_timestamps, duration=duration
+            frames=batch_frames,
+            frame_ids=list(range(len(batch_frames))),
+            timestamps=batch_timestamps,
+            duration=duration,
         )
 
 
