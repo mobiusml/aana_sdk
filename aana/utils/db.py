@@ -54,6 +54,35 @@ def save_video_batch(
         }
 
 
+def save_video_single(
+    video: Video,  # , video_params: list[VideoParams]
+) -> id_type:
+    """Saves a batch of videos to datastore."""
+    if video.url is not None:
+        orig_url = video.url
+        parsed_url = urlparse(orig_url)
+        orig_filename = Path(parsed_url.path).name
+    elif video.path is not None:
+        parsed_path = Path(video.path)
+        orig_filename = parsed_path.name
+        orig_url = None
+    else:
+        orig_url = None
+        orig_filename = None
+    entity = MediaEntity(
+        id=video.media_id,
+        media_type=MediaType.VIDEO,
+        orig_filename=orig_filename,
+        orig_url=orig_url,
+    )
+    with Session(engine) as session:
+        repo = MediaRepository(session)
+        result = repo.create(entity)
+        return {
+            "media_id": result.id  # type: ignore
+        }
+
+
 def save_media(media_type: MediaType, duration: float) -> id_type:
     """Creates and saves media to datastore.
 
@@ -102,6 +131,31 @@ def save_captions_batch(
         }
 
 
+def save_video_captions(
+    media_id: id_type,
+    model_name: str,
+    captions: CaptionsList,
+    timestamps: list[float],
+    frame_ids: list[int],
+) -> list[id_type]:
+    """Save captions."""
+    with Session(engine) as session:
+        entities = [
+            CaptionEntity.from_caption_output(
+                model_name, media_id, frame_id, timestamp, caption
+            )
+            for caption, timestamp, frame_id in zip(
+                captions, timestamps, frame_ids, strict=True
+            )
+        ]
+        repo = CaptionRepository(session)
+        results = repo.create_multiple(entities)
+        # return [c.id for c in results]
+        return {
+            "caption_ids": [c.id for c in results]  # type: ignore
+        }
+
+
 def save_transcripts_batch(
     model_name: str,
     media_ids: list[id_type],
@@ -130,6 +184,30 @@ def save_transcripts_batch(
 
         repo = TranscriptRepository(session)
         entities = repo.create_multiple(entities)
+        return {
+            "transcript_ids": [c.id for c in entities]  # type: ignore
+        }
+
+
+def save_video_transcripts(
+    model_name: str,
+    media_id: id_type,
+    transcript_infos: AsrTranscriptionInfoList,
+    transcripts: AsrTranscriptionList,
+    segments: AsrSegments,
+) -> list[id_type]:
+    """Save transcripts."""
+    with Session(engine) as session:
+        entities = [
+            TranscriptEntity.from_asr_output(model_name, media_id, info, txn, seg)
+            for info, txn, seg in zip(
+                transcript_infos, transcripts, segments, strict=True
+            )
+        ]
+
+        repo = TranscriptRepository(session)
+        entities = repo.create_multiple(entities)
+        print(len(entities))
         return {
             "transcript_ids": [c.id for c in entities]  # type: ignore
         }
