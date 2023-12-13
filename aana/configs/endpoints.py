@@ -47,9 +47,9 @@ endpoints = {
             summary="Generate captions for videos using BLIP2 OPT-2.7B",
             outputs=[
                 EndpointOutput(
-                    name="captions", output="videos_captions_hf_blip2_opt_2_7b"
+                    name="captions", output="video_captions_hf_blip2_opt_2_7b"
                 ),
-                EndpointOutput(name="timestamps", output="timestamps"),
+                EndpointOutput(name="timestamps", output="video_timestamps"),
                 EndpointOutput(name="caption_ids", output="caption_ids"),
             ],
         ),
