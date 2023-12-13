@@ -2,7 +2,6 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from aana.configs.db import create_database_engine
 from aana.models.db import CaptionEntity, MediaEntity, TranscriptEntity, VideoEntity
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.media_repo import MediaRepository
