@@ -4,6 +4,7 @@ import ray
 from ray import serve
 
 from aana.configs.deployments import deployments
+from aana.exceptions.general import PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.tests.utils import compare_texts, is_gpu_available
@@ -111,3 +112,10 @@ async def test_vllm_deployments():
             text += chunk["text"]
 
         compare_texts(expected_text, text)
+
+        # test generate method with too long prompt
+        with pytest.raises(PromptTooLongException):
+            output = await handle.generate.remote(
+                prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
+                sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+            )

@@ -10,7 +10,7 @@ from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import get_gpu_memory, random_uuid
 
 from aana.deployments.base_deployment import BaseDeployment
-from aana.exceptions.general import InferenceException
+from aana.exceptions.general import InferenceException, PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.chat_template import apply_chat_template
@@ -116,6 +116,7 @@ class VLLMDeployment(BaseDeployment):
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
         self.tokenizer = self.engine.engine.tokenizer
+        self.model_config = await self.engine.get_model_config()
 
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams
@@ -132,6 +133,16 @@ class VLLMDeployment(BaseDeployment):
         prompt = str(prompt)
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
         request_id = None
+
+        # tokenize the prompt
+        prompt_token_ids = self.tokenizer.encode(prompt)
+
+        if len(prompt_token_ids) > self.model_config.max_model_len:
+            raise PromptTooLongException(
+                prompt_len=len(prompt_token_ids),
+                max_len=self.model_config.max_model_len,
+            )
+
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
@@ -142,7 +153,10 @@ class VLLMDeployment(BaseDeployment):
             # set the random seed for reproducibility
             set_random_seed(42)
             results_generator = self.engine.generate(
-                prompt, sampling_params_vllm, request_id
+                prompt=None,
+                sampling_params=sampling_params_vllm,
+                request_id=request_id,
+                prompt_token_ids=prompt_token_ids,
             )
 
             num_returned = 0

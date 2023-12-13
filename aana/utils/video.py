@@ -371,13 +371,22 @@ def load_video_timeline(media_id: str):
     return timeline
 
 
-def generate_dialog(metadata: dict, timeline: list[dict], question: str) -> ChatDialog:
+def generate_dialog(
+    metadata: dict,
+    timeline: list[dict],
+    question: str,
+    max_timeline_len: int | None = 1024,
+) -> ChatDialog:
     """Generates a dialog from the metadata and timeline of a video.
 
     Args:
         metadata (dict): the metadata of the video
         timeline (list[dict]): the timeline of the video
         question (str): the question to ask
+        max_timeline_len (int, optional): the maximum length of the timeline in tokens.
+                                          Defaults to 1024.
+                                          If the timeline is longer than this, it will be truncated.
+                                          If None, the timeline will not be truncated.
 
     Returns:
         ChatDialog: the generated dialog
@@ -419,6 +428,12 @@ def generate_dialog(metadata: dict, timeline: list[dict], question: str) -> Chat
     )
 
     timeline_json = json.dumps(timeline, indent=4, separators=(",", ": "))
+    # truncate the timeline if it is too long
+    timeline_tokens = (
+        timeline_json.split()
+    )  # not an accurate count of tokens, but good enough
+    if max_timeline_len is not None and len(timeline_tokens) > max_timeline_len:
+        timeline_json = " ".join(timeline_tokens[:max_timeline_len])
 
     messages = []
     messages.append(ChatMessage(content=system_prompt_preamble, role="system"))
