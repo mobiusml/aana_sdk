@@ -112,6 +112,10 @@ endpoints = {
                 EndpointOutput(
                     name="info", output="video_transcriptions_info_whisper_medium"
                 ),
+                EndpointOutput(
+                    name="transcription_id", output="transcription_id"
+                )
+
             ],
             streaming=True,
         ),
