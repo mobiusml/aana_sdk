@@ -149,3 +149,25 @@ class PromptTooLongException(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.prompt_len, self.max_len))
+
+
+class MediaIdFoundException(BaseException):
+    """Exception raised when a media ID is found in the prompt.
+
+    Attributes:
+        media_id (str): the media ID
+    """
+
+    def __init__(self, media_id: str):
+        """Initialize the exception.
+
+        Args:
+            media_id (str): the media ID
+        """
+        super().__init__(media_id=media_id)
+        self.media_id = media_id
+        self.http_status_code = 404
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.media_id,))
