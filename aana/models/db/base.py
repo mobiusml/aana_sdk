@@ -2,7 +2,7 @@ from sqlalchemy import Column, DateTime, func
 from sqlalchemy.orm import DeclarativeBase
 
 
-class BaseModel(DeclarativeBase):
+class BaseEntity(DeclarativeBase):
     """Base for all ORM classes."""
 
     pass
