@@ -87,9 +87,8 @@ def test_save_transcripts_batch(mock_session):
         )
     ] * 2
     segments = [AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)] * 2
-    video_ids = [0, 1]
     result = save_transcripts_batch(
-        model, media_ids, video_ids, transcription_infos, transcripts, segments
+        model, media_ids, transcription_infos, transcripts, segments
     )
     result_ids = result["transcript_ids"]
 
@@ -106,7 +105,6 @@ def test_save_transcripts_batch(mock_session):
 def test_save_transcripts_single(mock_session):
     """Tests save transcripts function."""
     media_id = "0"
-    video_id = 0
     model = "test_model"
     texts = ("A transcript", "Another transcript", "A third transcript")
     infos = [("en", 0.5), ("de", 0.36), ("fr", 0.99)]
@@ -121,7 +119,7 @@ def test_save_transcripts_single(mock_session):
     )
     segments = AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)
     result = save_video_transcripts(
-        model, media_id, video_id, transcription_infos, transcripts, segments
+        model, media_id, transcription_infos, transcripts, segments
     )
     result_ids = result["transcript_ids"]
 
@@ -160,7 +158,6 @@ def test_save_captions_batch(mock_session):
 def test_save_captions_single(mock_session):
     """Tests save captions function."""
     media_id = "0"
-    video_id = 0
     model_name = "test_model"
     captions = ["A caption", "Another caption", "A third caption"]
     captions_list = CaptionsList(
@@ -170,7 +167,7 @@ def test_save_captions_single(mock_session):
     frame_ids = [0, 1, 2]
 
     result = save_video_captions(
-        model_name, media_id, video_id, captions_list, timestamps, frame_ids
+        model_name, media_id, captions_list, timestamps, frame_ids
     )
 
     assert (

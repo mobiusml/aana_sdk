@@ -83,7 +83,7 @@ endpoints = {
                 ),
                 EndpointOutput(
                     name="transcription_ids", output="videos_transcription_ids"
-                )
+                ),
             ],
         )
     ],

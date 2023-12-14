@@ -22,9 +22,6 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     Returns:
         JSONResponse: JSON response with the error details
     """
-    import traceback
-
-    traceback.print_exception(exc)
     return AanaJSONResponse(
         status_code=422,
         content=ExceptionResponseModel(
