@@ -63,6 +63,22 @@ def test_video(mock_download_file):
         video.cleanup()
 
 
+def test_media_dir():
+    """Test that the media_dir is set correctly."""
+    # Test saving from URL to disk
+    video_dir = settings.video_dir
+    try:
+        url = "http://example.com/squirrel.mp4"
+        video = Video(url=url, save_on_disk=True)
+        assert video.media_dir == video_dir
+        assert video.content is None
+        assert video.url == url
+        assert video.path.exists()
+        assert str(video.path).startswith(str(video_dir))
+    finally:
+        video.cleanup()
+
+
 def test_video_path_not_exist():
     """Test that the video can't be created from path if the path doesn't exist."""
     path = Path("path/to/video_that_does_not_exist.mp4")
@@ -157,18 +173,19 @@ def test_download_video(mock_download_file):
         assert video.content is None
         assert video.url == url
         assert video.path.exists()
+        assert video.media_id == video_input.media_id
     finally:
         video.cleanup()
 
     # Test Youtube URL
-    youtube_url = "https://www.youtube.com/watch?v=yModCU1OVHY"
+    youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     youtube_video_dir = settings.youtube_video_dir
-    expected_path = youtube_video_dir / "yModCU1OVHY.mp4"
+    expected_path = youtube_video_dir / "dQw4w9WgXcQ.mp4"
     # remove the file if it exists
     expected_path.unlink(missing_ok=True)
 
     try:
-        youtube_video_input = VideoInput(url=youtube_url)
+        youtube_video_input = VideoInput(url=youtube_url, media_id="dQw4w9WgXcQ")
         video = download_video(youtube_video_input)
         assert isinstance(video, Video)
         assert video.path == expected_path
@@ -176,6 +193,14 @@ def test_download_video(mock_download_file):
         assert video.path.exists()
         assert video.content is None
         assert video.url is None
+        assert video.media_id == "dQw4w9WgXcQ"
+        assert (
+            video.title
+            == "Rick Astley - Never Gonna Give You Up (Official Music Video)"
+        )
+        assert video.description.startswith(
+            "The official video for “Never Gonna Give You Up” by Rick Astley."
+        )
     finally:
         if video and video.path:
             video.path.unlink(missing_ok=True)
