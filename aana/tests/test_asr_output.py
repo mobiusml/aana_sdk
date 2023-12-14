@@ -128,6 +128,8 @@ def test_sum_asr_segments():
 
     assert len(segments.__root__) == 6
     assert segments.__root__ == [asr_segment_1] * 3 + [asr_segment_2] * 3
+    assert segments.__root__[:3] == segment_1.__root__
+    assert segments.__root__[3:] == segment_2.__root__
 
 
 def test_sum_asr_transcription():

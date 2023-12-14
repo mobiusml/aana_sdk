@@ -14,7 +14,7 @@ from yt_dlp.utils import DownloadError
 from aana.configs.settings import settings
 from aana.exceptions.general import (
     DownloadException,
-    MediaIdFoundException,
+    MediaIdNotFoundException,
     VideoReadingException,
 )
 from aana.models.core.image import Image
@@ -353,7 +353,7 @@ def load_video_metadata(media_id: str):
 
     output_path = Path(output_dir) / f"{media_id}.pkl"
     if not output_path.exists():
-        raise MediaIdFoundException(media_id)
+        raise MediaIdNotFoundException(media_id)
     with output_path.open("rb") as f:
         metadata = pickle.load(f)  # noqa: S301
     return metadata
