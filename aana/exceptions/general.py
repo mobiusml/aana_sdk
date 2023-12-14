@@ -151,8 +151,8 @@ class PromptTooLongException(BaseException):
         return (self.__class__, (self.prompt_len, self.max_len))
 
 
-class MediaIdFoundException(BaseException):
-    """Exception raised when a media ID is found in the prompt.
+class MediaIdNotFoundException(BaseException):
+    """Exception raised when a media ID is not found.
 
     Attributes:
         media_id (str): the media ID

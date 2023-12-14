@@ -1,3 +1,4 @@
+# ruff: noqa: S101
 import pytest
 from jinja2 import TemplateError
 from transformers import AutoTokenizer
@@ -68,12 +69,9 @@ def test_chat_messages_without_system():
         tokenizer, dialog, "llama2"
     )  # Apply custom chat template "llama2"
 
-    assert (  # noqa: S101
-        prompt
-        == (
-            "<s>[INST] How many helicopters can a human eat in one sitting? [/INST] I don't know, how many? </s>"
-            "<s>[INST] One, but only if they're really hungry! [/INST]"
-        )
+    assert prompt == (
+        "<s>[INST] How many helicopters can a human eat in one sitting? [/INST] I don't know, how many? </s>"
+        "<s>[INST] One, but only if they're really hungry! [/INST]"
     )
 
 
