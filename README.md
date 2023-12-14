@@ -102,10 +102,10 @@ to look for `/nas` and `/nas2`). You can read more about environment variables f
 
 ## Code Standards
 This project uses Ruff for linting and formatting. If you want to 
-manually run Ruff on the codebase, it's
+manually run Ruff on the codebase, using poetry it's
 
 ```sh
-ruff check aana
+poetry run ruff check aana
 ```
 
 You can automatically fix some issues with the `--fix`
@@ -115,9 +115,10 @@ You can automatically fix some issues with the `--fix`
 To run the auto-formatter, it's
 
 ```sh
-ruff format aana
+poetry run ruff format aana
 ```
 
+(If you are running code in a non-poetry environment, just leave off `poetry run`.)
 If you want to enable this as a local pre-commit hook, additionally
 run the following:
 
@@ -142,17 +143,17 @@ referred to internally as vectorstore and datastore, respectively.
 TBD
 
 ### Datastore
-The datastore uses SQLAlchemy as an ORM layer and Alembic for migrations. Before running the project,
-it is necessary to run `alembic upgrade head` to ensure the database exists and has the correct tables
-and columns. If changes are made to the SQLAlchemy models, it is necessary to also create an alembic
-migration that can be run to upgrade the database. The easiest way to do so is as follows:
+The datastore uses SQLAlchemy as an ORM layer and Alembic for migrations. The migrations are run 
+automatically at startup. If changes are made to the SQLAlchemy models, it is necessary to also 
+create an alembic migration that can be run to upgrade the database. 
+The easiest way to do so is as follows:
 
 ```bash
-alembic revision --autogenerate -m "<Short description of changes in sentence form.>"
+poetry run alembic revision --autogenerate -m "<Short description of changes in sentence form.>"
 ```
 
 ORM models referenced in the rest of the code should be imported from `aana.models.db` directly,
 not from that model's file for reasons explained in `aana/models/db/__init__.py`. This also means that 
-if you add a new model class, it should be added to `__init__.py` in addition to creating a migration.
+if you add a new model class, it should be imported by `__init__.py` in addition to creating a migration.
 
 Higher level code for interacting with the ORM is available in `aana.repository.data`.
