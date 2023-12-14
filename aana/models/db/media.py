@@ -3,7 +3,7 @@ from enum import Enum
 from sqlalchemy import Column, ForeignKey, Integer, String
 
 from aana.configs.db import MediaIdSqlType
-from aana.models.db.base import BaseModel, TimeStampEntity
+from aana.models.db.base import BaseEntity, TimeStampEntity
 
 
 class MediaType(str, Enum):
@@ -12,7 +12,7 @@ class MediaType(str, Enum):
     VIDEO = "video"
 
 
-class MediaEntity(BaseModel, TimeStampEntity):
+class MediaEntity(BaseEntity, TimeStampEntity):
     """Table for media items."""
 
     __tablename__ = "media"

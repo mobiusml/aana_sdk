@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 
 from aana.configs.db import media_id_type
 from aana.exceptions.database import NotFoundException
-from aana.models.db import BaseModel
+from aana.models.db import BaseEntity
 
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T", bound=BaseEntity)
 
 
 # Does not yet have an update method because I'm not sure if we'll need one.

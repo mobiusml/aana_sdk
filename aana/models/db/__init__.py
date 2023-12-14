@@ -9,7 +9,7 @@
 # https://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/database/sqlalchemy.html#importing-all-sqlalchemy-models
 # (even if not using Pyramid)
 
-from aana.models.db.base import BaseModel
+from aana.models.db.base import BaseEntity
 from aana.models.db.caption import CaptionEntity
 from aana.models.db.media import MediaEntity, MediaType
 from aana.models.db.transcript import TranscriptEntity

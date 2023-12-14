@@ -86,7 +86,6 @@ def save_video_single(
     media_entity = MediaEntity(id=video.media_id, media_type=MediaType.VIDEO)
     video_entity = VideoEntity(
         media=media_entity,
-        media_type=MediaType.VIDEO,
         orig_filename=orig_filename,
         orig_url=orig_url,
     )
