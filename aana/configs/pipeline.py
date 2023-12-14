@@ -554,11 +554,6 @@ nodes = [
                 "path": "video.media_id",
             },
             {
-                "name": "video_id",
-                "key": "video_id",
-                "path": "video.id",
-            },
-            {
                 "name": "video_transcriptions_info_whisper_medium",
                 "key": "transcription_info",
                 "path": "video.transcription_info",
@@ -597,11 +592,6 @@ nodes = [
                 "path": "video_batch.[*].media_id",
             },
             {
-                "name": "video_ids",
-                "key": "video_ids",
-                "path": "video_batch.[*].video_ids",
-            },
-            {
                 "name": "videos_transcriptions_info_whisper_medium",
                 "key": "transcription_info_list",
                 "path": "video_batch.videos.[*].transcription_info",
@@ -638,11 +628,6 @@ nodes = [
                 "name": "media_id",
                 "key": "media_id",
                 "path": "video.media_id",
-            },
-            {
-                "name": "video_id",
-                "key": "video_id",
-                "path": "video.id",
             },
             {
                 "name": "video_captions_hf_blip2_opt_2_7b",

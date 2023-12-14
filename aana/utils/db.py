@@ -133,16 +133,16 @@ def save_captions_batch(
 def save_video_captions(
     model_name: str,
     media_id: media_id_type,
-    video_id: int,
     captions: CaptionsList,
     timestamps: list[float],
     frame_ids: list[int],
 ) -> dict:
     """Save captions."""
     with Session(engine) as session:
+        video_entity = VideoRepository(session).get_by_media_id(media_id)
         entities = [
             CaptionEntity.from_caption_output(
-                model_name, media_id, video_id, frame_id, timestamp, caption
+                model_name, media_id, video_entity.id, frame_id, timestamp, caption
             )
             for caption, timestamp, frame_id in zip(
                 captions, timestamps, frame_ids, strict=True
@@ -159,53 +159,53 @@ def save_video_captions(
 def save_transcripts_batch(
     model_name: str,
     media_ids: list[media_id_type],
-    video_ids: list[int],
-    transcript_info_list: list[AsrTranscriptionInfoList],
-    transcripts_list: list[AsrTranscriptionList],
+    transcription_info_list: list[AsrTranscriptionInfoList],
+    transcription_list: list[AsrTranscriptionList],
     segments_list: list[AsrSegments],
 ) -> dict:
     """Save transcripts batch."""
     with Session(engine) as session:
+        video_repo = VideoRepository(session)
         entities = [
             TranscriptEntity.from_asr_output(
-                model_name, media_id, video_id, info, txn, seg
+                model_name,
+                media_id,
+                video_repo.get_by_media_id(media_id).id,
+                transcript_info,
+                transcript,
+                segments,
             )
-            for media_id, video_id, transcript_infos, transcripts, segments in zip(
+            for media_id, transcript_info, transcript, segments in zip(
                 media_ids,
-                video_ids,
-                transcript_info_list,
-                transcripts_list,
+                transcription_info_list,
+                transcription_list,
                 segments_list,
                 strict=True,
             )
-            for info, txn, seg in zip(
-                transcript_infos, transcripts, segments, strict=True
-            )
         ]
-
         repo = TranscriptRepository(session)
         entities = repo.create_multiple(entities)
         return {
-            "transcript_ids": [c.id for c in entities]  # type: ignore
+            "transcription_ids": [c.id for c in entities]  # type: ignore
         }
 
 
 def save_video_transcripts(
     model_name: str,
     media_id: media_id_type,
-    video_id: int,
-    transcript_infos: AsrTranscriptionInfoList,
-    transcripts: AsrTranscriptionList,
+    transcription_info: AsrTranscriptionInfoList,
+    transcription: AsrTranscriptionList,
     segments: AsrSegments,
 ) -> dict:
     """Save transcripts."""
     with Session(engine) as session:
+        video_entity = VideoRepository(session).get_by_media_id(media_id)
         entities = [
             TranscriptEntity.from_asr_output(
-                model_name, media_id, video_id, info, txn, seg
+                model_name, media_id, video_entity.id, info, txn, seg
             )
             for info, txn, seg in zip(
-                transcript_infos, transcripts, segments, strict=True
+                transcription_info, transcription, segments, strict=True
             )
         ]
 
@@ -213,5 +213,5 @@ def save_video_transcripts(
         entities = repo.create_multiple(entities)
         print(len(entities))
         return {
-            "transcript_ids": [c.id for c in entities]  # type: ignore
+            "transcription_ids": [c.id for c in entities]  # type: ignore
         }
