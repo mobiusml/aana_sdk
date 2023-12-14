@@ -42,7 +42,7 @@ def test_create_caption(mocked_session):
     caption_text = "This is the right caption text."
     frame_id = 32767
     timestamp = 327.6
-    media = MediaEntity(id=media_id, media_type=media_type)
+    _ = MediaEntity(id=media_id, media_type=media_type)
     video = VideoEntity(media_id=media_id, duration=video_duration)
     caption = CaptionEntity(
         media_id=media_id,

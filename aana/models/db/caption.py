@@ -1,13 +1,15 @@
 from __future__ import annotations  # Let classes use themselves in type annotations
 
-import uuid
+import typing
 
 from sqlalchemy import CheckConstraint, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from aana.configs.db import MediaIdSqlType, media_id_type
 from aana.models.db.base import BaseEntity, TimeStampEntity
-from aana.models.pydantic.captions import Caption
+
+if typing.TYPE_CHECKING:
+    from aana.models.pydantic.captions import Caption
 
 
 class CaptionEntity(BaseEntity, TimeStampEntity):

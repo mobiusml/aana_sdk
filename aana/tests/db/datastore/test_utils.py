@@ -1,6 +1,5 @@
 # ruff: noqa: S101
 from importlib import resources
-from pathlib import Path
 
 import pytest
 from sqlalchemy.orm import Session
