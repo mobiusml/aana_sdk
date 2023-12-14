@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from aana.configs.db import create_database_engine
 from aana.configs.settings import settings
-from aana.models.db.base import BaseModel
+from aana.models.db.base import BaseEntity
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,7 +21,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-target_metadata = BaseModel.metadata
+target_metadata = BaseEntity.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

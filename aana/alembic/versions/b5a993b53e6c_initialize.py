@@ -1,8 +1,8 @@
-"""Initalize.
+"""Initialize.
 
-Revision ID: 824292b5d320
+Revision ID: b5a993b53e6c
 Revises: 
-Create Date: 2023-12-13 12:43:46.181117
+Create Date: 2023-12-14 13:00:38.921552
 
 """
 from collections.abc import Sequence
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '824292b5d320'
+revision: str = 'b5a993b53e6c'
 down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -33,7 +33,6 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('media_id', sa.String(), nullable=False, comment='Foreign key to media table'),
     sa.Column('duration', sa.Float(), nullable=True, comment='Media duration in seconds'),
-    sa.Column('media_type', sa.String(), nullable=True, comment='Media type'),
     sa.Column('orig_filename', sa.String(), nullable=True, comment='Original filename'),
     sa.Column('orig_url', sa.String(), nullable=True, comment='Original URL'),
     sa.Column('create_ts', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True, comment='Timestamp when row is inserted'),
