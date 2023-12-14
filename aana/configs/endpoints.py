@@ -81,6 +81,9 @@ endpoints = {
                 EndpointOutput(
                     name="info", output="videos_transcriptions_info_whisper_medium"
                 ),
+                EndpointOutput(
+                    name="transcription_ids", output="videos_transcription_ids"
+                )
             ],
         )
     ],
@@ -112,10 +115,7 @@ endpoints = {
                 EndpointOutput(
                     name="info", output="video_transcriptions_info_whisper_medium"
                 ),
-                EndpointOutput(
-                    name="transcription_id", output="transcription_id"
-                )
-
+                EndpointOutput(name="transcription_id", output="transcription_id"),
             ],
             streaming=True,
         ),

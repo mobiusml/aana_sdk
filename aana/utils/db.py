@@ -32,8 +32,8 @@ def save_video_batch(
     videos: list[Video],  # , video_params: list[VideoParams]
 ) -> dict:
     """Saves a batch of videos to datastore."""
-    raise NotImplementedError("Needs to be fixed.")
-    entities = []
+    media_entities = []
+    video_entities = []
     for video_object, _ in zip(videos, videos, strict=True):
         if video_object.url is not None:
             orig_url = video_object.url
@@ -46,18 +46,25 @@ def save_video_batch(
         else:
             orig_url = None
             orig_filename = None
-        entity = MediaEntity(
+        media_entity = MediaEntity(
             id=video_object.media_id,
             media_type=MediaType.VIDEO,
+        )
+        video_entity = VideoEntity(
+            media=media_entity,
             orig_filename=orig_filename,
             orig_url=orig_url,
         )
-        entities.append(entity)
+        media_entities.append(media_entity)
+        video_entities.append(video_entity)
     with Session(engine) as session:
-        repo = MediaRepository(session)
-        results = repo.create_multiple(entities)
+        m_repo = MediaRepository(session)
+        v_repo = VideoRepository(session)
+        medias = m_repo.create_multiple(media_entities)
+        videos = v_repo.create_multiple(video_entities)
         return {
-            "media_ids": [result.id for result in results]  # type: ignore
+            "media_ids": [m.id for m in medias],  # type: ignore
+            "video_ids": [v.id for v in videos],
         }
 
 
@@ -153,17 +160,20 @@ def save_video_captions(
 def save_transcripts_batch(
     model_name: str,
     media_ids: list[media_id_type],
+    video_ids: list[int],
     transcript_info_list: list[AsrTranscriptionInfoList],
     transcripts_list: list[AsrTranscriptionList],
     segments_list: list[AsrSegments],
 ) -> dict:
-    """Save transcripts."""
-    raise NotImplementedError("Needs to be fixed")
+    """Save transcripts batch."""
     with Session(engine) as session:
         entities = [
-            TranscriptEntity.from_asr_output(model_name, media_id, info, txn, seg)
-            for media_id, transcript_infos, transcripts, segments in zip(
+            TranscriptEntity.from_asr_output(
+                model_name, media_id, video_id, info, txn, seg
+            )
+            for media_id, video_id, transcript_infos, transcripts, segments in zip(
                 media_ids,
+                video_ids,
                 transcript_info_list,
                 transcripts_list,
                 segments_list,
