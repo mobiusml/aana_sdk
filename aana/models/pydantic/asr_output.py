@@ -10,10 +10,10 @@ from faster_whisper.transcribe import (
 from faster_whisper.transcribe import (
     Word as WhisperWord,
 )
+from pydantic import BaseModel, Field
 
 from aana.models.pydantic.base import BaseListModel
 from aana.models.pydantic.time_interval import TimeInterval
-from pydantic import BaseModel, Field
 
 
 class AsrWord(BaseModel):

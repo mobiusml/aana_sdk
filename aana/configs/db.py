@@ -106,7 +106,7 @@ def run_alembic_migrations(settings):
     current_path = Path(__file__)
     aana_root = current_path.parent.parent  # go up two directories
     if aana_root.name != "aana":  # we are not in the right place
-        raise RuntimeError("Not in right directory, exiting.")
+        raise RuntimeError("Not in right directory, exiting.")  # noqa: TRY003
     ini_file_path = aana_root / "alembic.ini"
     alembic_data_path = aana_root / "alembic"
 
