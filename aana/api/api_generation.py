@@ -1,3 +1,4 @@
+import traceback
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -5,10 +6,13 @@ from typing import Any, Optional
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
+from mobius_pipeline.exceptions import BaseException
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
 from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
+from ray.exceptions import RayTaskError
 
+from aana.api.app import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 from aana.models.pydantic.exception_response import ExceptionResponseModel
@@ -41,7 +45,10 @@ async def run_pipeline(
 
 
 async def run_pipeline_streaming(
-    pipeline: Pipeline, data: dict, required_outputs: list[str]
+    pipeline: Pipeline,
+    data: dict,
+    requested_partial_outputs: list[str],
+    requested_full_outputs: list[str],
 ) -> AsyncGenerator[dict[str, Any], None]:
     """This function is used to run a Mobius Pipeline as a generator.
 
@@ -50,7 +57,8 @@ async def run_pipeline_streaming(
     Args:
         pipeline (Pipeline): The pipeline to run.
         data (dict): The data to create the container from.
-        required_outputs (List[str]): The required outputs of the pipeline.
+        requested_partial_outputs (list[str]): The required partial outputs of the pipeline that should be streamed.
+        requested_full_outputs (list[str]): The required full outputs of the pipeline that should be returned at the end.
 
     Yields:
         dict[str, Any]: The output of the pipeline and the execution time of the pipeline.
@@ -59,7 +67,9 @@ async def run_pipeline_streaming(
     container = pipeline.parse_dict(data)
 
     # run the pipeline
-    async for output in pipeline.run_generator(container, required_outputs):
+    async for output in pipeline.run_generator(
+        container, requested_partial_outputs, requested_full_outputs
+    ):
         yield output
 
 
@@ -103,6 +113,7 @@ class EndpointOutput:
 
     name: str
     output: str
+    streaming: bool = False
 
 
 @dataclass
@@ -133,6 +144,9 @@ class Endpoint:
         """
         self.name_to_output = {output.name: output.output for output in self.outputs}
         self.output_to_name = {output.output: output.name for output in self.outputs}
+        self.streaming_outputs = {
+            output.output for output in self.outputs if output.streaming
+        }
 
     def generate_model_name(self, suffix: str) -> str:
         """Generate a Pydantic model name based on a given suffix.
@@ -317,7 +331,7 @@ class Endpoint:
     ) -> Callable:
         """Create a function for routing an endpoint."""
 
-        async def route_func_body(body: str, files: list[UploadFile] | None = None):
+        async def route_func_body(body: str, files: list[UploadFile] | None = None):  # noqa: C901
             # parse form data as a pydantic model and validate it
             data = parse_raw_as(RequestModel, body)
 
@@ -332,10 +346,6 @@ class Endpoint:
             data_dict = {}
             for field_name in data.__fields__:
                 field_value = getattr(data, field_name)
-                # check if it has a method convert_to_entities
-                # if it does, call it to convert the model to an entity
-                if hasattr(field_value, "convert_input_to_object"):
-                    field_value = field_value.convert_input_to_object()
                 data_dict[field_name] = field_value
 
             if self.output_filter:
@@ -360,14 +370,38 @@ class Endpoint:
 
             # run the pipeline
             if self.streaming:
+                requested_partial_outputs = []
+                requested_full_outputs = []
+                for output in outputs:
+                    if output in self.streaming_outputs:
+                        requested_partial_outputs.append(output)
+                    else:
+                        requested_full_outputs.append(output)
 
                 async def generator_wrapper() -> AsyncGenerator[bytes, None]:
                     """Serializes the output of the generator using ORJSONResponseCustom."""
-                    async for output in run_pipeline_streaming(
-                        pipeline, data_dict, outputs
-                    ):
-                        output = self.process_output(output)
-                        yield AanaJSONResponse(content=output).body
+                    try:
+                        async for output in run_pipeline_streaming(
+                            pipeline,
+                            data_dict,
+                            requested_partial_outputs,
+                            requested_full_outputs,
+                        ):
+                            output = self.process_output(output)
+                            yield AanaJSONResponse(content=output).body
+                    except RayTaskError as e:
+                        yield custom_exception_handler(None, e).body
+                    except BaseException as e:
+                        yield custom_exception_handler(None, e)
+                    except Exception as e:
+                        error = e.__class__.__name__
+                        stacktrace = traceback.format_exc()
+                        yield AanaJSONResponse(
+                            status_code=400,
+                            content=ExceptionResponseModel(
+                                error=error, message=str(e), stacktrace=stacktrace
+                            ).dict(),
+                        ).body
 
                 return StreamingResponse(
                     generator_wrapper(), media_type="application/json"

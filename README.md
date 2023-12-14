@@ -30,7 +30,7 @@ sh install.sh
 5. Run the SDK.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 --target llama2
+CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 --target chat_with_video
 ```
 
 The target parameter specifies the set of endpoints to deploy.
@@ -105,7 +105,7 @@ This project uses Ruff for linting and formatting. If you want to
 manually run Ruff on the codebase, it's
 
 ```sh
-ruff check aana
+poetry run ruff check aana
 ```
 
 You can automatically fix some issues with the `--fix`
@@ -115,7 +115,7 @@ You can automatically fix some issues with the `--fix`
 To run the auto-formatter, it's
 
 ```sh
-ruff format aana
+poetry run ruff format aana
 ```
 
 If you want to enable this as a local pre-commit hook, additionally
