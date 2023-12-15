@@ -5,19 +5,28 @@ from pathlib import Path
 import pytest
 
 from aana.configs.settings import settings
-from aana.exceptions.general import DownloadException
+from aana.exceptions.general import DownloadException, VideoReadingException
 from aana.models.core.video import Video
 from aana.models.pydantic.video_input import VideoInput
 from aana.utils.video import download_video
 
 
+def mocked_download_file(url: str) -> bytes:
+    """Mock download_file to return different content based on URL."""
+    if url == "http://example.com/squirrel.mp4":
+        path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    elif url == "http://example.com/Starry_Night.jpeg":
+        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    else:
+        raise DownloadException(url)
+    return path.read_bytes()
+
+
 @pytest.fixture
 def mock_download_file(mocker):
-    """Mock download_file."""
+    """Mock download_file to return different content based on URL."""
     mock = mocker.patch("aana.models.core.media.download_file", autospec=True)
-    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
-    content = path.read_bytes()
-    mock.return_value = content
+    mock.side_effect = mocked_download_file
     return mock
 
 
@@ -63,7 +72,7 @@ def test_video(mock_download_file):
         video.cleanup()
 
 
-def test_media_dir():
+def test_media_dir(mock_download_file):
     """Test that the media_dir is set correctly."""
     # Test saving from URL to disk
     video_dir = settings.video_dir
@@ -210,6 +219,12 @@ def test_download_video(mock_download_file):
     youtube_video_input = VideoInput(url=youtube_url)
     with pytest.raises(DownloadException):
         download_video(youtube_video_input)
+
+    # Test url that doesn't contain a video
+    url = "http://example.com/Starry_Night.jpeg"
+    video_input = VideoInput(url=url)
+    with pytest.raises(VideoReadingException):
+        download_video(video_input)
 
     # Test Video object as input
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
