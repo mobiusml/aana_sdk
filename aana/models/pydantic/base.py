@@ -30,3 +30,7 @@ class BaseListModel(BaseModel):
     def __contains__(self, item):
         """Check if modle contains item."""
         return item in self.__root__
+
+    def __add__(self, other):
+        """Add two models."""
+        return self.__class__(__root__=self.__root__ + other.__root__)
