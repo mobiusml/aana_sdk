@@ -62,9 +62,10 @@ endpoints = {
             summary="Generate captions for videos using BLIP2 OPT-2.7B",
             outputs=[
                 EndpointOutput(
-                    name="captions", output="videos_captions_hf_blip2_opt_2_7b"
+                    name="captions", output="video_captions_hf_blip2_opt_2_7b"
                 ),
-                EndpointOutput(name="timestamps", output="timestamps"),
+                EndpointOutput(name="timestamps", output="video_timestamps"),
+                EndpointOutput(name="caption_ids", output="caption_ids"),
             ],
         ),
     ],
@@ -94,6 +95,9 @@ endpoints = {
                 ),
                 EndpointOutput(
                     name="info", output="videos_transcriptions_info_whisper_medium"
+                ),
+                EndpointOutput(
+                    name="transcription_ids", output="videos_transcription_ids"
                 ),
             ],
         )
@@ -138,6 +142,7 @@ endpoints = {
                     output="video_transcriptions_info_whisper_medium",
                     streaming=True,
                 ),
+                EndpointOutput(name="transcription_id", output="transcription_id"),
                 EndpointOutput(name="transcription_path", output="transcription_path"),
             ],
             streaming=True,
@@ -181,7 +186,9 @@ endpoints = {
                 EndpointOutput(
                     name="video_captions_path", output="video_captions_path"
                 ),
+                EndpointOutput(name="caption_ids", output="caption_ids"),
                 EndpointOutput(name="transcription_path", output="transcription_path"),
+                EndpointOutput(name="transcription_id", output="transcription_id"),
             ],
             streaming=True,
         ),

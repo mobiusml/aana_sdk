@@ -2,6 +2,6 @@
 
 set -e  # exit on error
 
-ruff check aana 
-ruff format aana
+poetry run ruff check aana 
+poetry run ruff format aana
 
