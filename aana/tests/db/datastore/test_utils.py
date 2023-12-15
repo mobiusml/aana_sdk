@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from aana.models.core.video import Video
 from aana.models.pydantic.asr_output import (
+    AsrSegment,
     AsrSegments,
     AsrSegmentsList,
     AsrTranscription,
@@ -14,6 +15,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import Caption, CaptionsList
+from aana.models.pydantic.time_interval import TimeInterval
 from aana.utils.db import (
     save_captions_batch,
     save_transcripts_batch,
@@ -71,32 +73,34 @@ def test_save_videos_batch(mock_session):
 
 def test_save_transcripts_batch(mock_session):
     """Tests save transcripts function."""
-    media_ids = ["0", "1"]
+    media_ids = ["0", "1", "2"]
     model = "test_model"
     texts = ("A transcript", "Another transcript", "A third transcript")
     infos = [("en", 0.5), ("de", 0.36), ("fr", 0.99)]
-    transcripts = [
-        AsrTranscriptionList(__root__=[AsrTranscription(text=text) for text in texts])
-    ] * 2
+    transcripts = [AsrTranscription(text=text) for text in texts]
     transcription_infos = [
-        AsrTranscriptionInfoList(
-            __root__=[
-                AsrTranscriptionInfo(language=lang, language_confidence=conf)
-                for lang, conf in infos
-            ]
-        )
-    ] * 2
-    segments = [AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)] * 2
+        AsrTranscriptionInfo(language=lang, language_confidence=conf)
+        for lang, conf in infos
+    ]
+    segments = [
+        [
+            AsrSegment(
+                text="",
+                time_interval=TimeInterval(start=0, end=1),
+                confidence=0.99,
+                no_speech_confidence=0.1,
+            )
+        ]
+        * 5
+    ] * 3
     result = save_transcripts_batch(
         model, media_ids, transcription_infos, transcripts, segments
     )
-    result_ids = result["transcript_ids"]
+    print(result)
+    result_ids = result["transcription_ids"]
 
     assert (
-        len(result_ids)
-        == len(transcripts[0]) + len(transcripts[1])
-        == len(transcription_infos[0]) + len(transcription_infos[1])
-        == len(segments[0]) + len(segments[1])
+        len(result_ids) == len(transcripts) == len(transcription_infos) == len(segments)
     )
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
@@ -121,7 +125,7 @@ def test_save_transcripts_single(mock_session):
     result = save_video_transcripts(
         model, media_id, transcription_infos, transcripts, segments
     )
-    result_ids = result["transcript_ids"]
+    result_ids = result["transcription_ids"]
 
     assert (
         len(result_ids) == len(transcripts) == len(transcription_infos) == len(segments)

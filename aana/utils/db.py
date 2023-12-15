@@ -14,7 +14,10 @@ from aana.models.db import (
     VideoEntity,
 )
 from aana.models.pydantic.asr_output import (
+    AsrSegment,
     AsrSegments,
+    AsrTranscription,
+    AsrTranscriptionInfo,
     AsrTranscriptionInfoList,
     AsrTranscriptionList,
 )
@@ -159,9 +162,9 @@ def save_video_captions(
 def save_transcripts_batch(
     model_name: str,
     media_ids: list[media_id_type],
-    transcription_info_list: list[AsrTranscriptionInfoList],
-    transcription_list: list[AsrTranscriptionList],
-    segments_list: list[AsrSegments],
+    transcription_info_list: list[AsrTranscriptionInfo],
+    transcription_list: list[AsrTranscription],
+    segments_list: list[list[AsrSegment]],
 ) -> dict:
     """Save transcripts batch."""
     with Session(engine) as session:
