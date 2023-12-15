@@ -7,11 +7,13 @@ from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.model_executor.utils import set_random_seed
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-from vllm.utils import random_uuid
+from vllm.utils import get_gpu_memory, random_uuid
 
 from aana.deployments.base_deployment import BaseDeployment
-from aana.exceptions.general import InferenceException
+from aana.exceptions.general import InferenceException, PromptTooLongException
+from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
+from aana.utils.chat_template import apply_chat_template
 from aana.utils.general import merged_options
 
 
@@ -22,7 +24,7 @@ class VLLMConfig(BaseModel):
         model (str): the model name
         dtype (str): the data type (optional, default: "auto")
         quantization (str): the quantization method (optional, default: None)
-        gpu_memory_utilization (float): the GPU memory utilization.
+        gpu_memory_reserved (float): the GPU memory reserved for the model in mb
         default_sampling_params (SamplingParams): the default sampling parameters.
         max_model_len (int): the maximum generated text length in tokens (optional, default: None)
     """
@@ -30,9 +32,10 @@ class VLLMConfig(BaseModel):
     model: str
     dtype: str | None = Field(default="auto")
     quantization: str | None = Field(default=None)
-    gpu_memory_utilization: float
+    gpu_memory_reserved: float
     default_sampling_params: SamplingParams
     max_model_len: int | None = Field(default=None)
+    chat_template: str | None = Field(default=None)
 
 
 class LLMOutput(TypedDict):
@@ -55,6 +58,16 @@ class LLMBatchOutput(TypedDict):
     texts: list[str]
 
 
+class ChatOutput(TypedDict):
+    """The output of the chat model.
+
+    Attributes:
+        dialog (ChatDialog): the dialog with the responses from the model
+    """
+
+    message: ChatMessage
+
+
 @serve.deployment
 class VLLMDeployment(BaseDeployment):
     """Deployment to serve large language models using vLLM."""
@@ -70,23 +83,30 @@ class VLLMDeployment(BaseDeployment):
         - model: the model name
         - dtype: the data type (optional, default: "auto")
         - quantization: the quantization method (optional, default: None)
-        - gpu_memory_utilization: the GPU memory utilization.
+        - gpu_memory_reserved: the GPU memory reserved for the model in mb
         - default_sampling_params: the default sampling parameters.
         - max_model_len: the maximum generated text length in tokens (optional, default: None)
+        - chat_template: the name of the chat template (optional, default: None)
 
         Args:
             config (dict): the configuration of the deployment
         """
         config_obj = VLLMConfig(**config)
         self.model = config_obj.model
+        total_gpu_memory_bytes = get_gpu_memory()
+        total_gpu_memory_mb = total_gpu_memory_bytes / 1024**2
+        self.gpu_memory_utilization = (
+            config_obj.gpu_memory_reserved / total_gpu_memory_mb
+        )
         self.default_sampling_params: SamplingParams = (
             config_obj.default_sampling_params
         )
+        self.chat_template_name = config_obj.chat_template
         args = AsyncEngineArgs(
             model=config_obj.model,
             dtype=config_obj.dtype,
             quantization=config_obj.quantization,
-            gpu_memory_utilization=config_obj.gpu_memory_utilization,
+            gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
         )
 
@@ -95,6 +115,8 @@ class VLLMDeployment(BaseDeployment):
 
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
+        self.tokenizer = self.engine.engine.tokenizer
+        self.model_config = await self.engine.get_model_config()
 
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams
@@ -111,6 +133,16 @@ class VLLMDeployment(BaseDeployment):
         prompt = str(prompt)
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
         request_id = None
+
+        # tokenize the prompt
+        prompt_token_ids = self.tokenizer.encode(prompt)
+
+        if len(prompt_token_ids) > self.model_config.max_model_len:
+            raise PromptTooLongException(
+                prompt_len=len(prompt_token_ids),
+                max_len=self.model_config.max_model_len,
+            )
+
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
@@ -121,7 +153,10 @@ class VLLMDeployment(BaseDeployment):
             # set the random seed for reproducibility
             set_random_seed(42)
             results_generator = self.engine.generate(
-                prompt, sampling_params_vllm, request_id
+                prompt=None,
+                sampling_params=sampling_params_vllm,
+                request_id=request_id,
+                prompt_token_ids=prompt_token_ids,
             )
 
             num_returned = 0
@@ -171,3 +206,38 @@ class VLLMDeployment(BaseDeployment):
             texts.append(text["text"])
 
         return LLMBatchOutput(texts=texts)
+
+    async def chat(
+        self, dialog: ChatDialog, sampling_params: SamplingParams
+    ) -> ChatOutput:
+        """Chat with the model.
+
+        Args:
+            dialog (ChatDialog): the dialog
+            sampling_params (SamplingParams): the sampling parameters
+
+        Returns:
+            ChatOutput: the dictionary with the key "message"
+                        and the response message with a role "assistant"
+                        and the generated text as the content
+        """
+        prompt = apply_chat_template(self.tokenizer, dialog, self.chat_template_name)
+        response = await self.generate(prompt, sampling_params)
+        response_message = ChatMessage(content=response["text"], role="assistant")
+        return ChatOutput(message=response_message)
+
+    async def chat_stream(
+        self, dialog: ChatDialog, sampling_params: SamplingParams
+    ) -> AsyncGenerator[LLMOutput, None]:
+        """Chat with the model and stream the responses.
+
+        Args:
+            dialog (ChatDialog): the dialog
+            sampling_params (SamplingParams): the sampling parameters
+
+        Yields:
+            LLMOutput: the dictionary with the key "text" and the generated text as the value
+        """
+        prompt = apply_chat_template(self.tokenizer, dialog, self.chat_template_name)
+        async for chunk in self.generate_stream(prompt, sampling_params):
+            yield chunk

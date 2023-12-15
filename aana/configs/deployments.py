@@ -13,36 +13,22 @@ deployments = {
     "vllm_deployment_llama2_7b_chat": VLLMDeployment.options(
         num_replicas=1,
         max_concurrent_queries=1000,
-        ray_actor_options={"num_gpus": 0.5},
+        ray_actor_options={"num_gpus": 0.25},
         user_config=VLLMConfig(
             model="TheBloke/Llama-2-7b-Chat-AWQ",
             dtype="auto",
             quantization="awq",
-            gpu_memory_utilization=0.7,
+            gpu_memory_reserved=10000,
             default_sampling_params=SamplingParams(
-                temperature=1.0, top_p=1.0, top_k=-1, max_tokens=256
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
             ),
-        ).dict(),
-    ),
-    "vllm_deployment_zephyr_7b_beta": VLLMDeployment.options(
-        num_replicas=1,
-        max_concurrent_queries=1000,
-        ray_actor_options={"num_gpus": 0.5},
-        user_config=VLLMConfig(
-            model="TheBloke/zephyr-7B-beta-AWQ",
-            dtype="auto",
-            quantization="awq",
-            gpu_memory_utilization=0.9,
-            max_model_len=512,
-            default_sampling_params=SamplingParams(
-                temperature=1.0, top_p=1.0, top_k=-1, max_tokens=256
-            ),
+            chat_template="llama2",
         ).dict(),
     ),
     "hf_blip2_deployment_opt_2_7b": HFBlip2Deployment.options(
         num_replicas=1,
         max_concurrent_queries=1000,
-        ray_actor_options={"num_gpus": 0.5},
+        ray_actor_options={"num_gpus": 0.25},
         user_config=HFBlip2Config(
             model="Salesforce/blip2-opt-2.7b",
             dtype=Dtype.FLOAT16,
@@ -53,7 +39,7 @@ deployments = {
     "whisper_deployment_medium": WhisperDeployment.options(
         num_replicas=1,
         max_concurrent_queries=1000,
-        ray_actor_options={"num_gpus": 0.5},
+        ray_actor_options={"num_gpus": 0.25},
         user_config=WhisperConfig(
             model_size=WhisperModelSize.MEDIUM,
             compute_type=WhisperComputeType.FLOAT16,

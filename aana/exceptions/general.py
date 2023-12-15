@@ -125,3 +125,49 @@ class VideoReadingException(VideoException):
     """
 
     pass
+
+
+class PromptTooLongException(BaseException):
+    """Exception raised when the prompt is too long.
+
+    Attributes:
+        prompt_len (int): the length of the prompt in tokens
+        max_len (int): the maximum allowed length of the prompt in tokens
+    """
+
+    def __init__(self, prompt_len: int, max_len: int):
+        """Initialize the exception.
+
+        Args:
+            prompt_len (int): the length of the prompt in tokens
+            max_len (int): the maximum allowed length of the prompt in tokens
+        """
+        super().__init__(prompt_len=prompt_len, max_len=max_len)
+        self.prompt_len = prompt_len
+        self.max_len = max_len
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.prompt_len, self.max_len))
+
+
+class MediaIdNotFoundException(BaseException):
+    """Exception raised when a media ID is not found.
+
+    Attributes:
+        media_id (str): the media ID
+    """
+
+    def __init__(self, media_id: str):
+        """Initialize the exception.
+
+        Args:
+            media_id (str): the media ID
+        """
+        super().__init__(media_id=media_id)
+        self.media_id = media_id
+        self.http_status_code = 404
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.media_id,))
