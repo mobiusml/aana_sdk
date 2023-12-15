@@ -67,7 +67,7 @@ endpoints = [
         name="lowercase",
         path="/lowercase",
         summary="Lowercase text",
-        outputs=[EndpointOutput(name="text", output="lowercase_text")],
+        outputs=[EndpointOutput(name="text", output="lowercase_text", streaming=True)],
         streaming=True,
     )
 ]
