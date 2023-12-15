@@ -32,7 +32,9 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     )
 
 
-def custom_exception_handler(request: Request, exc_raw: BaseException | RayTaskError):
+def custom_exception_handler(
+    request: Request | None, exc_raw: BaseException | RayTaskError
+):
     """This handler is used to handle custom exceptions raised in the application.
 
     BaseException is the base exception for all the exceptions
@@ -74,8 +76,9 @@ def custom_exception_handler(request: Request, exc_raw: BaseException | RayTaskE
     error = exc.__class__.__name__
     # get the message of the exception
     message = str(exc)
+    status_code = getattr(exc, "http_status_code", 400)
     return AanaJSONResponse(
-        status_code=400,
+        status_code=status_code,
         content=ExceptionResponseModel(
             error=error, message=message, data=data, stacktrace=stacktrace
         ).dict(),

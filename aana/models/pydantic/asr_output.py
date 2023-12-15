@@ -100,9 +100,9 @@ class AsrSegment(BaseModel):
 class AsrTranscriptionInfo(BaseModel):
     """Pydantic schema for TranscriptionInfo."""
 
-    language: str = Field(description="Language of the transcription")
+    language: str = Field(description="Language of the transcription", default="")
     language_confidence: float = Field(
-        ge=0.0, le=1.0, description="Confidence of the language detection"
+        ge=0.0, le=1.0, description="Confidence of the language detection", default=0.0
     )
 
     @classmethod
@@ -113,6 +113,26 @@ class AsrTranscriptionInfo(BaseModel):
         return cls(
             language=transcription_info.language,
             language_confidence=transcription_info.language_probability,
+        )
+
+    def __add__(self, other: "AsrTranscriptionInfo") -> "AsrTranscriptionInfo":
+        """Sum two transcriptions info."""
+        if self.language == other.language:
+            # if the languages are the same, take the average of the confidence
+            language = self.language
+            language_confidence = (
+                self.language_confidence + other.language_confidence
+            ) / 2
+        else:
+            # if the languages are different, take the one with the highest confidence
+            if self.language_confidence > other.language_confidence:
+                language = self.language
+                language_confidence = self.language_confidence
+            else:
+                language = other.language
+                language_confidence = other.language_confidence
+        return AsrTranscriptionInfo(
+            language=language, language_confidence=language_confidence
         )
 
     class Config:
@@ -126,7 +146,19 @@ class AsrTranscriptionInfo(BaseModel):
 class AsrTranscription(BaseModel):
     """Pydantic schema for Transcription/Translation."""
 
-    text: str = Field(description="The text of the transcription/translation")
+    text: str = Field(
+        description="The text of the transcription/translation", default=""
+    )
+
+    def __add__(self, other: "AsrTranscription") -> "AsrTranscription":
+        """Sum two transcriptions."""
+        if self.text == "":
+            text = other.text
+        elif other.text == "":
+            text = self.text
+        else:
+            text = self.text + "\n" + other.text
+        return AsrTranscription(text=text)
 
     class Config:
         schema_extra = MappingProxyType(
@@ -139,7 +171,9 @@ class AsrTranscription(BaseModel):
 class AsrSegments(BaseListModel):
     """Pydantic schema for the list of ASR segments."""
 
-    __root__: list[AsrSegment]
+    __root__: list[AsrSegment] = Field(
+        description="List of ASR segments", default_factory=list
+    )
 
     class Config:
         schema_extra = MappingProxyType(

@@ -133,6 +133,7 @@ class Image(Media):
         media_id (str): The ID of the image, generated automatically if not provided.
     """
 
+    media_dir: Path | None = settings.image_dir
     numpy: np.ndarray | None = None  # The image as a numpy array.
     image_lib: type[
         AbstractImageLibrary
