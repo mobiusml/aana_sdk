@@ -27,7 +27,7 @@ class VideoSource(str, Enum):
         """
         # TODO: Check that the URL is valid
 
-        youtube_pattern = r"^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtube\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)$"
+        youtube_pattern = r"^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtube\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)(?:&[^\s]+)*$"
 
         if re.match(youtube_pattern, url):
             return cls.YOUTUBE
