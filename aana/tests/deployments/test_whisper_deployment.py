@@ -2,6 +2,7 @@
 import json
 from importlib import resources
 from pathlib import Path
+from collections import defaultdict
 
 import pytest
 import ray
@@ -83,7 +84,7 @@ async def test_whisper_deployment(video_file):
             media=video, params=WhisperParams(word_timestamps=True)
         )
         output = pydantic_to_dict(output)
-
+        print(output.keys())
         compare_transcriptions(expected_output, output)
 
         # Test transcribe_stream method
@@ -94,12 +95,19 @@ async def test_whisper_deployment(video_file):
         stream = handle.options(stream=True).transcribe_stream.remote(
             media=video, params=WhisperParams(word_timestamps=True)
         )
-        # We only have one chunk now
-        # TODO: test multiple chunks when steaming is implemented properly
+
+        # Combine individual segments and compare with the final dict
+        grouped_dict = defaultdict(list)
+        transcript = ""
         async for chunk in stream:
             chunk = await chunk
             output = pydantic_to_dict(chunk)
-            compare_transcriptions(expected_output, output)
+            transcript += output["transcription"]["text"]
+            grouped_dict["segments"].append(output.get("segments")[0])
+
+        grouped_dict["transcription"] = {"text": transcript}
+        grouped_dict["transcription_info"] = output.get("transcription_info")
+        compare_transcriptions(expected_output, dict(grouped_dict))
 
         # Test transcribe_batch method
         videos = [video, video]
