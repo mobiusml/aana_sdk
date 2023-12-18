@@ -198,12 +198,9 @@ class WhisperDeployment(BaseDeployment):
             raise InferenceException(self.model_name) from e
 
         asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
-        transcription = ""
-        for seg in segments:
-            
-            asr_segments = AsrSegment.from_whisper(seg)
-            transcription += seg.text
-            asr_transcription = AsrTranscription(text=transcription)
+        for segment in segments:
+            asr_segments = [AsrSegment.from_whisper(segment)]
+            asr_transcription = AsrTranscription(text=segment.text)
 
             yield WhisperOutput(
                 segments=asr_segments,
