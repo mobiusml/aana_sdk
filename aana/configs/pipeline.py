@@ -774,7 +774,7 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "media_id",
+                "name": "video_media_id",
                 "key": "media_id",
                 "path": "video.media_id",
             },
@@ -799,7 +799,7 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "media_ids",
+                "name": "videos_media_ids",
                 "key": "media_ids",
                 "path": "video_batch.[*].media_id",
             },
@@ -820,7 +820,7 @@ nodes = [
         "dict_output": True,
         "inputs": [
             {
-                "name": "media_id",
+                "name": "video_media_id",
                 "key": "media_id",
                 "path": "video.media_id",
             },
@@ -858,7 +858,7 @@ nodes = [
         "dict_output": True,
         "inputs": [
             {
-                "name": "media_ids",
+                "name": "videos_media_ids",
                 "key": "media_ids",
                 "path": "video_batch.[*].media_id",
             },
@@ -896,7 +896,7 @@ nodes = [
         "dict_output": True,
         "inputs": [
             {
-                "name": "media_id",
+                "name": "video_media_id",
                 "key": "media_id",
                 "path": "video.media_id",
             },
