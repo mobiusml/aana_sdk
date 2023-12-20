@@ -87,20 +87,25 @@ endpoints = {
             summary="Transcribe a video using Whisper Medium",
             outputs=[
                 EndpointOutput(
-                    name="transcription", output="videos_transcriptions_whisper_medium"
+                    name="transcription",
+                    output="video_transcriptions_whisper_medium",
+                    streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="videos_transcriptions_segments_whisper_medium",
+                    output="video_transcriptions_segments_whisper_medium",
+                    streaming=True,
                 ),
                 EndpointOutput(
-                    name="info", output="videos_transcriptions_info_whisper_medium"
+                    name="info",
+                    output="video_transcriptions_info_whisper_medium",
+                    streaming=True,
                 ),
-                EndpointOutput(
-                    name="transcription_ids", output="videos_transcription_ids"
-                ),
+                EndpointOutput(name="transcription_id", output="transcription_id"),
+                EndpointOutput(name="transcription_path", output="transcription_path"),                     
             ],
-        )
+            streaming=True,
+        ),
     ],
     "chat_with_video": [
         Endpoint(
