@@ -84,7 +84,7 @@ async def test_whisper_deployment(video_file):
             media=video, params=WhisperParams(word_timestamps=True)
         )
         output = pydantic_to_dict(output)
-        print(output.keys())
+
         compare_transcriptions(expected_output, output)
 
         # Test transcribe_stream method
