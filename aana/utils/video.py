@@ -31,11 +31,12 @@ from aana.models.pydantic.video_params import VideoParams
 
 
 class FramesDict(TypedDict):
-    """Represents a set of frames with timestamps and total duration."""
+    """Represents a set of frames with ids, timestamps and total duration."""
 
     frames: list[Image]
     timestamps: list[float]
     duration: float
+    frame_ids: list[int]
 
 
 def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
@@ -46,7 +47,7 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
         params (VideoParams): the parameters of the video extraction
 
     Returns:
-        FramesDict: a dictionary containing the extracted frames, timestamps, and duration
+        FramesDict: a dictionary containing the extracted frames, frame_ids, timestamps, and duration
     """
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
@@ -76,7 +77,12 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
         img = Image(numpy=frame)
         frames.append(img)
 
-    return FramesDict(frames=frames, timestamps=timestamps, duration=duration)
+    return FramesDict(
+        frames=frames,
+        timestamps=timestamps,
+        duration=duration,
+        frame_ids=list(range(len(frames))),
+    )
 
 
 def generate_frames_decord(
@@ -90,7 +96,7 @@ def generate_frames_decord(
         batch_size (int): the number of frames to yield at each iteration
 
     Yields:
-        FramesDict: a dictionary containing the extracted frames, timestamps,
+        FramesDict: a dictionary containing the extracted frames, frame ids, timestamps,
                     and duration for each batch
     """
     device = decord.cpu(0)
@@ -125,7 +131,10 @@ def generate_frames_decord(
 
         batch_timestamps = timestamps[i : i + batch_size]
         yield FramesDict(
-            frames=batch_frames, timestamps=batch_timestamps, duration=duration
+            frames=batch_frames,
+            frame_ids=list(range(len(batch_frames))),
+            timestamps=batch_timestamps,
+            duration=duration,
         )
 
 
