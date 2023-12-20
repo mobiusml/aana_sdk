@@ -179,9 +179,6 @@ class WhisperDeployment(BaseDeployment):
     ) -> AsyncGenerator[WhisperOutput, None]:
         """Transcribe the media with the whisper model in a streaming fashion.
 
-        Right now this is the same as transcribe, but we will add support for
-        streaming in the future to support larger media and to make the ASR more responsive.
-
         Args:
             media (Video): The media to transcribe.
             params (WhisperParams): The parameters for the whisper model.
@@ -192,9 +189,24 @@ class WhisperDeployment(BaseDeployment):
                 transcription_info (AsrTranscriptionInfo): The ASR transcription info.
                 transcription (AsrTranscription): The ASR transcription.
         """
-        # TODO: add streaming support
-        output = await self.transcribe(media, params)
-        yield output
+        if not params:
+            params = WhisperParams()
+        media_path: str = str(media.path)
+        try:
+            segments, info = self.model.transcribe(media_path, **params.dict())
+        except Exception as e:
+            raise InferenceException(self.model_name) from e
+
+        asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
+        for segment in segments:
+            asr_segments = [AsrSegment.from_whisper(segment)]
+            asr_transcription = AsrTranscription(text=segment.text)
+
+            yield WhisperOutput(
+                segments=asr_segments,
+                transcription_info=asr_transcription_info,
+                transcription=asr_transcription,
+            )
 
     async def transcribe_batch(
         self, media_batch: list[Video], params: WhisperParams = None
