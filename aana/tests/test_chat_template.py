@@ -39,13 +39,10 @@ def test_chat_template_custom():
     prompt = apply_chat_template(
         tokenizer, dialog, "llama2"
     )  # Apply custom chat template "llama2"
-    assert (  # noqa: S101
-        prompt
-        == (
-            "<s>[INST] <<SYS>>\\nYou are a friendly chatbot who always responds in the style "
-            "of a pirate\\n<</SYS>>\\n\\nHow many helicopters can a human eat in one sitting? "
-            "[/INST] I don't know, how many? </s><s>[INST] One, but only if they're really hungry! [/INST]"
-        )
+    assert prompt == (
+        "<s>[INST] <<SYS>>\\nYou are a friendly chatbot who always responds in the style "
+        "of a pirate\\n<</SYS>>\\n\\nHow many helicopters can a human eat in one sitting? "
+        "[/INST] I don't know, how many? </s><s>[INST] One, but only if they're really hungry! [/INST]"
     )
 
 

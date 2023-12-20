@@ -5,10 +5,12 @@
         "editor.formatOnSave": true,
     },
     "python.testing.pytestArgs": [
+        // "--import-mode=importlib",
         "aana"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
+    "python.testing.pytestPath": "poetry run pytest",
     "ruff.fixAll": true,
     "ruff.organizeImports": true,
 }

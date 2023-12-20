@@ -49,7 +49,7 @@ class WhisperParams(BaseModel):
     def check_temperature(cls, v: float):
         """Validates a temperature value.
 
-        Arguments:
+        Args:
             v (float): Value to validate.
 
         Raises:
