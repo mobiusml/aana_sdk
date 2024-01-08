@@ -82,18 +82,20 @@ class DownloadException(BaseException):
         url (str): the URL of the file that caused the exception
     """
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, msg: str = ""):
         """Initialize the exception.
 
         Args:
             url (str): the URL of the file that caused the exception
+            msg (str): the error message
         """
         super().__init__(url=url)
         self.url = url
+        self.msg = msg
 
     def __reduce__(self):
         """Used for pickling."""
-        return (self.__class__, (self.url,))
+        return (self.__class__, (self.url, self.msg))
 
 
 class VideoException(BaseException):

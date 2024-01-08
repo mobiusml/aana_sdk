@@ -2,10 +2,11 @@ import uuid
 from pathlib import Path
 from types import MappingProxyType
 
-from aana.models.core.video import Video
-from aana.models.pydantic.base import BaseListModel
 from pydantic import BaseModel, Field, ValidationError, root_validator, validator
 from pydantic.error_wrappers import ErrorWrapper
+
+from aana.models.core.video import Video
+from aana.models.pydantic.base import BaseListModel
 
 
 class VideoInput(BaseModel):
