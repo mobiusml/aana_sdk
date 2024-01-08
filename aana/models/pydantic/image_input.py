@@ -4,11 +4,11 @@ from pathlib import Path
 from types import MappingProxyType
 
 import numpy as np
+from pydantic import BaseModel, Field, ValidationError, root_validator, validator
+from pydantic.error_wrappers import ErrorWrapper
 
 from aana.models.core.image import Image
 from aana.models.pydantic.base import BaseListModel
-from pydantic import BaseModel, Field, ValidationError, root_validator, validator
-from pydantic.error_wrappers import ErrorWrapper
 
 
 class ImageInput(BaseModel):
