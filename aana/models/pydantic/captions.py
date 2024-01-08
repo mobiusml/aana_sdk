@@ -1,7 +1,8 @@
 from types import MappingProxyType
 
-from aana.models.pydantic.base import BaseListModel
 from pydantic import BaseModel
+
+from aana.models.pydantic.base import BaseListModel
 
 
 class Caption(BaseModel):

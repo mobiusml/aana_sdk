@@ -30,7 +30,12 @@ class Video(Media):
     media_dir: Path | None = settings.video_dir
 
     def validate(self):
-        """Validate the video."""
+        """Validate the video.
+
+        Raises:
+            ValueError: if none of 'path', 'url', or 'content' is provided
+            VideoReadingException: if the video is not valid
+        """
         # validate the parent class
         super().validate()
 
@@ -45,6 +50,10 @@ class Video(Media):
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url' or 'content' must be provided."
             )
+
+        # check that the video is valid
+        if self.path and not self.is_video():
+            raise VideoReadingException(video=self)
 
     def is_video(self) -> bool:
         """Checks if it's a valid video."""
@@ -64,6 +73,7 @@ class Video(Media):
 
         Raises:
             DownloadError: if the media can't be downloaded
+            VideoReadingException: if the media is not a valid video
         """
         super().save_from_url(file_path)
         # check that the file is a video

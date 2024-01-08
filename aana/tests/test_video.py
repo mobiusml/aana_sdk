@@ -1,4 +1,5 @@
 # ruff: noqa: S101
+import hashlib
 from importlib import resources
 from pathlib import Path
 
@@ -11,26 +12,7 @@ from aana.models.pydantic.video_input import VideoInput
 from aana.utils.video import download_video
 
 
-def mocked_download_file(url: str) -> bytes:
-    """Mock download_file to return different content based on URL."""
-    if url == "http://example.com/squirrel.mp4":
-        path = resources.path("aana.tests.files.videos", "squirrel.mp4")
-    elif url == "http://example.com/Starry_Night.jpeg":
-        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
-    else:
-        raise DownloadException(url)
-    return path.read_bytes()
-
-
-@pytest.fixture
-def mock_download_file(mocker):
-    """Mock download_file to return different content based on URL."""
-    mock = mocker.patch("aana.models.core.media.download_file", autospec=True)
-    mock.side_effect = mocked_download_file
-    return mock
-
-
-def test_video(mock_download_file):
+def test_video():
     """Test that the video can be created from path, url, or content."""
     # Test creation from a path
     try:
@@ -47,7 +29,7 @@ def test_video(mock_download_file):
 
     # Test creation from a URL
     try:
-        url = "http://example.com/squirrel.mp4"
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
         video = Video(url=url, save_on_disk=False)
         assert video.path is None
         assert video.content is None
@@ -72,12 +54,12 @@ def test_video(mock_download_file):
         video.cleanup()
 
 
-def test_media_dir(mock_download_file):
+def test_media_dir():
     """Test that the media_dir is set correctly."""
     # Test saving from URL to disk
     video_dir = settings.video_dir
     try:
-        url = "http://example.com/squirrel.mp4"
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
         video = Video(url=url, save_on_disk=True)
         assert video.media_dir == video_dir
         assert video.content is None
@@ -95,7 +77,7 @@ def test_video_path_not_exist():
         Video(path=path)
 
 
-def test_save_video(mock_download_file):
+def test_save_video():
     """Test that save_on_disk works for video."""
     # Test that the video is saved to disk when save_on_disk is True
     try:
@@ -111,7 +93,7 @@ def test_save_video(mock_download_file):
 
     # Test saving from URL to disk
     try:
-        url = "http://example.com/squirrel.mp4"
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
         video = Video(url=url, save_on_disk=True)
         assert video.content is None
         assert video.url == url
@@ -131,10 +113,10 @@ def test_save_video(mock_download_file):
         video.cleanup()
 
 
-def test_cleanup(mock_download_file):
+def test_cleanup():
     """Test that cleanup works for video."""
     try:
-        url = "http://example.com/squirrel.mp4"
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
         video = Video(url=url, save_on_disk=True)
         assert video.path.exists()
     finally:
@@ -161,7 +143,7 @@ def test_at_least_one_input():
         Video(save_on_disk=True)
 
 
-def test_download_video(mock_download_file):
+def test_download_video():
     """Test download_video."""
     # Test VideoInput with path
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
@@ -174,7 +156,7 @@ def test_download_video(mock_download_file):
 
     # Test VideoInput with url
     try:
-        url = "http://example.com/squirrel.mp4"
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
         video_input = VideoInput(url=url)
         video = download_video(video_input)
         assert isinstance(video, Video)
@@ -188,8 +170,9 @@ def test_download_video(mock_download_file):
 
     # Test Youtube URL
     youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    youtube_video_dir = settings.youtube_video_dir
-    expected_path = youtube_video_dir / "dQw4w9WgXcQ.mp4"
+    youtube_url_hash = hashlib.md5(youtube_url.encode()).hexdigest()  # noqa: S324
+    video_dir = settings.video_dir
+    expected_path = video_dir / f"{youtube_url_hash}.webm"
     # remove the file if it exists
     expected_path.unlink(missing_ok=True)
 
@@ -201,7 +184,7 @@ def test_download_video(mock_download_file):
         assert video.path is not None
         assert video.path.exists()
         assert video.content is None
-        assert video.url is None
+        assert video.url == youtube_url
         assert video.media_id == "dQw4w9WgXcQ"
         assert (
             video.title
@@ -221,7 +204,7 @@ def test_download_video(mock_download_file):
         download_video(youtube_video_input)
 
     # Test url that doesn't contain a video
-    url = "http://example.com/Starry_Night.jpeg"
+    url = "https://mobius-public.s3.eu-west-1.amazonaws.com/Starry_Night.jpeg"
     video_input = VideoInput(url=url)
     with pytest.raises(VideoReadingException):
         download_video(video_input)
