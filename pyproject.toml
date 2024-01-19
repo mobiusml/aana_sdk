@@ -23,7 +23,7 @@ opencv-python = "^4.8.1.78"
 pydantic = "<2"
 pytest-mock = "^3.12.0"
 python-multipart = "^0.0.6"
-ray = {extras = ["serve"], version = "^2.7.1"}
+ray = {extras = ["serve"], version = "~2.8.1"}
 rapidfuzz = "^3.4.0"
 scipy = "^1.11.3"
 sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
