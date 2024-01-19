@@ -1,12 +1,10 @@
 # ruff: noqa: A002
-import json
 from pathlib import Path
 from urllib.parse import urlparse
 
 from sqlalchemy.orm import Session
 
 from aana.configs.db import media_id_type
-from aana.exceptions.database import MediaIDAlreadyExistsException
 from aana.models.core.video import Video
 from aana.models.db import (
     CaptionEntity,

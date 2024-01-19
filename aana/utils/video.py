@@ -1,5 +1,4 @@
 import json  # noqa: I001
-import pickle
 from collections import defaultdict
 from collections.abc import Generator
 from math import floor
@@ -14,7 +13,6 @@ from yt_dlp.utils import DownloadError
 from aana.configs.settings import settings
 from aana.exceptions.general import (
     DownloadException,
-    MediaIdNotFoundException,
     VideoReadingException,
 )
 from aana.models.core.image import Image
@@ -22,8 +20,6 @@ from aana.models.core.video import Video
 from aana.models.core.video_source import VideoSource
 from aana.models.pydantic.asr_output import (
     AsrSegments,
-    AsrTranscription,
-    AsrTranscriptionInfo,
 )
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.video_input import VideoInput

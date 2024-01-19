@@ -8,21 +8,18 @@ from aana.models.core.video import Video
 from aana.models.pydantic.asr_output import (
     AsrSegment,
     AsrSegments,
-    AsrSegmentsList,
     AsrTranscription,
     AsrTranscriptionInfo,
-    AsrTranscriptionInfoList,
-    AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import Caption, CaptionsList
 from aana.models.pydantic.time_interval import TimeInterval
 from aana.utils.db import (
     save_captions_batch,
     save_transcripts_batch,
+    save_video,
     save_video_batch,
     save_video_captions,
     save_video_transcription,
-    save_video,
 )
 
 
@@ -150,7 +147,7 @@ def test_save_video_transcription(mock_session):
         transcription=transcript,
         segments=segments,
     )
-    transcription_id = result["transcription_id"]
+    assert "transcription_id" in result
 
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
