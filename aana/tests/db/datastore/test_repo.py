@@ -11,7 +11,10 @@ from aana.repository.datastore.transcript_repo import TranscriptRepository
 @pytest.fixture
 def mocked_session(mocker):
     """Creates a mocked sqlalchemy.Session."""
-    return mocker.MagicMock(spec=Session)
+    session = mocker.MagicMock(spec=Session)
+    # Emulate the behavior of the empty database.
+    session.query.return_value.filter_by.return_value.first.return_value = None
+    return session
 
 
 def test_create_media(mocked_session):
@@ -22,7 +25,7 @@ def test_create_media(mocked_session):
     media = MediaEntity(id=media_id, media_type=media_type)
     media2 = repo.create(media)
 
-    # We need an integreation test to ensure that that the id gets set
+    # We need an integration test to ensure that that the id gets set
     # on creation, because the mocked version won't set it.
     assert media2 == media
     assert media2.media_type == media_type
