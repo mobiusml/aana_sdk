@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from aana.exceptions.database import NotFoundException
 
+from aana.exceptions.database import NotFoundException
 from aana.models.db import CaptionEntity
 from aana.repository.datastore.base import BaseRepository
 

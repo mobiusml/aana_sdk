@@ -1,8 +1,8 @@
 # ruff: noqa: S101
 import json
+from collections import defaultdict
 from importlib import resources
 from pathlib import Path
-from collections import defaultdict
 
 import pytest
 import ray
