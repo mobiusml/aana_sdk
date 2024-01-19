@@ -21,8 +21,8 @@ from aana.utils.db import (
     save_transcripts_batch,
     save_video_batch,
     save_video_captions,
-    save_video_single,
-    save_video_transcripts,
+    save_video_transcription,
+    save_video,
 )
 
 
@@ -37,6 +37,8 @@ def mock_session(mocker):
     session_mock.return_value.__enter__.return_value = context_var_mock
     # Ensure that the context var is visible on the injected mock.
     session_mock.context_var = context_var_mock
+    # Emulate the behavior of the empty database.
+    context_var_mock.query.return_value.filter_by.return_value.first.return_value = None
     mocker.patch("aana.utils.db.Session", session_mock)
     return session_mock
 
@@ -46,7 +48,7 @@ def test_save_video(mock_session):
     media_id = "foobar"
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     video = Video(path=path, media_id=media_id)
-    result = save_video_single(video)
+    result = save_video(video)
 
     assert result["media_id"] == media_id
     assert result["video_id"] is None
@@ -106,30 +108,50 @@ def test_save_transcripts_batch(mock_session):
     mock_session.context_var.commit.assert_called_once()
 
 
-def test_save_transcripts_single(mock_session):
+def test_save_video_transcription(mock_session):
     """Tests save transcripts function."""
     media_id = "0"
     model = "test_model"
-    texts = ("A transcript", "Another transcript", "A third transcript")
-    infos = [("en", 0.5), ("de", 0.36), ("fr", 0.99)]
-    transcripts = AsrTranscriptionList(
-        __root__=[AsrTranscription(text=text) for text in texts]
+    transcript = "This is a transcript. And this is another sentence. And a third one."
+    lang = "en"
+    lang_conf = 0.5
+    transcript = AsrTranscription(text=transcript)
+    transcription_info = AsrTranscriptionInfo(
+        language=lang, language_confidence=lang_conf
     )
-    transcription_infos = AsrTranscriptionInfoList(
+
+    segments = AsrSegments(
         __root__=[
-            AsrTranscriptionInfo(language=lang, language_confidence=conf)
-            for lang, conf in infos
+            AsrSegment(
+                text="This is a transcript.",
+                time_interval=TimeInterval(start=0, end=1),
+                confidence=0.99,
+                no_speech_confidence=0.1,
+            ),
+            AsrSegment(
+                text="And this is another sentence.",
+                time_interval=TimeInterval(start=1, end=2),
+                confidence=0.99,
+                no_speech_confidence=0.1,
+            ),
+            AsrSegment(
+                text="And a third one.",
+                time_interval=TimeInterval(start=2, end=3),
+                confidence=0.99,
+                no_speech_confidence=0.1,
+            ),
         ]
     )
-    segments = AsrSegmentsList(__root__=[AsrSegments(__root__=[])] * 3)
-    result = save_video_transcripts(
-        model, media_id, transcription_infos, transcripts, segments
-    )
-    result_ids = result["transcription_ids"]
 
-    assert (
-        len(result_ids) == len(transcripts) == len(transcription_infos) == len(segments)
+    result = save_video_transcription(
+        model_name=model,
+        media_id=media_id,
+        transcription_info=transcription_info,
+        transcription=transcript,
+        segments=segments,
     )
+    transcription_id = result["transcription_id"]
+
     mock_session.context_var.add_all.assert_called_once()
     mock_session.context_var.commit.assert_called_once()
 
