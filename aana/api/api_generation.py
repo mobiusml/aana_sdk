@@ -392,7 +392,7 @@ class Endpoint:
                     except RayTaskError as e:
                         yield custom_exception_handler(None, e).body
                     except BaseException as e:
-                        yield custom_exception_handler(None, e)
+                        yield custom_exception_handler(None, e).body
                     except Exception as e:
                         error = e.__class__.__name__
                         stacktrace = traceback.format_exc()

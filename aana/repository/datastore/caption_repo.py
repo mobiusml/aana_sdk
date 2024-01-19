@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from aana.exceptions.database import NotFoundException
 
 from aana.models.db import CaptionEntity
 from aana.repository.datastore.base import BaseRepository
@@ -10,3 +11,23 @@ class CaptionRepository(BaseRepository[CaptionEntity]):
     def __init__(self, session: Session):
         """Constructor."""
         super().__init__(session, CaptionEntity)
+
+    def get_captions(self, model_name: str, media_id: int) -> list[CaptionEntity]:
+        """Get the captions for a video.
+
+        Args:
+            model_name (str): The model name.
+            media_id (int): The media ID.
+
+        Returns:
+            list[CaptionEntity]: The list of caption entities.
+        """
+        entities: list[CaptionEntity] = (
+            self.session.query(self.model_class)
+            .filter_by(media_id=media_id, model=model_name)
+            .order_by(self.model_class.frame_id)
+            .all()
+        )
+        if not entities:
+            raise NotFoundException(self.table_name, media_id)
+        return entities
