@@ -27,6 +27,7 @@ from aana.models.pydantic.asr_output import (
 )
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.video_input import VideoInput
+from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
 
 
@@ -190,102 +191,7 @@ def download_video(video_input: VideoInput | Video) -> Video:
         return video_input.convert_input_to_object()
 
 
-def save_transcription(
-    transcription: AsrTranscription,
-    transcription_info: AsrTranscriptionInfo,
-    segments: AsrSegments,
-    video: Video,
-):
-    """Saves the transcription to a file.
-
-    Args:
-        transcription (AsrTranscription): the transcription to save
-        transcription_info (AsrTranscriptionInfo): the transcription info to save
-        segments (AsrSegments): the segments to save
-        video (Video): the video to save the transcription for
-    """
-    print(video)
-    print(transcription)
-    media_id = video.media_id
-    output_dir = settings.tmp_data_dir / "transcriptions"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    # dump the transcription to a file as json
-    output_path = Path(output_dir) / f"{media_id}.pkl"
-    with output_path.open("wb") as f:
-        pickle.dump(
-            {
-                "transcription": transcription,
-                "transcription_info": transcription_info,
-                "segments": segments,
-            },
-            f,
-        )
-
-    # output_path = Path(output_dir) / f"{media_id}.txt"
-    # output_path.write_text(transcription.text)
-    return {
-        "path": str(output_path),
-    }
-
-
-def save_video_captions(captions: list[str], timestamps: list[float], video: Video):
-    """Saves the captions to a file.
-
-    Args:
-        captions (list[str]): the captions to save
-        timestamps (list[float]): the timestamps to save
-        video (Video): the video to save the captions for
-    """
-    media_id = video.media_id
-    output_dir = settings.tmp_data_dir / "captions"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    # dump the transcription to a file as json
-    output_path = Path(output_dir) / f"{media_id}.pkl"
-    with output_path.open("wb") as f:
-        pickle.dump(
-            {
-                "captions": captions,
-                "timestamps": timestamps,
-            },
-            f,
-        )
-
-    # output_path = Path(output_dir) / f"{media_id}.txt"
-    # output_path.write_text(transcription.text)
-    return {
-        "path": str(output_path),
-    }
-
-
-def save_video_metadata(video: Video):
-    """Saves the metadata of the video to a file.
-
-    Args:
-        video (Video): the video to save the metadata for
-
-    Returns:
-        dict: dictionary containing the path to the saved metadata
-    """
-    media_id = video.media_id
-    output_dir = settings.tmp_data_dir / "video_metadata"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    output_path = Path(output_dir) / f"{media_id}.pkl"
-    with output_path.open("wb") as f:
-        pickle.dump(
-            {
-                "title": video.title,
-                "description": video.description,
-            },
-            f,
-        )
-    return {
-        "path": str(output_path),
-    }
-
-
 def generate_combined_timeline(
-    video: Video,
     transcription_segments: AsrSegments,
     captions: list[str],
     caption_timestamps: list[float],
@@ -294,17 +200,18 @@ def generate_combined_timeline(
     """Generates a combined timeline from the ASR segments and the captions.
 
     Args:
-        video (Video): the video
         transcription_segments (AsrSegments): the ASR segments
         captions (list[str]): the captions
         caption_timestamps (list[float]): the timestamps for the captions
         chunk_size (float, optional): the chunk size for the combined timeline in seconds. Defaults to 10.0.
 
     Returns:
-        list[str]: the combined timeline
+        dict: dictionary containing one key, "timeline", which is a list of dictionaries with the following keys:
+            "start_time": the start time of the chunk in seconds
+            "end_time": the end time of the chunk in seconds
+            "audio_transcript": the audio transcript for the chunk
+            "visual_caption": the visual caption for the chunk
     """
-    media_id = video.media_id
-
     timeline_dict: defaultdict[int, dict[str, list[str]]] = defaultdict(
         lambda: {"transcription": [], "captions": []}
     )
@@ -334,60 +241,13 @@ def generate_combined_timeline(
         for chunk_index in range(num_chunks)
     ]
 
-    # save the timeline to a file
-    output_dir = settings.tmp_data_dir / "timelines"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = Path(output_dir) / f"{media_id}.pkl"
-
-    with output_path.open("wb") as f:
-        pickle.dump(timeline, f)
-
     return {
-        "path": str(output_path),
         "timeline": timeline,
     }
 
 
-def load_video_metadata(media_id: str):
-    """Loads the metadata of the video from a file.
-
-    Args:
-        media_id: the id of the video
-
-    Returns:
-        dict: dictionary containing the metadata
-    """
-    output_dir = settings.tmp_data_dir / "video_metadata"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    output_path = Path(output_dir) / f"{media_id}.pkl"
-    if not output_path.exists():
-        raise MediaIdNotFoundException(media_id)
-    with output_path.open("rb") as f:
-        metadata = pickle.load(f)  # noqa: S301
-    return metadata
-
-
-def load_video_timeline(media_id: str):
-    """Loads the timeline of the video from a file.
-
-    Args:
-        media_id: the id of the video
-
-    Returns:
-        dict: dictionary containing the timeline
-    """
-    output_dir = settings.tmp_data_dir / "timelines"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    output_path = Path(output_dir) / f"{media_id}.pkl"
-    with output_path.open("rb") as f:
-        timeline = pickle.load(f)  # noqa: S301
-    return timeline
-
-
 def generate_dialog(
-    metadata: dict,
+    metadata: VideoMetadata,
     timeline: list[dict],
     question: str,
     max_timeline_len: int | None = 1024,
@@ -395,7 +255,7 @@ def generate_dialog(
     """Generates a dialog from the metadata and timeline of a video.
 
     Args:
-        metadata (dict): the metadata of the video
+        metadata (VideoMetadata): the metadata of the video
         timeline (list[dict]): the timeline of the video
         question (str): the question to ask
         max_timeline_len (int, optional): the maximum length of the timeline in tokens.
@@ -458,8 +318,8 @@ def generate_dialog(
                 instruction=instruction,
                 question=question,
                 timeline_json=timeline_json,
-                video_title=metadata["title"],
-                video_description=metadata["description"],
+                video_title=metadata.title,
+                video_description=metadata.description,
             ),
             role="user",
         )

@@ -59,9 +59,7 @@ def custom_exception_handler(
         # let's use it to get the stack trace
         stacktrace = str(exc_raw)
         # get the original exception
-        exc: BaseException = exc_raw.cause
-        if not isinstance(exc, BaseException):
-            raise TypeError(exc)
+        exc = exc_raw.cause
     else:
         # if it is not a RayTaskError
         # then we need to get the stack trace
@@ -70,7 +68,7 @@ def custom_exception_handler(
     # get the data from the exception
     # can be used to return additional info
     # like image path, url, model name etc.
-    data = exc.get_data()
+    data = exc.get_data() if isinstance(exc, BaseException) else {}
     # get the name of the class of the exception
     # can be used to identify the type of the error
     error = exc.__class__.__name__

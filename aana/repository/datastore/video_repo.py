@@ -33,3 +33,20 @@ class VideoRepository(BaseRepository[VideoEntity]):
         if not entity:
             raise NotFoundException(self.table_name, media_id)
         return entity
+
+    def delete_by_media_id(self, media_id: media_id_type) -> VideoEntity | None:
+        """Deletes a video by media_id.
+
+        Args:
+            media_id (media_id_type): Media ID to query.
+
+        Returns:
+            VideoEntity: the video.
+
+        Raises:
+            NotFoundException: if no entry in the VideoEntity table matching that media_id is found.
+        """
+        entity = self.get_by_media_id(media_id)
+        self.session.delete(entity)
+        self.session.commit()
+        return entity
