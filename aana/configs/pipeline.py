@@ -476,35 +476,6 @@ nodes = [
         ],
     },
     {
-        "name": "save_video_captions",
-        "type": "function",
-        "function": "aana.utils.video.save_video_captions",
-        "inputs": [
-            {
-                "name": "video_object",
-                "key": "video",
-                "path": "video.video",
-            },
-            {
-                "name": "video_captions_hf_blip2_opt_2_7b",
-                "key": "captions",
-                "path": "video.frames.[*].caption_hf_blip2_opt_2_7b",
-            },
-            {
-                "name": "video_timestamps",
-                "key": "timestamps",
-                "path": "video.timestamps",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "video_captions_path",
-                "key": "path",
-                "path": "video.video_captions_path",
-            },
-        ],
-    },
-    {
         "name": "whisper_medium_transcribe_video",
         "type": "ray_deployment",
         "deployment_name": "whisper_deployment_medium",
@@ -528,112 +499,20 @@ nodes = [
             {
                 "name": "video_transcriptions_segments_whisper_medium",
                 "key": "segments",
-                "path": "video_batch.videos.[*].segments",
+                "path": "video.segments",
                 "data_model": AsrSegments,
             },
             {
                 "name": "video_transcriptions_info_whisper_medium",
                 "key": "transcription_info",
-                "path": "video_batch.videos.[*].transcription_info",
+                "path": "video.transcription_info",
                 "data_model": AsrTranscriptionInfo,
             },
             {
                 "name": "video_transcriptions_whisper_medium",
                 "key": "transcription",
-                "path": "video_batch.videos.[*].transcription",
+                "path": "video.transcription",
                 "data_model": AsrTranscription,
-            },
-        ],
-    },
-    {
-        "name": "save_transcription",
-        "type": "function",
-        "function": "aana.utils.video.save_transcription",
-        "inputs": [
-            {
-                "name": "video_object",
-                "key": "video",
-                "path": "video.video",
-            },
-            {
-                "name": "video_transcriptions_whisper_medium",
-                "key": "transcription",
-                "path": "video_batch.videos.[*].transcription",
-            },
-            {
-                "name": "video_transcriptions_info_whisper_medium",
-                "key": "transcription_info",
-                "path": "video_batch.videos.[*].transcription_info",
-            },
-            {
-                "name": "video_transcriptions_segments_whisper_medium",
-                "key": "segments",
-                "path": "video_batch.videos.[*].segments",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "transcription_path",
-                "key": "path",
-                "path": "video.transcription_path",
-            },
-        ],
-    },
-    {
-        "name": "save_video_metadata",
-        "type": "function",
-        "function": "aana.utils.video.save_video_metadata",
-        "inputs": [
-            {
-                "name": "video_object",
-                "key": "video",
-                "path": "video.video",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "video_metadata_path",
-                "key": "path",
-                "path": "video.video_metadata_path",
-            },
-        ],
-    },
-    {
-        "name": "generate_combined_timeline",
-        "type": "function",
-        "function": "aana.utils.video.generate_combined_timeline",
-        "inputs": [
-            {
-                "name": "video_object",
-                "key": "video",
-                "path": "video.video",
-            },
-            {
-                "name": "video_transcriptions_segments_whisper_medium",
-                "key": "transcription_segments",
-                "path": "video_batch.videos.[*].segments",
-            },
-            {
-                "name": "video_captions_hf_blip2_opt_2_7b",
-                "key": "captions",
-                "path": "video.frames.[*].caption_hf_blip2_opt_2_7b",
-            },
-            {
-                "name": "video_timestamps",
-                "key": "caption_timestamps",
-                "path": "video.timestamps",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "combined_timeline_path",
-                "key": "path",
-                "path": "video.timeline_path",
-            },
-            {
-                "name": "combined_timeline",
-                "key": "timeline",
-                "path": "video.timeline",
             },
         ],
     },
@@ -664,7 +543,7 @@ nodes = [
     {
         "name": "load_video_metadata",
         "type": "function",
-        "function": "aana.utils.video.load_video_metadata",
+        "function": "aana.utils.db.load_video_metadata",
         "dict_output": False,
         "inputs": [
             {
@@ -683,10 +562,13 @@ nodes = [
         ],
     },
     {
-        "name": "load_video_timeline",
+        "name": "load_video_transcription",
         "type": "function",
-        "function": "aana.utils.video.load_video_timeline",
-        "dict_output": False,
+        "function": "aana.utils.db.load_video_transcription",
+        "dict_output": True,
+        "kwargs": {
+            "model_name": "whisper_medium",
+        },
         "inputs": [
             {
                 "name": "media_id",
@@ -696,8 +578,83 @@ nodes = [
         ],
         "outputs": [
             {
+                "name": "video_transcriptions_info_whisper_medium_from_db",
+                "key": "transcription_info",
+                "path": "video_transcriptions_info_whisper_medium_from_db",
+                "data_model": AsrTranscriptionInfo,
+            },
+            {
+                "name": "video_transcriptions_segments_whisper_medium_from_db",
+                "key": "segments",
+                "path": "video_transcriptions_segments_whisper_medium_from_db",
+                "data_model": AsrSegments,
+            },
+            {
+                "name": "video_transcriptions_whisper_medium_from_db",
+                "key": "transcription",
+                "path": "video_transcriptions_whisper_medium_from_db",
+                "data_model": AsrTranscription,
+            },
+        ],
+    },
+    {
+        "name": "load_video_captions_hf_blip2_opt_2_7b",
+        "type": "function",
+        "function": "aana.utils.db.load_video_captions",
+        "dict_output": True,
+        "kwargs": {
+            "model_name": "hf_blip2_opt_2_7b",
+        },
+        "inputs": [
+            {
+                "name": "media_id",
+                "key": "media_id",
+                "path": "media_id",
+            }
+        ],
+        "outputs": [
+            {
+                "name": "video_captions_hf_blip2_opt_2_7b_from_db",
+                "key": "captions",
+                "path": "video_captions_hf_blip2_opt_2_7b_from_db",
+            },
+            {
+                "name": "video_caption_timestamps_hf_blip2_opt_2_7b_from_db",
+                "key": "timestamps",
+                "path": "video_caption_timestamps_hf_blip2_opt_2_7b_from_db",
+            },
+            {
+                "name": "video_caption_frame_ids_hf_blip2_opt_2_7b_from_db",
+                "key": "frame_ids",
+                "path": "video_caption_frame_ids_hf_blip2_opt_2_7b_from_db",
+            },
+        ],
+    },
+    {
+        "name": "generate_combined_timeline",
+        "type": "function",
+        "function": "aana.utils.video.generate_combined_timeline",
+        "inputs": [
+            {
+                "name": "video_transcriptions_segments_whisper_medium_from_db",
+                "key": "transcription_segments",
+                "path": "video_transcriptions_segments_whisper_medium_from_db",
+            },
+            {
+                "name": "video_captions_hf_blip2_opt_2_7b_from_db",
+                "key": "captions",
+                "path": "video_captions_hf_blip2_opt_2_7b_from_db",
+            },
+            {
+                "name": "video_caption_timestamps_hf_blip2_opt_2_7b_from_db",
+                "key": "caption_timestamps",
+                "path": "video_caption_timestamps_hf_blip2_opt_2_7b_from_db",
+            },
+        ],
+        "outputs": [
+            {
                 "name": "video_timeline",
-                "key": "output",
+                "key": "timeline",
                 "path": "video_timeline",
             },
         ],
@@ -761,9 +718,9 @@ nodes = [
         ],
     },
     {
-        "name": "save_video_info",
-        "type": "ray_task",
-        "function": "aana.utils.db.save_video_single",
+        "name": "save_video",
+        "type": "function",
+        "function": "aana.utils.db.save_video",
         "dict_output": True,
         "inputs": [
             {
@@ -786,8 +743,28 @@ nodes = [
         ],
     },
     {
+        "name": "delete_media",
+        "type": "function",
+        "function": "aana.utils.db.delete_media",
+        "dict_output": True,
+        "inputs": [
+            {
+                "name": "media_id",
+                "key": "media_id",
+                "path": "media_id",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "deleted_media_id",
+                "key": "media_id",
+                "path": "deleted_media_id",
+            }
+        ],
+    },
+    {
         "name": "save_videos_info",
-        "type": "ray_task",
+        "type": "function",
         "function": "aana.utils.db.save_video_batch",
         "dict_output": True,
         "inputs": [
@@ -811,9 +788,9 @@ nodes = [
         ],
     },
     {
-        "name": "save_transcripts_medium",
-        "type": "ray_task",
-        "function": "aana.utils.db.save_video_transcripts",
+        "name": "save_video_transcription",
+        "type": "function",
+        "function": "aana.utils.db.save_video_transcription",
         "kwargs": {
             "model_name": "whisper_medium",
         },
@@ -844,13 +821,13 @@ nodes = [
             {
                 "name": "transcription_id",
                 "key": "transcription_id",
-                "path": "video.transcription.id",
+                "path": "video.transcription_id",
             }
         ],
     },
     {
         "name": "save_transcripts_batch_medium",
-        "type": "ray_task",
+        "type": "function",
         "function": "aana.utils.db.save_transcripts_batch",
         "kwargs": {
             "model_name": "whisper_medium",
@@ -888,7 +865,7 @@ nodes = [
     },
     {
         "name": "save_video_captions_hf_blip2_opt_2_7b",
-        "type": "ray_task",
+        "type": "function",
         "function": "aana.utils.db.save_video_captions",
         "kwargs": {
             "model_name": "hf_blip2_opt_2_7b",
