@@ -170,7 +170,9 @@ def test_download_video():
 
     # Test Youtube URL
     youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    youtube_url_hash = hashlib.md5(youtube_url.encode()).hexdigest()  # noqa: S324
+    youtube_url_hash = hashlib.md5(
+        youtube_url.encode(), usedforsecurity=False
+    ).hexdigest()
     video_dir = settings.video_dir
     expected_path = video_dir / f"{youtube_url_hash}.webm"
     # remove the file if it exists
