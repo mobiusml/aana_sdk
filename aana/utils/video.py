@@ -1,4 +1,5 @@
-import json  # noqa: I001
+import hashlib  # noqa: I001
+import json
 import pickle
 from collections import defaultdict
 from collections.abc import Generator
@@ -19,7 +20,6 @@ from aana.exceptions.general import (
 )
 from aana.models.core.image import Image
 from aana.models.core.video import Video
-from aana.models.core.video_source import VideoSource
 from aana.models.pydantic.asr_output import (
     AsrSegments,
     AsrTranscription,
@@ -150,42 +150,40 @@ def download_video(video_input: VideoInput | Video) -> Video:
     if isinstance(video_input, Video):
         return video_input
     if video_input.url is not None:
-        video_source: VideoSource = VideoSource.from_url(video_input.url)
-        if video_source == VideoSource.YOUTUBE:
-            youtube_video_dir = settings.youtube_video_dir
+        video_dir = settings.video_dir
+        url_hash = hashlib.md5(
+            video_input.url.encode(), usedforsecurity=False
+        ).hexdigest()
 
-            ydl_options = {
-                "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
-                "outtmpl": f"{youtube_video_dir}/%(id)s.%(ext)s",
-                "extract_flat": True,
-                "hls_prefer_native": True,
-                "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
-            }
-            try:
-                with yt_dlp.YoutubeDL(ydl_options) as ydl:
-                    info = ydl.extract_info(video_input.url, download=False)
-                    title = info.get("title", "")
-                    description = info.get("description", "")
-                    path = Path(ydl.prepare_filename(info))
-                    if not path.exists():
-                        ydl.download([video_input.url])
-                    if not path.exists():
-                        raise DownloadException(video_input.url)
-                    return Video(
-                        path=path,
-                        media_id=video_input.media_id,
-                        title=title,
-                        description=description,
-                    )
-            except DownloadError as e:
-                raise DownloadException(video_input.url) from e
-        elif video_source == VideoSource.AUTO:
-            video = Video(
-                url=video_input.url, save_on_disk=True, media_id=video_input.media_id
-            )
-            return video
-        else:
-            raise NotImplementedError(f"Download for {video_source} not implemented")
+        # we use yt_dlp to download the video
+        # it works not only for youtube videos, but also for other websites and direct links
+        ydl_options = {
+            "outtmpl": f"{video_dir}/{url_hash}.%(ext)s",
+            "extract_flat": True,
+            "hls_prefer_native": True,
+            "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
+        }
+        try:
+            with yt_dlp.YoutubeDL(ydl_options) as ydl:
+                info = ydl.extract_info(video_input.url, download=False)
+                title = info.get("title", "")
+                description = info.get("description", "")
+                path = Path(ydl.prepare_filename(info))
+                if not path.exists():
+                    ydl.download([video_input.url])
+                if not path.exists():
+                    raise DownloadException(video_input.url)
+                return Video(
+                    path=path,
+                    url=video_input.url,
+                    media_id=video_input.media_id,
+                    title=title,
+                    description=description,
+                )
+        except DownloadError as e:
+            # removes the yt-dlp request to file an issue
+            error_message = e.msg.split(";")[0]
+            raise DownloadException(url=video_input.url, msg=error_message) from e
     else:
         return video_input.convert_input_to_object()
 

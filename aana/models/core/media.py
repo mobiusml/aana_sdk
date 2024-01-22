@@ -78,7 +78,6 @@ class Media:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', or 'content' must be provided."
             )
-        self.path = file_path
         self.is_saved = True
 
     def save_from_bytes(self, file_path: Path, content: bytes):
@@ -89,6 +88,7 @@ class Media:
             content (bytes): the content of the media
         """
         file_path.write_bytes(content)
+        self.path = file_path
 
     def save_from_content(self, file_path: Path):
         """Save the media from the content.
