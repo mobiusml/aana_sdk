@@ -142,7 +142,9 @@ def download_video(video_input: VideoInput | Video) -> Video:
         return video_input
     if video_input.url is not None:
         video_dir = settings.video_dir
-        url_hash = hashlib.md5(video_input.url.encode()).hexdigest()  # noqa: S324
+        url_hash = hashlib.md5(
+            video_input.url.encode(), usedforsecurity=False
+        ).hexdigest()
 
         # we use yt_dlp to download the video
         # it works not only for youtube videos, but also for other websites and direct links
