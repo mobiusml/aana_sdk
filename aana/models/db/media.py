@@ -17,7 +17,7 @@ class MediaEntity(BaseEntity, TimeStampEntity):
     """Table for media items."""
 
     __tablename__ = "media"
-    id = Column(MediaIdSqlType, primary_key=True)  # noqa: A003
+    id = Column(MediaIdSqlType, primary_key=True)
     media_type = Column(String, comment="The type of media")
     video_id = Column(
         Integer,

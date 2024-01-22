@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 
-from aana.exceptions.database import NotFoundException
 from aana.models.db import CaptionEntity
 from aana.repository.datastore.base import BaseRepository
 
@@ -28,6 +27,4 @@ class CaptionRepository(BaseRepository[CaptionEntity]):
             .order_by(self.model_class.frame_id)
             .all()
         )
-        if not entities:
-            raise NotFoundException(self.table_name, media_id)
         return entities

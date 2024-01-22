@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from aana.exceptions.database import MediaIDAlreadyExistsException
+from aana.exceptions.database import MediaIdAlreadyExistsException
 from aana.models.db import MediaEntity
 from aana.repository.datastore.base import BaseRepository
 
@@ -36,6 +36,6 @@ class MediaRepository(BaseRepository[MediaEntity]):
             MediaEntity: The inserted entity.
         """
         if self.check_media_exists(entity.id):
-            raise MediaIDAlreadyExistsException(self.table_name, entity.id)
+            raise MediaIdAlreadyExistsException(self.table_name, entity.id)
 
         return super().create(entity)

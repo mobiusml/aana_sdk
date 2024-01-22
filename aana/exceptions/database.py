@@ -22,7 +22,7 @@ class NotFoundException(BaseException):
         return (self.__class__, (self.table_name, self.id))
 
 
-class MediaIDAlreadyExistsException(BaseException):
+class MediaIdAlreadyExistsException(BaseException):
     """Raised when a media_id already exists."""
 
     def __init__(self, table_name: str, media_id: media_id_type):
