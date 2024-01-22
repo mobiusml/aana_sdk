@@ -7,6 +7,7 @@ from typing import TypedDict
 
 import numpy as np
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
+from decord import DECORDError
 import yt_dlp
 from yt_dlp.utils import DownloadError
 
@@ -54,8 +55,17 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
         video_reader = decord.VideoReader(
             str(video.path), ctx=device, num_threads=num_threads
         )
-    except Exception as e:
-        raise VideoReadingException(video) from e
+    except DECORDError as video_reader_exception:
+        try:
+            audio_reader = decord.AudioReader(str(video.path), ctx=device)
+            return FramesDict(
+                frames=[],
+                timestamps=[],
+                duration=audio_reader.duration(),
+                frame_ids=[],
+            )
+        except DECORDError:
+            raise VideoReadingException(video) from video_reader_exception
 
     video_fps = video_reader.get_avg_fps()
     num_frames = len(video_reader)
@@ -100,12 +110,27 @@ def generate_frames_decord(
     num_threads = 1  # TODO: see if we can use more threads
 
     num_fps: float = params.extract_fps
+    is_audio_only = False
     try:
         video_reader = decord.VideoReader(
             str(video.path), ctx=device, num_threads=num_threads
         )
-    except Exception as e:
-        raise VideoReadingException(video) from e
+    except DECORDError as video_reader_exception:
+        try:
+            audio_reader = decord.AudioReader(str(video.path), ctx=device)
+            is_audio_only = True
+            yield FramesDict(
+                frames=[],
+                timestamps=[],
+                duration=audio_reader.duration(),
+                frame_ids=[],
+            )
+
+        except DECORDError:
+            raise VideoReadingException(video) from video_reader_exception
+
+    if is_audio_only:
+        return
 
     video_fps = video_reader.get_avg_fps()
     num_frames = len(video_reader)
