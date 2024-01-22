@@ -21,7 +21,7 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "transcripts"
 
-    id = Column(Integer, autoincrement=True, primary_key=True)  # noqa: A003
+    id = Column(Integer, autoincrement=True, primary_key=True)
     model = Column(
         String, nullable=False, comment="Name of model used to generate transcript"
     )
