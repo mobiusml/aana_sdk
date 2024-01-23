@@ -86,7 +86,7 @@ def test_extract_frames_failure():
     # image file instead of video file will create Video object
     # but will fail in extract_frames_decord
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
-    invalid_video = Video(path=path)
-    params = VideoParams(extract_fps=1.0, fast_mode_enabled=False)
     with pytest.raises(VideoReadingException):
+        invalid_video = Video(path=path)
+        params = VideoParams(extract_fps=1.0, fast_mode_enabled=False)
         extract_frames_decord(video=invalid_video, params=params)

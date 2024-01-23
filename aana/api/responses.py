@@ -1,4 +1,4 @@
-from pathlib import PosixPath
+from pathlib import Path
 from typing import Any
 
 import orjson
@@ -28,7 +28,7 @@ def json_serializer_default(obj: Any) -> Any:
     """
     if isinstance(obj, BaseModel):
         return obj.dict()
-    if isinstance(obj, PosixPath):
+    if isinstance(obj, Path):
         return str(obj)
     raise TypeError
 
