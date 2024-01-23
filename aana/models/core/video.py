@@ -1,8 +1,11 @@
-import hashlib
+import hashlib  # noqa: I001
 from dataclasses import dataclass
 from pathlib import Path
+import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
+from decord import DECORDError
 
 from aana.configs.settings import settings
+from aana.exceptions.general import VideoReadingException
 from aana.models.core.media import Media
 
 
@@ -28,7 +31,12 @@ class Video(Media):
     media_dir: Path | None = settings.video_dir
 
     def validate(self):
-        """Validate the video."""
+        """Validate the video.
+
+        Raises:
+            ValueError: if none of 'path', 'url', or 'content' is provided
+            VideoReadingException: if the video is not valid
+        """
         # validate the parent class
         super().validate()
 
@@ -43,6 +51,39 @@ class Video(Media):
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url' or 'content' must be provided."
             )
+
+        # check that the video is valid
+        if self.path and not self.is_video():
+            raise VideoReadingException(video=self)
+
+    def is_video(self) -> bool:
+        """Checks if it's a valid video."""
+        if not self.path:
+            return False
+
+        try:
+            decord.VideoReader(str(self.path))
+        except DECORDError:
+            try:
+                decord.AudioReader(str(self.path))
+            except DECORDError:
+                return False
+        return True
+
+    def save_from_url(self, file_path):
+        """Save the media from the URL.
+
+        Args:
+            file_path (Path): the path to save the media to
+
+        Raises:
+            DownloadError: if the media can't be downloaded
+            VideoReadingException: if the media is not a valid video
+        """
+        super().save_from_url(file_path)
+        # check that the file is a video
+        if not self.is_video():
+            raise VideoReadingException(video=self)
 
     def __repr__(self) -> str:
         """Get the representation of the video.

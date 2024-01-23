@@ -1,4 +1,3 @@
-import traceback
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -6,11 +5,9 @@ from typing import Any, Optional
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
-from mobius_pipeline.exceptions import BaseException
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
 from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
-from ray.exceptions import RayTaskError
 
 from aana.api.app import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
@@ -389,19 +386,8 @@ class Endpoint:
                         ):
                             output = self.process_output(output)
                             yield AanaJSONResponse(content=output).body
-                    except RayTaskError as e:
-                        yield custom_exception_handler(None, e).body
-                    except BaseException as e:
-                        yield custom_exception_handler(None, e).body
                     except Exception as e:
-                        error = e.__class__.__name__
-                        stacktrace = traceback.format_exc()
-                        yield AanaJSONResponse(
-                            status_code=400,
-                            content=ExceptionResponseModel(
-                                error=error, message=str(e), stacktrace=stacktrace
-                            ).dict(),
-                        ).body
+                        yield custom_exception_handler(None, e).body
 
                 return StreamingResponse(
                     generator_wrapper(), media_type="application/json"

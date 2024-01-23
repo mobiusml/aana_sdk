@@ -16,6 +16,7 @@ class NotFoundException(BaseException):
         super().__init__(table=table_name, id=id)
         self.table_name = table_name
         self.id = id
+        self.http_status_code = 404
 
     def __reduce__(self):
         """Used for pickling."""

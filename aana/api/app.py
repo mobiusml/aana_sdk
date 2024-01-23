@@ -32,9 +32,7 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     )
 
 
-def custom_exception_handler(
-    request: Request | None, exc_raw: BaseException | RayTaskError
-):
+def custom_exception_handler(request: Request | None, exc_raw: Exception):
     """This handler is used to handle custom exceptions raised in the application.
 
     BaseException is the base exception for all the exceptions
@@ -43,7 +41,7 @@ def custom_exception_handler(
 
     Args:
         request (Request): The request object
-        exc_raw (Union[BaseException, RayTaskError]): The exception raised
+        exc_raw (Exception): The exception raised
 
     Returns:
         JSONResponse: JSON response with the error details. The response contains the following fields:
