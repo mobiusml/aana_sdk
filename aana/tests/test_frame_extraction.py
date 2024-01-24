@@ -16,6 +16,7 @@ from aana.utils.video import extract_frames_decord, generate_frames_decord
         ("squirrel.mp4", 1.0, False, 10.0, 10),
         ("squirrel.mp4", 0.5, False, 10.0, 5),
         ("squirrel.mp4", 1.0, True, 10.0, 4),
+        ("physicsworks_audio.webm", 1.0, False, 203.0, 0),
     ],
 )
 def test_extract_frames_success(
@@ -31,7 +32,10 @@ def test_extract_frames_success(
     assert "duration" in result
     assert isinstance(result["duration"], float)
     assert isinstance(result["frames"], list)
-    assert isinstance(result["frames"][0], Image)
+    if expected_num_frames == 0:
+        assert result["frames"] == []
+    else:
+        assert isinstance(result["frames"][0], Image)
     assert result["duration"] == expected_duration
     assert len(result["frames"]) == expected_num_frames
     assert len(result["timestamps"]) == expected_num_frames
@@ -43,6 +47,7 @@ def test_extract_frames_success(
         ("squirrel.mp4", 1.0, False, 10.0, 10),
         ("squirrel.mp4", 0.5, False, 10.0, 5),
         ("squirrel.mp4", 1.0, True, 10.0, 4),
+        ("physicsworks_audio.webm", 1.0, False, 203.0, 0),
     ],
 )
 def test_generate_frames_success(
@@ -64,11 +69,14 @@ def test_generate_frames_success(
         assert "duration" in result
         assert isinstance(result["duration"], float)
         assert isinstance(result["frames"], list)
-        assert isinstance(result["frames"][0], Image)
+        if expected_num_frames == 0:
+            assert result["frames"] == []
+        else:
+            assert isinstance(result["frames"][0], Image)
+            assert len(result["frames"]) == 1  # batch_size = 1
+            assert len(result["timestamps"]) == 1  # batch_size = 1
+            total_frames += 1
         assert result["duration"] == expected_duration
-        assert len(result["frames"]) == 1  # batch_size = 1
-        assert len(result["timestamps"]) == 1  # batch_size = 1
-        total_frames += 1
 
     assert total_frames == expected_num_frames
 
