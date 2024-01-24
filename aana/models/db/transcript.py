@@ -1,6 +1,5 @@
 from __future__ import annotations  # Let classes use themselves in type annotations
 
-import json
 from typing import TYPE_CHECKING
 
 from sqlalchemy import JSON, CheckConstraint, Column, Float, ForeignKey, Integer, String
@@ -22,7 +21,7 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "transcripts"
 
-    id = Column(Integer, autoincrement=True, primary_key=True)  # noqa: A003
+    id = Column(Integer, autoincrement=True, primary_key=True)
     model = Column(
         String, nullable=False, comment="Name of model used to generate transcript"
     )
@@ -69,5 +68,5 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
             language=info.language,
             language_confidence=info.language_confidence,
             transcript=transcription.text,
-            segments=json.dumps([s.json() for s in segments]),
+            segments=[s.dict() for s in segments],
         )

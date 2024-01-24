@@ -10,7 +10,7 @@ class VideoEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "video"
 
-    id = Column(Integer, primary_key=True)  # noqa: A003
+    id = Column(Integer, primary_key=True)
     media_id = Column(
         MediaIdSqlType,
         ForeignKey("media.id"),
@@ -20,7 +20,16 @@ class VideoEntity(BaseEntity, TimeStampEntity):
     duration = Column(Float, comment="Media duration in seconds")
     orig_filename = Column(String, comment="Original filename")
     orig_url = Column(String, comment="Original URL")
+    title = Column(String, comment="Title of the video")
+    description = Column(String, comment="Description of the video")
 
-    media = relationship("MediaEntity", foreign_keys=[media_id])
-    captions = relationship("CaptionEntity", back_populates="video")
-    transcripts = relationship("TranscriptEntity", back_populates="video")
+    media = relationship(
+        "MediaEntity",
+        foreign_keys=[media_id],
+    )
+    captions = relationship(
+        "CaptionEntity", back_populates="video", cascade="all, delete-orphan"
+    )
+    transcripts = relationship(
+        "TranscriptEntity", back_populates="video", cascade="all, delete-orphan"
+    )
