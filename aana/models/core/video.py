@@ -2,6 +2,7 @@ import hashlib  # noqa: I001
 from dataclasses import dataclass
 from pathlib import Path
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
+from decord import DECORDError
 
 from aana.configs.settings import settings
 from aana.exceptions.general import VideoReadingException
@@ -59,10 +60,14 @@ class Video(Media):
         """Checks if it's a valid video."""
         if not self.path:
             return False
+
         try:
             decord.VideoReader(str(self.path))
-        except Exception:
-            return False
+        except DECORDError:
+            try:
+                decord.AudioReader(str(self.path))
+            except DECORDError:
+                return False
         return True
 
     def save_from_url(self, file_path):

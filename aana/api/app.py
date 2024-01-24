@@ -57,7 +57,7 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
         # let's use it to get the stack trace
         stacktrace = str(exc_raw)
         # get the original exception
-        exc: BaseException = exc_raw.cause
+        exc = exc_raw.cause
     else:
         # if it is not a RayTaskError
         # then we need to get the stack trace

@@ -85,14 +85,16 @@ class HFBlip2Deployment(BaseDeployment):
         else:
             load_in_8bit = False
             self.torch_dtype = self.dtype.to_torch()
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = Blip2ForConditionalGeneration.from_pretrained(
-            self.model_id, torch_dtype=self.torch_dtype, load_in_8bit=load_in_8bit
+            self.model_id,
+            torch_dtype=self.torch_dtype,
+            load_in_8bit=load_in_8bit,
+            device_map=self.device,
         )
         self.model = torch.compile(self.model)
         self.model.eval()
         self.processor = Blip2Processor.from_pretrained(self.model_id)
-
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model.to(self.device)
 
     async def generate(self, image: Image) -> CaptioningOutput:

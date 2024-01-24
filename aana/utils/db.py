@@ -18,10 +18,9 @@ from aana.models.pydantic.asr_output import (
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
-    AsrTranscriptionInfoList,
-    AsrTranscriptionList,
 )
 from aana.models.pydantic.captions import CaptionsList
+from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.engine import engine
 from aana.repository.datastore.media_repo import MediaRepository
@@ -71,10 +70,17 @@ def save_video_batch(
         }
 
 
-def save_video_single(
+def save_video(
     video: Video,
 ) -> dict:
-    """Saves a batch of videos to datastore."""
+    """Saves a batch of videos to datastore.
+
+    Args:
+        video (Video): The video object.
+
+    Returns:
+        dict: The dictionary with video and media IDs.
+    """
     if video.url is not None:
         orig_url = video.url
         parsed_url = urlparse(orig_url)
@@ -91,6 +97,8 @@ def save_video_single(
         media=media_entity,
         orig_filename=orig_filename,
         orig_url=orig_url,
+        title=video.title,
+        description=video.description,
     )
     with Session(engine) as session:
         media_repo = MediaRepository(session)
@@ -101,6 +109,26 @@ def save_video_single(
             "media_id": media_entity.id,  # type: ignore
             "video_id": video_entity.id,
         }
+
+
+def delete_media(media_id: media_id_type) -> dict:
+    """Deletes a media file from the database.
+
+    Args:
+        media_id (media_id_type): The media ID.
+
+    Returns:
+        dict: The dictionary with the ID of the deleted entity.
+    """
+    with Session(engine) as session:
+        media_repo = MediaRepository(session)
+        media_entity = media_repo.delete(media_id, check=True)
+        video_repo = VideoRepository(session)
+        video_entity = video_repo.delete_by_media_id(media_id)
+    return {
+        "media_id": media_entity.id,
+        "video_id": video_entity.id,
+    }
 
 
 def save_captions_batch(
@@ -140,7 +168,18 @@ def save_video_captions(
     timestamps: list[float],
     frame_ids: list[int],
 ) -> dict:
-    """Save captions."""
+    """Save captions.
+
+    Args:
+        model_name (str): The name of the model used to generate the captions.
+        media_id (media_id_type): The media ID.
+        captions (CaptionsList): The captions.
+        timestamps (list[float]): The timestamps.
+        frame_ids (list[int]): The frame IDs.
+
+    Returns:
+        dict: The dictionary with the IDs of the saved entities.
+    """
     with Session(engine) as session:
         video_entity = VideoRepository(session).get_by_media_id(media_id)
         entities = [
@@ -153,7 +192,6 @@ def save_video_captions(
         ]
         repo = CaptionRepository(session)
         results = repo.create_multiple(entities)
-        # return [c.id for c in results]
         return {
             "caption_ids": [c.id for c in results]  # type: ignore
         }
@@ -193,28 +231,117 @@ def save_transcripts_batch(
         }
 
 
-def save_video_transcripts(
+def save_video_transcription(
     model_name: str,
     media_id: media_id_type,
-    transcription_info: AsrTranscriptionInfoList,
-    transcription: AsrTranscriptionList,
+    transcription_info: AsrTranscriptionInfo,
+    transcription: AsrTranscription,
     segments: AsrSegments,
 ) -> dict:
-    """Save transcripts."""
+    """Save transcripts.
+
+    Args:
+        model_name (str): The name of the model used to generate the transcript.
+        media_id (media_id_type): The media ID.
+        transcription_info (AsrTranscriptionInfo): The ASR transcription info.
+        transcription (AsrTranscription): The ASR transcription.
+        segments (AsrSegments): The ASR segments.
+
+    Returns:
+        dict: The dictionary with the IDs of the saved entities.
+    """
     with Session(engine) as session:
         video_entity = VideoRepository(session).get_by_media_id(media_id)
+        video_id = int(video_entity.id)
         entities = [
             TranscriptEntity.from_asr_output(
-                model_name, media_id, video_entity.id, info, txn, seg
-            )
-            for info, txn, seg in zip(
-                transcription_info, transcription, segments, strict=True
+                model_name=model_name,
+                media_id=media_id,
+                video_id=video_id,
+                transcription=transcription,
+                segments=segments,
+                info=transcription_info,
             )
         ]
 
         repo = TranscriptRepository(session)
         entities = repo.create_multiple(entities)
-        print(len(entities))
+        transcription_id = entities[0].id
+
         return {
-            "transcription_ids": [c.id for c in entities]  # type: ignore
+            "transcription_id": transcription_id,
         }
+
+
+def load_video_transcription(
+    model_name: str,
+    media_id: media_id_type,
+) -> dict:
+    """Load transcript from database.
+
+    Args:
+        model_name (str): The name of the model used to generate the transcript.
+        media_id (media_id_type): The media ID.
+
+    Returns:
+        dict: The dictionary with the transcription, segments, and info.
+    """
+    with Session(engine) as session:
+        repo = TranscriptRepository(session)
+        entity: TranscriptEntity = repo.get_transcript(model_name, media_id)
+        transcription = AsrTranscription(text=entity.transcript)
+        segments = [AsrSegment(**s) for s in entity.segments]
+        info = AsrTranscriptionInfo(
+            language=entity.language,
+            language_confidence=entity.language_confidence,
+        )
+        return {
+            "transcription": transcription,
+            "segments": segments,
+            "transcription_info": info,
+        }
+
+
+def load_video_captions(
+    model_name: str,
+    media_id: media_id_type,
+) -> dict:
+    """Load captions from database.
+
+    Args:
+        model_name (str): The name of the model used to generate the captions.
+        media_id (media_id_type): The media ID.
+
+    Returns:
+        dict: The dictionary with the captions, timestamps, and frame IDs.
+    """
+    with Session(engine) as session:
+        repo = CaptionRepository(session)
+        entities = repo.get_captions(model_name, media_id)
+        captions = [c.caption for c in entities]
+        timestamps = [c.timestamp for c in entities]
+        frame_ids = [c.frame_id for c in entities]
+        return {
+            "captions": captions,
+            "timestamps": timestamps,
+            "frame_ids": frame_ids,
+        }
+
+
+def load_video_metadata(
+    media_id: media_id_type,
+) -> VideoMetadata:
+    """Load video metadata from database.
+
+    Args:
+        media_id (media_id_type): The media ID.
+
+    Returns:
+        VideoMetadata: The video metadata.
+    """
+    with Session(engine) as session:
+        video_entity = VideoRepository(session).get_by_media_id(media_id)
+        return VideoMetadata(
+            title=video_entity.title,
+            description=video_entity.description,
+        )

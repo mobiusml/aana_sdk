@@ -102,12 +102,48 @@ endpoints = {
                     streaming=True,
                 ),
                 EndpointOutput(name="transcription_id", output="transcription_id"),
-                EndpointOutput(name="transcription_path", output="transcription_path"),                     
             ],
             streaming=True,
         ),
+        Endpoint(
+            name="load_transcription",
+            path="/video/get_transcription",
+            summary="Load a transcription",
+            outputs=[
+                EndpointOutput(
+                    name="transcription",
+                    output="video_transcriptions_whisper_medium_from_db",
+                ),
+                EndpointOutput(
+                    name="segments",
+                    output="video_transcriptions_segments_whisper_medium_from_db",
+                ),
+                EndpointOutput(
+                    name="info",
+                    output="video_transcriptions_info_whisper_medium_from_db",
+                ),
+            ],
+        ),
+    ],
+    "chat_with_video_test": [
+        Endpoint(
+            name="delete_media_id",
+            path="/video/delete",
+            summary="Delete a video",
+            outputs=[
+                EndpointOutput(name="deleted_media_id", output="deleted_media_id")
+            ],
+        ),
     ],
     "chat_with_video": [
+        Endpoint(
+            name="delete_media_id",
+            path="/video/delete",
+            summary="Delete a video",
+            outputs=[
+                EndpointOutput(name="deleted_media_id", output="deleted_media_id")
+            ],
+        ),
         Endpoint(
             name="blip2_video_generate",
             path="/video/generate_captions",
@@ -120,9 +156,6 @@ endpoints = {
                 ),
                 EndpointOutput(
                     name="timestamps", output="video_timestamps", streaming=True
-                ),
-                EndpointOutput(
-                    name="video_captions_path", output="video_captions_path"
                 ),
             ],
             streaming=True,
@@ -148,7 +181,6 @@ endpoints = {
                     streaming=True,
                 ),
                 EndpointOutput(name="transcription_id", output="transcription_id"),
-                EndpointOutput(name="transcription_path", output="transcription_path"),
             ],
             streaming=True,
         ),
@@ -172,7 +204,6 @@ endpoints = {
                     output="video_transcriptions_info_whisper_medium",
                     streaming=True,
                 ),
-                EndpointOutput(name="transcription_path", output="transcription_path"),
                 EndpointOutput(
                     name="captions",
                     output="video_captions_hf_blip2_opt_2_7b",
@@ -181,18 +212,7 @@ endpoints = {
                 EndpointOutput(
                     name="timestamps", output="video_timestamps", streaming=True
                 ),
-                EndpointOutput(name="combined_timeline", output="combined_timeline"),
-                EndpointOutput(
-                    name="combined_timeline_path", output="combined_timeline_path"
-                ),
-                EndpointOutput(
-                    name="video_metadata_path", output="video_metadata_path"
-                ),
-                EndpointOutput(
-                    name="video_captions_path", output="video_captions_path"
-                ),
                 EndpointOutput(name="caption_ids", output="caption_ids"),
-                EndpointOutput(name="transcription_path", output="transcription_path"),
                 EndpointOutput(name="transcription_id", output="transcription_id"),
             ],
             streaming=True,
