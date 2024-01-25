@@ -124,6 +124,14 @@ endpoints = {
                 ),
             ],
         ),
+        Endpoint(
+            name="delete_media_id",
+            path="/video/delete",
+            summary="Delete a video",
+            outputs=[
+                EndpointOutput(name="deleted_media_id", output="deleted_media_id")
+            ],
+        ),
     ],
     "chat_with_video_test": [
         Endpoint(

@@ -3,7 +3,9 @@ from typing import Any, TypeVar
 import requests
 from pydantic import BaseModel
 
-from aana.exceptions.general import DownloadException
+from aana.api.api_generation import Endpoint
+from aana.configs.endpoints import endpoints as all_endpoints
+from aana.exceptions.general import DownloadException, EndpointNotFoundException
 
 OptionType = TypeVar("OptionType", bound=BaseModel)
 
@@ -68,3 +70,19 @@ def pydantic_to_dict(data: Any) -> Any:
         return {key: pydantic_to_dict(value) for key, value in data.items()}
     else:
         return data  # return as is for non-Pydantic types
+
+
+def get_endpoint(target: str, endpoint: str) -> Endpoint:
+    """Get endpoint from endpoints config.
+
+    Args:
+        target (str): the name of the target deployment
+        endpoint (str): the endpoint path
+
+    Returns:
+        Endpoint: the endpoint
+    """
+    for e in all_endpoints[target]:
+        if e.path == endpoint:
+            return e
+    raise EndpointNotFoundException(target=target, endpoint=endpoint)
