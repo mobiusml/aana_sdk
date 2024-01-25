@@ -73,7 +73,7 @@ endpoints = [
 ]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def ray_setup(request):
     """Setup the Ray environment and serve the endpoints.
 
