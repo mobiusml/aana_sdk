@@ -5,7 +5,7 @@ from importlib import resources
 
 import pytest
 
-from aana.tests.utils import call_endpoint, check_output
+from aana.tests.utils import call_endpoint, check_output, is_gpu_available
 
 TARGET = "whisper"
 
@@ -65,16 +65,17 @@ def delete_video(
     return output
 
 
+@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.parametrize(
     "video",
     [
         "physicsworks.webm",
     ],
 )
-def test_video_transcribe(video, ray_setup):
+def test_video_transcribe(video, app_setup):
     """Test video transcribe endpoint."""
     target = TARGET
-    port, route_prefix = next(ray_setup(target))
+    port, route_prefix = next(app_setup(target))
 
     # transcribe video
     transcribe(target, port, route_prefix, video)
