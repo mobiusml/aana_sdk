@@ -11,6 +11,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionInfoList,
     AsrTranscriptionList,
 )
+from aana.models.pydantic.vad_output import VadSegments
 from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.chat_message import ChatDialog
 from aana.models.pydantic.image_input import ImageInputList
@@ -20,6 +21,7 @@ from aana.models.pydantic.video_input import VideoInput, VideoInputList
 from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
 from aana.models.pydantic.whisper_params import WhisperParams
+from aana.models.pydantic.vad_params import VadParams
 
 # container data model
 # we don't enforce this data model for now but it's a good reference for writing paths and flatten_by
@@ -517,6 +519,91 @@ nodes = [
         ],
     },
     {
+        "name": "vad_params",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "vad_params",
+                "key": "vad_params",
+                "path": "video_batch.vad_params",
+                "data_model": VadParams,
+            }
+        ],
+    },
+    {
+        "name": "vad_batched_inference_video",
+        "type": "ray_deployment",
+        "deployment_name": "vad_deployment",
+        "method": "asr_preprocess_vad",
+        "inputs": [
+            {
+                "name": "video_object",
+                "key": "media",
+                "path": "video.video",
+            },
+            {
+                "name": "vad_params",
+                "key": "params",
+                "path": "video_batch.vad_params",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_transcriptions_vad_segments",
+                "key": "vad_segments",
+                "path": "video.vad_segments",
+                "data_model": VadSegments,
+            },
+        ],
+    },
+    {
+        "name": "whisper_medium_batched_inference_video",
+        "type": "ray_deployment",
+        "deployment_name": "whisper_deployment_medium",
+        "data_type": "generator",
+        "generator_path": "video",
+        "method": "batched_inference",
+        "inputs": [
+            {
+                "name": "video_object",
+                "key": "media",
+                "path": "video.video",
+            },
+            {
+                "name": "video_transcriptions_vad_segments",
+                "key": "vad_segments",
+                "path": "video.vad_segments",
+            },
+            {
+                "name": "whisper_params",
+                "key": "params",
+                "path": "video_batch.whisper_params",
+                "data_model": WhisperParams,
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_transcriptions_segments_batched_whisper_medium",
+                "key": "segments",
+                "path": "video.segments_batched",
+                "data_model": AsrSegments,
+            },
+            {
+                "name": "video_transcriptions_info_batched_whisper_medium",
+                "key": "transcription_info",
+                "path": "video.transcription_info_batched",
+                "data_model": AsrTranscriptionInfo,
+            },
+            {
+                "name": "video_transcriptions_batched_whisper_medium",
+                "key": "transcription",
+                "path": "video.transcription_batched",
+                "data_model": AsrTranscription,
+            },
+        ],
+    },
+    {
         "name": "media_id",
         "type": "input",
         "inputs": [],
@@ -822,6 +909,44 @@ nodes = [
                 "name": "transcription_id",
                 "key": "transcription_id",
                 "path": "video.transcription_id",
+            }
+        ],
+    },
+    {
+        "name": "save_video_transcription_batched",
+        "type": "function",
+        "function": "aana.utils.db.save_video_transcription",
+        "kwargs": {
+            "model_name": "whisper_medium",
+        },
+        "dict_output": True,
+        "inputs": [
+            {
+                "name": "video_media_id",
+                "key": "media_id",
+                "path": "video.media_id",
+            },
+            {
+                "name": "video_transcriptions_info_batched_whisper_medium",
+                "key": "transcription_info",
+                "path": "video.transcription_info_batched",
+            },
+            {
+                "name": "video_transcriptions_segments_batched_whisper_medium",
+                "key": "segments",
+                "path": "video.segments_batched",
+            },
+            {
+                "name": "video_transcriptions_whisper_medium",
+                "key": "transcription",
+                "path": "video.transcription_batched",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "transcription_id_batched",
+                "key": "transcription_id",
+                "path": "video.transcription_id_batched",
             }
         ],
     },
