@@ -6,6 +6,8 @@ from aana.deployments.whisper_deployment import (
     WhisperDeployment,
     WhisperModelSize,
 )
+from aana.deployments.vad_deployment import VadDeployment, VadConfig
+
 from aana.models.core.dtype import Dtype
 from aana.models.pydantic.sampling_params import SamplingParams
 
@@ -44,5 +46,11 @@ deployments = {
             model_size=WhisperModelSize.MEDIUM,
             compute_type=WhisperComputeType.FLOAT16,
         ).dict(),
+    ),
+    "vad_deployment": VadDeployment.options(
+        num_replicas=1,
+        max_concurrent_queries=1000,
+        ray_actor_options={"num_gpus": 0.25},
+        user_config=VadConfig(model_fp=None).dict(),
     ),
 }
