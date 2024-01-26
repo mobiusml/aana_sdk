@@ -1,4 +1,5 @@
 from types import MappingProxyType  # for immutable dictionary
+from typing import Union
 
 import numpy as np
 from faster_whisper.transcribe import (
@@ -54,18 +55,20 @@ class AsrSegment(BaseModel):
     Attributes:
         text (str): The text of the segment (transcript/translation)
         time_interval (TimeInterval): Time interval of the segment
-        confidence (float): Confidence of the segment
-        no_speech_confidence (float): Chance of being a silence segment
-        words (List[AsrWord]): List of words in the segment
+        confidence (float): Confidence of the segment (Optional)
+        no_speech_confidence (float): Chance of being a silence segment (Optional)
+        words (List[AsrWord]): List of words in the segment (Optional)
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
     time_interval: TimeInterval = Field(description="Time interval of the segment")
-    confidence: float = Field(ge=0.0, le=1.0, description="Confidence of the segment")
-    no_speech_confidence: float = Field(
+    confidence: float | None = Field(
+        ge=0.0, le=1.0, description="Confidence of the segment"
+    )
+    no_speech_confidence: float | None = Field(
         ge=0.0, le=1.0, description="Chance of being a silence segment"
     )
-    words: list[AsrWord] = Field(
+    words: list[AsrWord] | None = Field(
         description="List of words in the segment", default_factory=list
     )
 
@@ -75,17 +78,23 @@ class AsrSegment(BaseModel):
         time_interval = TimeInterval(
             start=whisper_segment.start, end=whisper_segment.end
         )
-        confidence = np.exp(whisper_segment.avg_logprob)
-        if whisper_segment.words:
+        avg_logprob = getattr(whisper_segment, "avg_logprob", None)
+        confidence = np.exp(avg_logprob) if avg_logprob else None
+
+        whisper_words = getattr(whisper_segment, "words", None)
+        if whisper_words:
             words = [AsrWord.from_whisper(word) for word in whisper_segment.words]
         else:
-            words = []
+            words = None
+
+        no_speech_prob = getattr(whisper_segment, "no_speech_prob", None)
+        no_speech_confidence = no_speech_prob if no_speech_prob else None
 
         return cls(
             text=whisper_segment.text,
             time_interval=time_interval,
             confidence=confidence,
-            no_speech_confidence=whisper_segment.no_speech_prob,
+            no_speech_confidence=no_speech_confidence,
             words=words,
         )
 
