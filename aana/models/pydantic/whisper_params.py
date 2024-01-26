@@ -72,3 +72,31 @@ class WhisperParams(BaseModel):
         schema_extra = MappingProxyType(
             {"description": "Parameters for the Whisper audio-to-text model."}
         )
+
+
+default_batched_asr_options = {
+    "beam_size": 5,
+    "best_of": 5,
+    "patience": 1,
+    "length_penalty": 1,
+    "repetition_penalty": 1,
+    "no_repeat_ngram_size": 0,
+    "temperatures": [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+    "compression_ratio_threshold": 2.4,
+    "log_prob_threshold": -1.0,
+    "no_speech_threshold": 0.6,
+    "condition_on_previous_text": False,
+    "prompt_reset_on_temperature": 0.5,
+    "initial_prompt": None,
+    "prefix": None,
+    "suppress_blank": True,
+    "suppress_tokens": [-1],
+    "without_timestamps": True,  # False for timings
+    "max_initial_timestamp": 0.0,
+    "word_timestamps": False,
+    "prepend_punctuations": "\"'“¿([{-",
+    "append_punctuations": "\"'.。,，!！?？:：”)]}、",
+    "log_prob_low_threshold": -2.0,
+    "multilingual": False,
+    "output_language": "en",
+}
