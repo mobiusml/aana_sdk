@@ -124,6 +124,36 @@ endpoints = {
                 ),
             ],
         ),
+        Endpoint(
+            name="whisper_transcribe",
+            path="/video/transcribe_batch",
+            summary="Transcribe a video using Whisper Medium in batch mode",
+            outputs=[
+                EndpointOutput(
+                    name="vad_segments",
+                    output="video_transcriptions_vad_segments",
+                ),
+                EndpointOutput(
+                    name="transcription",
+                    output="video_transcriptions_batched_whisper_medium",
+                    streaming=True,
+                ),
+                EndpointOutput(
+                    name="segments",
+                    output="video_transcriptions_segments_batched_whisper_medium",
+                    streaming=True,
+                ),
+                EndpointOutput(
+                    name="info",
+                    output="video_transcriptions_info_batched_whisper_medium",
+                    streaming=True,
+                ),
+                # EndpointOutput(
+                #    name="transcription_id_batched", output="transcription_id_batched"
+                # ),
+            ],
+            streaming=True,
+        ),
     ],
     "chat_with_video_test": [
         Endpoint(
