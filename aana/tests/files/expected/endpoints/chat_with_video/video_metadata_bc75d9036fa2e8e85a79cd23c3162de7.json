@@ -1,0 +1,28 @@
+{
+    "execution_time": {
+        "delete_media": 0,
+        "download_video": 0,
+        "generate_combined_timeline": 0,
+        "generate_dialog": 0,
+        "generate_frames_for_video": 0,
+        "hf_blip2_opt_2_7b_video": 0,
+        "load_video_captions_hf_blip2_opt_2_7b": 0,
+        "load_video_metadata": 0.002131938934326172,
+        "load_video_transcription": 0,
+        "media_id": 0,
+        "question": 0,
+        "sampling_params": 0,
+        "save_video": 0,
+        "save_video_captions_hf_blip2_opt_2_7b": 0,
+        "save_video_transcription": 0,
+        "video": 0,
+        "video_params": 0,
+        "vllm_llama2_7b_chat_dialog_stream_video": 0,
+        "whisper_medium_transcribe_video": 0,
+        "whisper_params": 0
+    },
+    "metadata": {
+        "description": "",
+        "title": "squirrel"
+    }
+}
