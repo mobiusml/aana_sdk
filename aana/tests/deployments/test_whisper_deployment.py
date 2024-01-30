@@ -7,15 +7,12 @@ from pathlib import Path
 import pytest
 from deepdiff import DeepDiff
 
-from aana.configs.deployments import deployments
 from aana.models.core.video import Video
 from aana.models.pydantic.whisper_params import WhisperParams
-from aana.tests.deployments.utils import start_ray
 from aana.tests.utils import (
     LevenshteinOperator,
+    get_deployments_by_type,
     is_gpu_available,
-    ray_lock,
-    ray_shutdown,
 )
 from aana.utils.general import pydantic_to_dict
 
@@ -44,73 +41,74 @@ def compare_transcriptions(expected_transcription, transcription):
     assert not diff, diff
 
 
+@pytest.fixture(scope="function", params=get_deployments_by_type("WhisperDeployment"))
+def setup_whisper_deployment(setup_deployment, request):
+    """Setup whisper deployment."""
+    name, deployment = request.param
+    binded_deployment = deployment.bind()
+    return name, deployment, *setup_deployment(binded_deployment)
+
+
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
 @pytest.mark.parametrize("video_file", ["physicsworks.webm"])
-async def test_whisper_deployment(video_file):
+async def test_whisper_deployment(setup_whisper_deployment, video_file):
     """Test whisper deployment."""
-    for deployment in deployments.values():
-        # skip if not a VLLM deployment
-        if deployment.name != "WhisperDeployment":
-            continue
+    name, deployment, handle, port, route_prefix = setup_whisper_deployment
 
-        with ray_lock():
-            handle = start_ray(deployment)
+    model_size = deployment.user_config["model_size"]
 
-            model_size = deployment.user_config["model_size"]
+    expected_output_path = resources.path(
+        f"aana.tests.files.expected.whisper.{model_size}", f"{video_file}.json"
+    )
+    assert (
+        expected_output_path.exists()
+    ), f"Expected output not found: {expected_output_path}"
+    with Path(expected_output_path) as path, path.open() as f:
+        expected_output = json.load(f)
 
-            expected_output_path = resources.path(
-                f"aana.tests.files.expected.whisper.{model_size}", f"{video_file}.json"
-            )
-            assert (
-                expected_output_path.exists()
-            ), f"Expected output not found: {expected_output_path}"
-            with Path(expected_output_path) as path, path.open() as f:
-                expected_output = json.load(f)
+    # Test transcribe method
+    path = resources.path("aana.tests.files.videos", video_file)
+    assert path.exists(), f"Video not found: {path}"
+    video = Video(path=path)
 
-            # Test transcribe method
-            path = resources.path("aana.tests.files.videos", video_file)
-            assert path.exists(), f"Video not found: {path}"
-            video = Video(path=path)
+    output = await handle.transcribe.remote(
+        media=video, params=WhisperParams(word_timestamps=True)
+    )
+    output = pydantic_to_dict(output)
 
-            output = await handle.transcribe.remote(
-                media=video, params=WhisperParams(word_timestamps=True)
-            )
-            output = pydantic_to_dict(output)
+    compare_transcriptions(expected_output, output)
 
-            compare_transcriptions(expected_output, output)
+    # Test transcribe_stream method
+    path = resources.path("aana.tests.files.videos", video_file)
+    assert path.exists(), f"Video not found: {path}"
+    video = Video(path=path)
 
-            # Test transcribe_stream method
-            path = resources.path("aana.tests.files.videos", video_file)
-            assert path.exists(), f"Video not found: {path}"
-            video = Video(path=path)
+    stream = handle.options(stream=True).transcribe_stream.remote(
+        media=video, params=WhisperParams(word_timestamps=True)
+    )
 
-            stream = handle.options(stream=True).transcribe_stream.remote(
-                media=video, params=WhisperParams(word_timestamps=True)
-            )
+    # Combine individual segments and compare with the final dict
+    grouped_dict = defaultdict(list)
+    transcript = ""
+    async for chunk in stream:
+        chunk = await chunk
+        output = pydantic_to_dict(chunk)
+        transcript += output["transcription"]["text"]
+        grouped_dict["segments"].append(output.get("segments")[0])
 
-            # Combine individual segments and compare with the final dict
-            grouped_dict = defaultdict(list)
-            transcript = ""
-            async for chunk in stream:
-                chunk = await chunk
-                output = pydantic_to_dict(chunk)
-                transcript += output["transcription"]["text"]
-                grouped_dict["segments"].append(output.get("segments")[0])
+    grouped_dict["transcription"] = {"text": transcript}
+    grouped_dict["transcription_info"] = output.get("transcription_info")
+    compare_transcriptions(expected_output, dict(grouped_dict))
 
-            grouped_dict["transcription"] = {"text": transcript}
-            grouped_dict["transcription_info"] = output.get("transcription_info")
-            compare_transcriptions(expected_output, dict(grouped_dict))
+    # Test transcribe_batch method
+    videos = [video, video]
 
-            # Test transcribe_batch method
-            videos = [video, video]
+    batch_output = await handle.transcribe_batch.remote(
+        media_batch=videos, params=WhisperParams(word_timestamps=True)
+    )
+    batch_output = pydantic_to_dict(batch_output)
 
-            batch_output = await handle.transcribe_batch.remote(
-                media_batch=videos, params=WhisperParams(word_timestamps=True)
-            )
-            batch_output = pydantic_to_dict(batch_output)
-
-            for i in range(len(videos)):
-                output = {k: v[i] for k, v in batch_output.items()}
-                compare_transcriptions(expected_output, output)
-            ray_shutdown()
+    for i in range(len(videos)):
+        output = {k: v[i] for k, v in batch_output.items()}
+        compare_transcriptions(expected_output, output)

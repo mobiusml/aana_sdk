@@ -63,9 +63,9 @@ endpoints = [
 ]
 
 
-def test_app(ray_setup):
+def test_app(ray_serve_setup):
     """Test the Ray Serve app."""
-    handle, port, route_prefix = next(ray_setup(endpoints, nodes, context))
+    handle, port, route_prefix = ray_serve_setup(endpoints, nodes, context)
 
     # Check that the server is ready
     response = requests.get(f"http://localhost:{port}{route_prefix}/api/ready")
