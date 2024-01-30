@@ -222,6 +222,9 @@ def check_output(
             f"aana.tests.files.expected.endpoints.{target}",
             f"{endpoint_key}_{key}.json",
         )
+        # if not expected_output_path.exists():
+        #     with expected_output_path.open("w") as f:
+        #         json.dump(output, f, indent=4, sort_keys=True)
         expected_output = json.loads(expected_output_path.read_text())
         if endpoint.streaming:
             compare_streaming_output(expected_output, output)

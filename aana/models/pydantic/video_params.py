@@ -20,7 +20,7 @@ class VideoParams(BaseModel):
         ),
     )
     fast_mode_enabled: bool = Field(
-        default=False,
+        default=True,
         description=(
             "Whether to use fast mode (keyframes only). "
             "extract_fps will be ignored if this is set to True."
