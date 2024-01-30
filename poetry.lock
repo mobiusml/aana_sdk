@@ -2836,6 +2836,20 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "portpicker"
+version = "1.6.0"
+description = "A library to choose unique available network ports."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "portpicker-1.6.0-py3-none-any.whl", hash = "sha256:b2787a41404cf7edbe29b07b9e0ed863b09f2665dcc01c1eb0c2261c1e7d0755"},
+    {file = "portpicker-1.6.0.tar.gz", hash = "sha256:bd507fd6f96f65ee02781f2e674e9dc6c99bbfa6e3c39992e3916204c9d431fa"},
+]
+
+[package.dependencies]
+psutil = "*"
+
+[[package]]
 name = "prometheus-client"
 version = "0.19.0"
 description = "Python client for the Prometheus monitoring system."
@@ -5267,4 +5281,4 @@ websockets = ">=12.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "611a3a2ece809082908533bd705aca66c3435ae31081159946ccaaf66b48c772"
+content-hash = "17ee9ae2611cad3697450826cff3720ea0394e676d882d1697141b78a6540c36"
