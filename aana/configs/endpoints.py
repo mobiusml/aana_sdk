@@ -69,17 +69,6 @@ endpoints = {
             ],
         ),
     ],
-    "video": [
-        Endpoint(
-            name="video_extract_frames",
-            path="/video/extract_frames",
-            summary="Extract frames from a video",
-            outputs=[
-                EndpointOutput(name="timestamps", output="timestamps"),
-                EndpointOutput(name="duration", output="duration"),
-            ],
-        )
-    ],
     "whisper": [
         Endpoint(
             name="whisper_transcribe",
