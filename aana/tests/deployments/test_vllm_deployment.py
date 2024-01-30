@@ -1,12 +1,10 @@
 # ruff: noqa: S101
 import pytest
 
-from aana.configs.deployments import deployments
 from aana.exceptions.general import PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.tests.deployments.utils import start_ray
-from aana.tests.utils import compare_texts, is_gpu_available, ray_lock, ray_shutdown
+from aana.tests.utils import compare_texts, get_deployments_by_type, is_gpu_available
 
 
 def expected_output(name):
@@ -20,91 +18,92 @@ def expected_output(name):
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
 
 
+@pytest.fixture(scope="function", params=get_deployments_by_type("VLLMDeployment"))
+def setup_vllm_deployment(setup_deployment, request):
+    """Setup vLLM deployment."""
+    name, deployment = request.param
+    binded_deployment = deployment.bind()
+    return name, deployment, *setup_deployment(binded_deployment)
+
+
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
-async def test_vllm_deployments():
+async def test_vllm_deployments(setup_vllm_deployment):
     """Test VLLM deployments."""
-    for name, deployment in deployments.items():
-        # skip if not a VLLM deployment
-        if deployment.name != "VLLMDeployment":
-            continue
+    name, deployment, handle, port, route_prefix = setup_vllm_deployment
 
-        expected_text = expected_output(name)
+    expected_text = expected_output(name)
 
-        with ray_lock():
-            handle = start_ray(deployment)
+    # test generate method
+    output = await handle.generate.remote(
+        prompt="[INST] Who is Elon Musk? [/INST]",
+        sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+    )
+    text = output["text"]
 
-            # test generate method
-            output = await handle.generate.remote(
-                prompt="[INST] Who is Elon Musk? [/INST]",
-                sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+    compare_texts(expected_text, text)
+
+    # test generate_stream method
+    stream = handle.options(stream=True).generate_stream.remote(
+        prompt="[INST] Who is Elon Musk? [/INST]",
+        sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+    )
+    text = ""
+    async for chunk in stream:
+        chunk = await chunk
+        text += chunk["text"]
+
+    compare_texts(expected_text, text)
+
+    # test generate_batch method
+    output = await handle.generate_batch.remote(
+        prompts=[
+            "[INST] Who is Elon Musk? [/INST]",
+            "[INST] Who is Elon Musk? [/INST]",
+        ],
+        sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+    )
+    texts = output["texts"]
+
+    for text in texts:
+        compare_texts(expected_text, text)
+
+    # test chat method
+    dialog = ChatDialog(
+        messages=[
+            ChatMessage(
+                role="user",
+                content="Who is Elon Musk?",
             )
-            text = output["text"]
+        ]
+    )
+    output = await handle.chat.remote(
+        dialog=dialog,
+        sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+    )
 
-            compare_texts(expected_text, text)
+    response_message = output["message"]
+    assert response_message.role == "assistant"
+    text = response_message.content
 
-            # test generate_stream method
-            stream = handle.options(stream=True).generate_stream.remote(
-                prompt="[INST] Who is Elon Musk? [/INST]",
-                sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
-            )
-            text = ""
-            async for chunk in stream:
-                chunk = await chunk
-                text += chunk["text"]
+    compare_texts(expected_text, text)
 
-            compare_texts(expected_text, text)
+    # test chat_stream method
+    stream = handle.options(stream=True).chat_stream.remote(
+        dialog=dialog,
+        sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+    )
 
-            # test generate_batch method
-            output = await handle.generate_batch.remote(
-                prompts=[
-                    "[INST] Who is Elon Musk? [/INST]",
-                    "[INST] Who is Elon Musk? [/INST]",
-                ],
-                sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
-            )
-            texts = output["texts"]
+    text = ""
+    async for chunk in stream:
+        chunk = await chunk
+        text += chunk["text"]
 
-            for text in texts:
-                compare_texts(expected_text, text)
+    compare_texts(expected_text, text)
 
-            # test chat method
-            dialog = ChatDialog(
-                messages=[
-                    ChatMessage(
-                        role="user",
-                        content="Who is Elon Musk?",
-                    )
-                ]
-            )
-            output = await handle.chat.remote(
-                dialog=dialog,
-                sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
-            )
-
-            response_message = output["message"]
-            assert response_message.role == "assistant"
-            text = response_message.content
-
-            compare_texts(expected_text, text)
-
-            # test chat_stream method
-            stream = handle.options(stream=True).chat_stream.remote(
-                dialog=dialog,
-                sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
-            )
-
-            text = ""
-            async for chunk in stream:
-                chunk = await chunk
-                text += chunk["text"]
-
-            compare_texts(expected_text, text)
-
-            # test generate method with too long prompt
-            with pytest.raises(PromptTooLongException):
-                output = await handle.generate.remote(
-                    prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
-                    sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
-                )
-            ray_shutdown()
+    # test generate method with too long prompt
+    with pytest.raises(PromptTooLongException):
+        output = await handle.generate.remote(
+            prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
+            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+        )

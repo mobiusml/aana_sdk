@@ -75,7 +75,7 @@ def delete_video(
 def test_video_transcribe(video, app_setup):
     """Test video transcribe endpoint."""
     target = TARGET
-    port, route_prefix = next(app_setup(target))
+    handle, port, route_prefix = app_setup(target)
 
     # transcribe video
     transcribe(target, port, route_prefix, video)
