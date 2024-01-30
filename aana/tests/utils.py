@@ -3,11 +3,8 @@ import json
 from importlib import resources
 
 import rapidfuzz
-import ray
 import requests
 from deepdiff.operator import BaseOperator
-from filelock import FileLock
-from ray import serve
 
 from aana.configs.db import (
     drop_all_tables,
@@ -15,30 +12,6 @@ from aana.configs.db import (
 )
 from aana.tests.const import ALLOWED_LEVENSTEIN_ERROR_RATE
 from aana.utils.general import get_endpoint
-
-
-def ray_lock():
-    """Get a lock for Ray."""
-    lock_path = "/tmp/ray.lock"
-    return FileLock(lock_path)
-
-
-def ray_init():
-    """Initialize Ray.
-
-    This function is used to initialize Ray in the tests.
-    """
-    print("Initializing Ray")
-    ray.init(ignore_reinit_error=True)
-
-
-def ray_shutdown():
-    """Shutdown Ray.
-
-    This function is used to shutdown Ray in the tests.
-    """
-    serve.shutdown()
-    ray.shutdown()
 
 
 def is_gpu_available() -> bool:
@@ -262,3 +235,21 @@ def check_output(
                 assert "error" not in chunk
         else:
             assert "error" not in output
+
+
+def get_deployments_by_type(deployment_type: str):
+    """Get deployments by type from the list of all available deployments.
+
+    Args:
+        deployment_type (str): Deployment type. For example, "VLLMDeployment".
+
+    Returns:
+        list: List of deployments with the given type.
+    """
+    from aana.configs.deployments import deployments
+
+    return [
+        (name, deployment)
+        for name, deployment in deployments.items()
+        if deployment.name == deployment_type
+    ]
