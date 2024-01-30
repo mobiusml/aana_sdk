@@ -81,40 +81,15 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
     )
 
 
-@app.exception_handler(BaseException)
-async def pipeline_exception_handler(request: Request, exc: BaseException):
+@app.exception_handler(Exception)
+async def pipeline_exception_handler(request: Request, exc: Exception):
     """This handler is used to handle exceptions raised by the Mobius Pipeline and Aana application.
 
     Args:
         request (Request): The request object
-        exc (BaseException): The exception raised
+        exc (Exception): The exception raised
 
     Returns:
         JSONResponse: JSON response with the error details
     """
     return custom_exception_handler(request, exc)
-
-
-@app.exception_handler(RayTaskError)
-async def ray_task_error_handler(request: Request, exc: RayTaskError):
-    """This handler is used to handle RayTaskError exceptions.
-
-    Args:
-        request (Request): The request object
-        exc (RayTaskError): The exception raised
-
-    Returns:
-        JSONResponse: JSON response with the error details. The response contains the following fields:
-            error: The name of the exception class.
-            message: The message of the exception.
-            stacktrace: The stacktrace of the exception.
-    """
-    error = exc.__class__.__name__
-    stacktrace = traceback.format_exc()
-
-    return AanaJSONResponse(
-        status_code=400,
-        content=ExceptionResponseModel(
-            error=error, message=str(exc), stacktrace=stacktrace
-        ).dict(),
-    )
