@@ -1,4 +1,5 @@
 # ruff: noqa: S101
+import hashlib
 import json
 from importlib import resources
 
@@ -12,6 +13,7 @@ from aana.configs.db import (
 )
 from aana.tests.const import ALLOWED_LEVENSTEIN_ERROR_RATE
 from aana.utils.general import get_endpoint
+from aana.utils.json import json_serializer_default
 
 
 def is_gpu_available() -> bool:
@@ -238,6 +240,27 @@ def check_output(
                 assert "error" not in chunk
         else:
             assert "error" not in output
+
+
+def call_and_check_endpoint(
+    target: str,
+    port: int,
+    route_prefix: str,
+    endpoint_path: str,
+    data: dict,
+    ignore_expected_output: bool = False,
+    expected_error: str | None = None,
+) -> dict | list:
+    """Call and check endpoint."""
+    data_hash = hashlib.md5(
+        json.dumps(data, default=json_serializer_default).encode("utf-8"),
+        usedforsecurity=False,
+    ).hexdigest()
+    output = call_endpoint(target, port, route_prefix, endpoint_path, data)
+    check_output(
+        target, endpoint_path, data_hash, output, ignore_expected_output, expected_error
+    )
+    return output
 
 
 def get_deployments_by_type(deployment_type: str):
