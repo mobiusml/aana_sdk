@@ -21,7 +21,7 @@ from aana.configs.deployments import deployments as all_deployments
 from aana.configs.endpoints import endpoints as all_endpoints
 from aana.configs.pipeline import nodes as all_nodes
 from aana.configs.settings import settings as aana_settings
-from aana.tests.utils import clear_database
+from aana.tests.utils import call_and_check_endpoint, clear_database
 from aana.utils.json import json_serializer_default
 
 gpu_lock = threading.Lock()
@@ -44,6 +44,9 @@ def setup_deployment(ray_setup, request):
         port = portpicker.pick_unused_port()
         name = request.node.name.replace("/", "_")
         route_prefix = f"/test/{name}"
+        print(
+            f"Starting deployment {name} on port {port} with route prefix {route_prefix}"
+        )
         handle = serve.run(deployment, port=port, name=name, route_prefix=route_prefix)
         return handle, port, route_prefix
 
@@ -113,3 +116,28 @@ def app_setup(ray_serve_setup):
 
     # delete temporary database
     tmp_database_path.unlink()
+
+
+@pytest.fixture(scope="module")
+def call_endpoint(app_setup, request):
+    """Call endpoint."""
+    target = request.param
+    handle, port, route_prefix = app_setup(target)
+
+    def _call_endpoint(
+        endpoint_path: str,
+        data: dict,
+        ignore_expected_output: bool = False,
+        expected_error: str | None = None,
+    ) -> dict | list:
+        return call_and_check_endpoint(
+            target,
+            port,
+            route_prefix,
+            endpoint_path,
+            data,
+            expected_error=expected_error,
+            ignore_expected_output=ignore_expected_output,
+        )
+
+    return _call_endpoint

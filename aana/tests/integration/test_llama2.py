@@ -1,122 +1,21 @@
 # ruff: noqa: S101
 # Test llama2 endpoints.
 
-import hashlib
-import json
 
 import pytest
 
-from aana.tests.utils import call_endpoint, check_output, is_gpu_available
-from aana.utils.json import json_serializer_default
+from aana.tests.utils import is_gpu_available
 
 TARGET = "llama2"
 
-
-def generate(
-    target: str,
-    port: int,
-    route_prefix: str,
-    prompt: str,
-    ignore_expected_output: bool = False,
-    expected_error: str | None = None,
-) -> dict | list:
-    """Generate text for a given prompt."""
-    endpoint_path = "/llm/generate"
-    data = {"prompt": prompt}
-    data_hash = hashlib.md5(
-        json.dumps(data, default=json_serializer_default).encode("utf-8"),
-        usedforsecurity=False,
-    ).hexdigest()
-    output = call_endpoint(target, port, route_prefix, endpoint_path, data)
-    check_output(
-        target,
-        endpoint_path,
-        data_hash,
-        output,
-        ignore_expected_output,
-        expected_error,
-    )
-    return output
-
-
-def generate_stream(
-    target: str,
-    port: int,
-    route_prefix: str,
-    prompt: str,
-    ignore_expected_output: bool = False,
-    expected_error: str | None = None,
-) -> dict | list:
-    """Generate text for a given prompt (streaming)."""
-    endpoint_path = "/llm/generate_stream"
-    data = {"prompt": prompt}
-    data_hash = hashlib.md5(
-        json.dumps(data, default=json_serializer_default).encode("utf-8"),
-        usedforsecurity=False,
-    ).hexdigest()
-    output = call_endpoint(target, port, route_prefix, endpoint_path, data)
-    check_output(
-        target,
-        endpoint_path,
-        data_hash,
-        output,
-        ignore_expected_output,
-        expected_error,
-    )
-    return output
-
-
-def chat(
-    target: str,
-    port: int,
-    route_prefix: str,
-    dialog: dict,
-    ignore_expected_output: bool = False,
-    expected_error: str | None = None,
-) -> dict | list:
-    """Chat with LLaMa2."""
-    endpoint_path = "/llm/chat"
-    data = {"dialog": dialog}
-    data_hash = hashlib.md5(
-        json.dumps(data, default=json_serializer_default).encode("utf-8"),
-        usedforsecurity=False,
-    ).hexdigest()
-    output = call_endpoint(target, port, route_prefix, endpoint_path, data)
-    check_output(
-        target, endpoint_path, data_hash, output, ignore_expected_output, expected_error
-    )
-    return output
-
-
-def chat_stream(
-    target: str,
-    port: int,
-    route_prefix: str,
-    dialog: dict,
-    ignore_expected_output: bool = False,
-    expected_error: str | None = None,
-) -> dict | list:
-    """Chat with LLaMa2 (streaming)."""
-    endpoint_path = "/llm/chat_stream"
-    data = {"dialog": dialog}
-    data_hash = hashlib.md5(
-        json.dumps(data, default=json_serializer_default).encode("utf-8"),
-        usedforsecurity=False,
-    ).hexdigest()
-    output = call_endpoint(target, port, route_prefix, endpoint_path, data)
-    check_output(
-        target, endpoint_path, data_hash, output, ignore_expected_output, expected_error
-    )
-    return output
-
-
-@pytest.fixture(scope="module")
-def app(app_setup):
-    """Setup app for a specific target."""
-    return app_setup(TARGET)
+LLM_GENERATE = "/llm/generate"
+LLM_GENERATE_STREAM = "/llm/generate_stream"
+LLM_CHAT = "/llm/chat"
+LLM_CHAT_STREAM = "/llm/chat_stream"
 
 
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
     "prompt, error",
     [
@@ -125,17 +24,23 @@ def app(app_setup):
         ("[INST] Who is Elon Musk? [/INST]" * 1000, "PromptTooLongException"),
     ],
 )
-def test_llama_generate(app, prompt, error):
+def test_llama_generate(call_endpoint, prompt, error):
     """Test llama generate endpoints."""
-    target = TARGET
-    handle, port, route_prefix = app
+    call_endpoint(
+        LLM_GENERATE,
+        {"prompt": prompt},
+        expected_error=error,
+    )
 
-    generate(target, port, route_prefix, prompt, expected_error=error)
-
-    generate_stream(target, port, route_prefix, prompt, expected_error=error)
+    call_endpoint(
+        LLM_GENERATE_STREAM,
+        {"prompt": prompt},
+        expected_error=error,
+    )
 
 
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
     "dialog, error",
     [
@@ -150,11 +55,16 @@ def test_llama_generate(app, prompt, error):
         ),
     ],
 )
-def test_llama_chat(app, dialog, error):
+def test_llama_chat(call_endpoint, dialog, error):
     """Test llama chat endpoint."""
-    target = TARGET
-    handle, port, route_prefix = app
+    call_endpoint(
+        LLM_CHAT,
+        {"dialog": dialog},
+        expected_error=error,
+    )
 
-    chat(target, port, route_prefix, dialog, expected_error=error)
-
-    chat_stream(target, port, route_prefix, dialog, expected_error=error)
+    call_endpoint(
+        LLM_CHAT_STREAM,
+        {"dialog": dialog},
+        expected_error=error,
+    )
