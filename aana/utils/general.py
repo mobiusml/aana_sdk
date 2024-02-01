@@ -7,6 +7,7 @@ from importlib import resources
 from pathlib import Path
 from typing import Any, TypeVar
 
+import rapidfuzz
 import requests
 from pydantic import BaseModel
 
@@ -174,6 +175,21 @@ def test_cache(func):  # noqa: C901
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.open("wb").write(pickle.dumps(cache_obj))
 
+    def find_matching_cache(cache_path, args, kwargs):
+        def get_args(path):
+            cache = pickle.loads(path.open("rb").read())  # noqa: S301
+            return cache["args"]
+
+        args_str = jsonify({"args": args[1:], "kwargs": kwargs})
+
+        # find the cache with the closest args
+        return min(
+            Path.glob(cache_path),
+            key=lambda path: rapidfuzz.distance.Levenshtein.distance(
+                args_str, get_args(path)
+            ),
+        )
+
     async def wrapper(*args, **kwargs):
         cache_path = get_cache_path(args, kwargs)
 
@@ -181,7 +197,8 @@ def test_cache(func):  # noqa: C901
             # load from cache
             if not cache_path.exists():
                 print(args, kwargs)
-                raise FileNotFoundError(cache_path)
+                # raise FileNotFoundError(cache_path)
+                cache_path = find_matching_cache(cache_path, args, kwargs)
             cache = pickle.loads(cache_path.open("rb").read())  # noqa: S301
             # raise exception if the cache contains an exception
             if "exception" in cache:
@@ -206,7 +223,9 @@ def test_cache(func):  # noqa: C901
         if settings.use_deployment_cache:
             # load from cache
             if not cache_path.exists():
-                raise FileNotFoundError(cache_path)
+                # raise FileNotFoundError(cache_path)
+                cache_path = find_matching_cache(cache_path, args, kwargs)
+
             cache = pickle.loads(cache_path.open("rb").read())  # noqa: S301
             # raise exception if the cache contains an exception
             if "exception" in cache:
