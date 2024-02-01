@@ -28,4 +28,8 @@ def json_serializer_default(obj: Any) -> Any:
         return obj.dict()
     if isinstance(obj, Path):
         return str(obj)
+    from aana.models.core.media import Media
+
+    if isinstance(obj, Media):
+        return str(obj)
     raise TypeError

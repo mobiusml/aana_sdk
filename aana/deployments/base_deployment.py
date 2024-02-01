@@ -1,5 +1,8 @@
 from typing import Any
 
+from aana.configs.settings import settings
+from aana.utils.general import is_testing
+
 
 class BaseDeployment:
     """Base class for all deployments.
@@ -19,8 +22,14 @@ class BaseDeployment:
         The method is called when the deployment is updated.
         """
         self.config = config
-        await self.apply_config(config)
-        self.configured = True
+        if is_testing() and settings.use_deployment_cache:
+            # If we are in testing mode and we want to use the cache,
+            # we don't need to load the model
+            self.configured = True
+            return
+        else:
+            await self.apply_config(config)
+            self.configured = True
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
