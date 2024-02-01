@@ -1,3 +1,10 @@
+import hashlib
+import inspect
+import json
+import os
+import pickle
+from importlib import resources
+from pathlib import Path
 from typing import Any, TypeVar
 
 import requests
@@ -5,7 +12,9 @@ from pydantic import BaseModel
 
 from aana.api.api_generation import Endpoint
 from aana.configs.endpoints import endpoints as all_endpoints
+from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException, EndpointNotFoundException
+from aana.utils.json import json_serializer_default
 
 OptionType = TypeVar("OptionType", bound=BaseModel)
 
@@ -86,3 +95,141 @@ def get_endpoint(target: str, endpoint: str) -> Endpoint:
         if e.path == endpoint:
             return e
     raise EndpointNotFoundException(target=target, endpoint=endpoint)
+
+
+def is_testing():
+    """Check if the code is running in testing mode.
+
+    Returns:
+        bool: True if the code is running in testing mode, False otherwise
+    """
+    return (
+        os.environ.get("TEST_MODE", "false").lower() == "true"
+        or "TEST_UUID" in os.environ
+    )
+
+
+def jsonify(data: Any) -> str:
+    """Convert data to JSON string.
+
+    Args:
+        data (Any): the data
+
+    Returns:
+        str: the JSON string
+    """
+    return json.dumps(data, default=json_serializer_default)
+
+
+def get_object_hash(obj: Any) -> str:
+    """Get the MD5 hash of an object.
+
+    Objects are converted to JSON strings before hashing.
+
+    Args:
+        obj (Any): the object to hash
+
+    Returns:
+        str: the MD5 hash of the object
+    """
+    return hashlib.md5(
+        jsonify(obj).encode("utf-8"),
+        usedforsecurity=False,
+    ).hexdigest()
+
+
+def test_cache(func):  # noqa: C901
+    """Decorator for caching and loading the results of a deployment function in testing mode."""
+    if not is_testing():
+        # If we are in production, the decorator is a no-op
+        return func
+
+    def get_cache_path(args, kwargs):
+        self = args[0]
+
+        func_name = func.__name__
+        deployment_name = self.__class__.__name__
+
+        config = args[0].config
+        config_hash = get_object_hash(config)
+
+        args_hash = get_object_hash({"args": args[1:], "kwargs": kwargs})
+
+        return (
+            resources.path("aana.tests.files.cache", "")
+            / Path(deployment_name)
+            / Path(f"{func_name}_{config_hash}_{args_hash}.pkl")
+        )
+
+    def save_cache(cache_path, cache, args, kwargs):
+        cache_obj = {
+            "args": jsonify({"args": args[1:], "kwargs": kwargs}),
+        }
+        if "exception" in cache:
+            cache_obj["exception"] = cache[
+                "exception"
+            ]  # if the cache contains an exception, save it
+        else:
+            cache_obj["cache"] = cache  # otherwise, cache the result
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.open("wb").write(pickle.dumps(cache_obj))
+
+    async def wrapper(*args, **kwargs):
+        cache_path = get_cache_path(args, kwargs)
+
+        if settings.use_deployment_cache:
+            # load from cache
+            if not cache_path.exists():
+                print(args, kwargs)
+                raise FileNotFoundError(cache_path)
+            cache = pickle.loads(cache_path.open("rb").read())  # noqa: S301
+            # raise exception if the cache contains an exception
+            if "exception" in cache:
+                raise cache["exception"]
+            return cache["cache"]
+        else:
+            # execute the function
+            try:
+                result = await func(*args, **kwargs)
+            except Exception as e:
+                result = {"exception": e}
+                raise
+            finally:
+                if settings.save_deployment_cache and not cache_path.exists():
+                    # save to cache
+                    save_cache(cache_path, result, args, kwargs)
+            return result
+
+    async def wrapper_generator(*args, **kwargs):
+        cache_path = get_cache_path(args, kwargs)
+
+        if settings.use_deployment_cache:
+            # load from cache
+            if not cache_path.exists():
+                raise FileNotFoundError(cache_path)
+            cache = pickle.loads(cache_path.open("rb").read())  # noqa: S301
+            # raise exception if the cache contains an exception
+            if "exception" in cache:
+                raise cache["exception"]
+            for item in cache["cache"]:
+                yield item
+        else:
+            cache = []
+            try:
+                # execute the function
+                async for item in func(*args, **kwargs):
+                    yield item
+                    if settings.save_deployment_cache:
+                        cache.append(item)
+            except Exception as e:
+                cache = {"exception": e}
+                raise
+            finally:
+                if settings.save_deployment_cache and not cache_path.exists():
+                    # save to cache
+                    save_cache(cache_path, cache, args, kwargs)
+
+    if inspect.isasyncgenfunction(func):
+        return wrapper_generator
+    else:
+        return wrapper

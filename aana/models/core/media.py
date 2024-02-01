@@ -34,7 +34,7 @@ class Media:
         """Validate the media."""
         # check that path is a Path object
         if self.path and not isinstance(self.path, Path):
-            raise ValueError(self.path)
+            raise ValueError("'path' must be a Path object.")  # noqa: TRY003
 
         # check if path exists if provided
         if self.path and not self.path.exists():

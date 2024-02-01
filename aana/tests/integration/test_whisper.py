@@ -5,7 +5,7 @@ from importlib import resources
 
 import pytest
 
-from aana.tests.utils import is_gpu_available
+from aana.tests.utils import is_gpu_available, is_using_deployment_cache
 
 TARGET = "whisper"
 
@@ -14,7 +14,10 @@ VIDEO_GET_TRANSCRIPTION_ENDPOINT = "/video/get_transcription"
 VIDEO_DELETE_ENDPOINT = "/video/delete"
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
     "video",
@@ -74,3 +77,28 @@ def test_video_transcribe(call_endpoint, video):
         VIDEO_TRANSCRIBE_ENDPOINT,
         {"video": video},
     )
+
+
+# @pytest.mark.skipif(
+#     not is_gpu_available() and not is_using_deployment_cache(),
+#     reason="GPU is not available",
+# )
+# @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
+# @pytest.mark.parametrize(
+#     "video",
+#     [
+#         {
+#             "path": str(resources.path("aana.tests.files.videos", "physicsworks.webm")),
+#             "media_id": "physicsworks.webm",
+#         }
+#     ],
+# )
+# def test_video_transcribe2(call_endpoint, video):
+#     """Test video transcribe endpoint."""
+#     media_id = video["media_id"]
+
+#     # transcribe video
+#     call_endpoint(
+#         VIDEO_TRANSCRIBE_ENDPOINT,
+#         {"video": video},
+#     )

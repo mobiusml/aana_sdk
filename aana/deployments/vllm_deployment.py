@@ -14,7 +14,7 @@ from aana.exceptions.general import InferenceException, PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.chat_template import apply_chat_template
-from aana.utils.general import merged_options
+from aana.utils.general import merged_options, test_cache
 
 
 class VLLMConfig(BaseModel):
@@ -118,6 +118,7 @@ class VLLMDeployment(BaseDeployment):
         self.tokenizer = self.engine.engine.tokenizer
         self.model_config = await self.engine.get_model_config()
 
+    @test_cache
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams
     ) -> AsyncGenerator[LLMOutput, None]:
@@ -172,6 +173,7 @@ class VLLMDeployment(BaseDeployment):
         except Exception as e:
             raise InferenceException(model_name=self.model) from e
 
+    @test_cache
     async def generate(self, prompt: str, sampling_params: SamplingParams) -> LLMOutput:
         """Generate completion for the given prompt.
 
@@ -187,6 +189,7 @@ class VLLMDeployment(BaseDeployment):
             generated_text += chunk["text"]
         return LLMOutput(text=generated_text)
 
+    @test_cache
     async def generate_batch(
         self, prompts: list[str], sampling_params: SamplingParams
     ) -> LLMBatchOutput:
@@ -207,6 +210,7 @@ class VLLMDeployment(BaseDeployment):
 
         return LLMBatchOutput(texts=texts)
 
+    @test_cache
     async def chat(
         self, dialog: ChatDialog, sampling_params: SamplingParams
     ) -> ChatOutput:
@@ -226,6 +230,7 @@ class VLLMDeployment(BaseDeployment):
         response_message = ChatMessage(content=response["text"], role="assistant")
         return ChatOutput(message=response_message)
 
+    @test_cache
     async def chat_stream(
         self, dialog: ChatDialog, sampling_params: SamplingParams
     ) -> AsyncGenerator[LLMOutput, None]:

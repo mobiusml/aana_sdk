@@ -4,7 +4,7 @@
 
 import pytest
 
-from aana.tests.utils import is_gpu_available
+from aana.tests.utils import is_gpu_available, is_using_deployment_cache
 
 TARGET = "llama2"
 
@@ -14,7 +14,10 @@ LLM_CHAT = "/llm/chat"
 LLM_CHAT_STREAM = "/llm/chat_stream"
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
     "prompt, error",
@@ -39,7 +42,10 @@ def test_llama_generate(call_endpoint, prompt, error):
     )
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
     "dialog, error",

@@ -8,6 +8,7 @@ from aana.tests.utils import (
     compare_texts,
     get_deployments_by_type,
     is_gpu_available,
+    is_using_deployment_cache,
 )
 
 
@@ -15,11 +16,13 @@ from aana.tests.utils import (
 def setup_hf_blip2_deployment(setup_deployment, request):
     """Setup HF BLIP2 deployment."""
     name, deployment = request.param
-    binded_deployment = deployment.bind()
-    return name, deployment, *setup_deployment(binded_deployment)
+    return name, deployment, *setup_deployment(deployment, bind=True)
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "image_name, expected_text",
@@ -32,7 +35,7 @@ async def test_hf_blip2_deployments(
     name, deployment, handle, port, route_prefix = setup_hf_blip2_deployment
 
     path = resources.path("aana.tests.files.images", image_name)
-    image = Image(path=path, save_on_disk=False)
+    image = Image(path=path, save_on_disk=False, media_id=image_name)
 
     output = await handle.generate.remote(image=image)
     caption = output["caption"]

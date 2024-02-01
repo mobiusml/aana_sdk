@@ -13,6 +13,7 @@ from aana.tests.utils import (
     LevenshteinOperator,
     get_deployments_by_type,
     is_gpu_available,
+    is_using_deployment_cache,
 )
 from aana.utils.general import pydantic_to_dict
 
@@ -45,11 +46,13 @@ def compare_transcriptions(expected_transcription, transcription):
 def setup_whisper_deployment(setup_deployment, request):
     """Setup whisper deployment."""
     name, deployment = request.param
-    binded_deployment = deployment.bind()
-    return name, deployment, *setup_deployment(binded_deployment)
+    return name, deployment, *setup_deployment(deployment, bind=True)
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.asyncio
 @pytest.mark.parametrize("video_file", ["physicsworks.webm"])
 async def test_whisper_deployment(setup_whisper_deployment, video_file):
@@ -70,7 +73,7 @@ async def test_whisper_deployment(setup_whisper_deployment, video_file):
     # Test transcribe method
     path = resources.path("aana.tests.files.videos", video_file)
     assert path.exists(), f"Video not found: {path}"
-    video = Video(path=path)
+    video = Video(path=path, media_id=video_file)
 
     output = await handle.transcribe.remote(
         media=video, params=WhisperParams(word_timestamps=True)
@@ -82,7 +85,7 @@ async def test_whisper_deployment(setup_whisper_deployment, video_file):
     # Test transcribe_stream method
     path = resources.path("aana.tests.files.videos", video_file)
     assert path.exists(), f"Video not found: {path}"
-    video = Video(path=path)
+    video = Video(path=path, media_id=video_file)
 
     stream = handle.options(stream=True).transcribe_stream.remote(
         media=video, params=WhisperParams(word_timestamps=True)

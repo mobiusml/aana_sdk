@@ -17,5 +17,9 @@ class Settings(BaseSettings):
         "datastore_config": {"path": Path("/var/lib/aana_data")},
     }
 
+    # Testing
+    use_deployment_cache: bool = False  # use cached deployment results for testing
+    save_deployment_cache: bool = False  # save deployment results to cache for testing
+
 
 settings = Settings()
