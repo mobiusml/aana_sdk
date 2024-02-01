@@ -32,7 +32,7 @@ from aana.utils.json import json_serializer_default
 @pytest.fixture(scope="session")
 def ray_setup():
     """Setup Ray instance."""
-    ray.init()
+    ray.init(num_cpus=6)  # pretend we have 6 cpus
     yield
     ray.shutdown()
 
