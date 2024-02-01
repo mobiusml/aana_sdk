@@ -28,6 +28,17 @@ def is_gpu_available() -> bool:
     return torch.cuda.is_available()
 
 
+def is_using_deployment_cache() -> bool:
+    """Check if the deployment cache is being used.
+
+    Returns:
+        bool: True if the deployment cache is being used, False otherwise.
+    """
+    from aana.configs.settings import settings
+
+    return settings.use_deployment_cache
+
+
 def compare_texts(expected_text: str, text: str):
     """Compare two texts using Levenshtein distance.
 
@@ -44,6 +55,7 @@ def compare_texts(expected_text: str, text: str):
     assert dist < len(expected_text) * ALLOWED_LEVENSTEIN_ERROR_RATE, (
         expected_text,
         text,
+        dist,
     )
 
 

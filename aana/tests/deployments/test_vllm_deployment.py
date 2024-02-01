@@ -4,7 +4,12 @@ import pytest
 from aana.exceptions.general import PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.tests.utils import compare_texts, get_deployments_by_type, is_gpu_available
+from aana.tests.utils import (
+    compare_texts,
+    get_deployments_by_type,
+    is_gpu_available,
+    is_using_deployment_cache,
+)
 
 
 def expected_output(name):
@@ -22,11 +27,13 @@ def expected_output(name):
 def setup_vllm_deployment(setup_deployment, request):
     """Setup vLLM deployment."""
     name, deployment = request.param
-    binded_deployment = deployment.bind()
-    return name, deployment, *setup_deployment(binded_deployment)
+    return name, deployment, *setup_deployment(deployment, bind=True)
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.asyncio
 async def test_vllm_deployments(setup_vllm_deployment):
     """Test VLLM deployments."""

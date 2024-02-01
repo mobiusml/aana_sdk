@@ -5,7 +5,7 @@ from importlib import resources
 
 import pytest
 
-from aana.tests.utils import is_gpu_available
+from aana.tests.utils import is_gpu_available, is_using_deployment_cache
 
 TARGET = "chat_with_video"
 
@@ -15,7 +15,10 @@ VIDEO_CHAT_ENDPOINT = "/video/chat_stream"
 VIDEO_DELETE_ENDPOINT = "/video/delete"
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU not available.")
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
     "video",
