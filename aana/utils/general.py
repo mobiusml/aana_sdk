@@ -1,3 +1,4 @@
+import glob
 import hashlib
 import inspect
 import json
@@ -183,12 +184,13 @@ def test_cache(func):  # noqa: C901
         args_str = jsonify({"args": args[1:], "kwargs": kwargs})
 
         # find the cache with the closest args
-        return min(
-            Path.glob(cache_path),
+        path = min(
+            glob.glob(cache_path),  # noqa: PTH207
             key=lambda path: rapidfuzz.distance.Levenshtein.distance(
                 args_str, get_args(path)
             ),
         )
+        return Path(path)
 
     async def wrapper(*args, **kwargs):
         cache_path = get_cache_path(args, kwargs)
