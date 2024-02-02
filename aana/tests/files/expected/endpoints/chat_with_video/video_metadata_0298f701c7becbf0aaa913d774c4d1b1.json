@@ -7,7 +7,7 @@
         "generate_frames_for_video": 0,
         "hf_blip2_opt_2_7b_video": 0,
         "load_video_captions_hf_blip2_opt_2_7b": 0,
-        "load_video_metadata": 0.0022258758544921875,
+        "load_video_metadata": 0.0019698143005371094,
         "load_video_transcription": 0,
         "media_id": 0,
         "question": 0,

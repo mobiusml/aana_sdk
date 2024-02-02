@@ -264,8 +264,16 @@ def call_and_check_endpoint(
     expected_error: str | None = None,
 ) -> dict | list:
     """Call and check endpoint."""
+    data_json = json.dumps(data, default=json_serializer_default)
+    # "aana.tests.files.videos" will be resolved to a different path on different systems
+    # so we need to replace it with a path that is the same on all systems
+    # to make sure that the hash of the data is the same on all systems
+    data_json = data_json.replace(
+        str(resources.path("aana.tests.files.videos", "")),
+        "/aana/tests/files/videos/",
+    )
     data_hash = hashlib.md5(
-        json.dumps(data, default=json_serializer_default).encode("utf-8"),
+        data_json.encode("utf-8"),
         usedforsecurity=False,
     ).hexdigest()
     output = call_endpoint(target, port, route_prefix, endpoint_path, data)
