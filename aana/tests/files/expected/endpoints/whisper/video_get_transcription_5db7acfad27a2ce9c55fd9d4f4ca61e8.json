@@ -2,7 +2,7 @@
     "execution_time": {
         "delete_media": 0,
         "download_video": 0,
-        "load_video_transcription": 0.008543252944946289,
+        "load_video_transcription": 0.005803823471069336,
         "media_id": 0,
         "save_video": 0,
         "save_video_transcription": 0,
