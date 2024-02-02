@@ -91,6 +91,9 @@ def get_endpoint(target: str, endpoint: str) -> Endpoint:
 
     Returns:
         Endpoint: the endpoint
+
+    Raises:
+        EndpointNotFoundException: If the endpoint is not found
     """
     for e in all_endpoints[target]:
         if e.path == endpoint:
@@ -98,16 +101,13 @@ def get_endpoint(target: str, endpoint: str) -> Endpoint:
     raise EndpointNotFoundException(target=target, endpoint=endpoint)
 
 
-def is_testing():
+def is_testing() -> bool:
     """Check if the code is running in testing mode.
 
     Returns:
         bool: True if the code is running in testing mode, False otherwise
     """
-    return (
-        os.environ.get("TEST_MODE", "false").lower() == "true"
-        or "TEST_UUID" in os.environ
-    )
+    return os.environ.get("TEST_MODE", "false").lower() in ["true", "1"]
 
 
 def jsonify(data: Any) -> str:
@@ -140,12 +140,37 @@ def get_object_hash(obj: Any) -> str:
 
 
 def test_cache(func):  # noqa: C901
-    """Decorator for caching and loading the results of a deployment function in testing mode."""
+    """Decorator for caching and loading the results of a deployment function in testing mode.
+
+    Keep in mind that this decorator only works for async functions and async generator functions.
+
+    Use this decorator to annotate deployment functions that you want to cache in testing mode.
+
+    There are 3 environment variables that control the behavior of the decorator:
+    - TEST_MODE: set to "true" to enable testing mode
+                (default is "false", should only be set to "true" if you are running tests)
+    - USE_DEPLOYMENT_CACHE: set to "true" to enable cache usage
+    - SAVE_DEPLOYMENT_CACHE: set to "true" to enable cache saving
+
+    The decorator behaves differently in testing and production modes.
+
+    In production mode, the decorator is a no-op.
+    In testing mode, the behavior of the decorator is controlled by the environment variables USE_DEPLOYMENT_CACHE and SAVE_DEPLOYMENT_CACHE.
+
+    If USE_DEPLOYMENT_CACHE is set to "true", the decorator will load the result from the cache if it exists. SAVE_DEPLOYMENT_CACHE is ignored.
+    The decorator takes a hash of the deployment configuration and the function arguments and keyword arguments (args and kwargs) to locate the cache file.
+    If the cache file exists, the decorator will load the result from the cache and return it.
+    If the cache file does not exist, the decorator will try to find the cache file with the closest args and load the result from that cache file
+    (function name and deployment configuration should match exactly, fuzzy matching only applies to args and kwargs).
+
+    If USE_DEPLOYMENT_CACHE is set to "false", the decorator will execute the function and save the result to the cache if SAVE_DEPLOYMENT_CACHE is set to "true".
+    """
     if not is_testing():
         # If we are in production, the decorator is a no-op
         return func
 
     def get_cache_path(args, kwargs):
+        """Get the path to the cache file."""
         self = args[0]
 
         func_name = func.__name__
@@ -163,6 +188,7 @@ def test_cache(func):  # noqa: C901
         )
 
     def save_cache(cache_path, cache, args, kwargs):
+        """Save the cache to a file."""
         cache_obj = {
             "args": jsonify({"args": args[1:], "kwargs": kwargs}),
         }
@@ -176,6 +202,8 @@ def test_cache(func):  # noqa: C901
         cache_path.open("wb").write(pickle.dumps(cache_obj))
 
     def find_matching_cache(cache_path, args, kwargs):
+        """Find the cache file with the closest args."""
+
         def get_args(path):
             cache = pickle.loads(path.open("rb").read())  # noqa: S301
             return cache["args"]
@@ -195,6 +223,7 @@ def test_cache(func):  # noqa: C901
         return Path(path)
 
     async def wrapper(*args, **kwargs):
+        """Wrapper for the deployment function."""
         cache_path = get_cache_path(args, kwargs)
 
         if settings.use_deployment_cache:
@@ -222,6 +251,7 @@ def test_cache(func):  # noqa: C901
             return result
 
     async def wrapper_generator(*args, **kwargs):
+        """Wrapper for the deployment generator function."""
         cache_path = get_cache_path(args, kwargs)
 
         if settings.use_deployment_cache:
