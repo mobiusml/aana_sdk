@@ -1,5 +1,15 @@
+# This file is used to define fixtures that are used in the integration tests.
+# The fixtures are used to setup Ray and Ray Serve, and to call the endpoints.
+# The fixtures depend on each other, to setup the environment for the tests.
+# Here is a dependency graph of the fixtures:
+# ray_setup (session scope, starts Ray cluster)
+#   -> setup_deployment (module scope, starts Ray deployment, args: deployment)
+#     -> ray_serve_setup (module scope, starts Ray Serve app, args: endpoints, nodes, context, runtime_env)
+#       -> app_setup (module scope, starts Ray Serve app for a specific target, args: target)
+#         -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
+
+
 # ruff: noqa: S101
-import json
 import os
 import tempfile
 from pathlib import Path
@@ -26,29 +36,31 @@ from aana.tests.utils import (
     is_gpu_available,
     is_using_deployment_cache,
 )
-from aana.utils.json import json_serializer_default
+from aana.utils.general import jsonify
 
 
 @pytest.fixture(scope="session")
 def ray_setup():
-    """Setup Ray instance."""
+    """Setup Ray cluster."""
     ray.init(num_cpus=6)  # pretend we have 6 cpus
     yield
     ray.shutdown()
 
 
 @pytest.fixture(scope="module")
-def setup_deployment(ray_setup, request):
-    """Setup Ray Deployment."""
+def setup_deployment(ray_setup, request):  # noqa: D417
+    """Setup Ray Deployment.
+
+    Args:
+        deployment: The deployment to start.
+        bind (bool): Whether to bind the deployment. Defaults to False.
+    """
 
     def start_deployment(deployment, bind=False):
         """Start deployment."""
         port = portpicker.pick_unused_port()
         name = request.node.name.replace("/", "_")
         route_prefix = f"/test/{name}"
-        print(
-            f"Starting deployment {name} on port {port} with route prefix {route_prefix}"
-        )
         if bind:
             if not is_gpu_available() and is_using_deployment_cache():
                 # if GPU is not available and we are using deployment cache,
@@ -64,8 +76,15 @@ def setup_deployment(ray_setup, request):
 
 
 @pytest.fixture(scope="module")
-def ray_serve_setup(setup_deployment, request):
-    """Setup the Ray Serve from specified endpoints and nodes."""
+def ray_serve_setup(setup_deployment, request):  # noqa: D417
+    """Setup the Ray Serve app from specified endpoints and nodes.
+
+    Args:
+        endpoints: App endpoints.
+        nodes: App nodes.
+        context: App context.
+        runtime_env: The runtime environment. Defaults to None.
+    """
 
     def start_ray_serve(endpoints, nodes, context, runtime_env=None):
         if runtime_env is None:
@@ -81,8 +100,12 @@ def ray_serve_setup(setup_deployment, request):
 
 
 @pytest.fixture(scope="module")
-def app_setup(ray_serve_setup):
-    """Setup app for a specific target."""
+def app_setup(ray_serve_setup):  # noqa: D417
+    """Setup Ray Serve app for a specific target.
+
+    Args:
+        target: The target deployment.
+    """
     # create temporary database
     tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
     db_config = DBConfig(
@@ -90,7 +113,8 @@ def app_setup(ray_serve_setup):
         datastore_config=SQLiteConfig(path=tmp_database_path),
     )
     # set environment variable for the database config so Ray can find it
-    os.environ["DB_CONFIG"] = json.dumps(db_config, default=json_serializer_default)
+    os.environ["DB_CONFIG"] = jsonify(db_config)
+
     # set database config in aana settings
     aana_settings.db_config = db_config
 
@@ -110,7 +134,7 @@ def app_setup(ray_serve_setup):
         deployments = configuration["deployments"]
         runtime_env = {
             "env_vars": {
-                "DB_CONFIG": json.dumps(db_config, default=json_serializer_default)
+                "DB_CONFIG": jsonify(db_config),
             }
         }
         context = {"deployments": {}}
@@ -133,8 +157,15 @@ def app_setup(ray_serve_setup):
 
 
 @pytest.fixture(scope="module")
-def call_endpoint(app_setup, request):
-    """Call endpoint."""
+def call_endpoint(app_setup, request):  # noqa: D417
+    """Call endpoint.
+
+    Args:
+        endpoint_path: The endpoint path.
+        data: The data to send.
+        ignore_expected_output: Whether to ignore the expected output. Defaults to False.
+        expected_error: The expected error. Defaults to None.
+    """
     target = request.param
     handle, port, route_prefix = app_setup(target)
 

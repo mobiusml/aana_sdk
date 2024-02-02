@@ -11,9 +11,9 @@ from aana.configs.db import (
     drop_all_tables,
     run_alembic_migrations,
 )
+from aana.configs.settings import Settings
 from aana.tests.const import ALLOWED_LEVENSTEIN_ERROR_RATE
-from aana.utils.general import get_endpoint
-from aana.utils.json import json_serializer_default
+from aana.utils.general import get_endpoint, jsonify
 
 
 def is_gpu_available() -> bool:
@@ -106,15 +106,16 @@ def call_endpoint(
     """Call an endpoint.
 
     Args:
-        target (str): the name of the target deployment
+        target (str): the name of the target.
         port (int): Port of the server.
         route_prefix (str): Route prefix of the server.
         endpoint_path (str): Endpoint to call.
         data (dict): Data to send to the endpoint.
 
     Returns:
-        dict | list: Output of the endpoint. If an error occurs, the output will be a dict
-            with the error message.
+        dict | list: Output of the endpoint. If the endpoint is a streaming endpoint, the output will be a list of output chunks.
+            If the endpoint is not a streaming endpoint, the output will be a dict.
+            If an error occurs, the output will be a dict with the error message.
     """
     endpoint = get_endpoint(target, endpoint_path)
     if endpoint.streaming:
@@ -205,8 +206,14 @@ def compare_output(expected_output: dict, output: dict):
     compare_texts(expected_json, actual_json)
 
 
-def clear_database(aana_settings):
-    """Clear the database."""
+def clear_database(aana_settings: Settings):
+    """Clear the database.
+
+    It drops all tables and runs alembic migrations to create the tables again.
+
+    Args:
+        aana_settings (Settings): AANA settings.
+    """
     drop_all_tables(aana_settings)
     run_alembic_migrations(aana_settings)
 
@@ -219,7 +226,20 @@ def check_output(
     ignore_expected_output=False,
     expected_error=None,
 ):
-    """Compare output with expected output."""
+    """Compare output with expected output.
+
+    Args:
+        target (str): the name of the target.
+        endpoint_path (str): Endpoint path.
+        key (str): Key of the expected output.
+        output (dict | list): Output of the endpoint.
+        ignore_expected_output (bool, optional): If True, do not compare the output with the expected output. Defaults to False.
+        expected_error (str | None, optional): Expected error. If not None, the output will be compared with the expected error
+            and the expected output will be ignored. Defaults to None.
+
+    Raises:
+        AssertionError: if the output is different from the expected output.
+    """
     endpoint = get_endpoint(target, endpoint_path)
     # if we expect an error, then we only check the error
     if expected_error:
@@ -263,8 +283,24 @@ def call_and_check_endpoint(
     ignore_expected_output: bool = False,
     expected_error: str | None = None,
 ) -> dict | list:
-    """Call and check endpoint."""
-    data_json = json.dumps(data, default=json_serializer_default)
+    """Call endpoint and compare the output with the expected output.
+
+    Args:
+        target (str): the name of the target.
+        port (int): Port of the server.
+        route_prefix (str): Route prefix of the server.
+        endpoint_path (str): Endpoint to call.
+        data (dict): Data to send to the endpoint.
+        ignore_expected_output (bool, optional): If True, do not compare the output with the expected output. Defaults to False.
+        expected_error (str | None, optional): Expected error. If not None, the output will be compared with the expected error
+            and the expected output will be ignored. Defaults to None.
+
+    Returns:
+        dict | list: Output of the endpoint. If the endpoint is a streaming endpoint, the output will be a list of output chunks.
+            If the endpoint is not a streaming endpoint, the output will be a dict.
+            If an error occurs, the output will be a dict with the error message.
+    """
+    data_json = jsonify(data)
     # "aana.tests.files.videos" will be resolved to a different path on different systems
     # so we need to replace it with a path that is the same on all systems
     # to make sure that the hash of the data is the same on all systems

@@ -108,6 +108,7 @@ def test_chat_with_video(call_endpoint, video):
     )
 
 
+# FIX: See https://github.com/mobiusml/aana_sdk/issues/42
 # @pytest.mark.parametrize(
 #     "endpoint, data",
 #     [
