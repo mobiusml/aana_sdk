@@ -5,7 +5,8 @@ from collections.abc import Generator
 from math import floor
 from pathlib import Path
 from typing import TypedDict
-
+import subprocess
+import wave
 import numpy as np
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 from decord import DECORDError
@@ -208,6 +209,79 @@ def download_video(video_input: VideoInput | Video) -> Video:
             raise DownloadException(url=video_input.url, msg=error_message) from e
     else:
         return video_input.convert_input_to_object()
+
+
+def load_audio(file: str, sr: int = 16000):
+    """Open an audio file and read as mono waveform, resampling as necessary.
+
+    Args:
+        file (str): The audio file to open.
+        sr (int): The sample rate to resample the audio if necessary.
+
+    Returns:
+        A NumPy array containing the audio waveform, in float32 dtype.
+
+    Raises:
+        RuntimeError: if ffmpeg fails to convert and load the audio.
+    """
+    try:
+        # Launches a subprocess to decode audio while down-mixing and resampling as necessary.
+        # Requires the ffmpeg CLI to be installed.
+        cmd = [
+            "ffmpeg",
+            "-nostdin",
+            "-threads",
+            "0",
+            "-i",
+            file,
+            "-f",
+            "s16le",
+            "-ac",
+            "1",
+            "-acodec",
+            "pcm_s16le",
+            "-ar",
+            str(sr),
+            "-",
+        ]
+        out = subprocess.run(cmd, capture_output=True, check=True).stdout
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
+
+    # Save audio to a WAV file
+    wav_file_path = Path(file).with_suffix(".wav")
+    with wave.open(str(wav_file_path), "wb") as wav_file:
+        wav_file.setnchannels(1)  # Mono audio
+        wav_file.setsampwidth(2)  # 16-bit audio
+        wav_file.setframerate(16000)  # Sample rate
+        wav_file.writeframes(out)
+
+    return wav_file_path
+
+
+def extract_audio(video_input: VideoInput | Video) -> Video:
+    """Extract the audio file from a VideoInput and return as a Video object.
+
+    Args:
+        video_input (VideoInput): The media file to extract audio.
+
+    Returns:
+        A Video object containing the extracted audio path.
+
+    """
+    media_path = str(video_input.path)
+    if not media_path.endswith(".wav"):
+        audio_raw = load_audio(media_path)
+    else:
+        audio_raw = video_input.path
+
+    return Video(
+        path=audio_raw,
+        url=video_input.url,
+        media_id=video_input.media_id,
+        title=video_input.title,
+        description=video_input.description,
+    )
 
 
 def generate_combined_timeline(
