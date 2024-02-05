@@ -24,7 +24,6 @@ from aana.models.pydantic.vad_output import VadSegment
 from aana.models.pydantic.time_interval import TimeInterval
 
 from ray import serve
-from faster_whisper.audio import decode_audio
 from pydantic import BaseModel, Field
 
 
@@ -301,8 +300,6 @@ class VadDeployment(BaseDeployment):
 
         config_obj = VadParams(**config)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        # print(config_obj.model_fp)
-        # print(config_obj.vad_segmentation_url)
         filepath = download_vad_model(
             config_obj.model_fp, config_obj.vad_segmentation_url
         )
@@ -321,7 +318,7 @@ class VadDeployment(BaseDeployment):
         )
         self.vad_pipeline.instantiate(hyperparameters)
 
-    # OPTIONAL: audio loader function if asr model is not used in deployment.:can not use subprocess in an async function: use whisper ftb
+    # OPTIONAL: audio loader function if asr model is not used in deployment.
     async def load_audio(self, file: str, sr: int = 16000):
         """Open an audio file and read as mono waveform, resampling as necessary.
 
@@ -373,8 +370,6 @@ class VadDeployment(BaseDeployment):
         Returns:
             merged_segments list(VadSegment): The list of segments.
 
-        Raises:
-            InferenceException: If the inference fails.
         """
         chunk_size = params["chunk_size"]
         onset = params["merge_onset"]
@@ -400,7 +395,7 @@ class VadDeployment(BaseDeployment):
             )  # To account for edge errors additional 100ms padding
 
         if len(segments_list) == 0:
-            print("No active speech found in audio")
+            # No active speech found in audio.
             return []
 
         # Make sure the starting point is the start of the segment.
@@ -436,14 +431,23 @@ class VadDeployment(BaseDeployment):
             media (Video): The media to perform vad.
 
         Returns:
-            vad_segments (VadSegment): The list of vad segments.
+            vad_segments (list[dict]): The list of vad segments.
 
         Raises:
             InferenceException: If the vad inference fails.
         """
         media_path: str = str(media.path)
-        audio_array = decode_audio(media_path)  # self.load_audio() has subprocess issue
-        # TODO: raise valueError if not able to load
+
+        # load audio data
+        audio_array = (
+            np.frombuffer(open(media_path, "rb").read(), dtype=np.int16)
+            .flatten()
+            .astype(np.float32)
+            / 32768.0
+        )
+        # OPTIONAL: Use load_audio function if audio extraction is not performed.
+        # audio_array = self.load_audio(media_path)
+
         try:
             vad_segments = self.vad_pipeline(
                 {
