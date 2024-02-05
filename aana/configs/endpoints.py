@@ -148,8 +148,9 @@ endpoints = {
                     output="video_transcriptions_info_batched_whisper_medium",
                     streaming=True,
                 ),
+                # TODO: adding id endpoint makes it very slow (>2x)
                 # EndpointOutput(
-                #    name="transcription_id_batched", output="transcription_id_batched"
+                #    name="transcription_id", output="transcription_id_batched"
                 # ),
             ],
             streaming=True,
