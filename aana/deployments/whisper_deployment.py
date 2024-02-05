@@ -170,8 +170,15 @@ class WhisperDeployment(BaseDeployment):
         if not params:
             params = WhisperParams()
         media_path: str = str(media.path)
+        # load from buffer and pass it
+        audio_array = (
+            np.frombuffer(open(media_path, "rb").read(), dtype=np.int16)
+            .flatten()
+            .astype(np.float32)
+            / 32768.0
+        )
         try:
-            segments, info = self.model.transcribe(media_path, **params.dict())
+            segments, info = self.model.transcribe(audio_array, **params.dict())
         except Exception as e:
             raise InferenceException(self.model_name) from e
 
@@ -305,35 +312,54 @@ class WhisperDeployment(BaseDeployment):
         )
 
         media_path: str = str(media.path)
-        audio_data = decode_audio(media_path)
+
+        # OPTIONAL: Use faster_whisper function to load media or use from buffer for loading extracted audio
+        # audio_data = decode_audio(media_path)
         # TODO: raise value error if not able to load the audio
 
-        # dict_format = kp['vad_segments'][0].to_dict()
+        audio_array = (
+            np.frombuffer(open(media_path, "rb").read(), dtype=np.int16)
+            .flatten()
+            .astype(np.float32)
+            / 32768.0
+        )
+
         vad_input = [seg.to_dict() for seg in vad_segments]
-        # print(vad_input[0])
-        try:
-            result = self.batched_model.transcribe_stream(
-                audio_data,
-                vad_segments=vad_input,
-                batch_size=batch_size,
-            )
-        except Exception as e:
-            raise InferenceException(self.model_name) from e
 
-        count = 0
-        for segment, info in result:
-            if count == 0:
-                # converting info dictionary to an object:
-                transcription_object = SimpleNamespace(**info)
-                asr_transcription_info = AsrTranscriptionInfo.from_whisper(
-                    transcription_object
-                )
-            count += 1
-            asr_segments = [AsrSegment.from_whisper(segment)]
-            asr_transcription = AsrTranscription(text=segment.text)
-
+        if not vad_input:
+            # return empty output with language as silence for silent audios
+            info = {"language": "silence", "language_probability": 1.0}
             yield WhisperOutput(
-                segments=asr_segments,
-                transcription_info=asr_transcription_info,
-                transcription=asr_transcription,
+                segments=[],
+                transcription_info=AsrTranscriptionInfo.from_whisper(
+                    SimpleNamespace(**info)
+                ),
+                transcription=AsrTranscription(text=""),
             )
+        else:
+            try:
+                result = self.batched_model.transcribe_stream(
+                    audio_array,
+                    vad_segments=vad_input,
+                    batch_size=batch_size,
+                )
+            except Exception as e:
+                raise InferenceException(self.model_name) from e
+
+            # count = 0
+            for count, (segment, info) in enumerate(result):
+                if count == 0:
+                    # converting info dictionary to an object:
+                    transcription_object = SimpleNamespace(**info)
+                    asr_transcription_info = AsrTranscriptionInfo.from_whisper(
+                        transcription_object
+                    )
+                # count += 1
+                asr_segments = [AsrSegment.from_whisper(segment)]
+                asr_transcription = AsrTranscription(text=segment.text)
+
+                yield WhisperOutput(
+                    segments=asr_segments,
+                    transcription_info=asr_transcription_info,
+                    transcription=asr_transcription,
+                )
