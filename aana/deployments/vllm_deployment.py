@@ -14,7 +14,8 @@ from aana.exceptions.general import InferenceException, PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.chat_template import apply_chat_template
-from aana.utils.general import merged_options, test_cache
+from aana.utils.general import merged_options
+from aana.utils.test import test_cache
 
 
 class VLLMConfig(BaseModel):
