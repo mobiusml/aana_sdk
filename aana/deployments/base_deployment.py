@@ -1,7 +1,6 @@
 from typing import Any
 
 from aana.configs.settings import settings
-from aana.utils.general import is_testing
 
 
 class BaseDeployment:
@@ -22,7 +21,7 @@ class BaseDeployment:
         The method is called when the deployment is updated.
         """
         self.config = config
-        if is_testing() and settings.use_deployment_cache:
+        if settings.test.test_mode and settings.test.use_deployment_cache:
             # If we are in testing mode and we want to use the cache,
             # we don't need to load the model
             self.configured = True

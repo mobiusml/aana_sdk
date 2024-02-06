@@ -16,7 +16,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionInfo,
 )
 from aana.models.pydantic.whisper_params import WhisperParams
-from aana.utils.general import test_cache
+from aana.utils.test import test_cache
 
 
 class WhisperComputeType(str, Enum):
