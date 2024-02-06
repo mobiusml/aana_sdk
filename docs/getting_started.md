@@ -1,6 +1,6 @@
 # Aana SDK Getting Started
 
-This document is a draft. The final version will live on Github.
+This is the living version of this document. A [previous draft](https://docs.google.com/document/d/1z1y7Gxo1RwL_9MyTzRVvwA6tsOaVz8JKzlOA9Bxq2FU/edit#heading=h.70hndo88ymuh) lived on Google Docs.
 
 
 ## Code overview
