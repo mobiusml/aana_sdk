@@ -5,7 +5,7 @@ from typing import Any
 from pydantic import BaseModel
 
 
-def json_serializer_default(obj: Any) -> str:
+def json_serializer_default(obj: object) -> object:
     """Default function for json serializer to handle custom objects.
 
     If json serializer does not know how to serialize an object, it calls the default function.
@@ -14,14 +14,13 @@ def json_serializer_default(obj: Any) -> str:
     we call the dict method to get the dictionary representation of the model
     that json serializer can deal with.
 
-    If the object is not a pydantic model, Path, or Media object,
-    we raise a TypeError.
+    If the object is not supported, we raise a TypeError.
 
     Args:
-        obj (Any): The object to serialize.
+        obj (object): The object to serialize.
 
     Returns:
-        str: The serialized object.
+        object: The serializable object.
 
     Raises:
         TypeError: If the object is not a pydantic model, Path, or Media object.
