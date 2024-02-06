@@ -75,8 +75,6 @@ Now you have a deployment! Unfortunately, that's not enough to run it just yet.
 
 Next you need to add some pipeline nodes to aana/config/pipeline.py so you can use your new deployment. A typical minimal, 1-stage inference workflow might be:
 
-
-
 1. input - says which input to get from a request
 2. preprocessing - turning the HTTP request into something you can use (download files, etc)
 3. inference - running on the ML model
@@ -84,7 +82,7 @@ Next you need to add some pipeline nodes to aana/config/pipeline.py so you can u
 
 (Not shown for simplicity: video processing params on the input, saving to the database)
 
-# TODO: add image again
+![](diagram.png)
 
 Here's an example of these for a video processing pipeline(aana/config/pipeline.py):
 
