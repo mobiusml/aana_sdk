@@ -11,7 +11,7 @@ from aana.exceptions.general import InferenceException
 from aana.models.core.dtype import Dtype
 from aana.models.core.image import Image
 from aana.utils.batch_processor import BatchProcessor
-from aana.utils.general import test_cache
+from aana.utils.test import test_cache
 
 
 class HFBlip2Config(BaseModel):

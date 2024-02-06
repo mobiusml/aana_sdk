@@ -36,7 +36,7 @@ def is_using_deployment_cache() -> bool:
     """
     from aana.configs.settings import settings
 
-    return settings.use_deployment_cache
+    return settings.test.use_deployment_cache
 
 
 def compare_texts(expected_text: str, text: str):
