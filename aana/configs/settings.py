@@ -5,6 +5,14 @@ from pydantic import BaseSettings
 from aana.configs.db import DBConfig
 
 
+class TestSettings(BaseSettings):
+    """A pydantic model for test settings."""
+
+    test_mode: bool = False
+    use_deployment_cache: bool = False  # use cached deployment results for testing
+    save_deployment_cache: bool = False  # save deployment results to cache for testing
+
+
 class Settings(BaseSettings):
     """A pydantic model for SDK settings."""
 
@@ -16,6 +24,8 @@ class Settings(BaseSettings):
         "datastore_type": "sqlite",
         "datastore_config": {"path": Path("/var/lib/aana_data")},
     }
+
+    test: TestSettings = TestSettings()
 
 
 settings = Settings()

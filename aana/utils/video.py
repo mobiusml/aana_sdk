@@ -80,8 +80,8 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
 
     frames_array = video_reader.get_batch(indexes).asnumpy()
     frames = []
-    for _, frame in enumerate(frames_array):
-        img = Image(numpy=frame)
+    for frame_id, frame in enumerate(frames_array):
+        img = Image(numpy=frame, media_id=f"{video.media_id}_frame_{frame_id}")
         frames.append(img)
 
     return FramesDict(
@@ -147,8 +147,8 @@ def generate_frames_decord(
         batch = indexes[i : i + batch_size]
         batch_frames_array = video_reader.get_batch(batch).asnumpy()
         batch_frames = []
-        for _, frame in enumerate(batch_frames_array):
-            img = Image(numpy=frame)
+        for frame_id, frame in enumerate(batch_frames_array):
+            img = Image(numpy=frame, media_id=f"{video.media_id}_frame_{frame_id}")
             batch_frames.append(img)
 
         batch_timestamps = timestamps[i : i + batch_size]
