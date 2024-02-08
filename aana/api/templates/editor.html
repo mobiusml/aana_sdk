@@ -1,0 +1,305 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/litegraph.css">
+    <link rel="stylesheet" type="text/css" href="/static/litegraph-editor.css">
+    <script type="text/javascript" src="/static/litegraph.js"></script>
+</head>
+
+<body style='width:100%; height:100%'>
+    <div class="litegraph litegraph-editor">
+        <canvas id="mycanvas" width="2000" height="1000"></canvas>
+    </div>
+    <script>
+        var graph = new LGraph();
+        graph.serialize_widgets = true;
+        console.log(graph);
+
+        var canvas = new LGraphCanvas("#mycanvas", graph);
+
+        var data_models = {{ data_models| safe}};
+
+        // var deployments = {{ deployments| safe}};
+        var deployments = JSON.parse('{{ deployments| safe}}');
+        console.log(deployments);
+
+        var available_functions = {{ functions| safe}};
+        console.log(available_functions);
+
+
+        function InputNode() {
+            var node = this;
+            this.serialize_widgets = true;
+            this.addOutput("output", "string");
+            // add a widget to change the name of the output
+            this.addWidget("text", "name", "output", function (value) {
+                node.outputs[0].name = value;
+                node.title = value;
+            });
+            this.addWidget("combo", "type", "", function (value) {
+                console.log("type changed", value);
+                // node.outputs[0].type = value;
+            }, { "values": data_models })
+        }
+
+        InputNode.title = "Input";
+
+        LiteGraph.registerNodeType("pipeline/input", InputNode);
+
+
+        function EndpointNode() {
+            // this.addWidget("number", "num_outputs", 0, function (value) {
+            //     console.log("num_outputs changed", value);
+            //     // node.outputs[0].name = value;
+            //     // node.title = value;
+            // });
+
+            // Add 5 inputs
+            this.addProperty("path", "", "string");
+            this.addProperty("summary", "", "string");
+            for (var i = 0; i < 5; i++) {
+                this.addInput("output_" + i, "string");
+                this.addProperty("output_" + i + "_name", "output_" + i, "string");
+            }
+        }
+
+        EndpointNode.prototype.onPropertyChanged = function (name, value) {
+            console.log("property changed", name, value, this);
+            if (name.includes("output_")) {
+                var index = parseInt(name.split("_")[1]);
+                console.log(index);
+                this.inputs[index].name = value;
+            }
+            if (name == "path") {
+                this.title = "Endpoint: " + value;
+                // this.size = [400, 100 + 20 * this.value.length];
+            }
+        }
+
+        EndpointNode.title = "Endpoint";
+        LiteGraph.registerNodeType("pipeline/endpoint", EndpointNode);
+
+
+        function FunctionNode() {
+            var removeSockets = function (node) {
+                // remove all inputs and outputs
+                if ("inputs" in node) {
+                    while (node.inputs.length > 0) {
+                        node.removeInput(0);
+                    }
+                }
+                if ("outputs" in node) {
+                    while (node.outputs.length > 0) {
+                        node.removeOutput(0);
+                    }
+                }
+            }
+
+            this.properties = {
+                name: "function",
+                function_name: "",
+            }
+
+            this.serialize_widgets = true;
+
+            var node = this;
+
+            this.addWidget("combo", "function_name", "", function (value) {
+                console.log("function_name changed", value);
+
+                node.properties.function_name = value;
+
+                // Remove all inputs and outputs
+                removeSockets(node);
+
+                // Add inputs and outputs
+                var inputs = available_functions[value].inputs;
+                var outputs = available_functions[value].outputs;
+                for (var i = 0; i < inputs.length; i++) {
+                    node.addInput(inputs[i].name, "string");
+                }
+
+                for (var i = 0; i < outputs.length; i++) {
+                    node.addOutput(outputs[i].name, "string");
+                }
+
+                var is_generator = available_functions[value].is_generator;
+                if (!node.properties.is_generator) {
+                    node.addProperty("is_generator", is_generator, "string");
+                }
+                else {
+                    node.properties.is_generator = is_generator;
+                }
+
+                var dict_output = available_functions[value].dict_output;
+                if (!node.properties.dict_output) {
+                    node.addProperty("dict_output", dict_output, "string");
+                }
+                else {
+                    node.properties.dict_output = dict_output;
+                }
+
+
+                node.title = value;
+                console.log(node);
+                node.size = [400, 200];
+            }, { "values": Object.keys(available_functions) })
+
+        }
+
+        FunctionNode.title = "Function";
+        LiteGraph.registerNodeType("pipeline/function", FunctionNode);
+
+
+
+        function DeploymentNode() {
+            var removeSockets = function (node) {
+                // remove all inputs and outputs
+                if ("inputs" in node) {
+                    while (node.inputs.length > 0) {
+                        node.removeInput(0);
+                    }
+                }
+                if ("outputs" in node) {
+                    while (node.outputs.length > 0) {
+                        node.removeOutput(0);
+                    }
+                }
+            }
+
+            this.properties = {
+                name: "deployment",
+                // deployment_name: "",
+                // method: "",
+            }
+
+            this.serialize_widgets = true;
+            var node = this;
+
+            this.addWidget("combo", "deployment_name", "", function (value) {
+                console.log("deployment_name changed", value);
+
+                // Add property "deployment_name" if not already present
+                removeSockets(node);
+                if (!node.properties.deployment_name) {
+                    node.addProperty("deployment_name", value, "string");
+                }
+                else {
+                    node.properties.deployment_name = value;
+                }
+                // node.addProperty("deployment_name", value, "string");
+                node.title = value;
+                console.log(node);
+
+                // If widget is present, update it
+                var widget = node.widgets.find(widget => widget.name === "method");
+                widget.options.values = Object.keys(deployments[value]);
+                widget.value = "";
+
+                node.size = [400, 200];
+            }, { "values": Object.keys(deployments) })
+
+            // var available_methods;
+            // if (this.properties.deployment_name) {
+            //     available_methods = Object.keys(deployments[this.properties.deployment_name]);
+            // }
+            // else {
+            //     available_methods = [];
+            // }
+
+            this.addWidget("combo", "method", "", function (value) {
+                console.log("method changed", value);
+
+                node.addProperty("method", value, "string");
+                var inputs = deployments[node.properties.deployment_name][value].inputs;
+                var outputs = deployments[node.properties.deployment_name][value].outputs;
+                var is_generator = deployments[node.properties.deployment_name][value].is_generator;
+
+                if (!node.properties.is_generator) {
+                    node.addProperty("is_generator", is_generator, "string");
+                }
+                else {
+                    node.properties.is_generator = is_generator;
+                }
+
+                if (!node.properties.method) {
+                    node.addProperty("method", value, "string");
+                }
+                else {
+                    node.properties.method = value;
+                }
+
+                // Remove all inputs and outputs
+                removeSockets(node);
+
+                // Add new inputs if not already present
+                for (var i = 0; i < inputs.length; i++) {
+                    if (node.findInputSlot(inputs[i].name) == -1) {
+                        node.addInput(inputs[i].name, "string");
+                    }
+                }
+
+                // Add new outputs if not already present
+                for (var i = 0; i < outputs.length; i++) {
+                    if (node.findOutputSlot(outputs[i].name) == -1) {
+                        node.addOutput(outputs[i].name, "string");
+                    }
+                }
+
+                node.title = node.properties.deployment_name + "_" + value;
+                node.size = [400, 200];
+            }, { "values": [] })
+
+            this.size = [400, 200];
+        }
+        DeploymentNode.prototype.onPropertyChanged = function (name, value) {
+            console.log("property changed", name, value, this);
+            if (name == "deployment_name") {
+                var method_widget = this.widgets.find(widget => widget.name === "method");
+                method_widget.options.values = Object.keys(deployments[value]);
+            }
+            if (name == "is_generator") {
+                console.log("is_generator changed", value, this);
+                // change the color of the node
+                if (value) {
+                    // blueish, very light but dark
+                    this.color = "#6666FF";
+                }
+                else {
+                    this.color = "#333333";
+                }
+            }
+        }
+
+        LiteGraph.registerNodeType("pipeline/deployment", DeploymentNode);
+
+
+
+
+        // var node_input = LiteGraph.createNode("pipeline/input");
+        // node_input.pos = [200, 200];
+        // graph.add(node_input);
+
+        // var node_deployment = LiteGraph.createNode("pipeline/deployment");
+        // node_deployment.pos = [1000, 200];
+        // // node_deployment.size = [400, 200];
+        // graph.add(node_deployment);
+
+
+        // var endpoint_node = LiteGraph.createNode("pipeline/endpoint");
+        // endpoint_node.pos = [200, 500];
+        // graph.add(endpoint_node);
+
+        // var function_node = LiteGraph.createNode("pipeline/function");
+        // function_node.pos = [600, 200];
+
+        // graph.add(function_node);
+
+        // conf = '{"last_node_id":2,"last_link_id":1,"nodes":[{"id":2,"type":"pipeline/deployment","pos":[1000,200],"size":[400,200],"flags":{},"order":1,"mode":0,"inputs":[{"name":"prompt","type":"string","link":1},{"name":"sampling_params","type":"string","link":null}],"outputs":[{"name":"text","type":"string","links":null}],"title":"VLLMDeployment_generate_stream","properties":{"name":"deployment","deployment_name":"VLLMDeployment","method":"generate_stream","is_generator":true},"widgets_values":["VLLMDeployment","generate_stream"]},{"id":1,"type":"pipeline/input","pos":[200,200],"size":{"0":210,"1":82},"flags":{},"order":0,"mode":0,"outputs":[{"name":"output","type":"string","links":[1],"slot_index":0}],"properties":{},"widgets_values":["output",""]}],"links":[[1,1,0,2,0,"string"]],"groups":[],"config":{},"extra":{},"version":0.4}'
+        // graph.configure(JSON.parse(conf));
+
+        graph.start()
+    </script>
+</body>
+
+</html>
