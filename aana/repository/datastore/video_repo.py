@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from aana.configs.db import media_id_type
 from aana.exceptions.database import NotFoundException
 from aana.models.db import VideoEntity
+from aana.models.pydantic.media_id import MediaId
 from aana.repository.datastore.base import BaseRepository
 
 
@@ -14,11 +14,11 @@ class VideoRepository(BaseRepository[VideoEntity]):
         """Constructor."""
         super().__init__(session, VideoEntity)
 
-    def get_by_media_id(self, media_id: media_id_type) -> VideoEntity:
+    def get_by_media_id(self, media_id: MediaId) -> VideoEntity:
         """Fetches a video by media_id.
 
         Args:
-            media_id (media_id_type): Media ID to query.
+            media_id (MediaId): Media ID to query.
 
         Raises:
             NotFoundException: if no entry in the VideoEntity table matching that media_id is found.
@@ -34,11 +34,11 @@ class VideoRepository(BaseRepository[VideoEntity]):
             raise NotFoundException(self.table_name, media_id)
         return entity
 
-    def delete_by_media_id(self, media_id: media_id_type) -> VideoEntity | None:
+    def delete_by_media_id(self, media_id: MediaId) -> VideoEntity | None:
         """Deletes a video by media_id.
 
         Args:
-            media_id (media_id_type): Media ID to query.
+            media_id (MediaId): Media ID to query.
 
         Returns:
             VideoEntity: the video.
