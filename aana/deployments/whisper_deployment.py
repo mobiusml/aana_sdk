@@ -1,6 +1,5 @@
 from collections.abc import AsyncGenerator
 from enum import Enum
-import numpy as np
 from types import SimpleNamespace
 from typing import Any, TypedDict, cast
 
@@ -8,7 +7,6 @@ import torch
 from faster_whisper import WhisperModel, BatchedInferencePipeline
 from faster_whisper.tokenizer import Tokenizer
 from faster_whisper.transcribe import TranscriptionOptions
-from faster_whisper.audio import decode_audio
 
 
 from pydantic import BaseModel, Field
@@ -16,7 +14,8 @@ from ray import serve
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
-from aana.models.core.video import Video
+from aana.models.core.audio import Audio
+
 from aana.models.pydantic.asr_output import (
     AsrSegment,
     AsrTranscription,
@@ -135,9 +134,7 @@ class WhisperDeployment(BaseDeployment):
 
         The method is called when the deployment is created or updated.
 
-        It loads the model and processor from HuggingFace.
-
-        The configuration should conform to the HFBlip2Config schema.
+        The configuration should conform to the WhisperConfig schema.
         """
         config_obj = WhisperConfig(**config)
         self.model_size = config_obj.model_size
@@ -148,14 +145,13 @@ class WhisperDeployment(BaseDeployment):
             self.model_size, device=self.device, compute_type=self.compute_type
         )
 
-    # TODO: add audio support
     async def transcribe(
-        self, media: Video, params: WhisperParams | None = None
+        self, media: Audio, params: WhisperParams | None = None
     ) -> WhisperOutput:
-        """Transcribe the media with the whisper model.
+        """Transcribe the audio with the whisper model.
 
         Args:
-            media (Video): The media to transcribe.
+            media (Audio): The audio to transcribe.
             params (WhisperParams): The parameters for the whisper model.
 
         Returns:
@@ -169,14 +165,9 @@ class WhisperDeployment(BaseDeployment):
         """
         if not params:
             params = WhisperParams()
-        media_path: str = str(media.path)
-        # load from buffer and pass it
-        audio_array = (
-            np.frombuffer(open(media_path, "rb").read(), dtype=np.int16)
-            .flatten()
-            .astype(np.float32)
-            / 32768.0
-        )
+
+        audio_array = media.get_numpy()
+
         try:
             segments, info = self.model.transcribe(audio_array, **params.dict())
         except Exception as e:
@@ -194,12 +185,12 @@ class WhisperDeployment(BaseDeployment):
         )
 
     async def transcribe_stream(
-        self, media: Video, params: WhisperParams | None = None
+        self, media: Audio, params: WhisperParams | None = None
     ) -> AsyncGenerator[WhisperOutput, None]:
-        """Transcribe the media with the whisper model in a streaming fashion.
+        """Transcribe the audio with the whisper model in a streaming fashion.
 
         Args:
-            media (Video): The media to transcribe.
+            media (Audio): The audio to transcribe.
             params (WhisperParams): The parameters for the whisper model.
 
         Yields:
@@ -210,9 +201,9 @@ class WhisperDeployment(BaseDeployment):
         """
         if not params:
             params = WhisperParams()
-        media_path: str = str(media.path)
+        audio_array = media.get_numpy()
         try:
-            segments, info = self.model.transcribe(media_path, **params.dict())
+            segments, info = self.model.transcribe(audio_array, **params.dict())
         except Exception as e:
             raise InferenceException(self.model_name) from e
 
@@ -228,19 +219,19 @@ class WhisperDeployment(BaseDeployment):
             )
 
     async def transcribe_batch(
-        self, media_batch: list[Video], params: WhisperParams = None
+        self, media_batch: list[Audio], params: WhisperParams = None
     ) -> WhisperBatchOutput:
-        """Transcribe the batch of media with the Whisper model.
+        """Transcribe the batch of audios with the Whisper model.
 
         Args:
-            media_batch (list[Video]): The batch of media to transcribe.
+            media_batch (list[Audio]): The batch of audios to transcribe.
             params (WhisperParams): The parameters for the whisper model.
 
         Returns:
             WhisperBatchOutput: The transcription output as a dictionary:
-                segments (list[list[AsrSegment]]): The ASR segments for each media.
-                transcription_info (list[AsrTranscriptionInfo]): The ASR transcription info for each media.
-                transcription (list[AsrTranscription]): The ASR transcription for each media.
+                segments (list[list[AsrSegment]]): The ASR segments for each audio.
+                transcription_info (list[AsrTranscriptionInfo]): The ASR transcription info for each audio.
+                transcription (list[AsrTranscription]): The ASR transcription for each audio.
 
         Raises:
             InferenceException: If the inference fails.
@@ -262,15 +253,15 @@ class WhisperDeployment(BaseDeployment):
 
     async def batched_inference(
         self,
-        media: Video,
+        media: Audio,
         vad_segments: list[VadSegment],
         batch_size: int = 16,
         params: WhisperParams | None = None,
     ) -> AsyncGenerator[WhisperOutput, None]:
-        """Transcribe the batch of audio segments with the Whisper model.
+        """Transcribe a single audio as batches of segments with the Whisper model (4x faster).
 
         Args:
-            media (Video): The media to transcribe. / audio_data (np.ndarray): The audio numpy array to transcribe.
+            media (Audio): The media to transcribe.
             vad_segments (list[VadSegment]): List of segments to guide batching the audio data.
             batch_size (int): Maximum batch size for the batched inference.
             params (WhisperParams): The parameters for the whisper model.
@@ -288,7 +279,6 @@ class WhisperDeployment(BaseDeployment):
         if not params:
             params = WhisperParams()
 
-        # additional param: batch size for batched asr
         if params.language is not None:
             tokenizer = Tokenizer(
                 self.model.hf_tokenizer,
@@ -297,9 +287,7 @@ class WhisperDeployment(BaseDeployment):
                 language=params.language,
             )
         else:
-            self.model.logger.warning(
-                "No language specified, language will be first detected for each audio file."
-            )
+            # If no language is specified, language will be first detected for each audio.
             tokenizer = None
 
         default_asr_options = TranscriptionOptions(**default_batched_asr_options)
@@ -311,23 +299,12 @@ class WhisperDeployment(BaseDeployment):
             language=params.language,
         )
 
-        media_path: str = str(media.path)
-
-        # OPTIONAL: Use faster_whisper function to load media or use from buffer for loading extracted audio
-        # audio_data = decode_audio(media_path)
-        # TODO: raise value error if not able to load the audio
-
-        audio_array = (
-            np.frombuffer(open(media_path, "rb").read(), dtype=np.int16)
-            .flatten()
-            .astype(np.float32)
-            / 32768.0
-        )
+        audio_array = media.get_numpy()
 
         vad_input = [seg.to_dict() for seg in vad_segments]
 
         if not vad_input:
-            # return empty output with language as silence for silent audios
+            # For silent audios/no audio tracks, return empty output with language as silence
             info = {"language": "silence", "language_probability": 1.0}
             yield WhisperOutput(
                 segments=[],
@@ -346,7 +323,6 @@ class WhisperDeployment(BaseDeployment):
             except Exception as e:
                 raise InferenceException(self.model_name) from e
 
-            # count = 0
             for count, (segment, info) in enumerate(result):
                 if count == 0:
                     # converting info dictionary to an object:
@@ -354,7 +330,6 @@ class WhisperDeployment(BaseDeployment):
                     asr_transcription_info = AsrTranscriptionInfo.from_whisper(
                         transcription_object
                     )
-                # count += 1
                 asr_segments = [AsrSegment.from_whisper(segment)]
                 asr_transcription = AsrTranscription(text=segment.text)
 
