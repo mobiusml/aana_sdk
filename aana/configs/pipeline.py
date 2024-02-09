@@ -14,7 +14,9 @@ from aana.models.pydantic.asr_output import (
 from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.chat_message import ChatDialog
 from aana.models.pydantic.image_input import ImageInputList
+from aana.models.pydantic.media_id import MediaId
 from aana.models.pydantic.prompt import Prompt
+from aana.models.pydantic.question import Question
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.models.pydantic.video_input import VideoInput, VideoInputList
 from aana.models.pydantic.video_metadata import VideoMetadata
@@ -525,6 +527,7 @@ nodes = [
                 "name": "media_id",
                 "key": "media_id",
                 "path": "media_id",
+                "data_model": MediaId,
             }
         ],
     },
@@ -537,6 +540,7 @@ nodes = [
                 "name": "question",
                 "key": "question",
                 "path": "question",
+                "data_model": Question,
             }
         ],
     },
