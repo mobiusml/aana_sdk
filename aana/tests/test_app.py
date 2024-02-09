@@ -1,13 +1,10 @@
 # ruff: noqa: S101, S113
 import json
 
-import pytest
-import ray
 import requests
 from ray import serve
 
 from aana.api.api_generation import Endpoint, EndpointOutput
-from aana.api.request_handler import RequestHandler
 
 
 @serve.deployment
@@ -66,26 +63,9 @@ endpoints = [
 ]
 
 
-@pytest.fixture(scope="session")
-def ray_setup(request):
-    """Setup the Ray environment and serve the endpoints.
-
-    Returns:
-        tuple: A tuple containing the handle to the Ray Serve app
-        and the port on which the app is running.
-    """
-    ray.init(ignore_reinit_error=True)
-    server = RequestHandler.bind(endpoints, nodes, context)
-    port = 34422
-    test_name = request.node.name
-    route_prefix = f"/{test_name}"
-    handle = serve.run(server, port=port, name=test_name, route_prefix=route_prefix)
-    return handle, port, route_prefix
-
-
-def test_app(ray_setup):
+def test_app(ray_serve_setup):
     """Test the Ray Serve app."""
-    handle, port, route_prefix = ray_setup
+    handle, port, route_prefix = ray_serve_setup(endpoints, nodes, context)
 
     # Check that the server is ready
     response = requests.get(f"http://localhost:{port}{route_prefix}/api/ready")

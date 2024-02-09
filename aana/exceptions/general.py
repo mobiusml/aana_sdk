@@ -195,3 +195,27 @@ class MediaIdNotFoundException(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.media_id,))
+
+
+class EndpointNotFoundException(BaseException):
+    """Exception raised when an endpoint is not found.
+
+    Attributes:
+        target (str): the name of the target deployment
+        endpoint (str): the endpoint path
+    """
+
+    def __init__(self, target: str, endpoint: str):
+        """Initialize the exception.
+
+        Args:
+            target (str): the name of the target deployment
+            endpoint (str): the endpoint path
+        """
+        super().__init__(target=target, endpoint=endpoint)
+        self.target = target
+        self.endpoint = endpoint
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.target, self.endpoint))

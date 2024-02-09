@@ -27,6 +27,7 @@ from aana.models.pydantic.whisper_params import (
 )
 
 from aana.models.pydantic.vad_output import VadSegment
+from aana.utils.test import test_cache
 
 
 class WhisperComputeType(str, Enum):
@@ -144,7 +145,7 @@ class WhisperDeployment(BaseDeployment):
         self.model = WhisperModel(
             self.model_size, device=self.device, compute_type=self.compute_type
         )
-
+    @test_cache
     async def transcribe(
         self, media: Audio, params: WhisperParams | None = None
     ) -> WhisperOutput:
@@ -184,6 +185,7 @@ class WhisperDeployment(BaseDeployment):
             transcription=asr_transcription,
         )
 
+    @test_cache
     async def transcribe_stream(
         self, media: Audio, params: WhisperParams | None = None
     ) -> AsyncGenerator[WhisperOutput, None]:
