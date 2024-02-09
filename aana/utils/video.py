@@ -6,7 +6,6 @@ from math import floor
 from pathlib import Path
 from typing import TypedDict
 import subprocess
-import wave
 import numpy as np
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 from decord import DECORDError
@@ -16,10 +15,12 @@ from yt_dlp.utils import DownloadError
 from aana.configs.settings import settings
 from aana.exceptions.general import (
     DownloadException,
-    VideoReadingException,
+    VideoReadingException,  # AudioReadingException
 )
 from aana.models.core.image import Image
 from aana.models.core.video import Video
+from aana.models.core.audio import Audio
+
 from aana.models.pydantic.asr_output import (
     AsrSegments,
 )
@@ -211,11 +212,11 @@ def download_video(video_input: VideoInput | Video) -> Video:
         return video_input.convert_input_to_object()
 
 
-def load_audio(file: str, sr: int = 16000):
+def check_and_load_audio(file: str, sr: int = 16000):
     """Open an audio file and read as mono waveform, resampling as necessary.
 
     Args:
-        file (str): The audio file to open.
+        file (str): The audio/video file to open.
         sr (int): The sample rate to resample the audio if necessary.
 
     Returns:
@@ -224,61 +225,80 @@ def load_audio(file: str, sr: int = 16000):
     Raises:
         RuntimeError: if ffmpeg fails to convert and load the audio.
     """
+    # Step 1: check if video contains an audio track: return None if not
     try:
-        # Launches a subprocess to decode audio while down-mixing and resampling as necessary.
-        # Requires the ffmpeg CLI to be installed.
-        cmd = [
-            "ffmpeg",
-            "-nostdin",
-            "-threads",
-            "0",
-            "-i",
-            file,
-            "-f",
-            "s16le",
-            "-ac",
-            "1",
-            "-acodec",
-            "pcm_s16le",
-            "-ar",
-            str(sr),
-            "-",
-        ]
-        out = subprocess.run(cmd, capture_output=True, check=True).stdout
+        # Run ffprobe to get information about the media file
+        result = subprocess.run(
+            [
+                "ffprobe",
+                "-v",
+                "error",
+                "-select_streams",
+                "a:0",
+                "-show_entries",
+                "stream=codec_type",
+                "-of",
+                "default=noprint_wrappers=1",
+                file,
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
     except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
+        raise RuntimeError(f"Failed to check for audio: {e.stderr.decode()}") from e
 
-    # Save audio to a WAV file
-    wav_file_path = Path(file).with_suffix(".wav")
-    with wave.open(str(wav_file_path), "wb") as wav_file:
-        wav_file.setnchannels(1)  # Mono audio
-        wav_file.setsampwidth(2)  # 16-bit audio
-        wav_file.setframerate(16000)  # Sample rate
-        wav_file.writeframes(out)
+    # Check if the output contains "audio"
+    if "audio" not in result.stdout.lower():
+        return None
 
-    return wav_file_path
+    else:
+        # Step 2. Launches a subprocess to decode audio while down-mixing and resampling as necessary.
+        try:
+            cmd = [
+                "ffmpeg",
+                "-nostdin",
+                "-threads",
+                "0",
+                "-i",
+                file,
+                "-f",
+                "s16le",
+                "-ac",
+                "1",
+                "-acodec",
+                "pcm_s16le",
+                "-ar",
+                str(sr),
+                "-",
+            ]
+            out = subprocess.run(cmd, capture_output=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
+
+        return out
 
 
-def extract_audio(video_input: VideoInput | Video) -> Video:
-    """Extract the audio file from a VideoInput and return as a Video object.
+def extract_audio(video_input: VideoInput | Video) -> Audio:
+    """Extract the audio file from a VideoInput and return as a Audio object.
 
     Args:
         video_input (VideoInput): The media file to extract audio.
 
     Returns:
-        A Video object containing the extracted audio path.
+        An Audio object containing the extracted audio.
 
     """
     media_path = str(video_input.path)
-    if not media_path.endswith(".wav"):
-        audio_raw = load_audio(media_path)
-    else:
-        audio_raw = video_input.path
+    # TODO: No need to convert 16khz, single channel PCM audio and just return the path.
 
-    return Video(
-        path=audio_raw,
-        url=video_input.url,
-        media_id=video_input.media_id,
+    # Check for audio and convert audio to bytes or None if no audio channel.
+    audio_bytes = check_and_load_audio(media_path)
+    
+    if not audio_bytes:
+        audio_bytes = b""  # empty audio 
+    return Audio(
+        content=audio_bytes,
         title=video_input.title,
         description=video_input.description,
     )
