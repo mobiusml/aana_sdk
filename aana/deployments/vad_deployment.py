@@ -1,34 +1,34 @@
-from pathlib import Path
-from contextlib import ExitStack
-from collections.abc import Callable
-import urllib.request, hashlib
-from tqdm import tqdm
-from typing import Callable, TypedDict, Optional, Text, Union, Any
-
-import torch
+import hashlib
 import subprocess
-import numpy as np
+import urllib.request
+from collections.abc import Callable
+from contextlib import ExitStack
+from pathlib import Path
+from typing import Any, Optional, TypedDict
 
-# faster whisper here? or load audio?
+import numpy as np
+import torch
 from pyannote.audio import Model
 from pyannote.audio.core.io import AudioFile
 from pyannote.audio.pipelines import VoiceActivityDetection
 from pyannote.audio.pipelines.utils import PipelineModel
 from pyannote.core import Annotation, Segment, SlidingWindowFeature
+from pydantic import BaseModel, Field
+from ray import serve
+from tqdm import tqdm
 
-from aana.models.core.video import Video
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
-from aana.models.pydantic.vad_params import VadParams
-from aana.models.pydantic.vad_output import VadSegment
+from aana.models.core.audio import Audio
 from aana.models.pydantic.time_interval import TimeInterval
-
-from ray import serve
-from pydantic import BaseModel, Field
+from aana.models.pydantic.vad_output import VadSegment
+from aana.models.pydantic.vad_params import VadParams
 
 
 class SegmentX:
-    def __init__(self, start, end, speaker=None):
+    """The vad segment format with optional speaker."""
+
+    def __init__(self, start, end, speaker=None):  # noqa: D107
         self.start = start
         self.end = end
         self.speaker = speaker
@@ -45,7 +45,7 @@ class VadOutput(TypedDict):
 
 
 class VadConfig(BaseModel):
-    """The configuration for the whisper deployment from faster-whisper."""
+    """The configuration for the vad deployment."""
 
     model_fp: Path | None = Field(default=None, description="The VAD model path.")
 
@@ -62,11 +62,11 @@ class VoiceActivitySegmentation(VoiceActivityDetection):
         segmentations: segmented speech regions
     """
 
-    def __init__(
+    def __init__(  # noqa: D107
         self,
         segmentation: PipelineModel = "pyannote/segmentation",
         fscore: bool = False,
-        use_auth_token: Union[Text, None] = None,
+        use_auth_token: str | None = None,
         **inference_kwargs,
     ):
         super().__init__(
@@ -76,7 +76,7 @@ class VoiceActivitySegmentation(VoiceActivityDetection):
             **inference_kwargs,
         )
 
-    def apply(self, file: AudioFile, hook: Optional[Callable] = None) -> Annotation:
+    def apply(self, file: AudioFile, hook: Callable | None = None) -> Annotation:
         """Apply voice activity detection.
 
         Args:
@@ -318,46 +318,6 @@ class VadDeployment(BaseDeployment):
         )
         self.vad_pipeline.instantiate(hyperparameters)
 
-    # OPTIONAL: audio loader function if asr model is not used in deployment.
-    async def load_audio(self, file: str, sr: int = 16000):
-        """Open an audio file and read as mono waveform, resampling as necessary.
-
-        Args:
-            file (str): The audio file to open.
-            sr (int): The sample rate to resample the audio if necessary.
-
-        Returns:
-            A NumPy array containing the audio waveform, in float32 dtype.
-
-        Raises:
-            RuntimeError: if ffmpeg fails to convert and load the audio.
-        """
-        try:
-            # Launches a subprocess to decode audio while down-mixing and resampling as necessary.
-            # Requires the ffmpeg CLI to be installed.
-            cmd = [
-                "ffmpeg",
-                "-nostdin",
-                "-threads",
-                "0",
-                "-i",
-                file,
-                "-f",
-                "s16le",
-                "-ac",
-                "1",
-                "-acodec",
-                "pcm_s16le",
-                "-ar",
-                str(sr),
-                "-",
-            ]
-            out = subprocess.run(cmd, capture_output=True, check=True).stdout
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
-
-        return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
-
     async def merge_chunks(
         self, segments: list[dict], params: dict[str, Any]
     ) -> list[VadSegment]:
@@ -398,7 +358,7 @@ class VadDeployment(BaseDeployment):
             # No active speech found in audio.
             return []
 
-        # Make sure the starting point is the start of the segment.
+        # To make sure the starting point is the start of the segment.
         curr_start = segments_list[0].start
 
         for seg in segments_list:
@@ -424,11 +384,11 @@ class VadDeployment(BaseDeployment):
         )
         return merged_segments
 
-    async def vad_inference(self, media: Video) -> list[dict]:
-        """Perform voice activity detection on the media with the vad model.
+    async def vad_inference(self, media: Audio) -> list[dict]:
+        """Perform voice activity detection on the Audio with the vad model.
 
         Args:
-            media (Video): The media to perform vad.
+            media (Audio): The audio to perform vad.
 
         Returns:
             vad_segments (list[dict]): The list of vad segments.
@@ -436,17 +396,8 @@ class VadDeployment(BaseDeployment):
         Raises:
             InferenceException: If the vad inference fails.
         """
-        media_path: str = str(media.path)
-
         # load audio data
-        audio_array = (
-            np.frombuffer(open(media_path, "rb").read(), dtype=np.int16)
-            .flatten()
-            .astype(np.float32)
-            / 32768.0
-        )
-        # OPTIONAL: Use load_audio function if audio extraction is not performed.
-        # audio_array = self.load_audio(media_path)
+        audio_array = media.get_numpy()
 
         try:
             vad_segments = self.vad_pipeline(
@@ -461,12 +412,12 @@ class VadDeployment(BaseDeployment):
         return vad_segments
 
     async def asr_preprocess_vad(
-        self, media: Video, params: VadParams | None = None
+        self, media: Audio, params: VadParams | None = None
     ) -> VadOutput:
         """Perform vad inference and further processing for batched asr inference.
 
         Args:
-            media (Video): The media to perform vad.
+            media (Audio): The audio to perform vad.
             params (VadParams): The parameters for the vad model.
 
         Returns:
