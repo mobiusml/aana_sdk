@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 
 from mobius_pipeline.exceptions import BaseException
 
+from aana.models.pydantic.media_id import MediaId
+
 if TYPE_CHECKING:
     from aana.models.core.image import Image
     from aana.models.core.video import Video
@@ -157,14 +159,14 @@ class MediaIdNotFoundException(BaseException):
     """Exception raised when a media ID is not found.
 
     Attributes:
-        media_id (str): the media ID
+        media_id (MediaId): the media ID
     """
 
-    def __init__(self, media_id: str):
+    def __init__(self, media_id: MediaId):
         """Initialize the exception.
 
         Args:
-            media_id (str): the media ID
+            media_id (MediaId): the media ID
         """
         super().__init__(media_id=media_id)
         self.media_id = media_id
