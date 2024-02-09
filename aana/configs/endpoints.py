@@ -88,17 +88,17 @@ endpoints = {
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="video_transcriptions_whisper_medium",
+                    output="audio_transcriptions_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="video_transcriptions_segments_whisper_medium",
+                    output="audio_transcriptions_segments_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="info",
-                    output="video_transcriptions_info_whisper_medium",
+                    output="audio_transcriptions_info_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(name="transcription_id", output="transcription_id"),
@@ -112,15 +112,15 @@ endpoints = {
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="video_transcriptions_whisper_medium_from_db",
+                    output="audio_transcriptions_whisper_medium_from_db",
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="video_transcriptions_segments_whisper_medium_from_db",
+                    output="audio_transcriptions_segments_whisper_medium_from_db",
                 ),
                 EndpointOutput(
                     name="info",
-                    output="video_transcriptions_info_whisper_medium_from_db",
+                    output="audio_transcriptions_info_whisper_medium_from_db",
                 ),
             ],
         ),
@@ -130,28 +130,23 @@ endpoints = {
             summary="Transcribe a video using Whisper Medium in batch mode",
             outputs=[
                 EndpointOutput(
-                    name="vad_segments",
-                    output="video_transcriptions_vad_segments",
-                ),
-                EndpointOutput(
                     name="transcription",
-                    output="video_transcriptions_batched_whisper_medium",
+                    output="audio_transcriptions_batched_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="video_transcriptions_segments_batched_whisper_medium",
+                    output="audio_transcriptions_segments_batched_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="info",
-                    output="video_transcriptions_info_batched_whisper_medium",
+                    output="audio_transcriptions_info_batched_whisper_medium",
                     streaming=True,
                 ),
-                # TODO: adding id endpoint makes it very slow (>2x)
-                # EndpointOutput(
-                #    name="transcription_id", output="transcription_id_batched"
-                # ),
+                EndpointOutput(
+                    name="transcription_id", output="transcription_id_batched"
+                ),
             ],
             streaming=True,
         ),
@@ -198,17 +193,17 @@ endpoints = {
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="video_transcriptions_whisper_medium",
+                    output="audio_transcriptions_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="video_transcriptions_segments_whisper_medium",
+                    output="audio_transcriptions_segments_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="info",
-                    output="video_transcriptions_info_whisper_medium",
+                    output="audio_transcriptions_info_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(name="transcription_id", output="transcription_id"),
@@ -222,22 +217,22 @@ endpoints = {
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="video_transcriptions_whisper_medium",
+                    output="audio_transcriptions_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="video_transcriptions_segments_whisper_medium",
+                    output="audio_transcriptions_segments_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="info",
-                    output="video_transcriptions_info_whisper_medium",
+                    output="audio_transcriptions_info_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="captions",
-                    output="video_captions_hf_blip2_opt_2_7b",
+                    output="audio_captions_hf_blip2_opt_2_7b",
                     streaming=True,
                 ),
                 EndpointOutput(
