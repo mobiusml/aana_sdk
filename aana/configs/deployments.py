@@ -1,4 +1,5 @@
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
+from aana.deployments.vad_deployment import VadConfig, VadDeployment
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
 from aana.deployments.whisper_deployment import (
     WhisperComputeType,
@@ -6,8 +7,6 @@ from aana.deployments.whisper_deployment import (
     WhisperDeployment,
     WhisperModelSize,
 )
-from aana.deployments.vad_deployment import VadDeployment, VadConfig
-
 from aana.models.core.dtype import Dtype
 from aana.models.pydantic.sampling_params import SamplingParams
 
