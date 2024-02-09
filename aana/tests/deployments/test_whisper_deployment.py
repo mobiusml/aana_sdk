@@ -10,7 +10,7 @@ from deepdiff import DeepDiff
 from ray import serve
 
 from aana.configs.deployments import deployments
-from aana.models.core.video import Video
+from aana.models.core.audio import Audio
 from aana.models.pydantic.whisper_params import WhisperParams
 from aana.tests.utils import LevenshteinOperator, is_gpu_available
 from aana.utils.general import pydantic_to_dict
@@ -18,7 +18,7 @@ from aana.utils.general import pydantic_to_dict
 EPSILON = 0.01
 
 
-def compare_transcriptions(expected_transcription, transcription):
+def compare_transcriptions(expected_transcription, transcription, words=True):
     """Compare two transcriptions.
 
     Texts and words are compared using Levenshtein distance.
@@ -30,12 +30,18 @@ def compare_transcriptions(expected_transcription, transcription):
     Raises:
         AssertionError: if transcriptions differ too much
     """
+
+    if words:
+        levenshtein_operator = [LevenshteinOperator([r"\['text'\]$", r"\['word'\]$"])]
+    else:
+        levenshtein_operator = [LevenshteinOperator([r"\['text'\]$"])]
+    
     diff = DeepDiff(
         expected_transcription,
         transcription,
         math_epsilon=EPSILON,
         ignore_numeric_type_changes=True,
-        custom_operators=[LevenshteinOperator([r"\['text'\]$", r"\['word'\]$"])],
+        custom_operators= levenshtein_operator,
     )
     assert not diff, diff
 
@@ -54,11 +60,11 @@ def ray_setup(deployment):
 
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.asyncio
-@pytest.mark.parametrize("video_file", ["physicsworks.webm"])
-async def test_whisper_deployment(video_file):
+@pytest.mark.parametrize("audio_file", ["physicsworks_16k.wav"])
+async def test_whisper_deployment(audio_file):
     """Test whisper deployment."""
     for deployment in deployments.values():
-        # skip if not a VLLM deployment
+        # skip if not a whisper deployment
         if deployment.name != "WhisperDeployment":
             continue
 
@@ -67,7 +73,7 @@ async def test_whisper_deployment(video_file):
         model_size = deployment.user_config["model_size"]
 
         expected_output_path = resources.path(
-            f"aana.tests.files.expected.whisper.{model_size}", f"{video_file}.json"
+            f"aana.tests.files.expected.whisper.{model_size}", f"{audio_file}.json"
         )
         assert (
             expected_output_path.exists()
@@ -76,24 +82,20 @@ async def test_whisper_deployment(video_file):
             expected_output = json.load(f)
 
         # Test transcribe method
-        path = resources.path("aana.tests.files.videos", video_file)
-        assert path.exists(), f"Video not found: {path}"
-        video = Video(path=path)
+        path = resources.path("aana.tests.files.audios", audio_file)
+        assert path.exists(), f"Audio not found: {path}"
+        audio = Audio(path=path)
 
         output = await handle.transcribe.remote(
-            media=video, params=WhisperParams(word_timestamps=True)
+            media=audio, params=WhisperParams(word_timestamps=True)
         )
         output = pydantic_to_dict(output)
 
         compare_transcriptions(expected_output, output)
 
         # Test transcribe_stream method
-        path = resources.path("aana.tests.files.videos", video_file)
-        assert path.exists(), f"Video not found: {path}"
-        video = Video(path=path)
-
         stream = handle.options(stream=True).transcribe_stream.remote(
-            media=video, params=WhisperParams(word_timestamps=True)
+            media=audio, params=WhisperParams(word_timestamps=True)
         )
 
         # Combine individual segments and compare with the final dict
@@ -110,13 +112,43 @@ async def test_whisper_deployment(video_file):
         compare_transcriptions(expected_output, dict(grouped_dict))
 
         # Test transcribe_batch method
-        videos = [video, video]
+        audios = [audio, audio]
 
         batch_output = await handle.transcribe_batch.remote(
-            media_batch=videos, params=WhisperParams(word_timestamps=True)
+            media_batch=audios, params=WhisperParams(word_timestamps=True)
         )
         batch_output = pydantic_to_dict(batch_output)
 
-        for i in range(len(videos)):
+        for i in range(len(audios)):
             output = {k: v[i] for k, v in batch_output.items()}
             compare_transcriptions(expected_output, output)
+
+        # Test batched_inference method: expected asr output is different
+        expected_batched_output_path = 
+        # get expected vad_segments
+        vad_path = resources.path(
+            "aana.tests.files.expected.vad", f"{audio_file}_vad.json"
+        )
+        assert vad_path.exists(), f"vad expected predictions not found: {vad_path}"
+
+        with Path(vad_path) as path, path.open() as f:
+            expected_output_vad = json.load(f)
+
+        # load expected_transcription_batched for batched version. check info
+
+        stream = handle.options(stream=True).batched_inference.remote(
+            media=audio,  # chnge alls
+            vad_segments=expected_output_vad,
+            batch_size=16,
+            params=WhisperParams,
+        )
+        
+        # Combine individual segments and compare with the final dict
+        grouped_dict = defaultdict(list)
+        async for chunk in stream:
+            chunk = await chunk
+            output = pydantic_to_dict(chunk)
+            grouped_dict["segments"].append(output.get("segments")[0]["text"])
+
+        grouped_dict["transcription_info"] = output.get("transcription_info")
+        compare_transcriptions(expected_transcription_batched, dict(grouped_dict), words=False)
