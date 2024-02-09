@@ -69,17 +69,6 @@ endpoints = {
             ],
         ),
     ],
-    "video": [
-        Endpoint(
-            name="video_extract_frames",
-            path="/video/extract_frames",
-            summary="Extract frames from a video",
-            outputs=[
-                EndpointOutput(name="timestamps", output="timestamps"),
-                EndpointOutput(name="duration", output="duration"),
-            ],
-        )
-    ],
     "whisper": [
         Endpoint(
             name="whisper_transcribe",
@@ -163,54 +152,6 @@ endpoints = {
     ],
     "chat_with_video": [
         Endpoint(
-            name="delete_media_id",
-            path="/video/delete",
-            summary="Delete a video",
-            outputs=[
-                EndpointOutput(name="deleted_media_id", output="deleted_media_id")
-            ],
-        ),
-        Endpoint(
-            name="blip2_video_generate",
-            path="/video/generate_captions",
-            summary="Generate captions for videos using BLIP2 OPT-2.7B",
-            outputs=[
-                EndpointOutput(
-                    name="captions",
-                    output="video_captions_hf_blip2_opt_2_7b",
-                    streaming=True,
-                ),
-                EndpointOutput(
-                    name="timestamps", output="video_timestamps", streaming=True
-                ),
-            ],
-            streaming=True,
-        ),
-        Endpoint(
-            name="whisper_transcribe",
-            path="/video/transcribe",
-            summary="Transcribe a video using Whisper Medium",
-            outputs=[
-                EndpointOutput(
-                    name="transcription",
-                    output="audio_transcriptions_whisper_medium",
-                    streaming=True,
-                ),
-                EndpointOutput(
-                    name="segments",
-                    output="audio_transcriptions_segments_whisper_medium",
-                    streaming=True,
-                ),
-                EndpointOutput(
-                    name="info",
-                    output="audio_transcriptions_info_whisper_medium",
-                    streaming=True,
-                ),
-                EndpointOutput(name="transcription_id", output="transcription_id"),
-            ],
-            streaming=True,
-        ),
-        Endpoint(
             name="index_video_stream",
             path="/video/index_stream",
             summary="Index a video and return the captions and transcriptions as a stream",
@@ -244,27 +185,6 @@ endpoints = {
             streaming=True,
         ),
         Endpoint(
-            name="llm_generate",
-            path="/llm/generate",
-            summary="Generate text using LLaMa2 7B Chat",
-            outputs=[
-                EndpointOutput(name="completion", output="vllm_llama2_7b_chat_output")
-            ],
-        ),
-        Endpoint(
-            name="llm_generate_stream",
-            path="/llm/generate_stream",
-            summary="Generate text using LLaMa2 7B Chat (streaming)",
-            outputs=[
-                EndpointOutput(
-                    name="completion",
-                    output="vllm_llama2_7b_chat_output_stream",
-                    streaming=True,
-                )
-            ],
-            streaming=True,
-        ),
-        Endpoint(
             name="video_chat_stream",
             path="/video/chat_stream",
             summary="Chat with video using LLaMa2 7B Chat (streaming)",
@@ -283,6 +203,14 @@ endpoints = {
             summary="Load video metadata",
             outputs=[
                 EndpointOutput(name="metadata", output="video_metadata"),
+            ],
+        ),
+        Endpoint(
+            name="delete_media_id",
+            path="/video/delete",
+            summary="Delete a video",
+            outputs=[
+                EndpointOutput(name="deleted_media_id", output="deleted_media_id")
             ],
         ),
     ],

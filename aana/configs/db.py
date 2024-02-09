@@ -112,3 +112,17 @@ def run_alembic_migrations(settings):
 
     alembic_config = get_alembic_config(settings, ini_file_path, alembic_data_path)
     command.upgrade(alembic_config, "head")
+
+
+def drop_all_tables(settings):
+    """Drops all tables in the database."""
+    # TODO: only allow this in testing mode
+    current_path = Path(__file__)
+    aana_root = current_path.parent.parent  # go up two directories
+    if aana_root.name != "aana":  # we are not in the right place
+        raise RuntimeError("Not in right directory, exiting.")  # noqa: TRY003
+    ini_file_path = aana_root / "alembic.ini"
+    alembic_data_path = aana_root / "alembic"
+
+    alembic_config = get_alembic_config(settings, ini_file_path, alembic_data_path)
+    command.downgrade(alembic_config, "base")

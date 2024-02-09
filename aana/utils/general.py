@@ -1,9 +1,13 @@
+import hashlib
 from typing import Any, TypeVar
 
 import requests
 from pydantic import BaseModel
 
-from aana.exceptions.general import DownloadException
+from aana.api.api_generation import Endpoint
+from aana.configs.endpoints import endpoints as all_endpoints
+from aana.exceptions.general import DownloadException, EndpointNotFoundException
+from aana.utils.json import jsonify
 
 OptionType = TypeVar("OptionType", bound=BaseModel)
 
@@ -68,3 +72,41 @@ def pydantic_to_dict(data: Any) -> Any:
         return {key: pydantic_to_dict(value) for key, value in data.items()}
     else:
         return data  # return as is for non-Pydantic types
+
+
+def get_endpoint(target: str, endpoint: str) -> Endpoint:
+    """Get endpoint from endpoints config.
+
+    #TODO: make EndpointList a class and make this a method.
+
+    Args:
+        target (str): the name of the target deployment
+        endpoint (str): the endpoint path
+
+    Returns:
+        Endpoint: the endpoint
+
+    Raises:
+        EndpointNotFoundException: If the endpoint is not found
+    """
+    for e in all_endpoints[target]:
+        if e.path == endpoint:
+            return e
+    raise EndpointNotFoundException(target=target, endpoint=endpoint)
+
+
+def get_object_hash(obj: Any) -> str:
+    """Get the MD5 hash of an object.
+
+    Objects are converted to JSON strings before hashing.
+
+    Args:
+        obj (Any): the object to hash
+
+    Returns:
+        str: the MD5 hash of the object
+    """
+    return hashlib.md5(
+        jsonify(obj).encode("utf-8"),
+        usedforsecurity=False,
+    ).hexdigest()
