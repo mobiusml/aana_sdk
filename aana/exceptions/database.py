@@ -11,7 +11,7 @@ class NotFoundException(BaseException):
 
         Args:
             table_name (str): the name of the table being queried.
-            id (MediaId): the id of the item to be retrieved.
+            id (int | MediaId): the id of the item to be retrieved.
         """
         super().__init__(table=table_name, id=id)
         self.table_name = table_name
