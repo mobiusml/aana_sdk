@@ -2,8 +2,6 @@ from typing import TYPE_CHECKING
 
 from mobius_pipeline.exceptions import BaseException
 
-from aana.models.pydantic.media_id import MediaId
-
 if TYPE_CHECKING:
     from aana.models.core.image import Image
     from aana.models.core.video import Video
