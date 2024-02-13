@@ -130,7 +130,7 @@ class Image(Media):
         url (str): The URL of the image.
         content (bytes): The content of the image in bytes (image file as bytes).
         numpy (np.ndarray): The image as a numpy array.
-        media_id (str): The ID of the image, generated automatically if not provided.
+        media_id (MediaId): The ID of the image, generated automatically if not provided.
     """
 
     media_dir: Path | None = settings.image_dir
