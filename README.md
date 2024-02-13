@@ -203,3 +203,12 @@ not from that model's file for reasons explained in `aana/models/db/__init__.py`
 if you add a new model class, it should be imported by `__init__.py` in addition to creating a migration.
 
 Higher level code for interacting with the ORM is available in `aana.repository.data`.
+
+## Settings
+
+Here are the environment variables that can be used to configure the Aaana SDK:
+- TMP_DATA_DIR: The directory to store temporary data. Default: `/tmp/aana`.
+- NUM_WORKERS: The number of request workers. Default: `2`.
+- DB_CONFIG: The database configuration in the format `{"datastore_type": "sqlite", "datastore_config": {"path": "/path/to/sqlite.db"}}`. Currently only SQLite and PostgreSQL are supported. Default: `{"datastore_type": "sqlite", "datastore_config": {"path": "/var/lib/aana_data"}}`.
+- USE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will use the deployment cache to avoid downloading the models and running the deployments. Default: `false`.
+- SAVE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will save the deployment cache after running the deployments. Default: `false`.
