@@ -90,7 +90,8 @@ def ray_serve_setup(setup_deployment, request):  # noqa: D417
         if runtime_env is None:
             runtime_env = {}
         server = RequestHandler.options(
-            ray_actor_options={"runtime_env": runtime_env}
+            num_replicas=aana_settings.num_workers,
+            ray_actor_options={"runtime_env": runtime_env},
         ).bind(endpoints, nodes, context)
         return setup_deployment(server)
 
