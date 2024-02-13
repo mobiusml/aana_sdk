@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     tmp_data_dir: Path = Path("/tmp/aana_data")  # noqa: S108
     image_dir = tmp_data_dir / "images"
     video_dir = tmp_data_dir / "videos"
+    num_workers: int = 2
 
     db_config: DBConfig = {
         "datastore_type": "sqlite",
