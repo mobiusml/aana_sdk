@@ -7,6 +7,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from aana.configs.deployments import deployments as all_deployments
+
 app = FastAPI()
 
 static_dir = resources.path("aana.static", "")
@@ -213,13 +215,18 @@ def get_function_details(func: str, outputs: dict):
             }
 
 
-@app.get("/api/node_editor")
+@app.get("/")
 async def get_node_editor(request: Request):
     """The endpoint for getting the node editor.
 
     Returns:
         AanaJSONResponse: The response containing the node editor.
     """
+    deployment_class_to_name = {
+        deployment.name: deployment_name
+        for deployment_name, deployment in all_deployments.items()
+    }
+
     pydantic_models = get_pydantic_models()
     pydantic_model_names = [m.name for m in pydantic_models]
 
@@ -254,9 +261,9 @@ async def get_node_editor(request: Request):
 
     deployments = {}
     for deployment in get_all_deployments():
-        deployments[deployment.name] = {}
+        deployments[deployment_class_to_name[deployment.name]] = {}
         for method in get_deployment_methods(deployment):
-            deployments[deployment.name][method["name"]] = {
+            deployments[deployment_class_to_name[deployment.name]][method["name"]] = {
                 "inputs": method["args"],
                 "is_generator": method["is_generator"],
                 # "return_type": method["return_type"],
@@ -273,6 +280,9 @@ async def get_node_editor(request: Request):
     for func in available_functions:
         functions[func] = get_function_details(func, outputs)
 
+    with open("/workspaces/aana_sdk/aana/test_pipeline.json", "r") as f:
+        pipeline = json.load(f)
+
     # return HTMLResponse(content=html)
     return templates.TemplateResponse(
         "editor.html",
@@ -281,5 +291,6 @@ async def get_node_editor(request: Request):
             "data_models": pydantic_model_names,
             "deployments": json.dumps(deployments),
             "functions": json.dumps(functions),
+            "pipeline": json.dumps(pipeline),
         },
     )

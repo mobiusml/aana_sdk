@@ -119,13 +119,11 @@ class HFBlip2Deployment(BaseDeployment):
         return CaptioningOutput(caption=captions["captions"][0])
 
     @test_cache
-    async def generate_batch(self, **kwargs) -> CaptioningBatchOutput:
+    async def generate_batch(self, images, **kwargs) -> CaptioningBatchOutput:
         """Generate captions for the given images.
 
         Args:
             images (List[Image]): the images
-            **kwargs (dict[str, Any]): keywordarguments to pass to the
-                batch processor.
 
         Returns:
             CaptioningBatchOutput: the dictionary with one key "captions"
@@ -136,7 +134,7 @@ class HFBlip2Deployment(BaseDeployment):
         """
         # Call the batch processor to process the requests
         # The actual inference is done in _generate()
-        return await self.batch_processor.process(kwargs)
+        return await self.batch_processor.process({"images": images})
 
     def _generate(self, images: list[Image]) -> CaptioningBatchOutput:
         """Generate captions for the given images.
