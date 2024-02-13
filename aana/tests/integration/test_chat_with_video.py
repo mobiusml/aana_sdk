@@ -108,23 +108,22 @@ def test_chat_with_video(call_endpoint, video):
     )
 
 
-# FIX: See https://github.com/mobiusml/aana_sdk/issues/42
-# @pytest.mark.parametrize(
-#     "endpoint, data",
-#     [
-#         (VIDEO_METADATA_ENDPOINT, {}),
-#         (VIDEO_CHAT_ENDPOINT, {}),
-#         (VIDEO_CHAT_ENDPOINT, {"media_id": "squirrel.mp4"}),
-#         (VIDEO_CHAT_ENDPOINT, {"question": "Summarize the video"}),
-#         (VIDEO_INDEX_ENDPOINT, {}),
-#         (VIDEO_DELETE_ENDPOINT, {}),
-#     ],
-# )
-# @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
-# def test_missing_params(call_endpoint, endpoint, data):
-#     """Test missing params."""
-#     call_endpoint(
-#         endpoint,
-#         data,
-#         expected_error="ValidationError",
-#     )
+@pytest.mark.parametrize(
+    "endpoint, data",
+    [
+        (VIDEO_METADATA_ENDPOINT, {}),
+        (VIDEO_CHAT_ENDPOINT, {}),
+        (VIDEO_CHAT_ENDPOINT, {"media_id": "squirrel.mp4"}),
+        (VIDEO_CHAT_ENDPOINT, {"question": "Summarize the video"}),
+        (VIDEO_INDEX_ENDPOINT, {}),
+        (VIDEO_DELETE_ENDPOINT, {}),
+    ],
+)
+@pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
+def test_missing_params(call_endpoint, endpoint, data):
+    """Test missing params."""
+    call_endpoint(
+        endpoint,
+        data,
+        expected_error="ValidationError",
+    )

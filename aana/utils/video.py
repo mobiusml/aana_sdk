@@ -23,6 +23,7 @@ from aana.models.pydantic.asr_output import (
     AsrSegments,
 )
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
+from aana.models.pydantic.question import Question
 from aana.models.pydantic.video_input import VideoInput
 from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
@@ -268,7 +269,7 @@ def generate_combined_timeline(
 def generate_dialog(
     metadata: VideoMetadata,
     timeline: list[dict],
-    question: str,
+    question: Question,
     max_timeline_len: int | None = 1024,
 ) -> ChatDialog:
     """Generates a dialog from the metadata and timeline of a video.
@@ -276,7 +277,7 @@ def generate_dialog(
     Args:
         metadata (VideoMetadata): the metadata of the video
         timeline (list[dict]): the timeline of the video
-        question (str): the question to ask
+        question (Question): the question to ask
         max_timeline_len (int, optional): the maximum length of the timeline in tokens.
                                           Defaults to 1024.
                                           If the timeline is longer than this, it will be truncated.

@@ -140,7 +140,11 @@ def compare_streaming_output(expected_output: list[dict], output: list[dict]):
         AssertionError: if the output is different from the expected output.
     """
     # check that the output and expected output have the same length
-    assert len(expected_output) == len(output)
+    assert len(expected_output) == len(output), (
+        len(expected_output),
+        len(output),
+        output,
+    )
 
     # if error is expected or occurs, compare the errors
     if "error" in expected_output[0] or "error" in output[0]:
@@ -244,9 +248,9 @@ def check_output(
     # if we expect an error, then we only check the error
     if expected_error:
         if endpoint.streaming:
-            assert output[0]["error"] == expected_error
+            assert output[0]["error"] == expected_error, output
         else:
-            assert output["error"] == expected_error
+            assert output["error"] == expected_error, output
     # if we don't expect an error and we don't ignore the expected output, then we compare
     elif not ignore_expected_output:
         endpoint_key = endpoint_path.replace("/", "_")[
@@ -269,9 +273,9 @@ def check_output(
     else:
         if endpoint.streaming:
             for chunk in output:
-                assert "error" not in chunk
+                assert "error" not in chunk, chunk
         else:
-            assert "error" not in output
+            assert "error" not in output, output
 
 
 def call_and_check_endpoint(
