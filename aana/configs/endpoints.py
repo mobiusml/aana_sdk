@@ -139,8 +139,6 @@ endpoints = {
             ],
             streaming=True,
         ),
-    ],
-    "chat_with_video_test": [
         Endpoint(
             name="delete_media_id",
             path="/video/delete",
@@ -150,6 +148,7 @@ endpoints = {
             ],
         ),
     ],
+
     "chat_with_video": [
         Endpoint(
             name="index_video_stream",
