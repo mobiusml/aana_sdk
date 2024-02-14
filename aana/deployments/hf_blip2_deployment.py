@@ -10,6 +10,7 @@ from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
 from aana.models.core.dtype import Dtype
 from aana.models.core.image import Image
+from aana.models.pydantic.captions import Caption, CaptionsList
 from aana.utils.batch_processor import BatchProcessor
 from aana.utils.test import test_cache
 
@@ -37,7 +38,7 @@ class CaptioningOutput(TypedDict):
         caption (str): the caption
     """
 
-    caption: str
+    caption: Caption
 
 
 class CaptioningBatchOutput(TypedDict):
@@ -47,7 +48,7 @@ class CaptioningBatchOutput(TypedDict):
         captions (List[str]): the list of captions
     """
 
-    captions: list[str]
+    captions: CaptionsList
 
 
 @serve.deployment

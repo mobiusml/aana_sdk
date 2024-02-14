@@ -294,3 +294,10 @@ async def get_node_editor(request: Request):
             "pipeline": json.dumps(pipeline),
         },
     )
+
+
+@app.post("/save")
+async def save_pipeline(request: Request):
+    data = await request.json()
+    print(data)
+    return {"status": "success"}

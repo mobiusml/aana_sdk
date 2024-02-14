@@ -6,11 +6,71 @@
     <script type="text/javascript" src="/static/litegraph.js"></script>
 </head>
 
-<body style='width:100%; height:100%'>
-    <div class="litegraph litegraph-editor">
-        <canvas id="mycanvas" width="2000" height="1000"></canvas>
+
+<body>
+    <!-- <button onclick="console.log(graph.serialize())">Save</button> -->
+    <div id="main" style="position: relative; width: 100%; height: 100%;">
+        <div class="litegraph litegraph-editor">
+            <div class="header">
+                <div class="tools tools-left">
+                    <button onclick="save()">Save</button>
+                </div>
+            </div>
+            <div class="content">
+                <div class="editor-area">
+                    <canvas id="mycanvas" width="2000" height="1000"> </canvas>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
+        function save() {
+            // serialize graph to JSON and send to /save
+            var data = graph.serialize();
+            console.log(data);
+            fetch("/save", {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+    <script>
+        GENERATOR_COLOR = "#6666FF";
+        DEFAULT_COLOR = "#333333";
+        PARTIAL_COLOR = "#FF6666";
+
+        var canvas = document.getElementById("mycanvas");
+
+        function updateEditorHiPPICanvas() {
+            const ratio = window.devicePixelRatio;
+            if (ratio == 1) { return }
+            const rect = canvas.parentNode.getBoundingClientRect();
+            const { width, height } = rect;
+            canvas.width = width * ratio;
+            canvas.height = height * ratio;
+            canvas.style.width = width + "px";
+            canvas.style.height = height + "px";
+            canvas.getContext("2d").scale(ratio, ratio);
+            return canvas;
+        }
+
+        window.addEventListener("resize", function () {
+            // canvas.resize();
+            updateEditorHiPPICanvas();
+            // console.log("resize", canvas);
+        });
+
+        updateEditorHiPPICanvas();
+
         var graph = new LGraph();
         LiteGraph.clearRegisteredTypes();
         graph.serialize_widgets = true;
@@ -18,29 +78,37 @@
 
         var canvas = new LGraphCanvas("#mycanvas", graph);
 
-        var data_models = {{ data_models| safe}};
-
-        // var deployments = {{ deployments| safe}};
+        var data_models = {{ data_models| safe }};
         var deployments = JSON.parse('{{ deployments| safe}}');
-        console.log(deployments);
-
         var available_functions = {{ functions| safe}};
-        console.log(available_functions);
 
+
+        function removeWidget(node, name) {
+            var widget = node.widgets.find(widget => widget.name === name);
+            node.widgets.splice(node.widgets.indexOf(widget), 1);
+        }
+
+        function removeProperty(node, name) {
+            delete node.properties[name];
+        }
+
+        function setWidgetValue(node, name, value) {
+            var widget = node.widgets.find(widget => widget.name === name);
+            widget.value = value;
+        }
 
         function InputNode() {
             var node = this;
+            this.title = "Input: output_name";
             this.serialize_widgets = true;
-            this.addOutput("output", "string");
+            this.addOutput("output_name", "string");
             // add a widget to change the name of the output
-            this.addWidget("text", "name", "output", function (value) {
+            this.addWidget("text", "name", "output_name", function (value) {
                 node.outputs[0].name = value;
-                node.title = value;
+                node.title = "Input: " + value;
             });
-            this.addWidget("combo", "type", "", function (value) {
-                console.log("type changed", value);
-                // node.outputs[0].type = value;
-            }, { "values": data_models })
+            this.addWidget("combo", "type", "", function (value) { }, { "values": data_models })
+            this.addWidget("text", "path", "", function (value) { });
         }
 
         InputNode.title = "Input";
@@ -49,32 +117,52 @@
 
 
         function EndpointNode() {
-            // this.addWidget("number", "num_outputs", 0, function (value) {
-            //     console.log("num_outputs changed", value);
-            //     // node.outputs[0].name = value;
-            //     // node.title = value;
-            // });
+            var node = this;
 
-            // Add 5 inputs
-            this.addProperty("path", "", "string");
-            this.addProperty("summary", "", "string");
-            for (var i = 0; i < 5; i++) {
-                this.addInput("output_" + i, "string");
-                this.addProperty("output_" + i + "_name", "output_" + i, "string");
+            function addEndpointOutput(i) {
+                node.addInput("output_" + i, "string");
+                node.addWidget("text", "output_" + i, "output_" + i, function (value) {
+                    var index = parseInt(this.name.split("_")[1]);
+                    // node.inputs[index].name = value;
+                    var is_streaming = node.widgets.find(widget => widget.name === "is_streaming_" + index);
+                    node.inputs[index].name = value + (is_streaming.value ? " (streaming)" : "");
+                });
+                node.addWidget("toggle", "is_streaming_" + i, false, function (value) {
+                    var index = parseInt(this.name.split("_")[2]);
+                    console.log("is_streaming_" + index, value);
+                    node.inputs[index].name = node.inputs[index].name.split(" (streaming)")[0] + (value ? " (streaming)" : "");
+                });
             }
-        }
 
-        EndpointNode.prototype.onPropertyChanged = function (name, value) {
-            console.log("property changed", name, value, this);
-            if (name.includes("output_")) {
-                var index = parseInt(name.split("_")[1]);
-                console.log(index);
-                this.inputs[index].name = value;
+            function removeEndpointOutput(i) {
+                // remove widget from the array node.widgets by name "output_" + i
+                // var widget = node.widgets.find(widget => widget.name === "output_" + i);
+                // node.widgets.splice(node.widgets.indexOf(widget), 1);
+                removeWidget(node, "output_" + i);
+
+                // remove widget from the array node.widgets by name "is_streaming_" + i
+                // widget = node.widgets.find(widget => widget.name === "is_streaming_" + i);
+                // node.widgets.splice(node.widgets.indexOf(widget), 1);
+                removeWidget(node, "is_streaming_" + i);
+
+                node.removeInput(i);
             }
-            if (name == "path") {
-                this.title = "Endpoint: " + value;
-                // this.size = [400, 100 + 20 * this.value.length];
-            }
+
+            this.addWidget("text", "path", "", function (value) {
+                node.title = "Endpoint: " + value;
+            });
+            this.addWidget("text", "summary", "", function (value) { });
+            this.addWidget("number", "num_outputs", 1, function (value) {
+                console.log("num_outputs", value, node.inputs.length);
+                while (node.inputs.length > value) {
+                    removeEndpointOutput(node.inputs.length - 1);
+                }
+                while (node.inputs.length < value) {
+                    addEndpointOutput(node.inputs.length);
+                }
+            }, { precision: 0, step: 10, min: 1 });
+            addEndpointOutput(0);
+            // this.size = [400, 200];
         }
 
         EndpointNode.title = "Endpoint";
@@ -91,6 +179,11 @@
                 }
                 if ("outputs" in node) {
                     while (node.outputs.length > 0) {
+                        // remove path widget
+                        // var widget = node.widgets.find(widget => widget.name === "path[" + node.outputs[0].name + "]");
+                        // node.widgets.splice(node.widgets.indexOf(widget), 1);
+                        removeWidget(node, "path[" + node.outputs[0].name + "]");
+
                         node.removeOutput(0);
                     }
                 }
@@ -100,6 +193,9 @@
                 name: "function",
                 function_name: "",
                 is_partial: false,
+                is_generator: false,
+                dict_output: false,
+                batched: false,
             }
 
             this.serialize_widgets = true;
@@ -117,62 +213,71 @@
                 // Add inputs and outputs
                 var inputs = available_functions[value].inputs;
                 var outputs = available_functions[value].outputs;
+
                 for (var i = 0; i < inputs.length; i++) {
                     node.addInput(inputs[i].name, "string");
                 }
 
                 for (var i = 0; i < outputs.length; i++) {
                     node.addOutput(outputs[i].name, "string");
+                    node.addWidget("text", "path[" + outputs[i].name + "]", "", function (value) { });
                 }
 
                 var is_generator = available_functions[value].is_generator;
-                if (!node.properties.is_generator) {
-                    node.addProperty("is_generator", is_generator, "string");
+                node.setProperty("is_generator", is_generator);
+                console.log("is_generator", is_generator, "generator_path" in node.properties)
+                if (is_generator && !("generator_path" in node.properties)) {
+                    node.addProperty("generator_path", "", "string");
+                    node.addWidget("string", "generator_path", "", function (value) { });
                 }
-                else {
-                    node.properties.is_generator = is_generator;
+                else if (!is_generator && "generator_path" in node.properties) {
+                    removeProperty(node, "generator_path");
+                    removeWidget(node, "generator_path");
                 }
 
                 var dict_output = available_functions[value].dict_output;
-                if (!node.properties.dict_output) {
-                    node.addProperty("dict_output", dict_output, "string");
-                }
-                else {
-                    node.properties.dict_output = dict_output;
-                }
+                node.setProperty("dict_output", dict_output);
 
+                // reset defaults
+                node.setProperty("is_partial", false);
+                // node.widgets.find(widget => widget.name === "is_partial").value = false;
+                setWidgetValue(node, "is_partial", false);
+
+                node.setProperty("batched", false);
+                // node.widgets.find(widget => widget.name === "batched").value = false;
+                setWidgetValue(node, "batched", false);
 
                 node.title = value;
-                console.log(node);
-                node.size = [400, 200];
+                // node.size = [400, 200];
             }, { "values": Object.keys(available_functions) })
 
+            this.addWidget("toggle", "batched", false, function (value) {
+                node.setProperty("batched", value);
+            });
+
+            this.addWidget("toggle", "is_partial", false, function (value) {
+                node.setProperty("is_partial", value);
+                if (node.properties.is_generator && value) {
+                    // not allowed
+                    alert("Generator function cannot be partial");
+                    node.setProperty("is_partial", false);
+                    // node.widgets.find(widget => widget.name === "is_partial").value = false;
+                    setWidgetValue(node, "is_partial", false);
+                }
+            });
         }
 
         FunctionNode.title = "Function";
         FunctionNode.prototype.onPropertyChanged = function (name, value) {
             console.log("property changed", name, value, this);
-            if (name == "is_generator") {
-                console.log("is_generator changed", value, this);
-                // change the color of the node
-                if (value) {
-                    // blueish, very light but dark
-                    this.color = "#6666FF";
-                }
-                else {
-                    this.color = "#333333";
-                }
+            if (this.properties.is_generator) {
+                this.color = GENERATOR_COLOR;
             }
-            if (name == "is_partial" && !this.properties.is_generator) {
-                console.log("is_partial changed", value, this);
-                // change the color of the node
-                if (value) {
-                    // slightly red 6666FF
-                    this.color = "#FF6666";
-                }
-                else {
-                    this.color = "#333333";
-                }
+            else if (this.properties.is_partial) {
+                this.color = PARTIAL_COLOR;
+            }
+            else {
+                this.color = DEFAULT_COLOR;
             }
         }
 
@@ -191,6 +296,9 @@
                 }
                 if ("outputs" in node) {
                     while (node.outputs.length > 0) {
+                        // remove path property
+                        // node.removeProperty("path[" + node.outputs[0].name + "]");
+                        delete node.properties["path[" + node.outputs[0].name + "]"];
                         node.removeOutput(0);
                     }
                 }
@@ -200,6 +308,7 @@
                 name: "deployment",
                 is_partial: false,
                 is_generator: false,
+                flatten_by: "",
 
                 // deployment_name: "",
                 // method: "",
@@ -247,8 +356,9 @@
                 var outputs = deployments[node.properties.deployment_name][value].outputs;
                 var is_generator = deployments[node.properties.deployment_name][value].is_generator;
 
-                node.properties.is_generator = is_generator;
-                node.color = is_generator ? "#6666FF" : "#333333";
+                // node.properties.is_generator = is_generator;
+                node.setProperty("is_generator", is_generator);
+                // node.color = is_generator ? "#6666FF" : "#333333";
 
                 if (!node.properties.method) {
                     node.addProperty("method", value, "string");
@@ -264,6 +374,7 @@
                 for (var i = 0; i < inputs.length; i++) {
                     if (node.findInputSlot(inputs[i].name) == -1) {
                         node.addInput(inputs[i].name, "string");
+                        // node.addInput(inputs[i].name + "[" + inputs[i].type + "]", inputs[i].type);
                     }
                 }
 
@@ -271,6 +382,8 @@
                 for (var i = 0; i < outputs.length; i++) {
                     if (node.findOutputSlot(outputs[i].name) == -1) {
                         node.addOutput(outputs[i].name, "string");
+                        // node.addOutput(outputs[i].name + "[" + outputs[i].type + "]", outputs[i].type);
+                        node.addProperty("path[" + outputs[i].name + "]", "", "string");
                     }
                 }
 
@@ -292,9 +405,13 @@
                 if (value) {
                     // blueish, very light but dark
                     this.color = "#6666FF";
+                    this.addProperty("generator_path", "", "string");
                 }
                 else {
                     this.color = "#333333";
+                    if ("generator_path" in this.properties) {
+                        delete this.properties.generator_path;
+                    }
                 }
             }
             if (name == "is_partial" && !this.properties.is_generator) {
@@ -315,33 +432,33 @@
 
 
 
-        // var node_input = LiteGraph.createNode("pipeline/input");
-        // node_input.pos = [200, 200];
-        // graph.add(node_input);
+        var node_input = LiteGraph.createNode("pipeline/input");
+        node_input.pos = [200, 200];
+        graph.add(node_input);
 
-        // var node_deployment = LiteGraph.createNode("pipeline/deployment");
-        // node_deployment.pos = [1000, 200];
-        // // node_deployment.size = [400, 200];
-        // graph.add(node_deployment);
+        var node_deployment = LiteGraph.createNode("pipeline/deployment");
+        node_deployment.pos = [1000, 200];
+        // node_deployment.size = [400, 200];
+        graph.add(node_deployment);
 
 
-        // var endpoint_node = LiteGraph.createNode("pipeline/endpoint");
-        // endpoint_node.pos = [200, 500];
-        // graph.add(endpoint_node);
+        var endpoint_node = LiteGraph.createNode("pipeline/endpoint");
+        endpoint_node.pos = [200, 500];
+        graph.add(endpoint_node);
 
-        // var function_node = LiteGraph.createNode("pipeline/function");
-        // function_node.pos = [600, 200];
+        var function_node = LiteGraph.createNode("pipeline/function");
+        function_node.pos = [600, 200];
 
-        // graph.add(function_node);
+        graph.add(function_node);
 
 
 
         // conf = '{"last_node_id":2,"last_link_id":1,"nodes":[{"id":2,"type":"pipeline/deployment","pos":[1000,200],"size":[400,200],"flags":{},"order":1,"mode":0,"inputs":[{"name":"prompt","type":"string","link":1},{"name":"sampling_params","type":"string","link":null}],"outputs":[{"name":"text","type":"string","links":null}],"title":"VLLMDeployment_generate_stream","properties":{"name":"deployment","deployment_name":"VLLMDeployment","method":"generate_stream","is_generator":true},"widgets_values":["VLLMDeployment","generate_stream"]},{"id":1,"type":"pipeline/input","pos":[200,200],"size":{"0":210,"1":82},"flags":{},"order":0,"mode":0,"outputs":[{"name":"output","type":"string","links":[1],"slot_index":0}],"properties":{},"widgets_values":["output",""]}],"links":[[1,1,0,2,0,"string"]],"groups":[],"config":{},"extra":{},"version":0.4}'
         // graph.configure(JSON.parse(conf));
 
-        var pipeline = {{ pipeline| safe}};
-        graph.configure(pipeline);
-        console.log(pipeline);
+        // var pipeline = {{ pipeline| safe}};
+        // graph.configure(pipeline);
+        // console.log(pipeline);
 
 
         graph.start()
