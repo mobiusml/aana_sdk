@@ -4,29 +4,25 @@ from types import SimpleNamespace
 from typing import Any, TypedDict, cast
 
 import torch
-from faster_whisper import WhisperModel, BatchedInferencePipeline
+from faster_whisper import BatchedInferencePipeline, WhisperModel
 from faster_whisper.tokenizer import Tokenizer
 from faster_whisper.transcribe import TranscriptionOptions
-
-
 from pydantic import BaseModel, Field
 from ray import serve
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
 from aana.models.core.audio import Audio
-
 from aana.models.pydantic.asr_output import (
     AsrSegment,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
+from aana.models.pydantic.vad_output import VadSegment
 from aana.models.pydantic.whisper_params import (
     WhisperParams,
     default_batched_asr_options,
 )
-
-from aana.models.pydantic.vad_output import VadSegment
 from aana.utils.test import test_cache
 
 
@@ -145,6 +141,7 @@ class WhisperDeployment(BaseDeployment):
         self.model = WhisperModel(
             self.model_size, device=self.device, compute_type=self.compute_type
         )
+
     @test_cache
     async def transcribe(
         self, media: Audio, params: WhisperParams | None = None
@@ -253,6 +250,7 @@ class WhisperDeployment(BaseDeployment):
             segments=segments, transcription_info=infos, transcription=transcriptions
         )
 
+    @test_cache
     async def batched_inference(
         self,
         media: Audio,
