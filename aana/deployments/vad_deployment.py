@@ -23,6 +23,7 @@ from aana.models.core.audio import Audio
 from aana.models.pydantic.time_interval import TimeInterval
 from aana.models.pydantic.vad_output import VadSegment
 from aana.models.pydantic.vad_params import VadParams
+from aana.utils.test import test_cache
 
 
 class SegmentX:
@@ -411,6 +412,7 @@ class VadDeployment(BaseDeployment):
 
         return vad_segments
 
+    @test_cache
     async def asr_preprocess_vad(
         self, media: Audio, params: VadParams | None = None
     ) -> VadOutput:
@@ -428,6 +430,7 @@ class VadDeployment(BaseDeployment):
 
         intermediate_vad_segments = await self.vad_inference(media)
         asr_vad_segments = await self.merge_chunks(
-            intermediate_vad_segments, params.__dict__
+            intermediate_vad_segments,
+            params.dict(),
         )
         return VadOutput(vad_segments=asr_vad_segments)
