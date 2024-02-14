@@ -421,7 +421,7 @@ nodes = [
         "name": "extract_audio",
         "type": "ray_task",
         "function": "aana.utils.video.extract_audio",
-        "dict_output": False,  # TODO:check
+        "dict_output": False,  
         "inputs": [
             {
                 "name": "video_object",
