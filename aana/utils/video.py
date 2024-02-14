@@ -294,14 +294,14 @@ def extract_audio(video_input: VideoInput | Video) -> Audio:
 
     # Check for audio and convert audio to bytes or None if no audio channel.
     audio_bytes = check_and_load_audio(media_path)
-    
+
     if not audio_bytes:
-        audio_bytes = b""  # empty audio 
+        audio_bytes = b""  # empty audio
     return Audio(
         content=audio_bytes,
-        title=video_input.title,
-        description=video_input.description,
-    )
+        title=video_input.title if isinstance(video_input, Video) else "",
+        description=video_input.description if isinstance(video_input, Video) else "",
+    )  # video_input.title,
 
 
 def generate_combined_timeline(
