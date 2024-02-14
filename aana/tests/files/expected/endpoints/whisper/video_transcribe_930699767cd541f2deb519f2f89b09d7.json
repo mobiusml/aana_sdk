@@ -2,18 +2,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9156856886597156,
-                "no_speech_confidence": 0.007213592529296875,
+                "confidence": 0.9151541181286792,
+                "no_speech_confidence": 0.01265716552734375,
                 "text": " Now I want to return to the conservation of mechanical energy.",
                 "time_interval": {
                     "end": 6.0,
                     "start": 0.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -23,18 +23,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9156856886597156,
-                "no_speech_confidence": 0.007213592529296875,
+                "confidence": 0.9151541181286792,
+                "no_speech_confidence": 0.01265716552734375,
                 "text": " I have here a pendulum.",
                 "time_interval": {
-                    "end": 12.0,
+                    "end": 10.0,
                     "start": 6.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -44,18 +44,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9156856886597156,
-                "no_speech_confidence": 0.007213592529296875,
+                "confidence": 0.9151541181286792,
+                "no_speech_confidence": 0.01265716552734375,
                 "text": " I have an object that weighs 15 kilograms",
                 "time_interval": {
-                    "end": 18.0,
-                    "start": 12.0
+                    "end": 14.0,
+                    "start": 10.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -65,18 +65,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9156856886597156,
-                "no_speech_confidence": 0.007213592529296875,
+                "confidence": 0.9151541181286792,
+                "no_speech_confidence": 0.01265716552734375,
                 "text": " and I can lift it up one meter, which I have done now.",
                 "time_interval": {
-                    "end": 24.0,
-                    "start": 18.0
+                    "end": 18.0,
+                    "start": 14.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -86,39 +86,102 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
-                "text": " If I let it fall, then that will be converted to kinetic energy.",
+                "confidence": 0.9151541181286792,
+                "no_speech_confidence": 0.01265716552734375,
+                "text": " That means I've done work. MGH is the work I have done,",
                 "time_interval": {
-                    "end": 30.0,
-                    "start": 24.0
+                    "end": 22.0,
+                    "start": 18.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " If I let it fall, then that will be converted to kinetic energy."
+            "text": " That means I've done work. MGH is the work I have done,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
+                "confidence": 0.9151541181286792,
+                "no_speech_confidence": 0.01265716552734375,
+                "text": " believe me.",
+                "time_interval": {
+                    "end": 24.0,
+                    "start": 22.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " believe me."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9151541181286792,
+                "no_speech_confidence": 0.01265716552734375,
+                "text": " I've increased the potential energy of this object.",
+                "time_interval": {
+                    "end": 28.0,
+                    "start": 24.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " I've increased the potential energy of this object."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9353229920980521,
+                "no_speech_confidence": 0.0139923095703125,
+                "text": " Then that will be converted to kinetic energy.",
+                "time_interval": {
+                    "end": 32.0,
+                    "start": 28.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " Then that will be converted to kinetic energy."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9353229920980521,
+                "no_speech_confidence": 0.0139923095703125,
                 "text": " If I would let it swing from one meter height",
                 "time_interval": {
                     "end": 36.0,
-                    "start": 30.0
+                    "start": 32.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -128,18 +191,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
+                "confidence": 0.9353229920980521,
+                "no_speech_confidence": 0.0139923095703125,
                 "text": " and you would be there and it would hit you, you'd be dead.",
                 "time_interval": {
-                    "end": 42.0,
+                    "end": 40.0,
                     "start": 36.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -149,18 +212,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
+                "confidence": 0.9353229920980521,
+                "no_speech_confidence": 0.0139923095703125,
                 "text": " 150 joules is enough to kill you.",
                 "time_interval": {
-                    "end": 48.0,
-                    "start": 42.0
+                    "end": 44.0,
+                    "start": 40.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -170,18 +233,39 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8812567619166937,
-                "no_speech_confidence": 0.59521484375,
+                "confidence": 0.9353229920980521,
+                "no_speech_confidence": 0.0139923095703125,
+                "text": " They use these devices. They're called a wrecker ball.",
+                "time_interval": {
+                    "end": 48.0,
+                    "start": 44.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " They use these devices. They're called a wrecker ball."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9353229920980521,
+                "no_speech_confidence": 0.0139923095703125,
                 "text": " They use them to demolish buildings.",
                 "time_interval": {
-                    "end": 54.0,
+                    "end": 52.0,
                     "start": 48.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -191,18 +275,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8812567619166937,
-                "no_speech_confidence": 0.59521484375,
+                "confidence": 0.9353229920980521,
+                "no_speech_confidence": 0.0139923095703125,
                 "text": " You lift up a very heavy object, even heavier than this,",
                 "time_interval": {
-                    "end": 60.0,
-                    "start": 54.0
+                    "end": 56.0,
+                    "start": 52.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -212,123 +296,228 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8812567619166937,
-                "no_speech_confidence": 0.59521484375,
-                "text": " and then you let it go, you swing it,",
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " you let it go, you swing it,",
                 "time_interval": {
-                    "end": 66.0,
-                    "start": 60.0
+                    "end": 58.0,
+                    "start": 56.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " and then you let it go, you swing it,"
+            "text": " you let it go, you swing it,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8812567619166937,
-                "no_speech_confidence": 0.59521484375,
-                "text": " thereby converting gravitational potential energy into kinetic energy",
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " thereby converting gravitational potential energy",
+                "time_interval": {
+                    "end": 62.0,
+                    "start": 58.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " thereby converting gravitational potential energy"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " into kinetic energy,",
+                "time_interval": {
+                    "end": 64.0,
+                    "start": 62.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " into kinetic energy,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " and that way you can demolish a building.",
+                "time_interval": {
+                    "end": 68.0,
+                    "start": 64.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " and that way you can demolish a building."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " You just let it hit and it breaks a building.",
                 "time_interval": {
                     "end": 72.0,
-                    "start": 66.0
+                    "start": 68.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " thereby converting gravitational potential energy into kinetic energy"
+            "text": " You just let it hit and it breaks a building."
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8716478427502443,
-                "no_speech_confidence": 0.40087890625,
-                "text": " which is the whole idea of wrecking.",
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " And that's the whole idea of wrecking.",
                 "time_interval": {
-                    "end": 78.0,
+                    "end": 76.0,
                     "start": 72.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " which is the whole idea of wrecking."
+            "text": " And that's the whole idea of wrecking."
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8716478427502443,
-                "no_speech_confidence": 0.40087890625,
-                "text": " So you are using then the conversion of gravitational potential energy to kinetic energy.",
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " So you are using, then, the conversion",
+                "time_interval": {
+                    "end": 80.0,
+                    "start": 76.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " So you are using, then, the conversion"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9104680214074008,
+                "no_speech_confidence": 0.0265350341796875,
+                "text": " of gravitational potential energy to kinetic energy.",
                 "time_interval": {
                     "end": 84.0,
-                    "start": 78.0
+                    "start": 80.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " So you are using then the conversion of gravitational potential energy to kinetic energy."
+            "text": " of gravitational potential energy to kinetic energy."
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8716478427502443,
-                "no_speech_confidence": 0.40087890625,
-                "text": " Now, I am such a strong believer of the conservation of mechanical energy",
+                "confidence": 0.961942945100935,
+                "no_speech_confidence": 0.003101348876953125,
+                "text": " Now, I am such a strong believer",
                 "time_interval": {
-                    "end": 90.0,
+                    "end": 88.0,
                     "start": 84.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " Now, I am such a strong believer of the conservation of mechanical energy"
+            "text": " Now, I am such a strong believer"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8716478427502443,
-                "no_speech_confidence": 0.40087890625,
+                "confidence": 0.961942945100935,
+                "no_speech_confidence": 0.003101348876953125,
+                "text": " of the conservation of mechanical energy",
+                "time_interval": {
+                    "end": 92.0,
+                    "start": 88.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " of the conservation of mechanical energy"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.961942945100935,
+                "no_speech_confidence": 0.003101348876953125,
                 "text": " that I am willing to put my life on the line.",
                 "time_interval": {
                     "end": 96.0,
-                    "start": 90.0
+                    "start": 92.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -338,18 +527,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9384350142302419,
-                "no_speech_confidence": 0.01447296142578125,
+                "confidence": 0.961942945100935,
+                "no_speech_confidence": 0.003101348876953125,
                 "text": " If I release that bob from a certain height,",
                 "time_interval": {
-                    "end": 103.0,
-                    "start": 97.0
+                    "end": 104.0,
+                    "start": 98.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -359,39 +548,60 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9384350142302419,
-                "no_speech_confidence": 0.01447296142578125,
-                "text": " then that bob can never come back to a point where the height is any larger.",
+                "confidence": 0.961942945100935,
+                "no_speech_confidence": 0.003101348876953125,
+                "text": " then that bob can never come back",
                 "time_interval": {
-                    "end": 109.0,
-                    "start": 103.0
+                    "end": 108.0,
+                    "start": 104.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " then that bob can never come back to a point where the height is any larger."
+            "text": " then that bob can never come back"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9384350142302419,
-                "no_speech_confidence": 0.01447296142578125,
+                "confidence": 0.961942945100935,
+                "no_speech_confidence": 0.003101348876953125,
+                "text": " to a point where the height is any larger.",
+                "time_interval": {
+                    "end": 112.0,
+                    "start": 108.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " to a point where the height is any larger."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
                 "text": " If I release it from this height and it swings,",
                 "time_interval": {
-                    "end": 117.0,
-                    "start": 111.0
+                    "end": 116.0,
+                    "start": 112.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -401,18 +611,18 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9384350142302419,
-                "no_speech_confidence": 0.01447296142578125,
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
                 "text": " then when it reaches here, it could not be higher.",
                 "time_interval": {
-                    "end": 121.0,
-                    "start": 117.0
+                    "end": 120.0,
+                    "start": 116.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -422,102 +632,165 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8512429595197428,
-                "no_speech_confidence": 0.2396240234375,
-                "text": " It could go from gravitational potential energy to kinetic energy",
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
+                "text": " There is a conversion from gravitational potential energy",
                 "time_interval": {
-                    "end": 127.0,
-                    "start": 121.0
+                    "end": 124.0,
+                    "start": 120.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " It could go from gravitational potential energy to kinetic energy"
+            "text": " There is a conversion from gravitational potential energy"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8512429595197428,
-                "no_speech_confidence": 0.2396240234375,
-                "text": " back to gravitational potential energy and it will come to a stop here.",
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
+                "text": " to kinetic energy back to gravitational potential energy",
                 "time_interval": {
-                    "end": 133.0,
-                    "start": 127.0
+                    "end": 128.0,
+                    "start": 124.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " back to gravitational potential energy and it will come to a stop here."
+            "text": " to kinetic energy back to gravitational potential energy"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8512429595197428,
-                "no_speech_confidence": 0.2396240234375,
-                "text": " And when it swings back, it should not be able to reach any higher",
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
+                "text": " and it will come to a stop here.",
                 "time_interval": {
-                    "end": 139.0,
-                    "start": 133.0
+                    "end": 130.0,
+                    "start": 128.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " And when it swings back, it should not be able to reach any higher"
+            "text": " and it will come to a stop here."
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8512429595197428,
-                "no_speech_confidence": 0.2396240234375,
-                "text": " provided that I do not give this object an initial speed when I stand here.",
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
+                "text": " And when it swings back,",
                 "time_interval": {
-                    "end": 145.0,
-                    "start": 139.0
+                    "end": 132.0,
+                    "start": 130.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " provided that I do not give this object an initial speed when I stand here."
+            "text": " And when it swings back,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9215607475886292,
-                "no_speech_confidence": 0.0235748291015625,
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
+                "text": " it should not be able to reach any higher,",
+                "time_interval": {
+                    "end": 136.0,
+                    "start": 132.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " it should not be able to reach any higher,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9432879027129201,
+                "no_speech_confidence": 0.0016651153564453125,
+                "text": " provided that I do not give this object an initial speed",
+                "time_interval": {
+                    "end": 140.0,
+                    "start": 136.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " provided that I do not give this object an initial speed"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9068384628790688,
+                "no_speech_confidence": 0.0232086181640625,
+                "text": " and I trust the conservation of mechanical energy for 100%.",
+                "time_interval": {
+                    "end": 146.0,
+                    "start": 140.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " and I trust the conservation of mechanical energy for 100%."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9068384628790688,
+                "no_speech_confidence": 0.0232086181640625,
                 "text": " I may not trust myself.",
                 "time_interval": {
-                    "end": 151.0,
-                    "start": 145.0
+                    "end": 150.0,
+                    "start": 146.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -527,60 +800,102 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9215607475886292,
-                "no_speech_confidence": 0.0235748291015625,
-                "text": " I'm going to release this object and I hope I will be able to do it at zero speed",
+                "confidence": 0.9068384628790688,
+                "no_speech_confidence": 0.0232086181640625,
+                "text": " I'm going to release this object,",
                 "time_interval": {
-                    "end": 157.0,
-                    "start": 151.0
+                    "end": 152.0,
+                    "start": 150.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " I'm going to release this object and I hope I will be able to do it at zero speed"
+            "text": " I'm going to release this object,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9215607475886292,
-                "no_speech_confidence": 0.0235748291015625,
-                "text": " so that when it comes back it may touch my chin but it may not crush my chin.",
+                "confidence": 0.9068384628790688,
+                "no_speech_confidence": 0.0232086181640625,
+                "text": " and I hope I will be able to do it at zero speed",
                 "time_interval": {
-                    "end": 163.0,
-                    "start": 157.0
+                    "end": 156.0,
+                    "start": 152.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " so that when it comes back it may touch my chin but it may not crush my chin."
+            "text": " and I hope I will be able to do it at zero speed"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.9215607475886292,
-                "no_speech_confidence": 0.0235748291015625,
+                "confidence": 0.9068384628790688,
+                "no_speech_confidence": 0.0232086181640625,
+                "text": " so that when it comes back,",
+                "time_interval": {
+                    "end": 158.0,
+                    "start": 156.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " so that when it comes back,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9068384628790688,
+                "no_speech_confidence": 0.0232086181640625,
+                "text": " it may touch my chin but it may not crush my chin.",
+                "time_interval": {
+                    "end": 162.0,
+                    "start": 158.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " it may touch my chin but it may not crush my chin."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.9068384628790688,
+                "no_speech_confidence": 0.0232086181640625,
                 "text": " I want you to be extremely quiet because this is no joke.",
                 "time_interval": {
-                    "end": 169.0,
-                    "start": 163.0
+                    "end": 166.0,
+                    "start": 162.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -590,81 +905,144 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8657550783376091,
-                "no_speech_confidence": 0.422607421875,
-                "text": " If I release this object at zero speed, then this will be my last lecture.",
+                "confidence": 0.946622482115293,
+                "no_speech_confidence": 0.01026153564453125,
+                "text": " If I don't succeed in giving it zero speed,",
                 "time_interval": {
-                    "end": 175.0,
-                    "start": 169.0
+                    "end": 170.0,
+                    "start": 166.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " If I release this object at zero speed, then this will be my last lecture."
+            "text": " If I don't succeed in giving it zero speed,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8657550783376091,
-                "no_speech_confidence": 0.422607421875,
-                "text": " I will close my eyes. I don't want to see this.",
+                "confidence": 0.946622482115293,
+                "no_speech_confidence": 0.01026153564453125,
+                "text": " then this will be my last lecture.",
                 "time_interval": {
-                    "end": 181.0,
-                    "start": 175.0
+                    "end": 174.0,
+                    "start": 170.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " I will close my eyes. I don't want to see this."
+            "text": " then this will be my last lecture."
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8657550783376091,
-                "no_speech_confidence": 0.422607421875,
-                "text": " So please be very quiet. I almost didn't sleep all night.",
+                "confidence": 0.946622482115293,
+                "no_speech_confidence": 0.01026153564453125,
+                "text": " I will close my eyes.",
                 "time_interval": {
-                    "end": 187.0,
-                    "start": 181.0
+                    "end": 176.0,
+                    "start": 174.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " So please be very quiet. I almost didn't sleep all night."
+            "text": " I will close my eyes."
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.8657550783376091,
-                "no_speech_confidence": 0.422607421875,
+                "confidence": 0.946622482115293,
+                "no_speech_confidence": 0.01026153564453125,
+                "text": " I don't want to see this.",
+                "time_interval": {
+                    "end": 178.0,
+                    "start": 176.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " I don't want to see this."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.946622482115293,
+                "no_speech_confidence": 0.01026153564453125,
+                "text": " So please be very quiet.",
+                "time_interval": {
+                    "end": 182.0,
+                    "start": 178.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " So please be very quiet."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.946622482115293,
+                "no_speech_confidence": 0.01026153564453125,
+                "text": " I almost didn't sleep all night.",
+                "time_interval": {
+                    "end": 186.0,
+                    "start": 182.0
+                },
+                "words": null
+            }
+        ],
+        "transcription": {
+            "text": " I almost didn't sleep all night."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.97216796875
+        },
+        "segments": [
+            {
+                "confidence": 0.946622482115293,
+                "no_speech_confidence": 0.01026153564453125,
                 "text": " Three, two, one, zero.",
                 "time_interval": {
-                    "end": 193.0,
-                    "start": 187.0
+                    "end": 190.0,
+                    "start": 186.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
@@ -674,22 +1052,22 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.97216796875
         },
         "segments": [
             {
-                "confidence": 0.852237597954602,
-                "no_speech_confidence": 0.16259765625,
-                "text": " Physics works and I'm still alive.",
+                "confidence": 0.6528340599004091,
+                "no_speech_confidence": 0.090576171875,
+                "text": " Physics works, and I'm still alive.",
                 "time_interval": {
-                    "end": 203.0,
-                    "start": 199.0
+                    "end": 200.0,
+                    "start": 196.0
                 },
-                "words": []
+                "words": null
             }
         ],
         "transcription": {
-            "text": " Physics works and I'm still alive."
+            "text": " Physics works, and I'm still alive."
         }
     },
     {
