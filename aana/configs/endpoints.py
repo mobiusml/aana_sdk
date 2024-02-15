@@ -260,4 +260,13 @@ endpoints = {
             ],
         ),
     ],
+    "stablediffusion2": [
+        Endpoint(
+            name="imagegen",
+            path="/generate_image",
+            summary="Generates an image from a text prompt",
+            outputs=[EndpointOutput(name="image", output="stablediffusion2-image")],
+        )
+    ],
+
 }
