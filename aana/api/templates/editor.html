@@ -97,6 +97,25 @@
             widget.value = value;
         }
 
+        function findWidget(node, name) {
+            return node.widgets.find(widget => widget.name === name);
+        }
+
+        function removeSockets(node) {
+            // remove all inputs and outputs
+            if ("inputs" in node) {
+                while (node.inputs.length > 0) {
+                    node.removeInput(0);
+                }
+            }
+            if ("outputs" in node) {
+                while (node.outputs.length > 0) {
+                    removeWidget(node, "path[" + node.outputs[0].name + "]");
+                    node.removeOutput(0);
+                }
+            }
+        }
+
         function InputNode() {
             var node = this;
             this.title = "Input: output_name";
@@ -170,25 +189,6 @@
 
 
         function FunctionNode() {
-            var removeSockets = function (node) {
-                // remove all inputs and outputs
-                if ("inputs" in node) {
-                    while (node.inputs.length > 0) {
-                        node.removeInput(0);
-                    }
-                }
-                if ("outputs" in node) {
-                    while (node.outputs.length > 0) {
-                        // remove path widget
-                        // var widget = node.widgets.find(widget => widget.name === "path[" + node.outputs[0].name + "]");
-                        // node.widgets.splice(node.widgets.indexOf(widget), 1);
-                        removeWidget(node, "path[" + node.outputs[0].name + "]");
-
-                        node.removeOutput(0);
-                    }
-                }
-            }
-
             this.properties = {
                 name: "function",
                 function_name: "",
@@ -205,7 +205,8 @@
             this.addWidget("combo", "function_name", "", function (value) {
                 console.log("function_name changed", value);
 
-                node.properties.function_name = value;
+                // node.properties.function_name = value;
+                node.setProperty("function_name", value);
 
                 // Remove all inputs and outputs
                 removeSockets(node);
@@ -240,11 +241,9 @@
 
                 // reset defaults
                 node.setProperty("is_partial", false);
-                // node.widgets.find(widget => widget.name === "is_partial").value = false;
                 setWidgetValue(node, "is_partial", false);
 
                 node.setProperty("batched", false);
-                // node.widgets.find(widget => widget.name === "batched").value = false;
                 setWidgetValue(node, "batched", false);
 
                 node.title = value;
@@ -287,31 +286,13 @@
 
 
         function DeploymentNode() {
-            var removeSockets = function (node) {
-                // remove all inputs and outputs
-                if ("inputs" in node) {
-                    while (node.inputs.length > 0) {
-                        node.removeInput(0);
-                    }
-                }
-                if ("outputs" in node) {
-                    while (node.outputs.length > 0) {
-                        // remove path property
-                        // node.removeProperty("path[" + node.outputs[0].name + "]");
-                        delete node.properties["path[" + node.outputs[0].name + "]"];
-                        node.removeOutput(0);
-                    }
-                }
-            }
-
             this.properties = {
                 name: "deployment",
+                deployment_name: "",
+                method: "",
                 is_partial: false,
                 is_generator: false,
                 flatten_by: "",
-
-                // deployment_name: "",
-                // method: "",
             }
 
             this.serialize_widgets = true;
@@ -320,78 +301,73 @@
             this.addWidget("combo", "deployment_name", "", function (value) {
                 console.log("deployment_name changed", value);
 
-                // Add property "deployment_name" if not already present
                 removeSockets(node);
-                if (!node.properties.deployment_name) {
-                    node.addProperty("deployment_name", value, "string");
-                }
-                else {
-                    node.properties.deployment_name = value;
-                }
-                // node.addProperty("deployment_name", value, "string");
+                node.setProperty("deployment_name", value);
+
                 node.title = value;
-                console.log(node);
 
-                // If widget is present, update it
-                var widget = node.widgets.find(widget => widget.name === "method");
-                widget.options.values = Object.keys(deployments[value]);
-                widget.value = "";
+                var method_widget = findWidget(node, "method");
+                method_widget.options.values = Object.keys(deployments[value]);
+                method_widget.value = "";
 
-                node.size = [400, 200];
+                // node.size = [400, 200];
             }, { "values": Object.keys(deployments) })
 
-            // var available_methods;
-            // if (this.properties.deployment_name) {
-            //     available_methods = Object.keys(deployments[this.properties.deployment_name]);
-            // }
-            // else {
-            //     available_methods = [];
-            // }
 
             this.addWidget("combo", "method", "", function (value) {
                 console.log("method changed", value);
 
-                node.addProperty("method", value, "string");
                 var inputs = deployments[node.properties.deployment_name][value].inputs;
                 var outputs = deployments[node.properties.deployment_name][value].outputs;
                 var is_generator = deployments[node.properties.deployment_name][value].is_generator;
-
-                // node.properties.is_generator = is_generator;
                 node.setProperty("is_generator", is_generator);
-                // node.color = is_generator ? "#6666FF" : "#333333";
+                console.log("is_generator", is_generator, "generator_path" in node.properties)
+                if (is_generator && !("generator_path" in node.properties)) {
+                    node.addProperty("generator_path", "", "string");
+                    node.addWidget("string", "generator_path", "", function (value) { });
+                }
+                else if (!is_generator && "generator_path" in node.properties) {
+                    removeProperty(node, "generator_path");
+                    removeWidget(node, "generator_path");
+                }
 
-                if (!node.properties.method) {
-                    node.addProperty("method", value, "string");
-                }
-                else {
-                    node.properties.method = value;
-                }
+                node.setProperty("method", value);
 
                 // Remove all inputs and outputs
                 removeSockets(node);
 
                 // Add new inputs if not already present
                 for (var i = 0; i < inputs.length; i++) {
-                    if (node.findInputSlot(inputs[i].name) == -1) {
-                        node.addInput(inputs[i].name, "string");
-                        // node.addInput(inputs[i].name + "[" + inputs[i].type + "]", inputs[i].type);
-                    }
+                    node.addInput(inputs[i].name, "string");
                 }
 
                 // Add new outputs if not already present
                 for (var i = 0; i < outputs.length; i++) {
-                    if (node.findOutputSlot(outputs[i].name) == -1) {
-                        node.addOutput(outputs[i].name, "string");
-                        // node.addOutput(outputs[i].name + "[" + outputs[i].type + "]", outputs[i].type);
-                        node.addProperty("path[" + outputs[i].name + "]", "", "string");
-                    }
+                    node.addOutput(outputs[i].name, "string");
+                    // node.addProperty("path[" + outputs[i].name + "]", "", "string");
+                    node.addWidget("text", "path[" + outputs[i].name + "]", "", function (value) { });
                 }
 
+                node.setProperty("is_partial", false);
+                setWidgetValue(node, "is_partial", false);
+
+
                 node.title = node.properties.deployment_name + "_" + value;
-                node.size = [400, 200];
+                // node.size = [400, 200];
             }, { "values": [] })
 
-            this.size = [400, 200];
+            this.addWidget("toggle", "is_partial", false, function (value) {
+                node.setProperty("is_partial", value);
+                if (node.properties.is_generator && value) {
+                    // not allowed
+                    alert("Generator function cannot be partial");
+                    node.setProperty("is_partial", false);
+                    // node.widgets.find(widget => widget.name === "is_partial").value = false;
+                    setWidgetValue(node, "is_partial", false);
+                }
+            });
+
+            // this.size = [400, 200];
         }
         DeploymentNode.prototype.onPropertyChanged = function (name, value) {
             console.log("property changed", name, value, this);
@@ -399,31 +375,14 @@
                 var method_widget = this.widgets.find(widget => widget.name === "method");
                 method_widget.options.values = Object.keys(deployments[value]);
             }
-            if (name == "is_generator") {
-                console.log("is_generator changed", value, this);
-                // change the color of the node
-                if (value) {
-                    // blueish, very light but dark
-                    this.color = "#6666FF";
-                    this.addProperty("generator_path", "", "string");
-                }
-                else {
-                    this.color = "#333333";
-                    if ("generator_path" in this.properties) {
-                        delete this.properties.generator_path;
-                    }
-                }
+            if (this.properties.is_generator) {
+                this.color = GENERATOR_COLOR;
             }
-            if (name == "is_partial" && !this.properties.is_generator) {
-                console.log("is_partial changed", value, this);
-                // change the color of the node
-                if (value) {
-                    // slightly red 6666FF
-                    this.color = "#FF6666";
-                }
-                else {
-                    this.color = "#333333";
-                }
+            else if (this.properties.is_partial) {
+                this.color = PARTIAL_COLOR;
+            }
+            else {
+                this.color = DEFAULT_COLOR;
             }
         }
 
