@@ -718,6 +718,39 @@ nodes = [
         ],
     },
     {
+        "name": "stable-diffusion-2-imagegen",
+        "type": "ray_deployment",
+        "deployment_name": "stablediffusion2_deployment",
+        "method": "generate",
+        "inputs": [{"name": "prompt", "key": "prompt", "path": "prompt"}],
+        "outputs": [
+            {
+                "name": "stablediffusion2-image",
+                "key": "image",
+                "path": "stablediffusion2-image",
+            }
+        ],
+    },
+    {
+        "name": "save_image_stablediffusion2",
+        "type": "function",
+        "function": "aana.utils.image.save_image",
+        "inputs": [
+            {
+                "name": "image_stablediffusion2",
+                "key": "image",
+                "path": "image",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "image_path_stablediffusion2",
+                "key": "path",
+                "path": "image_path",
+            }
+        ],
+    },
+    {
         "name": "save_video",
         "type": "function",
         "function": "aana.utils.db.save_video",

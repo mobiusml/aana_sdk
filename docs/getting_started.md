@@ -239,6 +239,7 @@ endpoints = {
             ],
         )
     ],
+}
 ```
 
 Finally, we need to write the save_image function we referenced above (`aana/utils/image.py`)
