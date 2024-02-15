@@ -5,71 +5,271 @@ This is the living version of this document. A [previous draft](https://docs.goo
 
 ## Code overview
 
-aana/ - top level source code directory for the project
+    aana/ - top level source code directory for the project
 
-    alembic/ - directory for database automigration
+        alembic/ - directory for database automigration
 
-         versions/ - individual migrations
+            versions/ - individual migrations
 
-    api/ - code for generating an API from deployment and endpoint configurations
+        api/ - code for generating an API from deployment and endpoint configurations
 
-    config/ - various configuration, including settings, but also config for deployments & endpoints
+        config/ - various configuration, including settings, but also config for deployments & endpoints
 
-         build.py - config for building the SDK pipeline
+            build.py - functionality to build the pipeline
 
-         db.py - config for the database
+            db.py - config for the database
 
-         deployments.py - config for available deployments
+            deployments.py - config for available deployment targets
 
-         endpoints.py - deployment names and associated endpoints
+            endpoints.py -  associations deployment targets with associated endpoints
 
-         pipeline.py - pipeline nodes for SDK
+            pipeline.py - pipeline nodes for SDK
 
-         settings.py - app settings
+            settings.py - app settings
 
-    deployments/ - classes for individual model deployments, wrap the model's functionality
+        deployments/ - classes for individual ray deployments to wrap models or other functionality for ray
 
-    exceptions/ - custom exception classes
+        exceptions/ - custom exception classes
 
-    models/ - model classes for data
+        models/ - model classes for data
 
-         core/ - core data models for the SDK
+            core/ - core data models for the SDK
 
-         db/ - database models 
+            db/ - database models (SQLAlchemy)
 
-         pydantic/ - pydantic models for HTTP inputs and outputs
+            pydantic/ - pydantic models (web request inputs + outputs, other data)
 
-    repository/ - repository classes for storage
+        repository/ - repository classes for storage
 
-         datastore/ - repositories for structured databases (SQL)
+            datastore/ - repositories for structured databases (SQL)
 
-         vectorstore/ - repositories for vector databases (Qdrant) (TODO)
+            vectorstore/ - repositories for vector databases (Qdrant) (TODO)
 
-    tests/ - automated tests for the SDK
+        tests/ - automated tests for the SDK
 
-         db/ - tests for database functions
+            db/ - tests for database functions
 
-         deployments/ - tests for model deployments
+            deployments/ - tests for model deployments
 
-         files/ - files used for tests
+            files/ - files used for tests
 
-     utils/ - various utility functionality
+        utils/ - various utility functionality
 
-           chat_templates/ - templates for LLM chats
+            chat_templates/ - templates for chat models
 
-     main.py - entry point for the application
+        main.py - entry point for the application
 
 
 ## Adding a New Model
 
-A deployment is a standardized interface for any kind of functionality that needs to manage state (primarily, but not limited to, an AI model that needs to be fetched and loaded onto a GPU). New deployments should inherit from aana.deployments.base_deployment.BaseDeployment, and be in the aana/deployments folder. Additionally, a deployment config for the deployment will have to be added to the aana/configs/deployments.py file. Some examples:
+A ray deployment is a standardized interface for any kind of functionality that needs to manage state (primarily, but not limited to, an AI model that needs to be fetched and loaded onto a GPU). New deployments should inherit from aana.deployments.base_deployment.BaseDeployment, and be in the aana/deployments folder. Additionally, a deployment config for the deployment will have to be added to the aana/configs/deployments.py file. Here's a simple example using Stable Diffusion 2:
 
 aana/configs/deployments.py:
 ```python
 deployments = {
+    "stablediffusion2_deployment": StableDiffusion2Deployment.options(
+        num_replicas=1,
+        max_concurrent_queries=1000,
+        ray_actor_options={"num_gpus": 1},
+        user_config=StableDiffusion2Config(
+            model="stabilityai/stable-diffusion-2", dtype=Dtype.FLOAT16
+        ).dict(),
+    ),
+}
+```
+aana/deployments/stablediffusion2_deployment.py:
+```python
+from typing import TYPE_CHECKING, Any, TypedDict
+
+import torch
+from diffusers import EulerDiscreteScheduler, StableDiffusionPipeline
+from pydantic import BaseModel, Field
+from ray import serve
+
+from aana.deployments.base_deployment import BaseDeployment
+from aana.models.core.dtype import Dtype
+from aana.models.core.image import Image
+from aana.models.pydantic.prompt import Prompt
+
+if TYPE_CHECKING:
+    import PIL
+
+
+class StableDiffusion2Config(BaseModel):
+    """The configuration for the StableDiffusion 2 deployment with HuggingFace models.
+
+    Attributes:
+        model (str): the model ID on HuggingFace
+        dtype (str): the data type (optional, default: "auto"), one of "auto", "float32", "float16"
+    """
+
+    model: str
+    dtype: Dtype = Field(default=Dtype.AUTO)
+
+
+class StableDiffusion2Output(TypedDict):
+    """Output class."""
+
+    image: Any
+
+
+@serve.deployment
+class StableDiffusion2Deployment(BaseDeployment):
+    """Deployment to serve Stable Diffusion models using HuggingFace."""
+
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
+
+        The method is called when the deployment is created or updated.
+
+        It loads the model and processor from HuggingFace.
+
+        The configuration should conform to the StableDiffusion2Config schema.
+        """
+        config_obj = StableDiffusion2Config(**config)
+
+        # Load the model and scheduler from HuggingFace
+        self.model_id = config_obj.model
+        self.dtype = config_obj.dtype
+        self.torch_dtype = self.dtype.to_torch()
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model = StableDiffusionPipeline.from_pretrained(
+            self.model_id,
+            torch_dtype=self.torch_dtype,
+            scheduler=EulerDiscreteScheduler.from_pretrained(
+                self.model_id, subfolder="scheduler"
+            ),
+        )
+        self.model.to(self.device)
+
+    async def generate(self, prompt: Prompt) -> StableDiffusion2Output:
+        """Generate image for the given prompt.
+
+        Args:
+            prompt (Prompt): the prompt
+
+        Returns:
+            StableDiffusion2Output: the output
+        """
+        result: PIL.Image = self.model(str(prompt)).images[0]
+
+        return {"image": Image(content=result.tobytes())}
+```
+
+Now you have a deployment! The next step is to add pipeline nodes so the deployment can be called.
+
+## Add pipeline nodes
+
+For this simple pipeline, we only need three nodes:
+
+1. Get the prompt from the input
+2. Generate an image from a prompt using Stable Diffusion 2
+2. Save the image to the disk and return the path
+
+Step 3 is actually only necessary because the SDK doesn't return binary files yet. At some point we expect this to be supported, so then this would only need two steps to run.
+
+Here are nodes we need (`aana/configs/pipeline.py`):
+```python
+nodes = [
+    {
+        "name": "prompt",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {"name": "prompt", "key": "prompt", "path": "prompt", "data_model": Prompt}
+        ],
+    },
+    {
+        "name": "stablediffusion2-imagegen",
+        "type": "ray_deployment",
+        "deployment_name": "stablediffusion2_deployment",
+        "method": "generate",
+        "inputs": [
+            {
+                "name": "prompt",  # name is taken from the same namespace as output (see above)
+                "key":"prompt",  # 'key' is what the argument is called in the method or function
+                "path": "prompt",  # this is a data path for hierarchically structured data
+                "data_model": Prompt  # Specifying a data model helps generate better documentation
+        }],
+        "outputs": [
+            {"name": "image_stablediffusion2",  # How we identify this output uniquely
+            "key": "image",  # If method returns a dict, what key on that dict to look up
+            "path": "image"  # Where to place this value in a data object hierarchy
+            }
+        ]
+    },
+    {
+        "name": "save_image_stablediffusion2",
+        "type": "function",
+        "function": "aana.utils.image.save_image",  # Could also be a function in a library
+        "inputs": [
+            {
+                "name": "image_stablediffusion2",  # matches output of the previous node
+                "key": "image",  # matches the name of an argument to the function
+                "path": "image"  # where the data is located in the object hierarchy
+            },
+        ],
+        "outputs": [
+            {
+                "name":"image_path_stablediffusion2",  # unique name
+                "key": "path",  # key on return dictionary
+                "path": "image_path"  # what the value is called in the object hierarchy
+            }
+        ]
+    }
+]
+```
+
+Then we need to define an endpoint so Aana knows how to call the pipeline from a web request. 
+
+```python
+from aana.api.api_generation import Endpoint, EndpointOutput
+
+endpoints = {
+    "stablediffusion2": [
+        Endpoint(
+            name="imagegen",
+            path="/imagegen",
+            summary="Generate image using Stable Diffusion 2",
+            outputs=[
+                EndpointOutput(
+                    name="path",  # key/label on response object
+                    output="image_path_stablediffusion2"  # name of output to use
+                )
+            ],
+        )
+    ],
+```
+
+Finally, we need to write the save_image function we referenced above (`aana/utils/image.py`)
+
+```python
+from pathlib import Path
+from uuid import uuid4
+
+from aana.configs.settings import settings
+from aana.models.core.image import Image
+
+
+def save_image(image: Image) -> dict[str, Path]:
+    """Saves an Image to a the tmp data dir."""
+    base_dir = settings.tmp_data_dir
+    filetype = "png"
+    filename = f"{uuid4()}.{filetype}"
+    full_path = base_dir / filename
+    image.save_from_content(full_path)
+    return {"path": full_path}  
+```
+
+# More complicated - Blip2 video captioning
+
+Here's a more complicated example for video captioning.
+
+```python
+deployments = {
    ...
     "hf_blip2_deployment_opt_2_7b": HFBlip2Deployment.options(
-        num_replicas=1,  # How many instances shouuld be started
+        num_replicas=1,  # How many instances should be started
         max_concurrent_queries=1000,  
         # Ray will count available GPUs and reserve according to this value
         # DOES NOT actually restrict model's ability to consume VRAM
@@ -82,7 +282,7 @@ deployments = {
         ).dict(),
     ),
 ```
-aana/deployments/foo_0b_deployment.py:
+aana/deployments/hfblip2_deployment.py:
 
 ```python
 class HFBlip2Config(BaseModel):  # BaseModel makes sure it's serializeable
@@ -109,7 +309,7 @@ class HFBlip2Deployment(BaseDeployment):
         """Sets up the deployment."""
         config_obj = HFBlip2Config(**config)
 
-	 # We have to do two things here: prepare the model itself to run,
+	    # We have to do two things here: prepare the model itself to run,
         # and set up the batch processor
         # 1. Load the model from HuggingFace into PyTorch
         self.model_id = config_obj.model
@@ -219,12 +419,11 @@ class HFBlip2Deployment(BaseDeployment):
             raise InferenceException(self.model_id) from e
 ```
 
-Now you have a deployment! Unfortunately, that's not enough to run it just yet.
-
+That is our production deployment. As before, we must add pipeline nodes to be able to call it.
 
 ## Adding Pipeline Nodes
 
-Next you need to add some pipeline nodes to aana/config/pipeline.py so you can use your new deployment. A typical minimal, 1-stage inference workflow might be:
+A typical workflow with one inference stage might be:
 
 1. input - says which input to get from a request
 2. preprocessing - turning the HTTP request into something you can use (download files, etc)
@@ -244,13 +443,10 @@ Here's an example of these for a video processing pipeline(aana/config/pipeline.
         "inputs": [],  # no antecedents (because it comes from request)
         "outputs": [
             {
-   # No other node can have the same output name
-                "name": "videos",
-   # return value is a dict. this is the name of the key
-                "key": "videos",
-   # "path" tells ray how to store & find data object
-                "path": "video_batch.videos.[*].video_input",
-                "data_model": VideoInputList,  # optional but recommended
+                "name": "videos",  # No other node can have the same output name
+                "key": "videos",  # Return value is a dict. this is the name of the key
+                "path": "video_batch.videos.[*].video_input",  # "path" tells ray how to store & find data object
+                "data_model": VideoInputList,  # Optional but recommended - helps with generating documentation
             }
         ],
     },
@@ -270,17 +466,17 @@ Here's an example of these for a video processing pipeline(aana/config/pipeline.
         # numpy.linalg.norm) that just return a value, "dict_output": True
         # tells the pipeline the value isn't wrapped
         "dict_output": False,
-        "inputs": [
+        "inputs": [  # List of inputs here should match the function signature
             {
                 "name": "videos",  # matches named output above!
-                "key": "video_input",
+                "key": "video_input",  # name of argument to function
                 "path": "video_batch.videos.[*].video_input",
-          # If you wish to "unwrap" a collection of a sub-object - for
-   # example you have a batch of videos and each video has a 
-   # series of frames, you can do all the frames of all the videos
-   # in one step with "flatten_by". The last [*] is the argument
-   # to be flattened.
-          "flatten_by": "video_batch.videos.[*]",
+                # If you wish to "unwrap" a collection of a sub-object - for
+                # example you have a batch of videos and each video has a 
+                # series of frames, you can do all the frames of all the videos
+                # in one step with "flatten_by". The last [*] is the argument
+                # to be flattened.
+                "flatten_by": "video_batch.videos.[*]",
             },
         ],
         "outputs": [
@@ -333,11 +529,9 @@ Here's an example of these for a video processing pipeline(aana/config/pipeline.
 # Inference - because this is a batch, inputs and outputs are lists
     {
         "name": "hf_blip2_opt_2_7b_videos",
-        "type": "ray_deployment",  # Deploys a ray actor
-        "deployment_name": "hf_blip2_deployment_opt_2_7b",
-        # name of the function on the class to be called
-        "method": "generate_batch",  
-        "flatten_by": "video_batch.videos.[*].frames.[*]",
+        "type": "ray_deployment",  # Ray deployment
+        "deployment_name": "hf_blip2_deployment_opt_2_7b",  # key from config/deployments.py
+        "method": "generate_batch",  # name of the method on the class to be called
         "inputs": [
             {
                 "name": "frames",
@@ -366,26 +560,26 @@ Here's an example of these for a video processing pipeline(aana/config/pipeline.
         },
         "inputs": [
             {
-                "name": "video_captions_hf_blip2_opt_2_7b",
+                "name": "videos_captions_hf_blip2_opt_2_7b",
                 "key": "captions",
-                "path": "video.frames.[*].caption_hf_blip2_opt_2_7b",
+                "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b",
             },
             {
-                "name": "video_timestamps",
+                "name": "videos_timestamps",
                 "key": "timestamps",
-                "path": "video.timestamps",
+                "path": "video_batch.videos.[*].timestamps",
             },
             {
-                "name": "video_frame_ids",
+                "name": "videos_frame_ids",
                 "key": "frame_ids",
-                "path": "video.frames.[*].id",
+                "path": "video_batch.videos.[*].frames.[*].id",
             },
         ],
         "outputs": [
             {
-                "name": "caption_ids",
+                "name": "captions_ids",
                 "key": "caption_ids",
-                "path": "video.frames.[*].caption_hf_blip2_opt_2_7b.id",
+                "path": "video_batch.videos.[*].frames.[*].caption_hf_blip2_opt_2_7b.id",
             }
         ],
     }
@@ -406,20 +600,22 @@ endpoints = {
             # Summary (for documentation)
             summary="Generate captions for videos using BLIP2 OPT-2.7B",
             outputs=[
-                # Only specified outputs will be included in the response
+                # Only specified outputs will be included in the response.
                 # Any data produced but not used in the output or a step
                 # leading up to the output may be discarded at any time!
+                # The inputs are determined by "backtracking" the pipeline
+                # graph to determine what is required for it to run.
                 EndpointOutput(
-                    name="captions", output="video_captions_hf_blip2_opt_2_7b"
+                    name="captions", output="videos_captions_hf_blip2_opt_2_7b"
                 ),
-                EndpointOutput(name="timestamps", output="video_timestamps"),
+                EndpointOutput(name="timestamps", output="videos_timestamps"),
             ],
         ),
     ]
 }
 ```
 
-Okay, can you figure out where there might be a bug?
+Okay, can you figure out what we might have forgotten? 
 
 We created a postprocessing step to save the video captions to the DB, but since we didn't include its output in the endpoint definition ("captions_ids"), that step **won't** run. It will get the output of the captions model, determine that no more steps are needed, and return it to the user. A working endpoint that wanted to include `EndpointOutput(name="caption_ids", output="caption_ids")` in the list of outputs.
 
@@ -474,7 +670,7 @@ def save_captions_batch(
     captions: VideoCaptionsList, 
 ) -> dict:
     """Saves a batch of videos to datastore."""
-  caption_entities = [CaptionEntity(**item) for item in captions]
+    caption_entities = [CaptionEntity(**item) for item in captions]
 
     with Session(engine) as session:
         captions_repo = CaptionRepository(session)
@@ -500,14 +696,16 @@ The "normal" way to run the SDK right now is to call the SDK as a module with fo
 poetry run python aana --host 0.0.0.0 --port 8000 --target blip2
 ```
 
-Host and port are optional; the defaults are `0.0.0.0` and `8000`, respectively, but you must give a deployment name as the target or the SDK doesn't know what to run. One the SDK has initialized the pipeline, downloaded any remote resources necessary, and loaded the model weights, it will print "Deployed Serve app successfully." and that is the cue that it is ready to serve traffic and perform tasks, including inference.
+Host and port are optional; the defaults are `0.0.0.0` and `8000`, respectively, but you must give a deployment target or the SDK doesn't know what to run. Once the SDK has initialized the pipeline, downloaded any remote resources necessary, and loaded the model weights, it will print "Deployed Serve app successfully." and that is the cue that it is ready to serve traffic and perform tasks, including inference.  Documentation is also automatically generated and available at http://{port}:{host}/docs and http://{port}:{host}/redoc, depending on which format you prefer.
 
 
 ## Tests
 
 Write unit tests for every freestand function or task function you add. Write unit tests for deployment methods or static functions that transform data without sending it to the inference engine (and refactor the deployment code so that as much functionality as possible is modularized so that it may be tested). 
 
-Additionally, please write some tests for the `tests/deployments` folder that will load your deployment and programmatically run some inputs through it to validate that the deployment itself works as expected. Note, however, that due to the size and complexity of loading deployments that this might fail even if the logic is correct, if for example the user is running on a machine without a GPU.
+Additionally, please write some tests for the `tests/deployments` folder that will load your deployment and programmatically run some inputs through it to validate that the deployment itself works as expected. Note, however, that due to the size and complexity of loading deployments that this might fail even if the logic is correct, if for example the user is running on a machine a GPU that is too small for the model.
+
+You can tell PyTest to skip tests under certain conditions. For example, if there is a deployment that doesn't make sense to run without a GPU, you can use the decorator `@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")` to tell pytest not to run it if there's no GPU available. The function `is_gpu_available()` is defined in aana.tests.utils.py.
 
 Additionally, you can use mocks to test things like database logic, or other code that would normally require extensive external functionality to test. For example, here is code that mocks out database calls so it can be run as a deployment without needed to load the model:
 
@@ -522,10 +720,10 @@ def mocked_session(mocker):
 
 def test_create_caption(mocked_session):
     """Tests caption creation."""
-  # "mocked_session" mocks all the database operations, so we have a 
-  # repo object that automatically skips those and only checks the repo logic
+    # "mocked_session" mocks all the database operations, so we have a 
+    # repo object that automatically skips those and only checks the repo logic
     repo = CaptionRepository(mocked_session)
-  # Make up a fake video with metadata
+    # Make up a fake video with metadata
     media_id = "foo"
     media_type = "video"
     video_duration = 500.25
@@ -544,12 +742,12 @@ def test_create_caption(mocked_session):
         timestamp=timestamp,
     )
 
-  # All that just so we can test one call!
+    # All that just so we can test one call!
     caption2 = repo.create(caption)
 
     # Then assert to validate our assumptions: the video returned from `create`
-  # is unchanged (we don't check that an id has been set because only a real db
-  # can do that)
+    # is unchanged (we don't check that an id has been set because only a real db
+    # can do that)
     assert caption2.video == video
     assert caption2.media_id == media_id
     assert caption2.video_id == video.id
@@ -559,7 +757,7 @@ def test_create_caption(mocked_session):
     assert caption2.timestamp == timestamp
 
     # And we check that the correct underly calls, in the correct numbers, 
-  # on the session object have been made
+    # on the session object have been made
     mocked_session.add.assert_called_once_with(caption)
     mocked_session.commit.assert_called_once()
 ```
