@@ -1,39 +1,33 @@
 from types import MappingProxyType
 
-from pydantic import BaseModel
+from pydantic import ConfigDict
 
-from aana.models.pydantic.base import BaseListModel
+from aana.models.pydantic.base import BaseListModel, BaseStringModel
 
 
-class Caption(BaseModel):
+class Caption(BaseStringModel):
     """A model for a caption."""
 
-    __root__: str
-
-    def __str__(self):
-        """Convert to string."""
-        return self.__root__
-
-    class Config:
-        schema_extra = MappingProxyType({"description": "A caption."})
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType({"description": "A caption."})
+    )
 
 
 class CaptionsList(BaseListModel):
     """A model for a list of captions."""
 
-    __root__: list[Caption]
-
-    class Config:
-        schema_extra = MappingProxyType({"description": "A list of captions."})
+    root: list[Caption]
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType({"description": "A list of captions."})
+    )
 
 
 class VideoCaptionsList(BaseListModel):
     """A model for a list of captions for a list of videos."""
 
-    __root__: list[CaptionsList]
-
-    class Config:
-        schema_extra = MappingProxyType(
+    root: list[CaptionsList]
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": (
                     "A list of a list of captions. "
@@ -42,3 +36,4 @@ class VideoCaptionsList(BaseListModel):
                 )
             }
         )
+    )

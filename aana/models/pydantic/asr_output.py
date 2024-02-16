@@ -10,7 +10,7 @@ from faster_whisper.transcribe import (
 from faster_whisper.transcribe import (
     Word as WhisperWord,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from aana.models.pydantic.base import BaseListModel
 from aana.models.pydantic.time_interval import TimeInterval
@@ -40,12 +40,13 @@ class AsrWord(BaseModel):
             alignment_confidence=whisper_word.probability,
         )
 
-    class Config:
-        schema_extra = MappingProxyType(
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "Word",
             }
         )
+    )
 
 
 class AsrSegment(BaseModel):
@@ -89,12 +90,13 @@ class AsrSegment(BaseModel):
             words=words,
         )
 
-    class Config:
-        schema_extra = MappingProxyType(
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "Segment",
             }
         )
+    )
 
 
 class AsrTranscriptionInfo(BaseModel):
@@ -135,12 +137,13 @@ class AsrTranscriptionInfo(BaseModel):
             language=language, language_confidence=language_confidence
         )
 
-    class Config:
-        schema_extra = MappingProxyType(
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "Transcription info",
             }
         )
+    )
 
 
 class AsrTranscription(BaseModel):
@@ -160,63 +163,64 @@ class AsrTranscription(BaseModel):
             text = self.text + "\n" + other.text
         return AsrTranscription(text=text)
 
-    class Config:
-        schema_extra = MappingProxyType(
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "Transcription/Translation",
             }
         )
+    )
 
 
 class AsrSegments(BaseListModel):
     """Pydantic schema for the list of ASR segments."""
 
-    __root__: list[AsrSegment] = Field(
+    root: list[AsrSegment] = Field(
         description="List of ASR segments", default_factory=list
     )
-
-    class Config:
-        schema_extra = MappingProxyType(
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "List of ASR segments",
             }
         )
+    )
 
 
 class AsrSegmentsList(BaseListModel):
     """Pydantic schema for the list of lists of ASR segments."""
 
-    __root__: list[AsrSegments]
-
-    class Config:
-        schema_extra = MappingProxyType(
+    root: list[AsrSegments]
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "List of lists of ASR segments",
             }
         )
+    )
 
 
 class AsrTranscriptionInfoList(BaseListModel):
     """Pydantic schema for the list of ASR transcription info."""
 
-    __root__: list[AsrTranscriptionInfo]
-
-    class Config:
-        schema_extra = MappingProxyType(
+    root: list[AsrTranscriptionInfo]
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "List of ASR transcription info",
             }
         )
+    )
 
 
 class AsrTranscriptionList(BaseListModel):
     """Pydantic schema for the list of ASR transcription."""
 
-    __root__: list[AsrTranscription]
-
-    class Config:
-        schema_extra = MappingProxyType(
+    root: list[AsrTranscription]
+    model_config = ConfigDict(
+        json_schema_extra=MappingProxyType(
             {
                 "description": "List of ASR transcription",
             }
         )
+    )

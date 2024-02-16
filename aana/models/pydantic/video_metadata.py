@@ -1,6 +1,6 @@
 from types import MappingProxyType
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class VideoMetadata(BaseModel):
@@ -13,10 +13,8 @@ class VideoMetadata(BaseModel):
 
     title: str = Field(None, description="The title of the video.")
     description: str = Field(None, description="The description of the video.")
-
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": "Metadata of a video.",
-            }
-        )
+    model_config = ConfigDict(json_schema_extra=MappingProxyType(
+        {
+            "description": "Metadata of a video.",
+        }
+    ))

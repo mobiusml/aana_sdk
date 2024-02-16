@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections.abc import Generator
 from math import floor
 from pathlib import Path
-from typing import TypedDict
+from typing_extensions import TypedDict
 
 import numpy as np
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263

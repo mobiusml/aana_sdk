@@ -121,15 +121,15 @@ def test_sum_asr_segments():
     asr_segment_1 = AsrSegment.from_whisper(whisper_segment)
     asr_segment_2 = AsrSegment.from_whisper(whisper_segment)
 
-    segment_1 = AsrSegments(__root__=[asr_segment_1] * 3)
-    segment_2 = AsrSegments(__root__=[asr_segment_2] * 3)
+    segment_1 = AsrSegments([asr_segment_1] * 3)
+    segment_2 = AsrSegments([asr_segment_2] * 3)
 
     segments = sum([segment_1, segment_2], AsrSegments())
 
-    assert len(segments.__root__) == 6
-    assert segments.__root__ == [asr_segment_1] * 3 + [asr_segment_2] * 3
-    assert segments.__root__[:3] == segment_1.__root__
-    assert segments.__root__[3:] == segment_2.__root__
+    assert len(segments) == 6
+    assert segments.root == [asr_segment_1] * 3 + [asr_segment_2] * 3
+    assert segments.root[:3] == segment_1.root
+    assert segments.root[3:] == segment_2.root
 
 
 def test_sum_asr_transcription():
