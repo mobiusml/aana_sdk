@@ -207,8 +207,8 @@ def test_imagelistinput():
         ImageInput(numpy=b"file"),
     ]
 
-    image_list_input = ImageInputList(__root__=images)
-    assert image_list_input.__root__ == images
+    image_list_input = ImageInputList(images)
+    assert image_list_input.root == images
     assert len(image_list_input) == len(images)
     assert image_list_input[0] == images[0]
     assert image_list_input[1] == images[1]
@@ -225,7 +225,7 @@ def test_imagelistinput_set_files():
         ImageInput(numpy=b"file"),
     ]
 
-    image_list_input = ImageInputList(__root__=images)
+    image_list_input = ImageInputList(images)
     image_list_input.set_files(files)
 
     assert image_list_input[0].content == files[0]
@@ -235,4 +235,4 @@ def test_imagelistinput_set_files():
 def test_imagelistinput_non_empty():
     """Test that ImageInputList must not be empty."""
     with pytest.raises(ValidationError):
-        ImageInputList(__root__=[])
+        ImageInputList([])

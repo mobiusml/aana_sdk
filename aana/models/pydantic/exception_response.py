@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, ConfigDict
 
 
 class ExceptionResponseModel(BaseModel):
@@ -17,6 +17,4 @@ class ExceptionResponseModel(BaseModel):
     message: str
     data: Any | None = None
     stacktrace: str | None = None
-
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")

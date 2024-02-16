@@ -32,7 +32,7 @@ def test_merged_options_none():
     default = MyOptions(field1="default1", field2=2, field3=True)
     merged = merged_options(default, None)
 
-    assert merged.dict() == default.dict()
+    assert merged.model_dump() == default.model_dump()
 
 
 def test_merged_options_type_mismatch():
