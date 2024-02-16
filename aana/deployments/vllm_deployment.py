@@ -1,20 +1,21 @@
 from collections.abc import AsyncGenerator
-from typing import Any, TypedDict
+from typing import Any
 
 from pydantic import BaseModel, Field
 from ray import serve
+from typing_extensions import TypedDict
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.model_executor.utils import set_random_seed
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-from vllm.utils import get_gpu_memory, random_uuid
+from vllm.utils import  random_uuid
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException, PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.chat_template import apply_chat_template
-from aana.utils.general import merged_options
+from aana.utils.general import merged_options, get_gpu_memory
 from aana.utils.test import test_cache
 
 
@@ -148,7 +149,7 @@ class VLLMDeployment(BaseDeployment):
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
-                **sampling_params.dict(exclude_unset=True)
+                **sampling_params.model_dump(exclude_unset=True)
             )
             # start the request
             request_id = random_uuid()

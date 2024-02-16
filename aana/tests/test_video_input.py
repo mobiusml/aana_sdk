@@ -136,8 +136,8 @@ def test_videoinputlist():
         VideoInput(content=b"file"),
     ]
 
-    video_list_input = VideoInputList(__root__=videos)
-    assert video_list_input.__root__ == videos
+    video_list_input = VideoInputList(root=videos)
+    assert video_list_input.root == videos
     assert len(video_list_input) == len(videos)
     assert video_list_input[0] == videos[0]
     assert video_list_input[1] == videos[1]
@@ -153,7 +153,7 @@ def test_videoinputlist_set_files():
         VideoInput(content=b"file"),
     ]
 
-    video_list_input = VideoInputList(__root__=videos)
+    video_list_input = VideoInputList(root=videos)
     video_list_input.set_files(files)
     assert video_list_input[0].content == files[0]
     assert video_list_input[1].content == files[1]
@@ -161,12 +161,12 @@ def test_videoinputlist_set_files():
     # If the number of files is not the same as the number of videos,
     # an error should be raised.
     files = [b"video data", b"another video data", b"yet another video data"]
-    video_list_input = VideoInputList(__root__=videos)
+    video_list_input = VideoInputList(root=videos)
     with pytest.raises(ValidationError):
         video_list_input.set_files(files)
 
     files = []
-    video_list_input = VideoInputList(__root__=videos)
+    video_list_input = VideoInputList(root=videos)
     with pytest.raises(ValidationError):
         video_list_input.set_files(files)
 
@@ -174,4 +174,4 @@ def test_videoinputlist_set_files():
 def test_videoinputlist_non_empty():
     """Test that videoinputlist must not be empty."""
     with pytest.raises(ValidationError):
-        VideoInputList(__root__=[])
+        VideoInputList(root=[])

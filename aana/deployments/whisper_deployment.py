@@ -1,11 +1,12 @@
 from collections.abc import AsyncGenerator
 from enum import Enum
-from typing import Any, TypedDict, cast
+from typing import Any, cast
 
 import torch
 from faster_whisper import WhisperModel
 from pydantic import BaseModel, Field
 from ray import serve
+from typing_extensions import TypedDict
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
@@ -161,7 +162,7 @@ class WhisperDeployment(BaseDeployment):
             params = WhisperParams()
         media_path: str = str(media.path)
         try:
-            segments, info = self.model.transcribe(media_path, **params.dict())
+            segments, info = self.model.transcribe(media_path, **params.model_dump())
         except Exception as e:
             raise InferenceException(self.model_name) from e
 
@@ -196,7 +197,7 @@ class WhisperDeployment(BaseDeployment):
             params = WhisperParams()
         media_path: str = str(media.path)
         try:
-            segments, info = self.model.transcribe(media_path, **params.dict())
+            segments, info = self.model.transcribe(media_path, **params.model_dump())
         except Exception as e:
             raise InferenceException(self.model_name) from e
 

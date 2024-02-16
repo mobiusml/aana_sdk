@@ -69,5 +69,5 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
             language=info.language,
             language_confidence=info.language_confidence,
             transcript=transcription.text,
-            segments=[s.dict() for s in segments],
+            segments=[s.model_dump() for s in segments],
         )

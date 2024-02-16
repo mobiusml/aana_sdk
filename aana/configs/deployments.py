@@ -23,7 +23,7 @@ deployments = {
                 temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
             ),
             chat_template="llama2",
-        ).dict(),
+        ).model_dump(),
     ),
     "hf_blip2_deployment_opt_2_7b": HFBlip2Deployment.options(
         num_replicas=1,
@@ -34,7 +34,7 @@ deployments = {
             dtype=Dtype.FLOAT16,
             batch_size=2,
             num_processing_threads=2,
-        ).dict(),
+        ).model_dump(),
     ),
     "whisper_deployment_medium": WhisperDeployment.options(
         num_replicas=1,
@@ -43,6 +43,6 @@ deployments = {
         user_config=WhisperConfig(
             model_size=WhisperModelSize.MEDIUM,
             compute_type=WhisperComputeType.FLOAT16,
-        ).dict(),
+        ).model_dump(),
     ),
 }

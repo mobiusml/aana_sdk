@@ -1,10 +1,11 @@
-from typing import Any, TypedDict
+from typing import Any
 
 import torch
 import transformers
 from pydantic import BaseModel, Field
 from ray import serve
 from transformers import Blip2ForConditionalGeneration, Blip2Processor
+from typing_extensions import TypedDict
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
