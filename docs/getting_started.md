@@ -736,12 +736,8 @@ poetry run python aana --host 0.0.0.0 --port 8000 --target blip2
 Once the SDK has initialized the pipeline, downloaded any remote resources necessary, and loaded the model weights, it will print "Deployed Serve app successfully." and that is the cue that it is ready to serve traffic and perform tasks, including inference.
 
 ## Tests
-
+### Unit tests
 Write unit tests for every freestand function or task function you add. Write unit tests for deployment methods or static functions that transform data without sending it to the inference engine (and refactor the deployment code so that as much functionality as possible is modularized so that it may be tested). 
-
-Additionally, please write some tests for the `[tests/deployments](tests/deployments)` folder that will load your deployment and programmatically run some inputs through it to validate that the deployment itself works as expected. Note, however, that due to the size and complexity of loading deployments that this might fail even if the logic is correct, if for example the user is running on a machine a GPU that is too small for the model.
-
-You can tell PyTest to skip tests under certain conditions. For example, if there is a deployment that doesn't make sense to run without a GPU, you can use the decorator `@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")` to tell pytest not to run it if there's no GPU available. The function `is_gpu_available()` is defined in aana.tests.utils.py.
 
 Additionally, you can use mocks to test things like database logic, or other code that would normally require extensive external functionality to test. For example, here is code that mocks out database calls so it can be run as a deployment without needed to load the model:
 
@@ -797,3 +793,79 @@ def test_create_caption(mocked_session):
     mocked_session.add.assert_called_once_with(caption)
     mocked_session.commit.assert_called_once()
 ```
+
+### Deployment tests
+Additionally, please write some deployment tests for the `[tests/deployments](../aana/tests/deployments)` folder that will load your deployment and programmatically run some inputs through it to validate that the deployment itself works as expected. Note, however, that due to the size and complexity of loading deployments that this might fail even if the logic is correct, if for example the user is running on a machine a GPU that is too small for the model.
+
+### Integration tests
+There are also a few integration tests for deployment targets in `[aana/tests/integration/](../aana/tests/deployments)` that endeavor to ensure the whole process of loading models and pipelines and running them works. The basic idea is that the test loads a target and then make a series of endpoint calls to verify that the deployment works.
+
+You can use an existing integration test as a model. Here's an example of an integration test from `[aana/tests/integration/test_llama2.py](../aana/tests/integration/test_llama2.py)`:
+```python
+import pytest
+
+from aana.tests.utils import is_gpu_available, is_using_deployment_cache
+
+# The name of the deployment to be tests.
+TARGET = "llama2"
+
+# Endpoints to be tested in the file
+LLM_GENERATE = "/llm/generate"
+LLM_GENERATE_STREAM = "/llm/generate_stream"
+LLM_CHAT = "/llm/chat"
+LLM_CHAT_STREAM = "/llm/chat_stream"
+
+# Skips the teest if the GPU is not available and the deployment cache is not in use (see below)
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
+# `call_endpoint` is automatically imported through conftest.py and manages starting the deployment
+# and sending deployment calls through.
+@pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
+# This sets the `dialog` and `error` parameters on test function to each value in the list; having a 
+# comma like in "dialog, error" causes the items in the list to be destructured on each call.
+# So this function (test_llama_chat) gets called once with 
+# dialog={"messages": [{"role": "user", "content": "Who is Elon Musk?"}]} and error=None,
+# once with
+# dialog={"messages": [{"role": "user", "content": "Where is the Eiffel Tower?"}]} and error=None
+# and once with a very long prompt and error=PromptTooLongException
+@pytest.mark.parametrize(
+    "dialog, error",
+    [
+        ({"messages": [{"role": "user", "content": "Who is Elon Musk?"}]}, None),
+        (
+            {"messages": [{"role": "user", "content": "Where is the Eiffel Tower?"}]},
+            None,
+        ),
+        (
+            {"messages": [{"role": "user", "content": "Who is Elon Musk?" * 1000}]},
+            "PromptTooLongException",
+        ),
+    ],
+)
+# The test function just calls a few endpoints. In this case, we are calling llama endpoints
+# with both as a streaming response and as a complete response.
+def test_llama_chat(call_endpoint, dialog, error):
+    """Test llama chat endpoint."""
+    call_endpoint(
+        LLM_CHAT,
+        {"dialog": dialog},
+        expected_error=error,
+    )
+
+    call_endpoint(
+        LLM_CHAT_STREAM,
+        {"dialog": dialog},
+        expected_error=error,
+    )
+```
+
+You can tell PyTest to skip tests under certain conditions. For example, if there is a deployment that doesn't make sense to run without a GPU, you can use the decorator `@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")` to tell pytest not to run it if there's no GPU available. The function `is_gpu_available()` is defined in aana.tests.utils.py.
+
+#### Deployment cache
+The deployment cache is a feature of integration tests that allows you to simulate running the model endpoints without having to go to the effort of downloading the model, loading it, and running on a GPU. This is useful to save time as well as to be able to run the integration tests without needing a GPU (for example if you are on your laptop without internet access).
+
+To enable it, 
+
+
