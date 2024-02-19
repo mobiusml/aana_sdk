@@ -11,9 +11,9 @@ from aana.models.pydantic.prompt import Prompt
 
 
 class StableDiffusion2Output(TypedDict):
-    """Output class."""
+    """Output class for the StableDiffusion2 deployment."""
 
-    data: Any
+    image: Any
 
 
 class StableDiffusion2Config(BaseModel):
@@ -26,8 +26,6 @@ class StableDiffusion2Config(BaseModel):
 
     model: str
     dtype: Dtype = Field(default=Dtype.AUTO)
-    batch_size: int = Field(default=1)
-    num_processing_threads: int = Field(default=1)
 
 
 @serve.deployment
@@ -39,9 +37,9 @@ class StableDiffusion2Deployment(BaseDeployment):
 
         The method is called when the deployment is created or updated.
 
-        It loads the model and processor from HuggingFace.
+        It loads the model and scheduler from HuggingFace.
 
-        The configuration should conform to the HFBlip2Config schema.
+        The configuration should conform to the StableDiffusion2Confgi schema.
         """
         config_obj = StableDiffusion2Config(**config)
 
@@ -59,11 +57,19 @@ class StableDiffusion2Deployment(BaseDeployment):
             scheduler=EulerDiscreteScheduler.from_pretrained(
                 self.model_id, subfolder="scheduler"
             ),
+            device_map=self.device,
         )
 
         self.model.to(self.device)
 
     async def generate(self, prompt: Prompt) -> StableDiffusion2Output:
-        """Generates output."""
+        """Runs the model on a given prompt and returns the first output.
+
+        Arguments:
+            prompt (Prompt): the prompt to the model.
+
+        Returns:
+            StableDiffusion2Output: a dictionary with one key containing the result
+        """
         image = self.model(str(prompt)).images[0]
         return {"image": image}
