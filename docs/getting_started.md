@@ -88,7 +88,7 @@ from aana.models.core.image import Image
 from aana.models.pydantic.prompt import Prompt
 
 if TYPE_CHECKING:
-    import PIL
+    import PIL.Image
 
 
 class StableDiffusion2Config(BaseModel):
@@ -106,7 +106,7 @@ class StableDiffusion2Config(BaseModel):
 class StableDiffusion2Output(TypedDict):
     """Output class."""
 
-    image: Any
+    image: PIL.Image.Image
 
 
 @serve.deployment
@@ -149,7 +149,7 @@ class StableDiffusion2Deployment(BaseDeployment):
         """
         result: PIL.Image = self.model(str(prompt)).images[0]
 
-        return {"image": Image(content=result.tobytes())}
+        return {"image": result}
 ```
 
 Now you have a deployment! The next step is to add pipeline nodes so the deployment can be called.
@@ -177,43 +177,47 @@ nodes = [
             {"name": "prompt", "key": "prompt", "path": "prompt", "data_model": Prompt}
         ],
     },
-    {
-        "name": "stablediffusion2-imagegen",
+        {
+        "name": "stable-diffusion-2-imagegen",
         "type": "ray_deployment",
         "deployment_name": "stablediffusion2_deployment",
         "method": "generate",
         "inputs": [
             {
                 "name": "prompt",  # name is taken from the same namespace as output (see above)
-                "key":"prompt",  # 'key' is what the argument is called in the method or function
-                "path": "prompt",  # this is a data path for hierarchically structured data
+                "key": "prompt",  # 'key' is what the argument is called in the method or function
+                "path": "prompt"  # This is a data path for hierarchically structured data
                 "data_model": Prompt  # Specifying a data model helps generate better documentation
-        }],
-        "outputs": [
-            {"name": "image_stablediffusion2",  # How we identify this output uniquely
-            "key": "image",  # If method returns a dict, what key on that dict to look up
-            "path": "image"  # Where to place this value in a data object hierarchy
             }
-        ]
+        ],
+        "outputs": [
+            {
+                "name": "image_stablediffusion2",  # How we identify this output uniquely
+                "key": "image",  # If method returns a dict, what key on that dict to look up
+                "path": "stablediffusion2-image",  # Where to place this value in a data object hierarchy
+                "data_model": PIL.Image.Image,
+            }
+        ],
     },
     {
         "name": "save_image_stablediffusion2",
         "type": "function",
         "function": "aana.utils.image.save_image",  # Could also be a function in a library
+        "dict_output": True,
         "inputs": [
             {
                 "name": "image_stablediffusion2",  # matches output of the previous node
-                "key": "image",  # matches the name of an argument to the function
-                "path": "image"  # where the data is located in the object hierarchy
+                "key": "image",  # matches name of argument to function
+                "path": "stablediffusion2-image",  # must also match previous node!
             },
         ],
         "outputs": [
             {
-                "name":"image_path_stablediffusion2",  # unique name
-                "key": "path",  # key on return dictionary
-                "path": "image_path"  # what the value is called in the object hierarchy
+                "name": "image_path_stablediffusion2",  # unique name
+                "key": "path",  # key on dictionary returned by function
+                "path": "image_path",  # what the value is called in the object hierarchy
             }
-        ]
+        ],
     }
 ]
 ```
@@ -246,18 +250,26 @@ Finally, we need to write the save_image function we referenced above  to `[aana
 from pathlib import Path
 from uuid import uuid4
 
+import PIL.Image
+
 from aana.configs.settings import settings
-from aana.models.core.image import Image
+from aana.models.core.file import PathResult
 
 
-def save_image(image: Image) -> dict[str, Path]:
-    """Saves an Image to a the tmp data dir."""
-    base_dir = settings.tmp_data_dir
-    filetype = "png"
-    filename = f"{uuid4()}.{filetype}"
-    full_path = base_dir / filename
-    image.save_from_content(full_path)
-    return {"path": full_path}  
+def save_image(image: PIL.Image.Image, full_path: Path | None = None, extension: str = 'png') -> PathResult:
+    """Saves an image to the given full path, or randomely generates one if no path is supplied.
+
+    Arguments:
+        image (Image): the image to save
+        full_path (Path|None): the path to save the image to. If None, will generate one randomly.
+
+    Returns:
+        PathResult: contains the path to the saved image.
+    """
+    if not full_path:
+        full_path = settings.image_dir / f"{uuid4()}.{extension}"
+    image.save(full_path)
+    return {"path": full_path}
 ```
 
 Now we have everything to run the SDK and send a request
@@ -523,7 +535,6 @@ Here's an example of these for a video processing pipeline ([aana/config/pipelin
         "type": "ray_task",
         "function": "aana.utils.video.extract_frames_decord",
         "batched": True,
-        "flatten_by": "video_batch.videos.[*]",
         "inputs": [
             {
                 "name": "video_objects",
