@@ -58,9 +58,9 @@
 
 ## Adding a New Model
 
-A ray deployment is a standardized interface for any kind of functionality that needs to manage state (primarily, but not limited to, an AI model that needs to be fetched and loaded onto a GPU). New deployments should inherit from aana.deployments.base_deployment.BaseDeployment, and be in the aana/deployments folder. Additionally, a deployment config for the deployment will have to be added to the `[aana/configs/deployments.py](aana/configs/deployments.py)` file. Here's a simple example using Stable Diffusion 2:
+A ray deployment is a standardized interface for any kind of functionality that needs to manage state (primarily, but not limited to, an AI model that needs to be fetched and loaded onto a GPU). New deployments should inherit from aana.deployments.base_deployment.BaseDeployment, and be in the aana/deployments folder. Additionally, a deployment config for the deployment will have to be added to the `[aana/configs/deployments.py](../aana/configs/deployments.py)` file. Here's a simple example using Stable Diffusion 2:
 
-[aana/configs/deployments.py](aana/configs/deployments.py):
+[aana/configs/deployments.py](../aana/configs/deployments.py):
 ```python
 deployments = {
     "stablediffusion2_deployment": StableDiffusion2Deployment.options(
@@ -73,7 +73,7 @@ deployments = {
     ),
 }
 ```
-[aana/deployments/stablediffusion2_deployment.py](aana/deployments/stablediffusion2_deployment.py):
+[aana/deployments/stablediffusion2_deployment.py](../aana/deployments/stablediffusion2_deployment.py):
 ```python
 from typing import TYPE_CHECKING, Any, TypedDict
 
@@ -164,7 +164,7 @@ For this simple pipeline, we only need three nodes:
 
 Step 3 is actually only necessary because the SDK doesn't return binary files yet. At some point we expect this to be supported, so then this would only need two steps to run.
 
-Here are nodes we need for `[aana/configs/pipeline.py](aana/configs/pipeline.py)`:
+Here are nodes we need for `[aana/configs/pipeline.py](../aana/configs/pipeline.py)`:
 ```python
 from aana.models.pydantic.prompt import Prompt
 
@@ -240,7 +240,7 @@ endpoints = {
 }
 ```
 
-Finally, we need to write the save_image function we referenced above  to `[aana/utils/image.py](aana/utils/image.py)`
+Finally, we need to write the save_image function we referenced above  to `[aana/utils/image.py](../aana/utils/image.py)`
 
 ```python
 from pathlib import Path
@@ -312,7 +312,7 @@ deployments = {
         ).dict(),
     ),
 ```
-[aana/deployments/hfblip2_deployment.py](aana/deployments/hfblip2_deployment.py):
+[aana/deployments/hfblip2_deployment.py](../aana/deployments/hfblip2_deployment.py):
 
 ```python
 class HFBlip2Config(BaseModel):  # BaseModel makes sure it's serializeable
@@ -464,7 +464,7 @@ A typical workflow with one inference stage might be:
 
 ![](diagram.png)
 
-Here's an example of these for a video processing pipeline ([aana/config/pipeline.py](aana/config/pipeline.py)):
+Here's an example of these for a video processing pipeline ([aana/config/pipeline.py](../aana/config/pipeline.py)):
 ```python
 # Input
     {
@@ -617,7 +617,7 @@ Here's an example of these for a video processing pipeline ([aana/config/pipelin
 
 ## Adding endpoints
 
-Now we're almost done. The last stage is to add a run target with endpoints that refer to the node inputs and outputs ([aana/config/endpoints.py](aana/config/endpoints.py)).
+Now we're almost done. The last stage is to add a run target with endpoints that refer to the node inputs and outputs ([aana/config/endpoints.py](../aana/config/endpoints.py)).
 
 ```python
 endpoints = {
@@ -657,7 +657,7 @@ Aana SDK is designed to have two databases, a structured database layer with res
 
 ### Saving to datastore
 
-You will need to add database entity models as a subclass of `aana.models.db.base.BaseEntity` to a class file in `[aana/models/db/](aana/models/db/)`. Additionally, to avoid import issues, you will need to import that model inside `[aana/models/db/__init__.py](aana/models/db/__init__.py)`.
+You will need to add database entity models as a subclass of `aana.models.db.base.BaseEntity` to a class file in `[aana/models/db/](../aana/models/db/)`. Additionally, to avoid import issues, you will need to import that model inside `[aana/models/db/__init__.py](../aana/models/db/__init__.py)`.
 
 Once you have defined your model, you will need to create an alembic migration to create the necessary table and modify other tables if necessary. Do this just by running
 
@@ -672,7 +672,7 @@ The app will automatically run the migration when you start up, so the rest is t
 
 We wrap access to the datastore in a repository class. There is a generic BaseRepository that provides the following methods: create, create_multiple, read (by id), delete (by id). If you want to fetch by another parameter (for example by a parent object id). Update logic is TODO since the semantics of in-place updates with the SqlAlchemy ORM is a bit complex.
 
-([aana/repository/datastore/caption_repository.py](aana/repository/datastore/caption_repository.py))
+([aana/repository/datastore/caption_repo.py](../aana/repository/datastore/caption_repo.py))
 
 ```python
 class CaptionsRepository(BaseRepository[CaptionEntity]):
@@ -685,7 +685,7 @@ class CaptionsRepository(BaseRepository[CaptionEntity]):
 
 That's it! 
 
-To make a repository work with the pipeline, it's easiest to wrap the repository actions in helper functions, like so ([aana/utils/db.py](aana/utils/db.py)):
+To make a repository work with the pipeline, it's easiest to wrap the repository actions in helper functions, like so ([aana/utils/db.py](../aana/utils/db.py)):
 
 ```python
 from sqlalchemy.orm import Session
