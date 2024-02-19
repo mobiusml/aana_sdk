@@ -725,7 +725,7 @@ nodes = [
         "inputs": [{"name": "prompt", "key": "prompt", "path": "prompt"}],
         "outputs": [
             {
-                "name": "stablediffusion2-image",
+                "name": "image_stablediffusion2",
                 "key": "image",
                 "path": "stablediffusion2-image",
             }
