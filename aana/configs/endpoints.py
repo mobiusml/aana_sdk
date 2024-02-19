@@ -265,8 +265,9 @@ endpoints = {
             name="imagegen",
             path="/generate_image",
             summary="Generates an image from a text prompt",
-            outputs=[EndpointOutput(name="image", output="stablediffusion2-image")],
+            outputs=[
+                EndpointOutput(name="image_path", output="image_path_stablediffusion2")
+            ],
         )
     ],
-
 }
