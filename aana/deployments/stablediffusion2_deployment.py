@@ -57,7 +57,7 @@ class StableDiffusion2Deployment(BaseDeployment):
             scheduler=EulerDiscreteScheduler.from_pretrained(
                 self.model_id, subfolder="scheduler"
             ),
-            device_map=self.device,
+            device_map="auto"",
         )
 
         self.model.to(self.device)
