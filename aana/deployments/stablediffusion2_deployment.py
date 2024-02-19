@@ -1,5 +1,6 @@
 from typing import Any, TypedDict
 
+import PIL
 import torch
 from diffusers import EulerDiscreteScheduler, StableDiffusionPipeline
 from pydantic import BaseModel, Field
@@ -13,7 +14,7 @@ from aana.models.pydantic.prompt import Prompt
 class StableDiffusion2Output(TypedDict):
     """Output class for the StableDiffusion2 deployment."""
 
-    image: Any
+    image: PIL.Image.Image
 
 
 class StableDiffusion2Config(BaseModel):
@@ -57,7 +58,7 @@ class StableDiffusion2Deployment(BaseDeployment):
             scheduler=EulerDiscreteScheduler.from_pretrained(
                 self.model_id, subfolder="scheduler"
             ),
-            device_map="auto"",
+            device_map="auto",
         )
 
         self.model.to(self.device)
