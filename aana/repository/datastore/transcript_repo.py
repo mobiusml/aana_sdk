@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from aana.configs.db import media_id_type
 from aana.exceptions.database import NotFoundException
 from aana.models.db import TranscriptEntity
+from aana.models.pydantic.media_id import MediaId
 from aana.repository.datastore.base import BaseRepository
 
 
@@ -13,14 +13,12 @@ class TranscriptRepository(BaseRepository[TranscriptEntity]):
         """Constructor."""
         super().__init__(session=session, model_class=TranscriptEntity)
 
-    def get_transcript(
-        self, model_name: str, media_id: media_id_type
-    ) -> TranscriptEntity:
+    def get_transcript(self, model_name: str, media_id: MediaId) -> TranscriptEntity:
         """Get the transcript for a video.
 
         Args:
             model_name (str): The name of the model used to generate the transcript.
-            media_id (media_id_type): The media ID.
+            media_id (MediaId): The media ID.
 
         Returns:
             TranscriptEntity: The transcript entity.

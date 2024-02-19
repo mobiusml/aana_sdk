@@ -5,12 +5,32 @@ from typing import TypeAlias, TypedDict
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import String, create_engine
+from sqlalchemy import String, TypeDecorator, create_engine
 
-# These are here so we can change types in a single place.
+from aana.models.pydantic.media_id import MediaId
 
-media_id_type: TypeAlias = str
-MediaIdSqlType: TypeAlias = String
+
+class MediaIdType(TypeDecorator):
+    """Custom type for handling MediaId objects with SQLAlchemy."""
+
+    impl = String
+
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        """Convert a MediaId instance to a string value for storage."""
+        if value is None:
+            return value
+        return str(value)
+
+    def process_result_value(self, value, dialect):
+        """Convert a string value from the database back into a MediaId instance."""
+        if value is None:
+            return value
+        return MediaId(value)
+
+
+MediaIdSqlType: TypeAlias = MediaIdType
 
 
 class SQLiteConfig(TypedDict):

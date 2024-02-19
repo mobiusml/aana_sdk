@@ -20,7 +20,7 @@ class Video(Media):
         path (Path): the path to the video file
         url (str): the URL of the video
         content (bytes): the content of the video in bytes
-        media_id (str): the ID of the video. If not provided, it will be generated automatically.
+        media_id (MediaId): the ID of the video. If not provided, it will be generated automatically.
         title (str): the title of the video
         description (str): the description of the video
         media_dir (Path): the directory to save the video in

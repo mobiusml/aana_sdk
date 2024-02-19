@@ -5,11 +5,12 @@ import typing
 from sqlalchemy import CheckConstraint, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from aana.configs.db import MediaIdSqlType, media_id_type
+from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseEntity, TimeStampEntity
 
 if typing.TYPE_CHECKING:
     from aana.models.pydantic.captions import Caption
+    from aana.models.pydantic.media_id import MediaId
 
 
 class CaptionEntity(BaseEntity, TimeStampEntity):
@@ -52,7 +53,7 @@ class CaptionEntity(BaseEntity, TimeStampEntity):
     def from_caption_output(
         cls,
         model_name: str,
-        media_id: media_id_type,
+        media_id: MediaId,
         video_id: int,
         frame_id: int,
         frame_timestamp: float,

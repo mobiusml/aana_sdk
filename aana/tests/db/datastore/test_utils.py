@@ -36,6 +36,7 @@ def mock_session(mocker):
     session_mock.context_var = context_var_mock
     # Emulate the behavior of the empty database.
     context_var_mock.query.return_value.filter_by.return_value.first.return_value = None
+    context_var_mock.query.return_value.get.return_value = None
     mocker.patch("aana.utils.db.Session", session_mock)
     return session_mock
 

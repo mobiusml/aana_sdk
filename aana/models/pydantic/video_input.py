@@ -1,4 +1,3 @@
-import uuid
 from pathlib import Path
 from types import MappingProxyType
 
@@ -7,6 +6,7 @@ from pydantic.error_wrappers import ErrorWrapper
 
 from aana.models.core.video import Video
 from aana.models.pydantic.base import BaseListModel
+from aana.models.pydantic.media_id import MediaId
 
 
 class VideoInput(BaseModel):
@@ -18,7 +18,7 @@ class VideoInput(BaseModel):
     the video will be loaded from the files uploaded to the endpoint.
 
     Attributes:
-        media_id (str): the ID of the video. If not provided, it will be generated automatically.
+        media_id (MediaId): the ID of the video. If not provided, it will be generated automatically.
         path (str): the file path of the video
         url (str): the URL of the video (supports YouTube videos)
         content (bytes): the content of the video in bytes
@@ -35,8 +35,8 @@ class VideoInput(BaseModel):
             "Set this field to 'file' to upload files to the endpoint."
         ),
     )
-    media_id: str = Field(
-        default_factory=lambda: str(uuid.uuid4()),
+    media_id: MediaId = Field(
+        default_factory=lambda: MediaId.random(),
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
 
@@ -63,7 +63,7 @@ class VideoInput(BaseModel):
         """Validates that the media_id is not an empty string.
 
         Args:
-            media_id (str): The value of the media_id field.
+            media_id (MediaId): The value of the media_id field.
 
         Raises:
             ValueError: If the media_id is an empty string.

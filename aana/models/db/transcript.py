@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import JSON, CheckConstraint, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from aana.configs.db import MediaIdSqlType, media_id_type
+from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseEntity, TimeStampEntity
 
 if TYPE_CHECKING:
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
         AsrTranscription,
         AsrTranscriptionInfo,
     )
+    from aana.models.pydantic.media_id import MediaId
 
 
 class TranscriptEntity(BaseEntity, TimeStampEntity):
@@ -54,7 +55,7 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
     def from_asr_output(
         cls,
         model_name: str,
-        media_id: media_id_type,
+        media_id: MediaId,
         video_id: int,
         info: AsrTranscriptionInfo,
         transcription: AsrTranscription,

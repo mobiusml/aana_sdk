@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
-from aana.exceptions.database import MediaIdAlreadyExistsException
+from aana.exceptions.database import MediaIdAlreadyExistsException, NotFoundException
 from aana.models.db import MediaEntity
+from aana.models.pydantic.media_id import MediaId
 from aana.repository.datastore.base import BaseRepository
 
 
@@ -12,19 +13,21 @@ class MediaRepository(BaseRepository[MediaEntity]):
         """Constructor."""
         super().__init__(session, MediaEntity)
 
-    def check_media_exists(self, media_id: str) -> bool:
+    def check_media_exists(self, media_id: MediaId) -> bool:
         """Checks if a media file exists in the database.
 
         Args:
-            media_id (str): The media ID.
+            media_id (MediaId): The media ID.
 
         Returns:
             bool: True if the media exists, False otherwise.
         """
-        return (
-            self.session.query(self.model_class).filter_by(id=media_id).first()
-            is not None
-        )
+        try:
+            self.read(media_id)
+        except NotFoundException:
+            return False
+
+        return True
 
     def create(self, entity: MediaEntity) -> MediaEntity:
         """Inserts a single new entity.

@@ -53,7 +53,9 @@ def run():
         }
     }
     try:
-        server = RequestHandler.bind(endpoints, pipeline_nodes, context)
+        server = RequestHandler.options(num_replicas=aana_settings.num_workers).bind(
+            endpoints, pipeline_nodes, context
+        )
         serve.run(server, port=args.port, host=args.host)
         # TODO: add logging
         print("Deployed Serve app successfully.")
