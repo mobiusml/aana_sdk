@@ -866,6 +866,64 @@ You can tell PyTest to skip tests under certain conditions. For example, if ther
 #### Deployment cache
 The deployment cache is a feature of integration tests that allows you to simulate running the model endpoints without having to go to the effort of downloading the model, loading it, and running on a GPU. This is useful to save time as well as to be able to run the integration tests without needing a GPU (for example if you are on your laptop without internet access).
 
-To enable it, 
+To enable it, set the environment variable `USE_DEPLOYMENT_CACHE=true` when running pytest. However, this won't work the first you run new tests, because the deployment cache won't be populated yet, and you haven't marked any functions as cacheable.
 
+To mark a function as cacheable so its output can be stored in the deployment cache, annotate it with @test_cache imported from `[aana.utils.test](../aana/utils/test.py)`. Here's our StableDiffusion 2 deployment with the generate method annotated:
 
+```python
+@serve.deployment
+class StableDiffusion2Deployment(BaseDeployment):
+    """Deployment to serve Stable Diffusion models using HuggingFace."""
+
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
+
+        The method is called when the deployment is created or updated.
+
+        It loads the model and processor from HuggingFace.
+
+        The configuration should conform to the StableDiffusion2Config schema.
+        """
+        config_obj = StableDiffusion2Config(**config)
+
+        # Load the model and scheduler from HuggingFace
+        self.model_id = config_obj.model
+        self.dtype = config_obj.dtype
+        self.torch_dtype = self.dtype.to_torch()
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model = StableDiffusionPipeline.from_pretrained(
+            self.model_id,
+            torch_dtype=self.torch_dtype,
+            scheduler=EulerDiscreteScheduler.from_pretrained(
+                self.model_id, subfolder="scheduler"
+            ),
+        )
+        self.model.to(self.device)
+
+    @test_cache
+    async def generate(self, prompt: Prompt) -> StableDiffusion2Output:
+        """Generate image for the given prompt.
+
+        Args:
+            prompt (Prompt): the prompt
+
+        Returns:
+            StableDiffusion2Output: the output
+        """
+        result: PIL.Image = self.model(str(prompt)).images[0]
+
+        return {"image": result}
+```
+
+Now you will need to run the tests once with the following environment variables:
+
+```bash
+USE_DEPLOYMENT_CACHE=false
+SAVE_DEPLOYMENT_CACHE=true
+```
+
+This will generate and save some JSON files with the SDK code base which represent the
+deployment cache; be sure to commit them when you commit the rest of your changes. 
+
+Once those files are generated you can set `USE_DEPLOYMENT_CACHE=true` and it will skip loading
+models and running inference on methods or functions where `@test_cache` is set.
