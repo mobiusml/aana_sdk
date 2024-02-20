@@ -266,7 +266,10 @@ endpoints = {
             path="/generate_image",
             summary="Generates an image from a text prompt",
             outputs=[
-                EndpointOutput(name="image_path", output="image_path_stablediffusion2")
+                EndpointOutput(
+                    name="image_path_stablediffusion2",
+                    output="image_path_stablediffusion2",
+                )
             ],
         )
     ],

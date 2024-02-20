@@ -101,7 +101,7 @@ from aana.models.core.image import Image
 from aana.models.pydantic.prompt import Prompt
 
 if TYPE_CHECKING:
-    import PIL
+    import PIL.Image
 
 
 class StableDiffusion2Config(BaseModel):
@@ -119,7 +119,7 @@ class StableDiffusion2Config(BaseModel):
 class StableDiffusion2Output(TypedDict):
     """Output class."""
 
-    image: Any
+    image: PIL.Image.Image
 
 
 @serve.deployment
@@ -162,7 +162,7 @@ class StableDiffusion2Deployment(BaseDeployment):
         """
         result: PIL.Image = self.model(str(prompt)).images[0]
 
-        return {"image": Image(content=result.tobytes())}
+        return {"image": result}
 ```
 
 Now you have a deployment! The next step is to add pipeline nodes so the deployment can be called.
@@ -190,43 +190,47 @@ nodes = [
             {"name": "prompt", "key": "prompt", "path": "prompt", "data_model": Prompt}
         ],
     },
-    {
-        "name": "stablediffusion2-imagegen",
+        {
+        "name": "stable-diffusion-2-imagegen",
         "type": "ray_deployment",
         "deployment_name": "stablediffusion2_deployment",
         "method": "generate",
         "inputs": [
             {
                 "name": "prompt",  # name is taken from the same namespace as output (see above)
-                "key":"prompt",  # 'key' is what the argument is called in the method or function
-                "path": "prompt",  # this is a data path for hierarchically structured data
+                "key": "prompt",  # 'key' is what the argument is called in the method or function
+                "path": "prompt"  # This is a data path for hierarchically structured data
                 "data_model": Prompt  # Specifying a data model helps generate better documentation
-        }],
-        "outputs": [
-            {"name": "image_stablediffusion2",  # How we identify this output uniquely
-            "key": "image",  # If method returns a dict, what key on that dict to look up
-            "path": "image"  # Where to place this value in a data object hierarchy
             }
-        ]
+        ],
+        "outputs": [
+            {
+                "name": "image_stablediffusion2",  # How we identify this output uniquely
+                "key": "image",  # If method returns a dict, what key on that dict to look up
+                "path": "stablediffusion2-image",  # Where to place this value in a data object hierarchy
+                "data_model": PIL.Image.Image,
+            }
+        ],
     },
     {
         "name": "save_image_stablediffusion2",
         "type": "function",
         "function": "aana.utils.image.save_image",  # Could also be a function in a library
+        "dict_output": True,
         "inputs": [
             {
                 "name": "image_stablediffusion2",  # matches output of the previous node
-                "key": "image",  # matches the name of an argument to the function
-                "path": "image"  # where the data is located in the object hierarchy
+                "key": "image",  # matches name of argument to function
+                "path": "stablediffusion2-image",  # must also match previous node!
             },
         ],
         "outputs": [
             {
-                "name":"image_path_stablediffusion2",  # unique name
-                "key": "path",  # key on return dictionary
-                "path": "image_path"  # what the value is called in the object hierarchy
+                "name": "image_path_stablediffusion2",  # unique name
+                "key": "path",  # key on dictionary returned by function
+                "path": "image_path",  # what the value is called in the object hierarchy
             }
-        ]
+        ],
     }
 ]
 ```
@@ -259,18 +263,26 @@ Finally, we need to write the save_image function we referenced above  to `[aana
 from pathlib import Path
 from uuid import uuid4
 
+import PIL.Image
+
 from aana.configs.settings import settings
-from aana.models.core.image import Image
+from aana.models.core.file import PathResult
 
 
-def save_image(image: Image) -> dict[str, Path]:
-    """Saves an Image to a the tmp data dir."""
-    base_dir = settings.tmp_data_dir
-    filetype = "png"
-    filename = f"{uuid4()}.{filetype}"
-    full_path = base_dir / filename
-    image.save_from_content(full_path)
-    return {"path": full_path}  
+def save_image(image: PIL.Image.Image, full_path: Path | None = None, extension: str = 'png') -> PathResult:
+    """Saves an image to the given full path, or randomely generates one if no path is supplied.
+
+    Arguments:
+        image (Image): the image to save
+        full_path (Path|None): the path to save the image to. If None, will generate one randomly.
+
+    Returns:
+        PathResult: contains the path to the saved image.
+    """
+    if not full_path:
+        full_path = settings.image_dir / f"{uuid4()}.{extension}"
+    image.save(full_path)
+    return {"path": full_path}
 ```
 
 Now we have everything to run the SDK and send a request
@@ -536,7 +548,6 @@ Here's an example of these for a video processing pipeline ([aana/config/pipelin
         "type": "ray_task",
         "function": "aana.utils.video.extract_frames_decord",
         "batched": True,
-        "flatten_by": "video_batch.videos.[*]",
         "inputs": [
             {
                 "name": "video_objects",
@@ -738,12 +749,8 @@ poetry run python aana --host 0.0.0.0 --port 8000 --target blip2
 Once the SDK has initialized the pipeline, downloaded any remote resources necessary, and loaded the model weights, it will print "Deployed Serve app successfully." and that is the cue that it is ready to serve traffic and perform tasks, including inference.
 
 ## Tests
-
+### Unit tests
 Write unit tests for every freestand function or task function you add. Write unit tests for deployment methods or static functions that transform data without sending it to the inference engine (and refactor the deployment code so that as much functionality as possible is modularized so that it may be tested). 
-
-Additionally, please write some tests for the `[tests/deployments](tests/deployments)` folder that will load your deployment and programmatically run some inputs through it to validate that the deployment itself works as expected. Note, however, that due to the size and complexity of loading deployments that this might fail even if the logic is correct, if for example the user is running on a machine a GPU that is too small for the model.
-
-You can tell PyTest to skip tests under certain conditions. For example, if there is a deployment that doesn't make sense to run without a GPU, you can use the decorator `@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")` to tell pytest not to run it if there's no GPU available. The function `is_gpu_available()` is defined in aana.tests.utils.py.
 
 Additionally, you can use mocks to test things like database logic, or other code that would normally require extensive external functionality to test. For example, here is code that mocks out database calls so it can be run as a deployment without needed to load the model:
 
@@ -799,3 +806,137 @@ def test_create_caption(mocked_session):
     mocked_session.add.assert_called_once_with(caption)
     mocked_session.commit.assert_called_once()
 ```
+
+### Deployment tests
+Additionally, please write some deployment tests for the `[tests/deployments](../aana/tests/deployments)` folder that will load your deployment and programmatically run some inputs through it to validate that the deployment itself works as expected. Note, however, that due to the size and complexity of loading deployments that this might fail even if the logic is correct, if for example the user is running on a machine a GPU that is too small for the model.
+
+### Integration tests
+There are also a few integration tests for deployment targets in `[aana/tests/integration/](../aana/tests/deployments)` that endeavor to ensure the whole process of loading models and pipelines and running them works. The basic idea is that the test loads a target and then make a series of endpoint calls to verify that the deployment works.
+
+You can use an existing integration test as a model. Here's an example of an integration test from `[aana/tests/integration/test_llama2.py](../aana/tests/integration/test_llama2.py)`:
+```python
+import pytest
+
+from aana.tests.utils import is_gpu_available, is_using_deployment_cache
+
+# The name of the deployment to be tests.
+TARGET = "llama2"
+
+# Endpoints to be tested in the file
+LLM_GENERATE = "/llm/generate"
+LLM_GENERATE_STREAM = "/llm/generate_stream"
+LLM_CHAT = "/llm/chat"
+LLM_CHAT_STREAM = "/llm/chat_stream"
+
+# Skips the teest if the GPU is not available and the deployment cache is not in use (see below)
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
+# `call_endpoint` is automatically imported through conftest.py and manages starting the deployment
+# and sending deployment calls through.
+@pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
+# This sets the `dialog` and `error` parameters on test function to each value in the list; having a 
+# comma like in "dialog, error" causes the items in the list to be destructured on each call.
+# So this function (test_llama_chat) gets called once with 
+# dialog={"messages": [{"role": "user", "content": "Who is Elon Musk?"}]} and error=None,
+# once with
+# dialog={"messages": [{"role": "user", "content": "Where is the Eiffel Tower?"}]} and error=None
+# and once with a very long prompt and error=PromptTooLongException
+@pytest.mark.parametrize(
+    "dialog, error",
+    [
+        ({"messages": [{"role": "user", "content": "Who is Elon Musk?"}]}, None),
+        (
+            {"messages": [{"role": "user", "content": "Where is the Eiffel Tower?"}]},
+            None,
+        ),
+        (
+            {"messages": [{"role": "user", "content": "Who is Elon Musk?" * 1000}]},
+            "PromptTooLongException",
+        ),
+    ],
+)
+# The test function just calls a few endpoints. In this case, we are calling llama endpoints
+# with both as a streaming response and as a complete response.
+def test_llama_chat(call_endpoint, dialog, error):
+    """Test llama chat endpoint."""
+    call_endpoint(
+        LLM_CHAT,
+        {"dialog": dialog},
+        expected_error=error,
+    )
+
+    call_endpoint(
+        LLM_CHAT_STREAM,
+        {"dialog": dialog},
+        expected_error=error,
+    )
+```
+
+You can tell PyTest to skip tests under certain conditions. For example, if there is a deployment that doesn't make sense to run without a GPU, you can use the decorator `@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")` to tell pytest not to run it if there's no GPU available. The function `is_gpu_available()` is defined in aana.tests.utils.py.
+
+#### Deployment cache
+The deployment cache is a feature of integration tests that allows you to simulate running the model endpoints without having to go to the effort of downloading the model, loading it, and running on a GPU. This is useful to save time as well as to be able to run the integration tests without needing a GPU (for example if you are on your laptop without internet access).
+
+To enable it, set the environment variable `USE_DEPLOYMENT_CACHE=true` when running pytest. However, this won't work the first you run new tests, because the deployment cache won't be populated yet, and you haven't marked any functions as cacheable.
+
+To mark a function as cacheable so its output can be stored in the deployment cache, annotate it with @test_cache imported from `[aana.utils.test](../aana/utils/test.py)`. Here's our StableDiffusion 2 deployment with the generate method annotated:
+
+```python
+@serve.deployment
+class StableDiffusion2Deployment(BaseDeployment):
+    """Deployment to serve Stable Diffusion models using HuggingFace."""
+
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
+
+        The method is called when the deployment is created or updated.
+
+        It loads the model and processor from HuggingFace.
+
+        The configuration should conform to the StableDiffusion2Config schema.
+        """
+        config_obj = StableDiffusion2Config(**config)
+
+        # Load the model and scheduler from HuggingFace
+        self.model_id = config_obj.model
+        self.dtype = config_obj.dtype
+        self.torch_dtype = self.dtype.to_torch()
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model = StableDiffusionPipeline.from_pretrained(
+            self.model_id,
+            torch_dtype=self.torch_dtype,
+            scheduler=EulerDiscreteScheduler.from_pretrained(
+                self.model_id, subfolder="scheduler"
+            ),
+        )
+        self.model.to(self.device)
+
+    @test_cache
+    async def generate(self, prompt: Prompt) -> StableDiffusion2Output:
+        """Generate image for the given prompt.
+
+        Args:
+            prompt (Prompt): the prompt
+
+        Returns:
+            StableDiffusion2Output: the output
+        """
+        result: PIL.Image = self.model(str(prompt)).images[0]
+
+        return {"image": result}
+```
+
+Now you will need to run the tests once with the following environment variables:
+
+```bash
+USE_DEPLOYMENT_CACHE=false
+SAVE_DEPLOYMENT_CACHE=true
+```
+
+This will generate and save some JSON files with the SDK code base which represent the
+deployment cache; be sure to commit them when you commit the rest of your changes. 
+
+Once those files are generated you can set `USE_DEPLOYMENT_CACHE=true` and it will skip loading
+models and running inference on methods or functions where `@test_cache` is set.
