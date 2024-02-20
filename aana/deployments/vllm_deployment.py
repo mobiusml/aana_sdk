@@ -34,6 +34,9 @@ class VLLMConfig(BaseModel):
         gpu_memory_reserved (float): the GPU memory reserved for the model in mb
         default_sampling_params (SamplingParams): the default sampling parameters.
         max_model_len (int): the maximum generated text length in tokens (optional, default: None)
+        chat_template (str): the name of the chat template, if not provided, the chat template from the model will be used
+                             but some models may not have a chat template (optional, default: None)
+        enforce_eager (bool): whether to enforce eager execution (optional, default: False)
     """
 
     model: str
