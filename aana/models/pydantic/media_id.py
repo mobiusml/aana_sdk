@@ -1,5 +1,4 @@
 import uuid
-from types import MappingProxyType
 
 from pydantic import ConfigDict, model_validator
 from typing_extensions import Self

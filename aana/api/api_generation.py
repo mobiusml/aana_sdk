@@ -237,9 +237,9 @@ class Endpoint:
                 continue
 
             # check if pydantic model has file_upload field and it's set to True
-            file_upload_enabled = getattr(data_model.model_config, "file_upload", False)
-            file_upload_description = getattr(
-                data_model.model_config, "file_upload_description", ""
+            file_upload_enabled = data_model.model_config.get("file_upload", False)
+            file_upload_description = data_model.model_config.get(
+                "file_upload_description", ""
             )
 
             if file_upload_enabled and file_upload_field is None:

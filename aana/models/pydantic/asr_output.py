@@ -1,4 +1,3 @@
-from types import MappingProxyType  # for immutable dictionary
 
 import numpy as np
 from faster_whisper.transcribe import (
@@ -41,11 +40,9 @@ class AsrWord(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "Word",
-            }
-        )
+        json_schema_extra={
+            "description": "Word",
+        }
     )
 
 
@@ -91,11 +88,9 @@ class AsrSegment(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "Segment",
-            }
-        )
+        json_schema_extra={
+            "description": "Segment",
+        }
     )
 
 
@@ -138,11 +133,9 @@ class AsrTranscriptionInfo(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "Transcription info",
-            }
-        )
+        json_schema_extra={
+            "description": "Transcription info",
+        }
     )
 
 
@@ -164,11 +157,9 @@ class AsrTranscription(BaseModel):
         return AsrTranscription(text=text)
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "Transcription/Translation",
-            }
-        )
+        json_schema_extra={
+            "description": "Transcription/Translation",
+        }
     )
 
 
@@ -179,11 +170,9 @@ class AsrSegments(BaseListModel):
         description="List of ASR segments", default_factory=list
     )
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "List of ASR segments",
-            }
-        )
+        json_schema_extra={
+            "description": "List of ASR segments",
+        }
     )
 
 
@@ -192,11 +181,9 @@ class AsrSegmentsList(BaseListModel):
 
     root: list[AsrSegments]
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "List of lists of ASR segments",
-            }
-        )
+        json_schema_extra={
+            "description": "List of lists of ASR segments",
+        }
     )
 
 
@@ -205,11 +192,9 @@ class AsrTranscriptionInfoList(BaseListModel):
 
     root: list[AsrTranscriptionInfo]
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "List of ASR transcription info",
-            }
-        )
+        json_schema_extra={
+            "description": "List of ASR transcription info",
+        }
     )
 
 
@@ -218,9 +203,7 @@ class AsrTranscriptionList(BaseListModel):
 
     root: list[AsrTranscription]
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": "List of ASR transcription",
-            }
-        )
+        json_schema_extra={
+            "description": "List of ASR transcription",
+        }
     )

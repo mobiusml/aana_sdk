@@ -8,14 +8,14 @@ from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.model_executor.utils import set_random_seed
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-from vllm.utils import  random_uuid
+from vllm.utils import random_uuid
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException, PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.chat_template import apply_chat_template
-from aana.utils.general import merged_options, get_gpu_memory
+from aana.utils.general import get_gpu_memory, merged_options
 from aana.utils.test import test_cache
 
 
@@ -38,6 +38,7 @@ class VLLMConfig(BaseModel):
     default_sampling_params: SamplingParams
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
+    enforce_eager: bool | None = Field(default=False)
 
 
 class LLMOutput(TypedDict):
@@ -108,6 +109,7 @@ class VLLMDeployment(BaseDeployment):
             model=config_obj.model,
             dtype=config_obj.dtype,
             quantization=config_obj.quantization,
+            enforce_eager=config_obj.enforce_eager,
             gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
         )
@@ -117,7 +119,7 @@ class VLLMDeployment(BaseDeployment):
 
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
-        self.tokenizer = self.engine.engine.tokenizer
+        self.tokenizer = self.engine.engine.tokenizer.tokenizer
         self.model_config = await self.engine.get_model_config()
 
     @test_cache
