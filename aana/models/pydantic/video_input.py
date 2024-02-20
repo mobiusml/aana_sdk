@@ -1,6 +1,4 @@
 from pathlib import Path
-from types import MappingProxyType
-from typing_extensions import Self
 
 from pydantic import (
     BaseModel,
@@ -10,6 +8,9 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from pydantic_core import InitErrorDetails
+from typing_extensions import Self
+
 from aana.models.core.video import Video
 from aana.models.pydantic.base import BaseListModel
 from aana.models.pydantic.media_id import MediaId
@@ -83,7 +84,6 @@ class VideoInput(BaseModel):
             raise ValueError("media_id cannot be an empty string")  # noqa: TRY003
         return media_id
 
-
     @model_validator(mode="after")
     def check_only_one_field(self) -> Self:
         """Check that exactly one of 'path', 'url', or 'content' is provided.
@@ -94,9 +94,7 @@ class VideoInput(BaseModel):
         Returns:
             Self: the instance
         """
-        count = sum(
-            value is not None for value in [self.path, self.url, self.content]
-        )
+        count = sum(value is not None for value in [self.path, self.url, self.content])
         if count != 1:
             raise ValueError(  # noqa: TRY003
                 "Exactly one of 'path', 'url', or 'content' must be provided."
@@ -132,12 +130,21 @@ class VideoInput(BaseModel):
             ValidationError: if the number of files isn't 1
         """
         if len(files) != 1:
-            # error = ErrorWrapper(
-            #     ValueError("The number of videos and files must be the same."),
-            #     loc=("video",),
-            # )
-            # raise ValidationError([error], self.__class__)
-            raise ValueError("The number of videos and files must be the same.")
+            raise ValidationError.from_exception_data(
+                title=self.__class__.__name__,
+                line_errors=[
+                    InitErrorDetails(
+                        loc=("video",),
+                        type="value_error",
+                        ctx={
+                            "error": ValueError(
+                                "The number of videos and files must be the same."
+                            )
+                        },
+                        input=None,
+                    )
+                ],
+            )
         self.set_file(files[0])
 
     def convert_input_to_object(self) -> Video:
@@ -158,18 +165,16 @@ class VideoInput(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": (
-                    "A video. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided. \n"
-                    "If 'path' is provided, the video will be loaded from the path. \n"
-                    "If 'url' is provided, the video will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        ),
+        json_schema_extra={
+            "description": (
+                "A video. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                "If 'path' is provided, the video will be loaded from the path. \n"
+                "If 'url' is provided, the video will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
         validate_assignment=True,
         file_upload=True,
         file_upload_description="Upload video file.",
@@ -197,7 +202,7 @@ class VideoInputList(BaseListModel):
             Self: the instance
         """
         if len(self.root) == 0:
-            raise ValueError("The list of videos must not be empty.")
+            raise ValueError("The list of videos must not be empty.")  # noqa: TRY003
         return self
 
     def set_files(self, files: list[bytes]):
@@ -210,12 +215,21 @@ class VideoInputList(BaseListModel):
             ValidationError: if the number of videos and files aren't the same
         """
         if len(self.root) != len(files):
-            # error = ErrorWrapper(
-            #     ValueError("The number of videos and files must be the same."),
-            #     loc=("videos",),
-            # )
-            # raise ValidationError([error], self.__class__)
-            raise ValueError("The number of videos and files must be the same.")
+            raise ValidationError.from_exception_data(
+                title=self.__class__.__name__,
+                line_errors=[
+                    InitErrorDetails(
+                        loc=("videos",),
+                        type="value_error",
+                        ctx={
+                            "error": ValueError(
+                                "The number of videos and files must be the same."
+                            )
+                        },
+                        input=None,
+                    )
+                ],
+            )
         for video, file in zip(self.root, files, strict=False):
             video.set_file(file)
 
@@ -228,18 +242,16 @@ class VideoInputList(BaseListModel):
         return self.root
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": (
-                    "A list of videos. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided for each video. \n"
-                    "If 'path' is provided, the video will be loaded from the path. \n"
-                    "If 'url' is provided, the video will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        ),
+        json_schema_extra={
+            "description": (
+                "A list of videos. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided for each video. \n"
+                "If 'path' is provided, the video will be loaded from the path. \n"
+                "If 'url' is provided, the video will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
         file_upload=True,
         file_upload_description="Upload video files.",
     )

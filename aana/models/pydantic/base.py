@@ -1,8 +1,8 @@
-from pydantic import BaseModel, RootModel
+from pydantic import RootModel
 from pyparsing import Any
 
 
-class BaseListModel(BaseModel):
+class BaseListModel(RootModel[list]):
     """The base model for pydantic models with list as root.
 
     It makes pydantic models with list as root behave like normal lists.

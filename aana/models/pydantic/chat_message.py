@@ -1,4 +1,3 @@
-from types import MappingProxyType
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -16,8 +15,8 @@ class ChatMessage(BaseModel):
 
     content: str
     role: Role
-    model_config = ConfigDict(json_schema_extra=MappingProxyType(
-        {
+    model_config = ConfigDict(
+        json_schema_extra={
             "description": "A chat message.",
             "examples": [
                 {
@@ -34,7 +33,7 @@ class ChatMessage(BaseModel):
                 },
             ],
         }
-    ))
+    )
 
 
 class ChatDialog(BaseModel):
@@ -45,8 +44,8 @@ class ChatDialog(BaseModel):
     """
 
     messages: list[ChatMessage]
-    model_config = ConfigDict(json_schema_extra=MappingProxyType(
-        {
+    model_config = ConfigDict(
+        json_schema_extra={
             "description": "A chat dialog.",
             "examples": [
                 {
@@ -67,4 +66,4 @@ class ChatDialog(BaseModel):
                 }
             ],
         }
-    ))
+    )

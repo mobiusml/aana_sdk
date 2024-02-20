@@ -18,7 +18,8 @@ deployments = {
             model="TheBloke/Llama-2-7b-Chat-AWQ",
             dtype="auto",
             quantization="awq",
-            gpu_memory_reserved=10000,
+            gpu_memory_reserved=13000,
+            enforce_eager=True,
             default_sampling_params=SamplingParams(
                 temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
             ),

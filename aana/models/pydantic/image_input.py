@@ -1,7 +1,5 @@
 import io
 from pathlib import Path
-from types import MappingProxyType
-from typing_extensions import Self
 
 import numpy as np
 from pydantic import (
@@ -12,6 +10,8 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from pydantic_core import InitErrorDetails
+from typing_extensions import Self
 
 from aana.models.core.image import Image
 from aana.models.pydantic.base import BaseListModel
@@ -108,33 +108,42 @@ class ImageInput(BaseModel):
             ValidationError: if the number of images and files aren't the same
         """
         if len(files) != 1:
-            # error = ErrorWrapper(
-            #     ValueError("The number of images and files must be the same."),
-            #     loc=("images",),
-            # )
-            # raise ValidationError([error], self.__class__)
-            raise ValueError("The number of images and files must be the same.")
+            raise ValidationError.from_exception_data(
+                title=self.__class__.__name__,
+                line_errors=[
+                    InitErrorDetails(
+                        loc=("images",),
+                        type="value_error",
+                        ctx={
+                            "error": ValueError(
+                                "The number of images and files must be the same."
+                            )
+                        },
+                        input=None,
+                    )
+                ],
+            )
         self.set_file(files[0])
 
-        @model_validator(mode="after")
-        def check_only_one_field(self) -> Self:
-            """Check that exactly one of 'path', 'url', 'content' or 'numpy' is provided.
+    @model_validator(mode="after")
+    def check_only_one_field(self) -> Self:
+        """Check that exactly one of 'path', 'url', 'content' or 'numpy' is provided.
 
-            Raises:
-                ValueError: if not exactly one of 'path', 'url', 'content' or 'numpy' is provided
+        Raises:
+            ValueError: if not exactly one of 'path', 'url', 'content' or 'numpy' is provided
 
-            Returns:
-                Self: the instance
-            """
-            count = sum(
-                value is not None
-                for value in [self.path, self.url, self.content, self.numpy]
+        Returns:
+            Self: the instance
+        """
+        count = sum(
+            value is not None
+            for value in [self.path, self.url, self.content, self.numpy]
+        )
+        if count != 1:
+            raise ValueError(  # noqa: TRY003
+                "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
-            if count != 1:
-                raise ValueError(  # noqa: TRY003
-                    "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided."
-                )
-            return self
+        return self
 
     def convert_input_to_object(self) -> Image:
         """Convert the image input to an image object.
@@ -164,18 +173,16 @@ class ImageInput(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": (
-                    "An image. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided. \n"
-                    "If 'path' is provided, the image will be loaded from the path. \n"
-                    "If 'url' is provided, the image will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        ),
+        json_schema_extra={
+            "description": (
+                "An image. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                "If 'path' is provided, the image will be loaded from the path. \n"
+                "If 'url' is provided, the image will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
         validate_assignment=True,
         file_upload=True,
         file_upload_description="Upload image file.",
@@ -202,7 +209,7 @@ class ImageInputList(BaseListModel):
             Self: the instance
         """
         if len(self.root) == 0:
-            raise ValueError("The list of images must not be empty.")
+            raise ValueError("The list of images must not be empty.")  # noqa: TRY003
         return self
 
     def set_files(self, files: list[bytes]):
@@ -215,7 +222,7 @@ class ImageInputList(BaseListModel):
             ValidationError: if the number of images and files aren't the same
         """
         if len(self.root) != len(files):
-            error =  ValueError("The number of images and files must be the same.")
+            error = ValueError("The number of images and files must be the same.")
             # raise ValidationError(error,
             raise error
         for image, file in zip(self.root, files, strict=False):
@@ -230,18 +237,16 @@ class ImageInputList(BaseListModel):
         return [image.convert_input_to_object() for image in self.root]
 
     model_config = ConfigDict(
-        json_schema_extra=MappingProxyType(
-            {
-                "description": (
-                    "A list of images. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
-                    "If 'path' is provided, the image will be loaded from the path. \n"
-                    "If 'url' is provided, the image will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        ),
+        json_schema_extra={
+            "description": (
+                "A list of images. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
+                "If 'path' is provided, the image will be loaded from the path. \n"
+                "If 'url' is provided, the image will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
         file_upload=True,
         file_upload_description="Upload image files.",
     )
