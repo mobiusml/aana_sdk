@@ -56,6 +56,10 @@ def test_llama_generate(call_endpoint, prompt, error):
             None,
         ),
         (
+            {"messages": [{"role": "user", "content": "Who is Elon Musk?" * 100}]},
+            None,
+        ),
+        (
             {"messages": [{"role": "user", "content": "Who is Elon Musk?" * 1000}]},
             "PromptTooLongException",
         ),

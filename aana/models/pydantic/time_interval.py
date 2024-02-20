@@ -1,4 +1,3 @@
-from types import MappingProxyType
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -13,8 +12,8 @@ class TimeInterval(BaseModel):
 
     start: float = Field(ge=0.0, description="Start time in seconds")
     end: float = Field(ge=0.0, description="End time in seconds")
-    model_config = ConfigDict(json_schema_extra=MappingProxyType(
-        {
+    model_config = ConfigDict(
+        json_schema_extra={
             "description": "Time interval in seconds",
         }
-    ))
+    )

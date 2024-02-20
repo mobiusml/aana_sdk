@@ -1,5 +1,4 @@
 import collections.abc
-from types import MappingProxyType
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -68,6 +67,9 @@ class WhisperParams(BaseModel):
                 "Each temperature in the sequence must be between 0 and 1."
             )
         return v
-    model_config = ConfigDict(json_schema_extra=MappingProxyType(
-        {"description": "Parameters for the Whisper audio-to-text model."}
-    ))
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "Parameters for the Whisper audio-to-text model."
+        }
+    )
