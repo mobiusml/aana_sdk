@@ -2,6 +2,7 @@
 
 It is used to generate the pipeline and the API endpoints.
 """
+import PIL.Image
 
 from aana.models.pydantic.asr_output import (
     AsrSegments,
@@ -728,6 +729,7 @@ nodes = [
                 "name": "image_stablediffusion2",
                 "key": "image",
                 "path": "stablediffusion2-image",
+                "data_model": PIL.Image.Image,
             }
         ],
     },
@@ -735,11 +737,12 @@ nodes = [
         "name": "save_image_stablediffusion2",
         "type": "function",
         "function": "aana.utils.image.save_image",
+        "dict_output": True,
         "inputs": [
             {
                 "name": "image_stablediffusion2",
                 "key": "image",
-                "path": "image",
+                "path": "stablediffusion2-image",
             },
         ],
         "outputs": [
