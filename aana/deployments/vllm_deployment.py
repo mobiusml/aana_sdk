@@ -1,3 +1,4 @@
+import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
 
@@ -6,7 +7,11 @@ from ray import serve
 from typing_extensions import TypedDict
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
-from vllm.model_executor.utils import set_random_seed
+
+with contextlib.suppress(ImportError):
+    from vllm.model_executor.utils import (
+        set_random_seed,  # Ignore if we don't have GPU and only run on CPU with test cache
+    )
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
 
