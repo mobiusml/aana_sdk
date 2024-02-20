@@ -1,4 +1,17 @@
 # Aana SDK Getting Started
+
+Aana SDK is an SDK for deploying and serving multimodal machine-learning models of Mobius Labs.
+
+The SDK is designed according to the following principles:
+
+Reliability: Aana is designed to be reliable and robust. It is built to be fault-tolerant and to handle failures gracefully.
+Scalability: Aana is designed to be scalable. It is built on top of Ray, a distributed computing framework, and can be easily scaled to multiple servers.
+Efficiency: Aana is designed to be efficient. It is built to be fast and parallel and to use resources efficiently.
+Easy to Use: Aana is designed to be easy to use by developers. It is built to be modular, with a lot of automation and abstraction.
+These design principles are reflected in the architecture of the SDK. The SDK is built on top of Ray, a distributed computing framework, and Mobius Pipeline, a Python package designed for efficient and parallel processing of complex workflows. The SDK is designed to be modular, with a lot of automation and abstraction.
+
+Although we are trying to follow these principles, we are aware that there is always room for improvement. The SDK is still in development, and not all features are fully implemented. We are constantly working on improving the SDK, and we welcome any feedback or suggestions.
+
 ## Code overview
 
     aana/ - top level source code directory for the project
