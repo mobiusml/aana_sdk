@@ -16,6 +16,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionInfo,
 )
 from aana.models.pydantic.whisper_params import WhisperParams
+from aana.utils.test import test_cache
 
 
 class WhisperComputeType(str, Enum):
@@ -137,6 +138,7 @@ class WhisperDeployment(BaseDeployment):
         )
 
     # TODO: add audio support
+    @test_cache
     async def transcribe(
         self, media: Video, params: WhisperParams | None = None
     ) -> WhisperOutput:
@@ -174,6 +176,7 @@ class WhisperDeployment(BaseDeployment):
             transcription=asr_transcription,
         )
 
+    @test_cache
     async def transcribe_stream(
         self, media: Video, params: WhisperParams | None = None
     ) -> AsyncGenerator[WhisperOutput, None]:

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from aana.models.db import CaptionEntity
+from aana.models.pydantic.media_id import MediaId
 from aana.repository.datastore.base import BaseRepository
 
 
@@ -11,12 +12,12 @@ class CaptionRepository(BaseRepository[CaptionEntity]):
         """Constructor."""
         super().__init__(session, CaptionEntity)
 
-    def get_captions(self, model_name: str, media_id: int) -> list[CaptionEntity]:
+    def get_captions(self, model_name: str, media_id: MediaId) -> list[CaptionEntity]:
         """Get the captions for a video.
 
         Args:
             model_name (str): The model name.
-            media_id (int): The media ID.
+            media_id (MediaId): The media ID.
 
         Returns:
             list[CaptionEntity]: The list of caption entities.

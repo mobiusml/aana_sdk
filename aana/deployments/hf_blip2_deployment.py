@@ -1,6 +1,7 @@
 from typing import Any, TypedDict
 
 import torch
+import transformers
 from pydantic import BaseModel, Field
 from ray import serve
 from transformers import Blip2ForConditionalGeneration, Blip2Processor
@@ -10,6 +11,7 @@ from aana.exceptions.general import InferenceException
 from aana.models.core.dtype import Dtype
 from aana.models.core.image import Image
 from aana.utils.batch_processor import BatchProcessor
+from aana.utils.test import test_cache
 
 
 class HFBlip2Config(BaseModel):
@@ -97,6 +99,7 @@ class HFBlip2Deployment(BaseDeployment):
         self.processor = Blip2Processor.from_pretrained(self.model_id)
         self.model.to(self.device)
 
+    @test_cache
     async def generate(self, image: Image) -> CaptioningOutput:
         """Generate captions for the given image.
 
@@ -115,6 +118,7 @@ class HFBlip2Deployment(BaseDeployment):
         )
         return CaptioningOutput(caption=captions["captions"][0])
 
+    @test_cache
     async def generate_batch(self, **kwargs) -> CaptioningBatchOutput:
         """Generate captions for the given images.
 
@@ -149,6 +153,8 @@ class HFBlip2Deployment(BaseDeployment):
         Raises:
             InferenceException: if the inference fails
         """
+        # Set the seed to make the results reproducible
+        transformers.set_seed(42)
         # Loading images
         numpy_images = [im.get_numpy() for im in images]
         inputs = self.processor(numpy_images, return_tensors="pt").to(

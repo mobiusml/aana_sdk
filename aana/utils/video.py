@@ -23,6 +23,7 @@ from aana.models.pydantic.asr_output import (
     AsrSegments,
 )
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
+from aana.models.pydantic.question import Question
 from aana.models.pydantic.video_input import VideoInput
 from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
@@ -80,8 +81,8 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
 
     frames_array = video_reader.get_batch(indexes).asnumpy()
     frames = []
-    for _, frame in enumerate(frames_array):
-        img = Image(numpy=frame)
+    for frame_id, frame in enumerate(frames_array):
+        img = Image(numpy=frame, media_id=f"{video.media_id}_frame_{frame_id}")
         frames.append(img)
 
     return FramesDict(
@@ -147,8 +148,8 @@ def generate_frames_decord(
         batch = indexes[i : i + batch_size]
         batch_frames_array = video_reader.get_batch(batch).asnumpy()
         batch_frames = []
-        for _, frame in enumerate(batch_frames_array):
-            img = Image(numpy=frame)
+        for frame_id, frame in enumerate(batch_frames_array):
+            img = Image(numpy=frame, media_id=f"{video.media_id}_frame_{frame_id}")
             batch_frames.append(img)
 
         batch_timestamps = timestamps[i : i + batch_size]
@@ -268,7 +269,7 @@ def generate_combined_timeline(
 def generate_dialog(
     metadata: VideoMetadata,
     timeline: list[dict],
-    question: str,
+    question: Question,
     max_timeline_len: int | None = 1024,
 ) -> ChatDialog:
     """Generates a dialog from the metadata and timeline of a video.
@@ -276,7 +277,7 @@ def generate_dialog(
     Args:
         metadata (VideoMetadata): the metadata of the video
         timeline (list[dict]): the timeline of the video
-        question (str): the question to ask
+        question (Question): the question to ask
         max_timeline_len (int, optional): the maximum length of the timeline in tokens.
                                           Defaults to 1024.
                                           If the timeline is longer than this, it will be truncated.
