@@ -5,12 +5,32 @@ from typing import TypeAlias, TypedDict
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import String, create_engine
+from sqlalchemy import String, TypeDecorator, create_engine
 
-# These are here so we can change types in a single place.
+from aana.models.pydantic.media_id import MediaId
 
-media_id_type: TypeAlias = str
-MediaIdSqlType: TypeAlias = String
+
+class MediaIdType(TypeDecorator):
+    """Custom type for handling MediaId objects with SQLAlchemy."""
+
+    impl = String
+
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        """Convert a MediaId instance to a string value for storage."""
+        if value is None:
+            return value
+        return str(value)
+
+    def process_result_value(self, value, dialect):
+        """Convert a string value from the database back into a MediaId instance."""
+        if value is None:
+            return value
+        return MediaId(value)
+
+
+MediaIdSqlType: TypeAlias = MediaIdType
 
 
 class SQLiteConfig(TypedDict):
@@ -112,3 +132,17 @@ def run_alembic_migrations(settings):
 
     alembic_config = get_alembic_config(settings, ini_file_path, alembic_data_path)
     command.upgrade(alembic_config, "head")
+
+
+def drop_all_tables(settings):
+    """Drops all tables in the database."""
+    # TODO: only allow this in testing mode
+    current_path = Path(__file__)
+    aana_root = current_path.parent.parent  # go up two directories
+    if aana_root.name != "aana":  # we are not in the right place
+        raise RuntimeError("Not in right directory, exiting.")  # noqa: TRY003
+    ini_file_path = aana_root / "alembic.ini"
+    alembic_data_path = aana_root / "alembic"
+
+    alembic_config = get_alembic_config(settings, ini_file_path, alembic_data_path)
+    command.downgrade(alembic_config, "base")

@@ -153,23 +153,25 @@ class PromptTooLongException(BaseException):
         return (self.__class__, (self.prompt_len, self.max_len))
 
 
-class MediaIdNotFoundException(BaseException):
-    """Exception raised when a media ID is not found.
+class EndpointNotFoundException(BaseException):
+    """Exception raised when an endpoint is not found.
 
     Attributes:
-        media_id (str): the media ID
+        target (str): the name of the target deployment
+        endpoint (str): the endpoint path
     """
 
-    def __init__(self, media_id: str):
+    def __init__(self, target: str, endpoint: str):
         """Initialize the exception.
 
         Args:
-            media_id (str): the media ID
+            target (str): the name of the target deployment
+            endpoint (str): the endpoint path
         """
-        super().__init__(media_id=media_id)
-        self.media_id = media_id
-        self.http_status_code = 404
+        super().__init__(target=target, endpoint=endpoint)
+        self.target = target
+        self.endpoint = endpoint
 
     def __reduce__(self):
         """Used for pickling."""
-        return (self.__class__, (self.media_id,))
+        return (self.__class__, (self.target, self.endpoint))
