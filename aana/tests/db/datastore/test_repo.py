@@ -14,6 +14,7 @@ def mocked_session(mocker):
     session = mocker.MagicMock(spec=Session)
     # Emulate the behavior of the empty database.
     session.query.return_value.filter_by.return_value.first.return_value = None
+    session.query.return_value.get.return_value = None
     return session
 
 

@@ -1,5 +1,4 @@
 import io
-import uuid
 from pathlib import Path
 from types import MappingProxyType
 
@@ -9,6 +8,7 @@ from pydantic.error_wrappers import ErrorWrapper
 
 from aana.models.core.image import Image
 from aana.models.pydantic.base import BaseListModel
+from aana.models.pydantic.media_id import MediaId
 
 
 class ImageInput(BaseModel):
@@ -45,8 +45,8 @@ class ImageInput(BaseModel):
             "Set this field to 'file' to upload files to the endpoint."
         ),
     )
-    media_id: str = Field(
-        default_factory=lambda: str(uuid.uuid4()),
+    media_id: MediaId = Field(
+        default_factory=lambda: MediaId.random(),
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
 
@@ -55,7 +55,7 @@ class ImageInput(BaseModel):
         """Validates that the media_id is not an empty string.
 
         Args:
-            media_id (str): The value of the media_id field.
+            media_id (MediaId): The value of the media_id field.
 
         Raises:
             ValueError: If the media_id is an empty string.

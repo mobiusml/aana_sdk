@@ -1,8 +1,8 @@
 import hashlib
-import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from aana.models.pydantic.media_id import MediaId
 from aana.utils.general import download_file
 
 
@@ -19,13 +19,13 @@ class Media:
         path (Path): the path to the media file
         url (str): the URL of the media
         content (bytes): the content of the media in bytes
-        media_id (str): the ID of the media. If not provided, it will be generated automatically.
+        media_id (MediaId): the ID of the media. If not provided, it will be generated automatically.
     """
 
     path: Path | None = None
     url: str | None = None
     content: bytes | None = None
-    media_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    media_id: MediaId = field(default_factory=lambda: MediaId.random())
     save_on_disk: bool = True
     is_saved: bool = False
     media_dir: Path | None = None
@@ -34,7 +34,7 @@ class Media:
         """Validate the media."""
         # check that path is a Path object
         if self.path and not isinstance(self.path, Path):
-            raise ValueError(self.path)
+            raise ValueError("'path' must be a Path object.")  # noqa: TRY003
 
         # check if path exists if provided
         if self.path and not self.path.exists():
