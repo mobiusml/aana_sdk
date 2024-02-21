@@ -16,6 +16,7 @@ alembic = "^1.12.1"
 bitsandbytes = "^0.42.0"
 decord = "^0.6.0"
 deepdiff = "^6.7.0"
+diffusers = "^0.23.1"
 fastapi = "^0.104.0"
 faster-whisper = "^0.9.0"
 onnxruntime = "1.16.1"
@@ -28,7 +29,7 @@ ray = {extras = ["serve"], version = "~2.8.1"}
 rapidfuzz = "^3.4.0"
 scipy = "^1.11.3"
 sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
-transformers = "^4.34.1"
+transformers = "^4.34.0"
 torch = { url = "https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp310-cp310-linux_x86_64.whl" }
 torchvision = { url = "https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp310-cp310-linux_x86_64.whl" }
 vllm = "^0.2.1.post1"
