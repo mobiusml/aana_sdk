@@ -146,11 +146,11 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         )
 
     batched_stream = handle.options(stream=True).batched_inference.remote(
-        media=audio,  # chnge all
+        media=audio,
         vad_segments=final_input,
         batch_size=16,
-        params=WhisperParams(word_timestamps=False),
-    )
+        params=WhisperParams(),
+    )  # word_timestamps=True
 
     # Combine individual segments and compare with the final dict
     transcript = ""

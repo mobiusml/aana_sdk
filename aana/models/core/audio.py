@@ -12,7 +12,7 @@ from aana.utils.general import download_file
 
 
 class AbstractAudioLibrary:
-    """Abstract class for audio libraries."""
+    """Class for audio libraries."""
 
     @classmethod
     def read_file(cls, path: Path) -> np.ndarray:
@@ -101,7 +101,7 @@ class Audio(Media):
     title: str = ""
     description: str = ""
     audio_dir: Path | None = settings.audio_dir
-    numpy: np.ndarray | None = None  
+    numpy: np.ndarray | None = None
     audio_lib: type[AbstractAudioLibrary] = AbstractAudioLibrary
 
     def validate(self):
