@@ -15,7 +15,7 @@ from yt_dlp.utils import DownloadError
 from aana.configs.settings import settings
 from aana.exceptions.general import (
     DownloadException,
-    VideoReadingException,  # AudioReadingException
+    VideoReadingException,
 )
 from aana.models.core.image import Image
 from aana.models.core.video import Video
@@ -279,29 +279,30 @@ def check_and_load_audio(file: str, sr: int = 16000):
         return out
 
 
-def extract_audio(video_input: VideoInput | Video) -> Audio:
-    """Extract the audio file from a VideoInput and return as a Audio object.
+def extract_audio(video: Video) -> Audio:
+    """Extract the audio file from a Video and return as a Audio object.
 
     Args:
-        video_input (VideoInput): The media file to extract audio.
+        video (Video): The video file to extract audio.
 
     Returns:
         An Audio object containing the extracted audio.
 
     """
-    media_path = str(video_input.path)
+    media_path = str(video.path)
     # TODO: No need to convert 16khz, single channel PCM audio and just return the path.
 
     # Check for audio and convert audio to bytes or None if no audio channel.
+    # TODO: Split to check_audio and load_audio functions.
     audio_bytes = check_and_load_audio(media_path)
 
     if not audio_bytes:
         audio_bytes = b""  # empty audio
     return Audio(
         content=audio_bytes,
-        title=video_input.title if isinstance(video_input, Video) else "",
-        description=video_input.description if isinstance(video_input, Video) else "",
-    )  # video_input.title,
+        title=video.title,
+        description=video.description,
+    )
 
 
 def generate_combined_timeline(

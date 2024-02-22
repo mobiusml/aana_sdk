@@ -57,7 +57,7 @@ class AsrSegment(BaseModel):
         time_interval (TimeInterval): Time interval of the segment
         confidence (float): Confidence of the segment (Optional)
         no_speech_confidence (float): Chance of being a silence segment (Optional)
-        words (List[AsrWord]): List of words in the segment (Optional)
+        words (list[AsrWord]): List of words in the segment (Optional)
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
@@ -68,7 +68,7 @@ class AsrSegment(BaseModel):
     no_speech_confidence: float | None = Field(
         ge=0.0, le=1.0, description="Chance of being a silence segment"
     )
-    words: list[AsrWord] | None = Field(
+    words: list[AsrWord] = Field(
         description="List of words in the segment", default_factory=list
     )
 
@@ -85,7 +85,7 @@ class AsrSegment(BaseModel):
         if whisper_words:
             words = [AsrWord.from_whisper(word) for word in whisper_segment.words]
         else:
-            words = None
+            words = []
 
         no_speech_prob = getattr(whisper_segment, "no_speech_prob", None)
         no_speech_confidence = no_speech_prob if no_speech_prob else None

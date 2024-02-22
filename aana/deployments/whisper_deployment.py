@@ -92,6 +92,9 @@ class WhisperConfig(BaseModel):
     compute_type: WhisperComputeType = Field(
         default=WhisperComputeType.FLOAT16, description="The compute type."
     )
+    default_batched_asr_options: TranscriptionOptions = TranscriptionOptions(
+        **default_batched_asr_options
+    )
 
 
 class WhisperOutput(TypedDict):
@@ -141,6 +144,7 @@ class WhisperDeployment(BaseDeployment):
         self.model = WhisperModel(
             self.model_size, device=self.device, compute_type=self.compute_type
         )
+        self.default_batched_asr_options = config_obj.default_batched_asr_options
 
     @test_cache
     async def transcribe(
@@ -253,16 +257,16 @@ class WhisperDeployment(BaseDeployment):
     @test_cache
     async def batched_inference(
         self,
-        media: Audio,
-        vad_segments: list[VadSegment],
+        audio: Audio,
+        segments: list[VadSegment],
         batch_size: int = 16,
         params: WhisperParams | None = None,
     ) -> AsyncGenerator[WhisperOutput, None]:
         """Transcribe a single audio as batches of segments with the Whisper model (4x faster).
 
         Args:
-            media (Audio): The media to transcribe.
-            vad_segments (list[VadSegment]): List of segments to guide batching the audio data.
+            audio (Audio): The audio to transcribe.
+            segments (list[VadSegment]): List of segments to guide batching the audio data.
             batch_size (int): Maximum batch size for the batched inference.
             params (WhisperParams): The parameters for the whisper model.
 
@@ -290,26 +294,25 @@ class WhisperDeployment(BaseDeployment):
             # If no language is specified, language will be first detected for each audio.
             tokenizer = None
 
-        default_asr_options = TranscriptionOptions(**default_batched_asr_options)
+        # default_asr_options = TranscriptionOptions(**default_batched_asr_options)
 
         self.batched_model = BatchedInferencePipeline(
             model=self.model,
-            options=default_asr_options,
+            options=self.default_batched_asr_options,
             tokenizer=tokenizer,
             language=params.language,
         )
 
-        audio_array = media.get_numpy()
+        audio_array = audio.get_numpy()
 
-        vad_input = [seg.to_dict() for seg in vad_segments]
+        vad_input = [seg.to_dict() for seg in segments]
 
         if not vad_input:
             # For silent audios/no audio tracks, return empty output with language as silence
-            info = {"language": "silence", "language_probability": 1.0}
             yield WhisperOutput(
                 segments=[],
-                transcription_info=AsrTranscriptionInfo.from_whisper(
-                    SimpleNamespace(**info)
+                transcription_info=AsrTranscriptionInfo(
+                    language="silence", language_probability=1.0
                 ),
                 transcription=AsrTranscription(text=""),
             )
