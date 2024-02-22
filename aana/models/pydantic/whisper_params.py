@@ -41,7 +41,7 @@ class WhisperParams(BaseModel):
         default=False, description="Whether to extract word-level timestamps."
     )
     vad_filter: bool = Field(
-        default=False,
+        default=True,
         description="Whether to enable voice activity detection filtering.",
     )
 

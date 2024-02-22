@@ -29,7 +29,7 @@ def test_asr_segment_from_whisper():
         end=1.0,
         avg_logprob=-0.5,
         no_speech_prob=0.1,
-        words=None,  # changed rrom [] to cater for batched version without words.
+        words=[],  # changed rrom [] to cater for batched version without words.
         text="hello world",
     )
 
@@ -41,7 +41,7 @@ def test_asr_segment_from_whisper():
     )
     assert asr_segment.confidence == np.exp(whisper_segment.avg_logprob)
     assert asr_segment.no_speech_confidence == whisper_segment.no_speech_prob
-    assert asr_segment.words == None
+    assert asr_segment.words == []
 
     word = WhisperWord(
         word="hello",

@@ -77,17 +77,17 @@ endpoints = {
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="audio_transcriptions_whisper_medium",
+                    output="video_transcriptions_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="audio_transcriptions_segments_whisper_medium",
+                    output="video_transcriptions_segments_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="info",
-                    output="audio_transcriptions_info_whisper_medium",
+                    output="video_transcriptions_info_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(name="transcription_id", output="transcription_id"),
@@ -101,36 +101,36 @@ endpoints = {
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="audio_transcriptions_whisper_medium_from_db",
+                    output="video_transcriptions_whisper_medium_from_db",
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="audio_transcriptions_segments_whisper_medium_from_db",
+                    output="video_transcriptions_segments_whisper_medium_from_db",
                 ),
                 EndpointOutput(
                     name="info",
-                    output="audio_transcriptions_info_whisper_medium_from_db",
+                    output="video_transcriptions_info_whisper_medium_from_db",
                 ),
             ],
         ),
         Endpoint(
-            name="whisper_transcribe",
-            path="/video/transcribe_batch",
+            name="whisper_transcribe_segments",
+            path="/video/transcribe_segments",
             summary="Transcribe a video using Whisper Medium in batch mode",
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="audio_transcriptions_batched_whisper_medium",
+                    output="video_transcriptions_batched_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="audio_transcriptions_segments_batched_whisper_medium",
+                    output="video_transcriptions_segments_batched_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="info",
-                    output="audio_transcriptions_info_batched_whisper_medium",
+                    output="video_transcriptions_info_batched_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
@@ -148,7 +148,6 @@ endpoints = {
             ],
         ),
     ],
-
     "chat_with_video": [
         Endpoint(
             name="index_video_stream",
@@ -157,22 +156,22 @@ endpoints = {
             outputs=[
                 EndpointOutput(
                     name="transcription",
-                    output="audio_transcriptions_whisper_medium",
+                    output="video_transcriptions_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="segments",
-                    output="audio_transcriptions_segments_whisper_medium",
+                    output="video_transcriptions_segments_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="info",
-                    output="audio_transcriptions_info_whisper_medium",
+                    output="video_transcriptions_info_whisper_medium",
                     streaming=True,
                 ),
                 EndpointOutput(
                     name="captions",
-                    output="audio_captions_hf_blip2_opt_2_7b",
+                    output="video_captions_hf_blip2_opt_2_7b",
                     streaming=True,
                 ),
                 EndpointOutput(
