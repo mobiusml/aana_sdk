@@ -421,11 +421,11 @@ nodes = [
         "name": "extract_audio",
         "type": "ray_task",
         "function": "aana.utils.video.extract_audio",
-        "dict_output": False,  
+        "dict_output": False,
         "inputs": [
             {
                 "name": "video_object",
-                "key": "video_input",
+                "key": "video",
                 "path": "video.video",
             },
         ],
@@ -433,7 +433,7 @@ nodes = [
             {
                 "name": "audio_object",
                 "key": "output",
-                "path": "audio.audio",
+                "path": "video.audio",
             },
         ],
     },
@@ -498,7 +498,7 @@ nodes = [
         ],
     },
     {
-        "name": "whisper_medium_transcribe_audio",
+        "name": "whisper_medium_transcribe_video",
         "type": "ray_deployment",
         "deployment_name": "whisper_deployment_medium",
         "data_type": "generator",
@@ -508,7 +508,7 @@ nodes = [
             {
                 "name": "audio_object",
                 "key": "media",
-                "path": "audio.audio",
+                "path": "video.audio",
             },
             {
                 "name": "whisper_params",
@@ -519,21 +519,21 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "audio_transcriptions_segments_whisper_medium",
+                "name": "video_transcriptions_segments_whisper_medium",
                 "key": "segments",
-                "path": "audio.segments",
+                "path": "video.segments",
                 "data_model": AsrSegments,
             },
             {
-                "name": "audio_transcriptions_info_whisper_medium",
+                "name": "video_transcriptions_info_whisper_medium",
                 "key": "transcription_info",
-                "path": "audio.transcription_info",
+                "path": "video.transcription_info",
                 "data_model": AsrTranscriptionInfo,
             },
             {
-                "name": "audio_transcriptions_whisper_medium",
+                "name": "video_transcriptions_whisper_medium",
                 "key": "transcription",
-                "path": "audio.transcription",
+                "path": "video.transcription",
                 "data_model": AsrTranscription,
             },
         ],
@@ -546,7 +546,7 @@ nodes = [
             {
                 "name": "vad_params",
                 "key": "vad_params",
-                "path": "audio.vad_params",
+                "path": "video.vad_params",
                 "data_model": VadParams,
             }
         ],
@@ -559,26 +559,26 @@ nodes = [
         "inputs": [
             {
                 "name": "audio_object",
-                "key": "media",
-                "path": "audio.audio",
+                "key": "audio",
+                "path": "video.audio",
             },
             {
                 "name": "vad_params",
                 "key": "params",
-                "path": "audio.vad_params",
+                "path": "video.vad_params",
             },
         ],
         "outputs": [
             {
-                "name": "audio_transcriptions_vad_segments",
-                "key": "vad_segments",
-                "path": "audio.vad_segments",
+                "name": "video_transcriptions_vad_segments",
+                "key": "segments",
+                "path": "video.vad_segments",
                 "data_model": VadSegments,
             },
         ],
     },
     {
-        "name": "whisper_medium_batched_inference_audio",
+        "name": "whisper_medium_batched_inference_video",
         "type": "ray_deployment",
         "deployment_name": "whisper_deployment_medium",
         "data_type": "generator",
@@ -587,13 +587,13 @@ nodes = [
         "inputs": [
             {
                 "name": "audio_object",
-                "key": "media",
-                "path": "audio.audio",
+                "key": "audio",
+                "path": "video.audio",
             },
             {
-                "name": "audio_transcriptions_vad_segments",
-                "key": "vad_segments",
-                "path": "audio.vad_segments",
+                "name": "video_transcriptions_vad_segments",
+                "key": "segments",
+                "path": "video.vad_segments",
             },
             {
                 "name": "whisper_params",
@@ -604,21 +604,21 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "audio_transcriptions_segments_batched_whisper_medium",
+                "name": "video_transcriptions_segments_batched_whisper_medium",
                 "key": "segments",
-                "path": "audio.segments_batched",
+                "path": "video.segments_batched",
                 "data_model": AsrSegments,
             },
             {
-                "name": "audio_transcriptions_info_batched_whisper_medium",
+                "name": "video_transcriptions_info_batched_whisper_medium",
                 "key": "transcription_info",
-                "path": "audio.transcription_info_batched",
+                "path": "video.transcription_info_batched",
                 "data_model": AsrTranscriptionInfo,
             },
             {
-                "name": "audio_transcriptions_batched_whisper_medium",
+                "name": "video_transcriptions_batched_whisper_medium",
                 "key": "transcription",
-                "path": "audio.transcription_batched",
+                "path": "video.transcription_batched",
                 "data_model": AsrTranscription,
             },
         ],
@@ -669,7 +669,7 @@ nodes = [
         ],
     },
     {
-        "name": "load_audio_transcription",
+        "name": "load_video_transcription",
         "type": "function",
         "function": "aana.utils.db.load_video_transcription",
         "dict_output": True,
@@ -685,21 +685,21 @@ nodes = [
         ],
         "outputs": [
             {
-                "name": "audio_transcriptions_info_whisper_medium_from_db",
+                "name": "video_transcriptions_info_whisper_medium_from_db",
                 "key": "transcription_info",
-                "path": "audio_transcriptions_info_whisper_medium_from_db",
+                "path": "video_transcriptions_info_whisper_medium_from_db",
                 "data_model": AsrTranscriptionInfo,
             },
             {
-                "name": "audio_transcriptions_segments_whisper_medium_from_db",
+                "name": "video_transcriptions_segments_whisper_medium_from_db",
                 "key": "segments",
-                "path": "audio_transcriptions_segments_whisper_medium_from_db",
+                "path": "video_transcriptions_segments_whisper_medium_from_db",
                 "data_model": AsrSegments,
             },
             {
-                "name": "audio_transcriptions_whisper_medium_from_db",
+                "name": "video_transcriptions_whisper_medium_from_db",
                 "key": "transcription",
-                "path": "audio_transcriptions_whisper_medium_from_db",
+                "path": "video_transcriptions_whisper_medium_from_db",
                 "data_model": AsrTranscription,
             },
         ],
@@ -743,9 +743,9 @@ nodes = [
         "function": "aana.utils.video.generate_combined_timeline",
         "inputs": [
             {
-                "name": "audio_transcriptions_segments_whisper_medium_from_db",
+                "name": "video_transcriptions_segments_whisper_medium_from_db",
                 "key": "transcription_segments",
-                "path": "audio_transcriptions_segments_whisper_medium_from_db",
+                "path": "video_transcriptions_segments_whisper_medium_from_db",
             },
             {
                 "name": "video_captions_hf_blip2_opt_2_7b_from_db",
@@ -895,7 +895,7 @@ nodes = [
         ],
     },
     {
-        "name": "save_audio_transcription",
+        "name": "save_video_transcription",
         "type": "function",
         "function": "aana.utils.db.save_video_transcription",
         "kwargs": {
@@ -909,31 +909,31 @@ nodes = [
                 "path": "video.media_id",
             },
             {
-                "name": "audio_transcriptions_info_whisper_medium",
+                "name": "video_transcriptions_info_whisper_medium",
                 "key": "transcription_info",
-                "path": "audio.transcription_info",
+                "path": "video.transcription_info",
             },
             {
-                "name": "audio_transcriptions_segments_whisper_medium",
+                "name": "video_transcriptions_segments_whisper_medium",
                 "key": "segments",
-                "path": "audio.segments",
+                "path": "video.segments",
             },
             {
-                "name": "audio_transcriptions_whisper_medium",
+                "name": "video_transcriptions_whisper_medium",
                 "key": "transcription",
-                "path": "audio.transcription",
+                "path": "video.transcription",
             },
         ],
         "outputs": [
             {
                 "name": "transcription_id",
                 "key": "transcription_id",
-                "path": "audio.transcription_id",
+                "path": "video.transcription_id",
             }
         ],
     },
     {
-        "name": "save_audio_transcription_batched",
+        "name": "save_video_transcription_batched",
         "type": "function",
         "function": "aana.utils.db.save_video_transcription",
         "kwargs": {
@@ -947,26 +947,26 @@ nodes = [
                 "path": "video.media_id",
             },
             {
-                "name": "audio_transcriptions_info_batched_whisper_medium",
+                "name": "video_transcriptions_info_batched_whisper_medium",
                 "key": "transcription_info",
-                "path": "audio.transcription_info_batched",
+                "path": "video.transcription_info_batched",
             },
             {
-                "name": "audio_transcriptions_segments_batched_whisper_medium",
+                "name": "video_transcriptions_segments_batched_whisper_medium",
                 "key": "segments",
-                "path": "audio.segments_batched",
+                "path": "video.segments_batched",
             },
             {
-                "name": "audio_transcriptions_batched_whisper_medium",
+                "name": "video_transcriptions_batched_whisper_medium",
                 "key": "transcription",
-                "path": "audio.transcription_batched",
+                "path": "video.transcription_batched",
             },
         ],
         "outputs": [
             {
                 "name": "transcription_id_batched",
                 "key": "transcription_id",
-                "path": "audio.transcription_id_batched",
+                "path": "video.transcription_id_batched",
             }
         ],
     },
