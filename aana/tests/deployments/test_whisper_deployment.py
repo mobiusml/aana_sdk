@@ -95,7 +95,6 @@ async def test_whisper_deployment(setup_whisper_deployment, video_file):
     grouped_dict = defaultdict(list)
     transcript = ""
     async for chunk in stream:
-        chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
         grouped_dict["segments"].append(output.get("segments")[0])

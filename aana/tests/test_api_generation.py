@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 from mobius_pipeline.node.socket import Socket
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.exceptions.general import MultipleFileUploadNotAllowed
@@ -13,9 +13,7 @@ class InputModel(BaseModel):
     """Model for a text input."""
 
     input: str = Field(..., description="Input text")
-
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
 class FileUploadModel(BaseModel):
@@ -32,20 +30,14 @@ class FileUploadModel(BaseModel):
             if isinstance(files, list):
                 files = files[0]
             self.content = files
-
-    class Config:
-        extra = Extra.forbid
-        file_upload = True
-        file_upload_description = "Upload image files."
+    model_config = ConfigDict(extra="forbid", file_upload=True, file_upload_description="Upload image files.")
 
 
 class OutputModel(BaseModel):
     """Model for outputs."""
 
     output: str = Field(..., description="Output text")
-
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
 def test_get_request_model():
@@ -72,11 +64,11 @@ def test_get_request_model():
     assert RequestModel.__name__ == "TestEndpointRequest"
 
     # Check that the request model has the correct fields
-    assert RequestModel.__fields__.keys() == {"input", "input_without_datamodel"}
+    assert RequestModel.model_fields.keys() == {"input", "input_without_datamodel"}
 
     # Check that the request fields have the correct types
-    assert RequestModel.__fields__["input"].type_ == InputModel
-    assert RequestModel.__fields__["input_without_datamodel"].type_ == Any
+    assert RequestModel.model_fields["input"].annotation == InputModel
+    assert RequestModel.model_fields["input_without_datamodel"].annotation == Any
 
 
 def test_get_response_model():
@@ -108,11 +100,11 @@ def test_get_response_model():
     assert ResponseModel.__name__ == "TestEndpointResponse"
 
     # Check that the response model has the correct fields
-    assert ResponseModel.__fields__.keys() == {"output", "output_without_datamodel"}
+    assert ResponseModel.model_fields.keys() == {"output", "output_without_datamodel"}
 
     # Check that the response fields have the correct types
-    assert ResponseModel.__fields__["output"].type_ == OutputModel
-    assert ResponseModel.__fields__["output_without_datamodel"].type_ == Any
+    assert ResponseModel.model_fields["output"].annotation == OutputModel
+    assert ResponseModel.model_fields["output_without_datamodel"].annotation == Any
 
     endpoint_with_one_output = Endpoint(
         name="test_endpoint",
@@ -131,10 +123,10 @@ def test_get_response_model():
     assert ResponseModel.__name__ == "TestEndpointResponse"
 
     # Check that the response model has the correct fields
-    assert ResponseModel.__fields__.keys() == {"output"}
+    assert ResponseModel.model_fields.keys() == {"output"}
 
     # Check that the response fields have the correct types
-    assert ResponseModel.__fields__["output"].type_ == OutputModel
+    assert ResponseModel.model_fields["output"].annotation == OutputModel
 
 
 def test_get_file_upload_field():
