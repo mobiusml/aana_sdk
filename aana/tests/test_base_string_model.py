@@ -6,7 +6,7 @@ from aana.models.pydantic.base import BaseStringModel
 
 def test_str_model_creation():
     """Test that a media id can be created."""
-    str_model = BaseStringModel(__root__="foo")
+    str_model = BaseStringModel(root="foo")
     assert str_model == "foo"
 
     str_model = BaseStringModel("foo")

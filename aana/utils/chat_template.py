@@ -50,7 +50,7 @@ def apply_chat_template(
         ValueError: If the tokenizer does not have a chat template.
         ValueError: If the chat template does not exist.
     """
-    messages = dialog.dict()["messages"]
+    messages = dialog.model_dump()["messages"]
 
     if chat_template_name is not None:
         chat_template = load_chat_template(chat_template_name)
