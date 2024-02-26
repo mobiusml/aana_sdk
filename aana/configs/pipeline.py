@@ -2,6 +2,7 @@
 
 It is used to generate the pipeline and the API endpoints.
 """
+import PIL.Image
 
 from aana.models.pydantic.asr_output import (
     AsrSegments,
@@ -718,6 +719,41 @@ nodes = [
                 "name": "vllm_llama2_7b_chat_output_dialog_stream_video",
                 "key": "text",
                 "path": "vllm_llama2_7b_chat_output_dialog_stream_video",
+            }
+        ],
+    },
+    {
+        "name": "stable-diffusion-2-imagegen",
+        "type": "ray_deployment",
+        "deployment_name": "stablediffusion2_deployment",
+        "method": "generate",
+        "inputs": [{"name": "prompt", "key": "prompt", "path": "prompt"}],
+        "outputs": [
+            {
+                "name": "image_stablediffusion2",
+                "key": "image",
+                "path": "stablediffusion2-image",
+                "data_model": PIL.Image.Image,
+            }
+        ],
+    },
+    {
+        "name": "save_image_stablediffusion2",
+        "type": "function",
+        "function": "aana.utils.image.save_image",
+        "dict_output": True,
+        "inputs": [
+            {
+                "name": "image_stablediffusion2",
+                "key": "image",
+                "path": "stablediffusion2-image",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "image_path_stablediffusion2",
+                "key": "path",
+                "path": "image_path",
             }
         ],
     },

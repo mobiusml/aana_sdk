@@ -1,4 +1,8 @@
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
+from aana.deployments.stablediffusion2_deployment import (
+    StableDiffusion2Config,
+    StableDiffusion2Deployment,
+)
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
 from aana.deployments.whisper_deployment import (
     WhisperComputeType,
@@ -45,5 +49,14 @@ deployments = {
             model_size=WhisperModelSize.MEDIUM,
             compute_type=WhisperComputeType.FLOAT16,
         ).model_dump(),
+    ),
+    "stablediffusion2_deployment": StableDiffusion2Deployment.options(
+        num_replicas=1,
+        max_concurrent_queries=1000,
+        ray_actor_options={"num_gpus": 1},
+        user_config=StableDiffusion2Config(
+            model="stabilityai/stable-diffusion-2",
+            dtype=Dtype.FLOAT16,
+        ).dict(),
     ),
 }
