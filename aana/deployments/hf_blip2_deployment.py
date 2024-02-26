@@ -120,11 +120,13 @@ class HFBlip2Deployment(BaseDeployment):
         return CaptioningOutput(caption=captions["captions"][0])
 
     @test_cache
-    async def generate_batch(self, images, **kwargs) -> CaptioningBatchOutput:
+    async def generate_batch(
+        self, images: list[Image], **kwargs
+    ) -> CaptioningBatchOutput:
         """Generate captions for the given images.
 
         Args:
-            images (List[Image]): the images
+            images (list[Image]): the images
 
         Returns:
             CaptioningBatchOutput: the dictionary with one key "captions"
@@ -143,7 +145,7 @@ class HFBlip2Deployment(BaseDeployment):
         This method is called by the batch processor.
 
         Args:
-            images (List[Image]): the images
+            images (list[Image]): the images
 
         Returns:
             CaptioningBatchOutput: the dictionary with one key "captions"

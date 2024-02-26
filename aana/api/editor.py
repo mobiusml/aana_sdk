@@ -94,14 +94,31 @@ def annotation_to_type(annotation_node):
     return ast.unparse(annotation_node)
 
 
+def get_defaults(func):
+    defaults = {}
+    for i, arg in enumerate(func.args.args[::-1]):
+        if len(func.args.defaults) > i:
+            default = func.args.defaults[i]
+            defaults[arg.arg] = default.value
+    return defaults
+
+
 # Function to process each function definition in the AST
 def get_args(func):
+    defaults = get_defaults(func)
+
     args = []
     for arg in func.args.args:
         if arg.arg == "self":
             continue
         # print(f"Argument name: {arg.arg}, type: {annotation_to_type(arg.annotation)}")
-        args.append({"name": arg.arg, "type": annotation_to_type(arg.annotation)})
+        args.append(
+            {
+                "name": arg.arg,
+                "type": annotation_to_type(arg.annotation),
+                "default": defaults.get(arg.arg, None),
+            }
+        )
     return args
 
 
@@ -274,6 +291,7 @@ async def get_node_editor(request: Request):
         "aana.utils.video.download_video",
         "aana.utils.video.extract_frames_decord",
         "aana.utils.video.generate_frames_decord",
+        "aana.utils.db.save_video_transcription",
     ]
 
     functions = {}
