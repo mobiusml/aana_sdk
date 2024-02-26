@@ -1,7 +1,6 @@
-from types import MappingProxyType
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 Role = Literal["system", "user", "assistant"]
 
@@ -16,27 +15,25 @@ class ChatMessage(BaseModel):
 
     content: str
     role: Role
-
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": "A chat message.",
-                "examples": [
-                    {
-                        "role": "system",
-                        "content": "You are a helpful assistant.",
-                    },
-                    {
-                        "role": "user",
-                        "content": "Hello, how are you?",
-                    },
-                    {
-                        "role": "assistant",
-                        "content": "I am doing well, thank you.",
-                    },
-                ],
-            }
-        )
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "A chat message.",
+            "examples": [
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant.",
+                },
+                {
+                    "role": "user",
+                    "content": "Hello, how are you?",
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am doing well, thank you.",
+                },
+            ],
+        }
+    )
 
 
 class ChatDialog(BaseModel):
@@ -47,28 +44,26 @@ class ChatDialog(BaseModel):
     """
 
     messages: list[ChatMessage]
-
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": "A chat dialog.",
-                "examples": [
-                    {
-                        "messages": [
-                            {
-                                "role": "system",
-                                "content": "You are a helpful assistant.",
-                            },
-                            {
-                                "role": "user",
-                                "content": "Hello, how are you?",
-                            },
-                            {
-                                "role": "assistant",
-                                "content": "I am doing well, thank you.",
-                            },
-                        ]
-                    }
-                ],
-            }
-        )
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "A chat dialog.",
+            "examples": [
+                {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are a helpful assistant.",
+                        },
+                        {
+                            "role": "user",
+                            "content": "Hello, how are you?",
+                        },
+                        {
+                            "role": "assistant",
+                            "content": "I am doing well, thank you.",
+                        },
+                    ]
+                }
+            ],
+        }
+    )
