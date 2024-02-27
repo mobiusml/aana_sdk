@@ -104,6 +104,7 @@ def save_video(
         media_repo = MediaRepository(session)
         _ = media_repo.create(media_entity)
         video_repo = VideoRepository(session)
+        video_entity.media_id = media_entity.id
         _ = video_repo.create(video_entity)
         return {
             "media_id": media_entity.id,  # type: ignore
