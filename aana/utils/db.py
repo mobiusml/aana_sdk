@@ -31,12 +31,14 @@ from aana.repository.datastore.video_repo import VideoRepository
 # Just using raw utility functions like this isn't a permanent solution, but
 # it's good enough for now to validate what we're working on.
 def save_video_batch(
-    videos: list[Video],  # , video_params: list[VideoParams]
+    videos: list[Video],
+    durations: list[float],
+    # , video_params: list[VideoParams]
 ) -> dict:
     """Saves a batch of videos to datastore."""
     media_entities = []
     video_entities = []
-    for video_object, _ in zip(videos, videos, strict=True):
+    for video_object, duration in zip(videos, durations, strict=True):
         if video_object.url is not None:
             orig_url = video_object.url
             parsed_url = urlparse(orig_url)
@@ -54,6 +56,7 @@ def save_video_batch(
         )
         video_entity = VideoEntity(
             media=media_entity,
+            duration=duration,
             orig_filename=orig_filename,
             orig_url=orig_url,
         )
@@ -62,21 +65,22 @@ def save_video_batch(
     with Session(engine) as session:
         m_repo = MediaRepository(session)
         v_repo = VideoRepository(session)
-        medias = m_repo.create_multiple(media_entities)
-        videos = v_repo.create_multiple(video_entities)
+        media_entities = m_repo.create_multiple(media_entities)
+        for media, video_entity in zip(media_entities, video_entities, strict=True):
+            video_entity.media_id = media.id
+        video_entities = v_repo.create_multiple(video_entities)
         return {
-            "media_ids": [m.id for m in medias],  # type: ignore
-            "video_ids": [v.id for v in videos],
+            "media_ids": [m.id for m in media_entities],  # type: ignore
+            "video_ids": [v.id for v in video_entities],  # type: ignore
         }
 
 
-def save_video(
-    video: Video,
-) -> dict:
+def save_video(video: Video, video_duration: float) -> dict:
     """Saves a batch of videos to datastore.
 
     Args:
         video (Video): The video object.
+        video_duration (float): the duration of the video object
 
     Returns:
         dict: The dictionary with video and media IDs.
@@ -98,6 +102,7 @@ def save_video(
         orig_filename=orig_filename,
         orig_url=orig_url,
         title=video.title,
+        duration=video_duration,
         description=video.description,
     )
     with Session(engine) as session:
