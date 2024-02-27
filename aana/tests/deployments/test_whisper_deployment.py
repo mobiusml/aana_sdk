@@ -21,7 +21,7 @@ from aana.utils.general import pydantic_to_dict
 EPSILON = 0.01  # 0.01
 
 
-def compare_transcriptions(expected_transcription, transcription, use_words=True):
+def compare_transcriptions(expected_transcription, transcription):
     """Compare two transcriptions.
 
     Texts and words are compared using Levenshtein distance.
@@ -29,14 +29,10 @@ def compare_transcriptions(expected_transcription, transcription, use_words=True
     Args:
         expected_transcription (dict): the expected transcription
         transcription (dict): the actual transcription
-        use_words (bool): Whether to use words in comparison or not
     Raises:
         AssertionError: if transcriptions differ too much
     """
-    if use_words:
-        levenshtein_operator = [LevenshteinOperator([r"\['text'\]$", r"\['word'\]$"])]
-    else:
-        levenshtein_operator = [LevenshteinOperator([r"\['text'\]$"])]
+    levenshtein_operator = [LevenshteinOperator([r"\['text'\]$", r"\['word'\]$"])]
 
     diff = DeepDiff(
         expected_transcription,
