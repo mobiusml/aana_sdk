@@ -44,9 +44,10 @@ def mock_session(mocker):
 def test_save_video(mock_session):
     """Tests save media function."""
     media_id = "foobar"
+    duration = 550.25
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     video = Video(path=path, media_id=media_id)
-    result = save_video(video)
+    result = save_video(video, duration)
 
     assert result["media_id"] == media_id
     assert result["video_id"] is None
@@ -60,8 +61,8 @@ def test_save_videos_batch(mock_session):
     media_ids = ["foo", "bar"]
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     videos = [Video(path=path, media_id=m_id) for m_id in media_ids]
-
-    result = save_video_batch(videos)
+    durations = [x + 0.1 for x, _ in enumerate(media_ids)]
+    result = save_video_batch(videos, durations)
 
     assert result["media_ids"] == media_ids
     assert result["video_ids"] == [None, None]

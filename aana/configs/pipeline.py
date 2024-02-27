@@ -768,6 +768,11 @@ nodes = [
                 "key": "video",
                 "path": "video.video",
             },
+            {
+                "name": "video_duration",
+                "key": "duration",
+                "path": "video.duration",
+            },
         ],
         "outputs": [
             {
