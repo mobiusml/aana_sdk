@@ -1,5 +1,7 @@
 import hashlib  # noqa: I001
 from dataclasses import dataclass
+import io, gc
+import itertools
 from pathlib import Path
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 from decord import DECORDError
@@ -9,10 +11,11 @@ from aana.configs.settings import settings
 from aana.exceptions.general import AudioReadingException
 from aana.models.core.media import Media
 from aana.utils.general import download_file
+import av
 
 
 class AbstractAudioLibrary:
-    """Class for audio libraries."""
+    """Abstract class for audio libraries."""
 
     @classmethod
     def read_file(cls, path: Path) -> np.ndarray:
@@ -22,19 +25,13 @@ class AbstractAudioLibrary:
             path (Path): The path of the file to read.
 
         Returns:
-            np.ndarray: The audio file as a numpy array.
+            np.ndarray: The file as a numpy array.
         """
-        audio = (
-            np.frombuffer(open(str(path), "rb").read(), dtype=np.int16)
-            .flatten()
-            .astype(np.float32)
-            / 32768.0
-        )
-        return audio
+        raise NotImplementedError
 
     @classmethod
     def read_from_bytes(cls, content: bytes) -> np.ndarray:
-        """Read audio bytes as numpy array.
+        """Read bytes using the image library.
 
         Args:
             content (bytes): The content of the file to read.
@@ -42,43 +39,192 @@ class AbstractAudioLibrary:
         Returns:
             np.ndarray: The file as a numpy array.
         """
-        audio = (
-            np.frombuffer(content, dtype=np.int16).flatten().astype(np.float32)
-            / 32768.0
-        )
-        return audio
+        raise NotImplementedError
 
     @classmethod
     def write_file(cls, path: Path, audio: np.ndarray):
-        """Write a file to wav from numpy array.
+        """Write a file using the audio library.
 
         Args:
             path (Path): The path of the file to write.
             audio (np.ndarray): The audio to write.
         """
-        normalized_audio = np.int16(audio * 32767)
-
-        # Open a WAV file for writing
-        with wave.open(str(path), "w") as wav_file:
-            # Set the WAV file parameters
-            wav_file.setnchannels(1)  # Mono audio
-            wav_file.setsampwidth(2)  # 2 bytes (16 bits) per sample
-            wav_file.setframerate(16000)  # Sample rate
-            wav_file.writeframes(normalized_audio.tobytes())
+        raise NotImplementedError
 
     @classmethod
-    def write_audio_bytes(cls, path: Path, audio: bytes):
+    def write_to_bytes(cls, audio: np.ndarray) -> bytes:
+        """Write bytes using the audio library.
+
+        Args:
+            audio (np.ndarray): The audio to write.
+
+        Returns:
+            bytes: The audio as bytes.
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate=16000):
         """Write a file to wav from the normalized audio bytes.
 
         Args:
             path (Path): The path of the file to write.
             audio (bytes): The audio to in 16-bit PCM byte write.
+            sample_rate (int): The sample rate of the audio.
+        """
+        raise NotImplementedError
+
+
+class pyAVWrapper(AbstractAudioLibrary):
+    """Class for audio libraries."""
+
+    @classmethod
+    def read_file(cls, path: Path, sample_rate=16000) -> np.ndarray:
+        """Read an audio file from path.
+
+        Args:
+            path (Path): The path of the file to read.
+            sample_rate (int): sample rate of the audio
+        Returns:
+            np.ndarray: The audio file as a numpy array.
+        """
+        resampler = av.audio.resampler.AudioResampler(
+            format="s16",
+            layout="mono",
+            rate=sample_rate,
+        )
+
+        raw_buffer = io.BytesIO()
+        dtype = None
+
+        with av.open(str(path), mode="r", metadata_errors="ignore") as container:
+            frames = container.decode(audio=0)
+            frames = _ignore_invalid_frames(frames)
+            frames = _group_frames(frames, 500000)
+            frames = _resample_frames(frames, resampler)
+
+            for frame in frames:
+                array = frame.to_ndarray()
+                dtype = array.dtype
+                raw_buffer.write(array)
+
+        # It appears that some objects related to the resampler are not freed
+        # unless the garbage collector is manually run.
+        del resampler
+        gc.collect()
+
+        audio = np.frombuffer(raw_buffer.getbuffer(), dtype=dtype)
+        # Convert s16 back to f32.
+        audio = audio.astype(np.float32) / 32768.0
+        return audio
+
+    @classmethod
+    def read_from_bytes(cls, content: bytes, sample_rate=16000) -> np.ndarray:
+        """Read audio bytes as numpy array.
+
+        Args:
+            content (bytes): The content of the file to read.
+            sample_rate (int): sample rate of the audio
+        Returns:
+            np.ndarray: The file as a numpy array.
+        """
+        # Open the audio stream
+        # container = av.open(BytesIO(content))
+        frames = av.AudioFrame.from_ndarray(np.zeros(0, dtype=np.int16), format="s16")
+        frames.planes[0].buffer = content
+
+        array = frames.to_ndarray()
+        # Convert s16 back to f32.
+        audio = array.astype(np.float32) / 32768.0
+
+        return audio
+
+    @classmethod
+    def write_file(cls, path: Path, audio: np.ndarray, sample_rate=16000):
+        """Write a file to wav from numpy array.
+
+        Args:
+            path (Path): The path of the file to write.
+            audio (np.ndarray): The audio to write.
+            sample_rate (int): The sample rate of the audio to save.
+        """
+        audio = (audio * 32768.0).astype(np.int16)
+        # Create an AV container
+        container = av.open(str(path), "w", format="wav")
+        # Add an audio stream
+        stream = container.add_stream("pcm_s16le", rate=sample_rate)
+        stream.channels = 1
+        # Write audio frames to the stream
+        for frame in av.AudioFrame.from_ndarray(
+            audio, format="s16", layout="mono", rate=sample_rate
+        ):
+            for packet in stream.encode(frame):
+                container.mux(packet)
+        for packet in stream.encode(None):
+            container.mux(packet)
+        container.close()
+
+    @classmethod
+    def write_to_bytes(cls, audio: np.ndarray) -> bytes:
+        """Write bytes using the audio library.
+
+        Args:
+            audio (np.ndarray): The audio to write.
+
+        Returns:
+            bytes: The audio as bytes.
+        """
+        frame = av.AudioFrame(format="s16", layout="mono", samples=len(audio))
+        frame.planes[0].update(audio.astype(np.int16).tobytes())
+        return frame.planes[0].to_bytes()
+        # return audio.tobytes()
+
+    @classmethod
+    def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate=16000):
+        """Write a file to wav from the normalized audio bytes.
+
+        Args:
+            path (Path): The path of the file to write.
+            audio (bytes): The audio to in 16-bit PCM byte write.
+            sample_rate (int): The sample rate of the audio.
         """
         with wave.open(str(path), "wb") as wav_file:
             wav_file.setnchannels(1)  # Mono audio
             wav_file.setsampwidth(2)  # 16-bit audio
-            wav_file.setframerate(16000)  # Sample rate
+            wav_file.setframerate(sample_rate)  # Sample rate
             wav_file.writeframes(audio)
+
+
+def _ignore_invalid_frames(frames):
+    iterator = iter(frames)
+
+    while True:
+        try:
+            yield next(iterator)
+        except StopIteration:  # noqa: PERF203
+            break
+        except av.error.InvalidDataError:
+            continue
+
+
+def _group_frames(frames, num_samples=None):
+    fifo = av.audio.fifo.AudioFifo()
+
+    for frame in frames:
+        frame.pts = None  # Ignore timestamp check.
+        fifo.write(frame)
+
+        if num_samples is not None and fifo.samples >= num_samples:
+            yield fifo.read()
+
+    if fifo.samples > 0:
+        yield fifo.read()
+
+
+def _resample_frames(frames, resampler):
+    # Add None to flush the resampler.
+    for frame in itertools.chain(frames, [None]):
+        yield from resampler.resample(frame)
 
 
 @dataclass
@@ -102,7 +248,7 @@ class Audio(Media):
     description: str = ""
     audio_dir: Path | None = settings.audio_dir
     numpy: np.ndarray | None = None
-    audio_lib: type[AbstractAudioLibrary] = AbstractAudioLibrary
+    audio_lib: type[AbstractAudioLibrary] = pyAVWrapper
 
     def validate(self):
         """Validate the audio.
@@ -141,7 +287,7 @@ class Audio(Media):
         return True
 
     def save(self):
-        """Save the image on disk.
+        """Save the audio on disk.
 
         If the audio is already available on disk, do nothing.
         If the audio represented as a byte string, save it on disk.
@@ -165,7 +311,7 @@ class Audio(Media):
         elif self.numpy is not None:
             self.save_from_numpy(file_path)
         elif self.url:
-            self.save_from_audio_url(file_path)
+            self.save_from_url(file_path)
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
@@ -233,7 +379,7 @@ class Audio(Media):
         """Load the audio as a numpy array from a path.
 
         Raises:
-            ImageReadingException: If there is an error reading the audio.
+            AudioReadingException: If there is an error reading the audio.
         """
         assert self.path is not None  # noqa: S101
         try:
