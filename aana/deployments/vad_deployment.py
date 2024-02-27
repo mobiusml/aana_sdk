@@ -1,14 +1,9 @@
-import hashlib
-import urllib.request
-from contextlib import ExitStack
-from pathlib import Path
 from typing import Any, TypedDict
 
 import torch
 from pyannote.audio import Model
 from pydantic import BaseModel, Field
 from ray import serve
-from tqdm import tqdm
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
@@ -17,6 +12,7 @@ from aana.models.pydantic.time_interval import TimeInterval
 from aana.models.pydantic.vad_output import VadSegment
 from aana.models.pydantic.vad_params import VadParams
 from aana.utils.audio import BinarizeVadScores, VoiceActivitySegmentation
+from aana.utils.general import download_model
 from aana.utils.test import test_cache
 
 
@@ -86,52 +82,6 @@ class VadDeployment(BaseDeployment):
         The configuration should conform to the VadConfig schema.
 
         """
-
-        def download_vad_model(model_fp, vad_segmentation_url):
-            if model_fp is None:
-                model_dir = torch.hub._get_torch_home()
-                if not Path(model_dir).exists():
-                    Path(model_dir).mkdir(parents=True)
-                model_fp = Path(model_dir) / "whisperx-vad-segmentation.bin"
-
-            if Path(model_fp).exists() and not Path(model_fp).is_file():
-                raise RuntimeError(f"{model_fp}")  # exists and is not a regular file
-
-            if not Path(model_fp).is_file():
-                with ExitStack() as stack:
-                    source = stack.enter_context(
-                        urllib.request.urlopen(vad_segmentation_url)
-                    )
-                    output = stack.enter_context(Path.open(model_fp, "wb"))
-
-                    loop = tqdm(
-                        total=int(source.info().get("Content-Length")),
-                        ncols=80,
-                        unit="iB",
-                        unit_scale=True,
-                        unit_divisor=1024,
-                    )
-
-                    with loop:
-                        while True:
-                            buffer = source.read(8192)
-                            if not buffer:
-                                break
-
-                            output.write(buffer)
-                            loop.update(len(buffer))
-
-            model_bytes = Path.open(model_fp, "rb").read()
-
-            if (
-                hashlib.sha256(model_bytes).hexdigest()
-                != str(vad_segmentation_url).split("/")[-2]
-            ):
-                checksum_error = "Model has been downloaded but the SHA256 checksum does not not match. Please retry loading the model."
-                raise RuntimeError(f"{checksum_error}")
-
-            return Path(model_fp)
-
         config_obj = VadConfig(**config)
         self.hyperparameters = {
             "onset": config_obj.onset,
@@ -141,9 +91,7 @@ class VadDeployment(BaseDeployment):
         }
         self.sample_rate = config_obj.sample_rate
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.filepath = download_vad_model(
-            None, config_obj.model
-        )  # TODO: TO change this:just for now
+        self.filepath = download_model(config_obj.model)
 
         self.vad_model = Model.from_pretrained(self.filepath, use_auth_token=None)
 
@@ -181,15 +129,13 @@ class VadDeployment(BaseDeployment):
             offset=self.hyperparameters["offset"],
         )
         segments = binarize(segments)
-        segments_list = []
-        for speech_turn in segments.itersegments():  # .get_timeline():
-            # .get_timeline(): #Annotation object supports iteration.
-            segments_list.append(  # noqa: PERF401
-                SegmentX(
-                    max(0.0, speech_turn.start - 0.1), speech_turn.end + 0.1, "UNKNOWN"
-                )
-            )  # Additional 100ms padding to account for edge errors.
 
+        segments_list = [
+            SegmentX(
+                max(0.0, speech_turn.start - 0.1), speech_turn.end + 0.1, "UNKNOWN"
+            )
+            for speech_turn in segments.itersegments()
+        ]
         if len(segments_list) == 0:
             # No active speech found in audio.
             return []
