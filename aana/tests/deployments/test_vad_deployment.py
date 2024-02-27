@@ -1,3 +1,4 @@
+# ruff: noqa: S101
 import json
 from importlib import resources
 from pathlib import Path
@@ -40,7 +41,7 @@ def compare_vad_outputs(expected_output, predictions):
             ignore_numeric_type_changes=True,
             custom_operators=[LevenshteinOperator([r"\['start'\]$", r"\['end'\]$"])],
         )
-        assert not diff, diff  # noqa: S101
+        assert not diff, diff
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("VadDeployment"))
@@ -63,7 +64,7 @@ async def test_vad_deployment(setup_vad_deployment, audio_file):
     expected_output_path = resources.path(
         "aana.tests.files.expected.vad", f"{audio_file_name}_vad.json"
     )
-    assert (  # noqa: S101
+    assert (
         expected_output_path.exists()
     ), f"Expected output not found: {expected_output_path}"
     with Path(expected_output_path) as path, path.open() as f:
@@ -71,7 +72,7 @@ async def test_vad_deployment(setup_vad_deployment, audio_file):
 
     # asr_preprocess_vad method
     path = resources.path("aana.tests.files.audios", audio_file)
-    assert path.exists(), f"Audio not found: {path}"  # noqa: S101
+    assert path.exists(), f"Audio not found: {path}"
 
     audio = Audio(path=path)
 
