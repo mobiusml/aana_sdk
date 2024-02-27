@@ -5,12 +5,15 @@ from collections.abc import Generator
 from math import floor
 from pathlib import Path
 from typing import TypedDict
-import subprocess
 import numpy as np
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 from decord import DECORDError
 import yt_dlp
 from yt_dlp.utils import DownloadError
+import av
+import io
+import gc
+import itertools
 
 from aana.configs.settings import settings
 from aana.exceptions.general import (
@@ -212,11 +215,43 @@ def download_video(video_input: VideoInput | Video) -> Video:
         return video_input.convert_input_to_object()
 
 
-def check_and_load_audio(file: str, sr: int = 16000):
+def _ignore_invalid_frames(frames):
+    iterator = iter(frames)
+
+    while True:
+        try:
+            yield next(iterator)
+        except StopIteration:  # noqa: PERF203
+            break
+        except av.error.InvalidDataError:
+            continue
+
+
+def _group_frames(frames, num_samples=None):
+    fifo = av.audio.fifo.AudioFifo()
+
+    for frame in frames:
+        frame.pts = None  # Ignore timestamp check.
+        fifo.write(frame)
+
+        if num_samples is not None and fifo.samples >= num_samples:
+            yield fifo.read()
+
+    if fifo.samples > 0:
+        yield fifo.read()
+
+
+def _resample_frames(frames, resampler):
+    # Add None to flush the resampler.
+    for frame in itertools.chain(frames, [None]):
+        yield from resampler.resample(frame)
+
+
+def load_audio(file: Path | None, sr: int = 16000):
     """Open an audio file and read as mono waveform, resampling as necessary.
 
     Args:
-        file (str): The audio/video file to open.
+        file (Path): The audio/video file to open.
         sr (int): The sample rate to resample the audio if necessary.
 
     Returns:
@@ -225,62 +260,43 @@ def check_and_load_audio(file: str, sr: int = 16000):
     Raises:
         RuntimeError: if ffmpeg fails to convert and load the audio.
     """
-    # Step 1: check if video contains an audio track: return None if not
+    resampler = av.audio.resampler.AudioResampler(
+        format="s16",
+        layout="mono",
+        rate=sr,
+    )
+
+    raw_buffer = io.BytesIO()
+
+    # Try loading audio and check for empty audio in one shot.
     try:
-        # Run ffprobe to get information about the media file
-        result = subprocess.run(
-            [
-                "ffprobe",
-                "-v",
-                "error",
-                "-select_streams",
-                "a:0",
-                "-show_entries",
-                "stream=codec_type",
-                "-of",
-                "default=noprint_wrappers=1",
-                file,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Failed to check for audio: {e.stderr.decode()}") from e
+        with av.open(str(file), mode="r", metadata_errors="ignore") as container:
+            # check for empty audio
+            if container.streams.audio == tuple():
+                return b""
 
-    # Check if the output contains "audio"
-    if "audio" not in result.stdout.lower():
-        return None
+            frames = container.decode(audio=0)
+            frames = _ignore_invalid_frames(frames)
+            frames = _group_frames(frames, 500000)
+            frames = _resample_frames(frames, resampler)
 
-    else:
-        # Step 2. Launches a subprocess to decode audio while down-mixing and resampling as necessary.
-        try:
-            cmd = [
-                "ffmpeg",
-                "-nostdin",
-                "-threads",
-                "0",
-                "-i",
-                file,
-                "-f",
-                "s16le",
-                "-ac",
-                "1",
-                "-acodec",
-                "pcm_s16le",
-                "-ar",
-                str(sr),
-                "-",
-            ]
-            out = subprocess.run(cmd, capture_output=True, check=True).stdout
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
+            for frame in frames:
+                array = frame.to_ndarray()
+                raw_buffer.write(array)
 
-        return out
+        # It appears that some objects related to the resampler are not freed
+        # unless the garbage collector is manually run.
+        del resampler
+        gc.collect()
+
+        return raw_buffer.getvalue()
+
+    except Exception as e:
+        raise RuntimeError(f"{e!s}") from e
 
 
 def extract_audio(video: Video) -> Audio:
-    """Extract the audio file from a Video and return as a Audio object.
+    """Extract the audio file from a Video and return an Audio object.
 
     Args:
         video (Video): The video file to extract audio.
@@ -289,16 +305,11 @@ def extract_audio(video: Video) -> Audio:
         An Audio object containing the extracted audio.
 
     """
-    media_path = str(video.path)
-    # TODO: No need to convert 16khz, single channel PCM audio and just return the path.
-
-    # Check for audio and convert audio to bytes or None if no audio channel.
-    # TODO: Split to check_audio and load_audio functions.
-    audio_bytes = check_and_load_audio(media_path)
-
-    if not audio_bytes:
-        audio_bytes = b""  # empty audio
+    audio_bytes = load_audio(video.path)
+    # Only difference will be in path where WAV file will be stored  and in content but has same media_id
     return Audio(
+        url=video.url,
+        media_id=video.media_id,
         content=audio_bytes,
         title=video.title,
         description=video.description,
