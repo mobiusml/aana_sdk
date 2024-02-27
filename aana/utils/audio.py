@@ -63,24 +63,6 @@ class VoiceActivitySegmentation(VoiceActivityDetection):
 class BinarizeVadScores:
     """Binarize detection scores using hysteresis thresholding, with min-cut operation to ensure no segments are longer than max_duration.
 
-    Args:
-        onset (float, optional):
-            Onset threshold. Defaults to 0.5.
-        offset (float, optional):
-            Offset threshold. Defaults to `onset`.
-        min_duration_on (float, optional):
-            Remove active regions shorter than that many seconds. Defaults to 0s.
-        min_duration_off (float, optional):
-            Fill inactive regions shorter than that many seconds. Defaults to 0s.
-        pad_onset (float, optional):
-            Extend active regions by moving their start time by that many seconds.
-            Defaults to 0s.
-        pad_offset (float, optional):
-            Extend active regions by moving their end time by that many seconds.
-            Defaults to 0s.
-        max_duration (float):
-            The maximum length of an active segment, divides segment at timestamp with lowest score.
-
     Reference:
         Gregory Gelly and Jean-Luc Gauvain. "Minimum Word Error Training of
         RNN-based Voice Activity Detection", InterSpeech 2015.
@@ -100,6 +82,26 @@ class BinarizeVadScores:
         pad_offset: float = 0.0,
         max_duration: float = float("inf"),
     ):
+        """Initializes the parameters for Binarizing the VAD scores.
+
+        Args:
+            onset (float, optional):
+                Onset threshold. Defaults to 0.5.
+            offset (float, optional):
+                Offset threshold. Defaults to `onset`.
+            min_duration_on (float, optional):
+                Remove active regions shorter than that many seconds. Defaults to 0s.
+            min_duration_off (float, optional):
+                Fill inactive regions shorter than that many seconds. Defaults to 0s.
+            pad_onset (float, optional):
+                Extend active regions by moving their start time by that many seconds.
+                Defaults to 0s.
+            pad_offset (float, optional):
+                Extend active regions by moving their end time by that many seconds.
+                Defaults to 0s.
+            max_duration (float):
+                The maximum length of an active segment, divides segment at timestamp with lowest score.
+        """
         super().__init__()
 
         self.onset = onset
@@ -113,21 +115,10 @@ class BinarizeVadScores:
 
         self.max_duration = max_duration
 
-    def __call__(self, scores: SlidingWindowFeature) -> Annotation:
-        """Binarize detection scores.
-
-        Args:
-            scores : SlidingWindowFeature
-                Detection scores.
-
-        Returns:
-            active : Annotation
-                Binarized scores.
-        """
+    def __get_active_regions(self, scores: SlidingWindowFeature) -> Annotation:
         num_frames, num_classes = scores.data.shape
         frames = scores.sliding_window
         timestamps = [frames[i].middle for i in range(num_frames)]
-
         # annotation meant to store 'active' regions
         active = Annotation()
         for k, k_scores in enumerate(scores.data.T):
@@ -139,7 +130,7 @@ class BinarizeVadScores:
             curr_scores = [k_scores[0]]
             curr_timestamps = [start]
             t = start
-            for t, y in zip(timestamps[1:], k_scores[1:]):
+            for t, y in zip(timestamps[1:], k_scores[1:], strict=False):
                 # currently active
                 if is_active:
                     curr_duration = t - start
@@ -179,6 +170,20 @@ class BinarizeVadScores:
                 region = Segment(start - self.pad_onset, t + self.pad_offset)
                 active[region, k] = label
 
+        return active
+
+    def __call__(self, scores: SlidingWindowFeature) -> Annotation:
+        """Binarize detection scores.
+
+        Args:
+            scores : SlidingWindowFeature
+                Detection scores.
+
+        Returns:
+            active : Annotation
+                Binarized scores.
+        """
+        active = self.__get_active_regions(scores)
         # because of padding, some active regions might be overlapping: merge them.
         # also: fill same speaker gaps shorter than min_duration_off
         if self.pad_offset > 0.0 or self.pad_onset > 0.0 or self.min_duration_off > 0.0:
