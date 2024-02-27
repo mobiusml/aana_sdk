@@ -1,6 +1,5 @@
 from collections.abc import AsyncGenerator
 from enum import Enum
-from types import SimpleNamespace
 from typing import Any, TypedDict, cast
 
 import torch
@@ -255,7 +254,7 @@ class WhisperDeployment(BaseDeployment):
         )
 
     @test_cache
-    async def batched_inference(
+    async def transcribe_in_chunks(
         self,
         audio: Audio,
         segments: list[VadSegment],
@@ -287,14 +286,12 @@ class WhisperDeployment(BaseDeployment):
             tokenizer = Tokenizer(
                 self.model.hf_tokenizer,
                 self.model.model.is_multilingual,
-                task=params.task,
+                task="transcribe",  # TODO: need params.task
                 language=params.language,
             )
         else:
             # If no language is specified, language will be first detected for each audio.
             tokenizer = None
-
-        # default_asr_options = TranscriptionOptions(**default_batched_asr_options)
 
         self.batched_model = BatchedInferencePipeline(
             model=self.model,
@@ -306,13 +303,12 @@ class WhisperDeployment(BaseDeployment):
         audio_array = audio.get_numpy()
 
         vad_input = [seg.to_dict() for seg in segments]
-
         if not vad_input:
             # For silent audios/no audio tracks, return empty output with language as silence
             yield WhisperOutput(
                 segments=[],
                 transcription_info=AsrTranscriptionInfo(
-                    language="silence", language_probability=1.0
+                    language="silence", language_confidence=1.0
                 ),
                 transcription=AsrTranscription(text=""),
             )
@@ -328,10 +324,9 @@ class WhisperDeployment(BaseDeployment):
 
             for count, (segment, info) in enumerate(result):
                 if count == 0:
-                    # converting info dictionary to an object:
-                    transcription_object = SimpleNamespace(**info)
-                    asr_transcription_info = AsrTranscriptionInfo.from_whisper(
-                        transcription_object
+                    asr_transcription_info = AsrTranscriptionInfo(
+                        language=info["language"],
+                        language_confidence=info["language_probability"],
                     )
                 asr_segments = [AsrSegment.from_whisper(segment)]
                 asr_transcription = AsrTranscription(text=segment.text)
