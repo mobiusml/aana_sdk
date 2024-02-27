@@ -1,14 +1,10 @@
 import json
-import os
 from importlib import resources
 from pathlib import Path
 
 import pytest
-import ray
 from deepdiff import DeepDiff
-from ray import serve
 
-from aana.configs.deployments import deployments
 from aana.models.core.audio import Audio
 from aana.models.pydantic.vad_params import VadParams
 from aana.tests.utils import (
@@ -63,9 +59,9 @@ def setup_vad_deployment(setup_deployment, request):
 async def test_vad_deployment(setup_vad_deployment, audio_file):
     """Test vad deployment."""
     name, deployment, handle, port, route_prefix = setup_vad_deployment
-    audio_file_path = os.path.splitext(audio_file)[0]  # noqa: PTH122
+    audio_file_name = Path(audio_file).stem
     expected_output_path = resources.path(
-        "aana.tests.files.expected.vad", f"{audio_file_path}_vad.json"
+        "aana.tests.files.expected.vad", f"{audio_file_name}_vad.json"
     )
     assert (  # noqa: S101
         expected_output_path.exists()
@@ -75,9 +71,10 @@ async def test_vad_deployment(setup_vad_deployment, audio_file):
 
     # asr_preprocess_vad method
     path = resources.path("aana.tests.files.audios", audio_file)
-    assert path.exists(), f"Audio not found: {path}"
+    assert path.exists(), f"Audio not found: {path}"  # noqa: S101
+
     audio = Audio(path=path)
 
-    output = await handle.asr_preprocess_vad.remote(media=audio, params=VadParams())
+    output = await handle.asr_preprocess_vad.remote(audio=audio, params=VadParams())
     output = pydantic_to_dict(output)
     compare_vad_outputs(expected_output, output)
