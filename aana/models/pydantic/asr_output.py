@@ -1,5 +1,4 @@
 from types import MappingProxyType  # for immutable dictionary
-from typing import Union
 
 import numpy as np
 from faster_whisper.transcribe import (
@@ -78,17 +77,22 @@ class AsrSegment(BaseModel):
         time_interval = TimeInterval(
             start=whisper_segment.start, end=whisper_segment.end
         )
-        avg_logprob = getattr(whisper_segment, "avg_logprob", None)
-        confidence = np.exp(avg_logprob) if avg_logprob else None
+        try:
+            avg_logprob = whisper_segment.avg_logprob
+            confidence = np.exp(avg_logprob)
+        except AttributeError:
+            confidence = None
 
-        whisper_words = getattr(whisper_segment, "words", None)
-        if whisper_words:
+        try:
             words = [AsrWord.from_whisper(word) for word in whisper_segment.words]
-        else:
+        except TypeError:  # "None type object is not iterable"
             words = []
-
-        no_speech_prob = getattr(whisper_segment, "no_speech_prob", None)
-        no_speech_confidence = no_speech_prob if no_speech_prob else None
+        except AttributeError:  # "'StreamSegment' object has no attribute 'words'"
+            words = []
+        try:
+            no_speech_confidence = whisper_segment.no_speech_prob
+        except AttributeError:
+            no_speech_confidence = None
 
         return cls(
             text=whisper_segment.text,
