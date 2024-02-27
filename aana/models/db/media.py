@@ -31,5 +31,6 @@ class MediaEntity(BaseEntity, TimeStampEntity):
         back_populates="media",
         cascade="all, delete",
         uselist=False,
+        post_update=True,
         foreign_keys=[video_id],
     )
