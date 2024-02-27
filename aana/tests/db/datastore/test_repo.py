@@ -6,6 +6,7 @@ from aana.models.db import CaptionEntity, MediaEntity, TranscriptEntity, VideoEn
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.media_repo import MediaRepository
 from aana.repository.datastore.transcript_repo import TranscriptRepository
+from aana.repository.datastore.video_repo import VideoRepository
 
 
 @pytest.fixture
@@ -34,6 +35,24 @@ def test_create_media(mocked_session):
 
     mocked_session.add.assert_called_once_with(media)
     mocked_session.commit.assert_called_once()
+
+
+def test_create_media_with_video(mocked_session):
+    """Tests that video propery is se on media and vice-versa."""
+    media_repo = MediaRepository(mocked_session)
+    video_repo = VideoRepository(mocked_session)
+    media_type = "video"
+    media_id = "foo"
+    media = MediaEntity(id=media_id, media_type=media_type)
+    video = VideoEntity(media=media)
+    media.video = video
+    media2 = media_repo.create(media)
+    mocked_session.add.assert_called_with(media2)
+    video2 = video_repo.create(video)
+    mocked_session.add.assert_called_with(video2)
+
+    assert media2.video == video2
+    assert video2.media == media2
 
 
 def test_create_caption(mocked_session):

@@ -23,10 +23,7 @@ class VideoEntity(BaseEntity, TimeStampEntity):
     title = Column(String, comment="Title of the video")
     description = Column(String, comment="Description of the video")
 
-    media = relationship(
-        "MediaEntity",
-        foreign_keys=[media_id],
-    )
+    media = relationship("MediaEntity", foreign_keys=[media_id], post_update=True)
     captions = relationship(
         "CaptionEntity", back_populates="video", cascade="all, delete-orphan"
     )
