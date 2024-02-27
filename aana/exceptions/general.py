@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING
 from mobius_pipeline.exceptions import BaseException
 
 if TYPE_CHECKING:
+    from aana.models.core.audio import Audio
     from aana.models.core.image import Image
     from aana.models.core.video import Video
-    from aana.models.core.audio import Audio
 
 
 class InferenceException(BaseException):
@@ -89,7 +89,7 @@ class AudioReadingException(BaseException):
         Args:
             audio (Audio): the audio that caused the exception
         """
-        super().__init__(image=audio)
+        super().__init__(audio=audio)
         self.audio = audio
 
     def __reduce__(self):
