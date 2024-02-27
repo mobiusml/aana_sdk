@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
 from aana.deployments.vad_deployment import VadConfig, VadDeployment
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
@@ -11,7 +9,6 @@ from aana.deployments.whisper_deployment import (
 )
 from aana.models.core.dtype import Dtype
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.models.pydantic.vad_params import VadParams
 
 deployments = {
     "vllm_deployment_llama2_7b_chat": VLLMDeployment.options(

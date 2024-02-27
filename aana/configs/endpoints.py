@@ -114,8 +114,8 @@ endpoints = {
             ],
         ),
         Endpoint(
-            name="whisper_transcribe_segments",
-            path="/video/transcribe_segments",
+            name="whisper_transcribe_in_chunks",
+            path="/video/transcribe_in_chunks",
             summary="Transcribe a video using Whisper Medium in batch mode",
             outputs=[
                 EndpointOutput(
