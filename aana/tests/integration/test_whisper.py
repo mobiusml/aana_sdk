@@ -12,8 +12,9 @@ TARGET = "whisper"
 VIDEO_TRANSCRIBE_ENDPOINT = "/video/transcribe"
 VIDEO_GET_TRANSCRIPTION_ENDPOINT = "/video/get_transcription"
 VIDEO_DELETE_ENDPOINT = "/video/delete"
-VIDEO_TRANSCRIBE_BATCH_ENDPOINT = "/video/transcribe_batch"
-#TODO: VIDEO_GET_TRANSCRIPTION_BATCH_ENDPOINT = "/video/get_transcription_batch"
+VIDEO_TRANSCRIBE_BATCH_ENDPOINT = "/video/transcribe_in_chunks"
+
+# TODO: VIDEO_GET_TRANSCRIPTION_BATCH_ENDPOINT = "/video/get_transcription_batch"
 # Note: expected transcription varies between transcribe and transcribe_batch
 
 
@@ -22,22 +23,37 @@ VIDEO_TRANSCRIBE_BATCH_ENDPOINT = "/video/transcribe_batch"
     reason="GPU is not available",
 )
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
+# TODO: Should work with audio as well
 @pytest.mark.parametrize(
-    "video",
+    "video, transcription_endpoint",
     [
-        {
-            "path": str(resources.path("aana.tests.files.videos", "physicsworks.webm")),
-            "media_id": "physicsworks.webm",
-        }
+        (
+            {
+                "path": str(
+                    resources.path("aana.tests.files.videos", "physicsworks.webm")
+                ),
+                "media_id": "physicsworks.webm",
+            },
+            VIDEO_TRANSCRIBE_ENDPOINT,
+        ),
+        (
+            {
+                "path": str(
+                    resources.path("aana.tests.files.videos", "physicsworks.webm")
+                ),
+                "media_id": "physicsworks.webm_batched",
+            },
+            VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
+        ),
     ],
-)  # TODO: Should work with audio as well.
-def test_video_transcribe(call_endpoint, video):
+)
+def test_video_transcribe(call_endpoint, video, transcription_endpoint):
     """Test video transcribe endpoint."""
     media_id = video["media_id"]
 
     # transcribe video
     call_endpoint(
-        VIDEO_TRANSCRIBE_ENDPOINT,
+        transcription_endpoint,
         {"video": video},
     )
 
@@ -49,7 +65,7 @@ def test_video_transcribe(call_endpoint, video):
 
     # try to transcribe video again, it should fail with MediaIdAlreadyExistsException
     call_endpoint(
-        VIDEO_TRANSCRIBE_ENDPOINT,
+        transcription_endpoint,
         {"video": video},
         expected_error="MediaIdAlreadyExistsException",
     )
@@ -77,15 +93,8 @@ def test_video_transcribe(call_endpoint, video):
 
     # transcribe video again after deleting it
     call_endpoint(
-        VIDEO_TRANSCRIBE_ENDPOINT,
+        transcription_endpoint,
         {"video": video},
-    )
-
-    # batch transcribe video: fails with media_id exists: 
-    call_endpoint(
-        VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
-        {"video": video},
-        expected_error="MediaIdAlreadyExistsException"
     )
 
     # delete video
@@ -102,16 +111,10 @@ def test_video_transcribe(call_endpoint, video):
         expected_error="NotFoundException",
     )
 
-    # batch transcribe video: no error expected
-    call_endpoint(
-        VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
-        {"video": video},
-    )
-
-    # Expected is normal transcription and what you get is batched_transcription 
+    # Expected is normal transcription and what you get is batched_transcription
     # (because both of them has same media_id while storing in db).
-    # There will be a run time Assertion Error for below call 
-    # (but bypassing it via ignore_expected_output=True ftb) 
+    # There will be a run time Assertion Error for below call
+    # (but bypassing it via ignore_expected_output=True ftb)
     # TODO: This can be avoided if we have a separate endpoint to get batched transcription.
 
     call_endpoint(
@@ -127,17 +130,16 @@ def test_video_transcribe(call_endpoint, video):
         ignore_expected_output=True,
     )
 
-    # TODO: End point to Load batched transcription: 
-    #call_endpoint(
+    # TODO: End point to Load batched transcription:
+    # call_endpoint(
     #    VIDEO_GET_TRANSCRIPTION_BATCH_ENDPOINT,
     #    {"media_id": media_id},
     #    expected_error="NotFoundException",
 
-    #)
+    # )
 
     # try to transcribe video again, it should work since we delete the transcription by media_id
     call_endpoint(
-        VIDEO_TRANSCRIBE_ENDPOINT,
+        transcription_endpoint,
         {"video": video},
     )
-

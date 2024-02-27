@@ -1,5 +1,4 @@
 # ruff: noqa: S101
-import hashlib
 from importlib import resources
 from pathlib import Path
 
@@ -26,18 +25,7 @@ def test_audio():
     finally:
         audio.cleanup()
 
-    # Test creation from a URL
-    # try:
-    #    url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"  # ask to keep audio as well
-    #    audio = Audio(url=url, save_on_disk=False)
-    #    assert audio.path is None
-    #    assert audio.content is None
-    #    assert audio.url == url
-
-    #    content = audio.get_content()
-    #    assert len(content) > 0
-    # finally:
-    #    audio.cleanup()
+    # TODO: Test creation of audio object from a URL
 
     # Test creation from content
     try:
@@ -53,12 +41,9 @@ def test_audio():
         audio.cleanup()
 
 
-# TODO: Test saving audio from URL to disk
-
-
 def test_audio_path_not_exist():
     """Test that the audio can't be created from path if the path doesn't exist."""
-    path = Path("path/to/audio_that_does_not_exist.mp4")
+    path = Path("path/to/audio_that_does_not_exist.wav")
     with pytest.raises(FileNotFoundError):
         Audio(path=path)
 
@@ -77,15 +62,7 @@ def test_save_audio():
         audio.cleanup()
     assert audio.path.exists()  # Cleanup should NOT delete the file if path is provided
 
-    # TODO: Test saving from URL to disk (load audio physicsworks.wav to aws )
-    # try:
-    #    url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"  # need to have an audio input
-    #    audio = Audio(url=url, save_on_disk=True)
-    #    assert audio.content is None
-    #    assert audio.url == url
-    #    assert audio.path.exists()
-    # finally:
-    #    audio.cleanup()
+    # TODO: Test saving from URL to disk (load audio physicsworks.wav to aws for audio)
 
     # Test saving from content to disk
     try:
@@ -101,13 +78,7 @@ def test_save_audio():
 
 def test_cleanup():
     """Test that cleanup works for audios."""
-    # try:
-    #    url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
-    #    video = Video(url=url, save_on_disk=True)
-    #    assert video.path.exists()
-    # finally:
-    #    video.cleanup()
-    #    assert not video.path.exists()
+    # TODO: create test for creatung audio object from url and then deleting it
 
     try:
         path = resources.path("aana.tests.files.audios", "physicsworks.wav")
@@ -129,11 +100,9 @@ def test_at_least_one_input():
         Audio(save_on_disk=True)
 
 
-# TODO: some parts are missing because audio needs to be uploaded to a url to test them
 def test_extract_audio():
     """Test download_video and extract_audio."""
     # Test VideoInput with video path (tests download_video and extract_audio): return audio bytes
-
     path = resources.path("aana.tests.files.videos", "physicsworks.webm")
     video_input = VideoInput(path=str(path))
     video = download_video(video_input)
@@ -144,27 +113,16 @@ def test_extract_audio():
 
     audio = extract_audio(video)
     assert isinstance(audio, Audio)
-    assert audio.path is not None  # temporary path created in audio_dir on save()
-    assert audio.content is not None  # extract_audio returns audio_bytes
-    assert audio.url is None
-
-    # Test audio from VideoInput (for video input): return audio bytes
-    path = resources.path(
-        "aana.tests.files.videos", "physicsworks.webm"
-    )  # ideally some other sampling rate
-    video_input = VideoInput(path=str(path))
-    audio = extract_audio(video_input)
-    assert isinstance(audio, Audio)
-    assert audio.content is not None
     assert audio.path is not None
+    assert audio.content is not None
     assert audio.url is None
 
     # Test audio from VideoInput (for audio input): return audio bytes
-    path = resources.path(
-        "aana.tests.files.audios", "physicsworks.wav"
-    )  # ideally some other sampling rate
+    path = resources.path("aana.tests.files.audios", "physicsworks.wav")
     video_input = VideoInput(path=str(path))
-    audio = extract_audio(video_input)
+    video = download_video(video_input)
+    assert isinstance(video, Video)
+    audio = extract_audio(video)
     assert isinstance(audio, Audio)
     assert audio.content is not None
     assert audio.path is not None
@@ -173,25 +131,34 @@ def test_extract_audio():
     # Test audio from VideoInput (for no audio channel): return empty bytes
     path = resources.path("aana.tests.files.videos", "squirrel_no_audio.mp4")
     video_input = VideoInput(path=str(path))
-    audio = extract_audio(video_input)
+    video = download_video(video_input)
+    audio = extract_audio(video)
     assert isinstance(audio, Audio)
     assert audio.content == b""
     assert audio.url is None
     assert audio.path is not None
 
-    # TODO: Test extract_audio with url (upload .wav)
-    # try:
-    #    url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
-    #    video_input = VideoInput(url=url)
-    #    video = download_video(video_input)
-    #    assert isinstance(video, Video)
-    #    assert video.path is not None
-    #    assert video.content is None
-    #    assert video.url == url
-    #    assert video.path.exists()
-    #    assert video.media_id == video_input.media_id
-    # finally:
-    #    video.cleanup()
+    # TODO: Test extract_audio with an audio url, currently only uses video.
+    try:
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
+        video_input = VideoInput(url=url)
+        video = download_video(video_input)
+        audio = extract_audio(video)
+        assert isinstance(audio, Audio)
+        assert audio.path is not None
+        assert audio.content is not None
+        assert audio.path.exists()
+        assert video.media_id == video_input.media_id
+        assert audio.media_id == video.media_id
+
+    finally:
+        video.cleanup()
+        audio.cleanup()
+
+    # Test loading numpy from the Audio object
+    path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+    audio = Audio(path=path, save_on_disk=True)
+    assert audio.get_numpy() is not None
 
     # Test content of Audio objects created in different ways from same source video is the same.
     video_path = resources.path("aana.tests.files.videos", "physicsworks.webm")
@@ -202,6 +169,6 @@ def test_extract_audio():
     downloaded_video = download_video(video_input)
     extracted_audio_2 = extract_audio(downloaded_video)
 
-    # paths will be different since Audio object is created from two different Video objects,
+    # Paths will be different since Audio object is created from two different Video objects,
     # but the audio content should be the same
-    assert extracted_audio_1.get_numpy().all() == extracted_audio_2.get_numpy().all()
+    assert (extracted_audio_1.get_numpy().all()) == extracted_audio_2.get_numpy().all()

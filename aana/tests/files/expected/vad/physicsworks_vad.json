@@ -1,5 +1,5 @@
 {
-    "vad_segments": [
+    "segments": [
         {
             "time_interval": {
                 "start": 0.0,
