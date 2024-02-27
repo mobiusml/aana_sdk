@@ -1,6 +1,5 @@
 # ruff: noqa: S101
 import json
-import os
 from collections import defaultdict
 from importlib import resources
 from pathlib import Path
@@ -19,10 +18,10 @@ from aana.tests.utils import (
 )
 from aana.utils.general import pydantic_to_dict
 
-EPSILON = 0.01
+EPSILON = 0.01  # 0.01
 
 
-def compare_transcriptions(expected_transcription, transcription, words=True):
+def compare_transcriptions(expected_transcription, transcription, use_words=True):
     """Compare two transcriptions.
 
     Texts and words are compared using Levenshtein distance.
@@ -30,11 +29,11 @@ def compare_transcriptions(expected_transcription, transcription, words=True):
     Args:
         expected_transcription (dict): the expected transcription
         transcription (dict): the actual transcription
-
+        use_words (bool): Whether to use words in comparison or not
     Raises:
         AssertionError: if transcriptions differ too much
     """
-    if words:
+    if use_words:
         levenshtein_operator = [LevenshteinOperator([r"\['text'\]$", r"\['word'\]$"])]
     else:
         levenshtein_operator = [LevenshteinOperator([r"\['text'\]$"])]
@@ -56,6 +55,9 @@ def setup_whisper_deployment(setup_deployment, request):
     return name, deployment, *setup_deployment(deployment, bind=True)
 
 
+# TODO: Not getting same output as the API call for some reason!
+
+
 @pytest.mark.skipif(
     not is_gpu_available() and not is_using_deployment_cache(),
     reason="GPU is not available",
@@ -67,7 +69,7 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     name, deployment, handle, port, route_prefix = setup_whisper_deployment
 
     model_size = deployment.user_config["model_size"]
-    audio_file_name = os.path.splitext(audio_file)[0]  # noqa: PTH122
+    audio_file_name = Path(audio_file).stem
     expected_output_path = resources.path(
         f"aana.tests.files.expected.whisper.{model_size}", f"{audio_file_name}.json"
     )
@@ -86,7 +88,6 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         media=audio, params=WhisperParams(word_timestamps=True)
     )
     output = pydantic_to_dict(output)
-
     compare_transcriptions(expected_output, output)
 
     # Test transcribe_stream method)
@@ -101,7 +102,8 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
-        grouped_dict["segments"].append(output.get("segments")[0])
+        # grouped_dict["segments"].append(output.get("segments")[0])
+        grouped_dict["segments"].extend(output.get("segments", []))
 
     grouped_dict["transcription"] = {"text": transcript}
     grouped_dict["transcription_info"] = output.get("transcription_info")
@@ -119,7 +121,8 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         output = {k: v[i] for k, v in batch_output.items()}
         compare_transcriptions(expected_output, output)
 
-    # Test batched_inference method: Note that the expected asr output is different
+    print("Done until last")
+    # Test transcribe_in_chunks method: Note that the expected asr output is different
     expectd_batched_output_path = resources.path(
         f"aana.tests.files.expected.whisper.{model_size}",
         f"{audio_file_name}_batched.json",
@@ -139,18 +142,17 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     with Path(vad_path) as path, path.open() as f:
         expected_output_vad = json.load(f)
 
-    final_input = []
-    for seg in expected_output_vad["vad_segments"]:
-        final_input.append(  # noqa: PERF401
-            VadSegment(time_interval=seg["time_interval"], segments=seg["segments"])
-        )
+    final_input = [
+        VadSegment(time_interval=seg["time_interval"], segments=seg["segments"])
+        for seg in expected_output_vad["vad_segments"]
+    ]
 
-    batched_stream = handle.options(stream=True).batched_inference.remote(
+    batched_stream = handle.options(stream=True).transcribe_in_chunks.remote(
         media=audio,
         vad_segments=final_input,
         batch_size=16,
         params=WhisperParams(),
-    )  # word_timestamps=True
+    )  # TODO: Write tests with different conditions: eg: word_timestamps=True
 
     # Combine individual segments and compare with the final dict
     transcript = ""
@@ -159,7 +161,8 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
-        grouped_dict["segments"].append(output.get("segments")[0])
+        # grouped_dict["segments"].append(output.get("segments")[0])
+        grouped_dict["segments"].extend(output.get("segments", []))
 
     grouped_dict["transcription"] = {"text": transcript}
     grouped_dict["transcription_info"] = output.get("transcription_info")
