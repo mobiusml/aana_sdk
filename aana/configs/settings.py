@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pydantic import BaseSettings
 
-from aana.configs.db import DBConfig
+from aana.configs.db import DbSettings
 
 
 class TestSettings(BaseSettings):
@@ -21,10 +21,7 @@ class Settings(BaseSettings):
     video_dir = tmp_data_dir / "videos"
     num_workers: int = 2
 
-    db_config: DBConfig = {
-        "datastore_type": "sqlite",
-        "datastore_config": {"path": Path("/var/lib/aana_data")},
-    }
+    db_config: DbSettings = DbSettings()
 
     test: TestSettings = TestSettings()
 
