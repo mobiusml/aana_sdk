@@ -130,10 +130,19 @@ class pyAVWrapper(AbstractAudioLibrary):
         """
         # Open the audio stream
         # container = av.open(BytesIO(content))
-        frames = av.AudioFrame.from_ndarray(np.zeros(0, dtype=np.int16), format="s16")
-        frames.planes[0].buffer = content
+        # frames = av.AudioFrame.from_ndarray(np.zeros(0, dtype=np.int16), format="s16")
+        # frames.planes[0].buffer = content
+        # Create an in-memory file-like object
+        content_io = io.BytesIO(content)
 
-        array = frames.to_ndarray()
+        # Open the in-memory file with av
+        with av.open(content_io, format="wav", mode="r") as container:
+            # Iterate through audio frames
+            frames = [frame.to_ndarray() for frame in container.decode(audio=0)]
+
+        # Concatenate the frames
+        array = np.concatenate(frames)
+
         # Convert s16 back to f32.
         audio = array.astype(np.float32) / 32768.0
 
