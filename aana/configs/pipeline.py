@@ -285,7 +285,7 @@ nodes = [
                 "key": "video",
                 "path": "video_batch.videos.[*].video",
             },
-            {"name": "video_params", "key": "params", "path": "-params"},
+            {"name": "video_params", "key": "params", "path": "video_batch.params"},
         ],
         "outputs": [
             {
