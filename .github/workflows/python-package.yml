@@ -6,10 +6,10 @@ name: Python package
 on:
   push:
     branches:
-      - '*'  # Runs on push to any branch
+      - '**'  # Runs on push to any branch
   pull_request:
     branches:
-      - '*'  # Runs on pull requests to any branch
+      - '**'  # Runs on pull requests to any branch
   workflow_dispatch:  # Allows for manual triggering
 
 jobs:
