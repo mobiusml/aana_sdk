@@ -18,7 +18,7 @@ from aana.tests.utils import (
 )
 from aana.utils.general import pydantic_to_dict
 
-EPSILON = 0.01  # 0.01
+EPSILON = 0.01
 
 
 def compare_transcriptions(expected_transcription, transcription):
@@ -51,9 +51,6 @@ def setup_whisper_deployment(setup_deployment, request):
     return name, deployment, *setup_deployment(deployment, bind=True)
 
 
-# TODO: Not getting same output as the API call for some reason!
-
-
 @pytest.mark.skipif(
     not is_gpu_available() and not is_using_deployment_cache(),
     reason="GPU is not available",
@@ -81,14 +78,14 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     audio = Audio(path=path, media_id=audio_file)
 
     output = await handle.transcribe.remote(
-        media=audio, params=WhisperParams(word_timestamps=True)
+        media=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
     )
     output = pydantic_to_dict(output)
     compare_transcriptions(expected_output, output)
 
     # Test transcribe_stream method)
     stream = handle.options(stream=True).transcribe_stream.remote(
-        media=audio, params=WhisperParams(word_timestamps=True)
+        media=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
     )
 
     # Combine individual segments and compare with the final dict
@@ -98,7 +95,6 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
-        # grouped_dict["segments"].append(output.get("segments")[0])
         grouped_dict["segments"].extend(output.get("segments", []))
 
     grouped_dict["transcription"] = {"text": transcript}
@@ -109,7 +105,8 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     audios = [audio, audio]
 
     batch_output = await handle.transcribe_batch.remote(
-        media_batch=audios, params=WhisperParams(word_timestamps=True)
+        media_batch=audios,
+        params=WhisperParams(word_timestamps=True, temperature=0.0),
     )
     batch_output = pydantic_to_dict(batch_output)
 
@@ -117,7 +114,6 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         output = {k: v[i] for k, v in batch_output.items()}
         compare_transcriptions(expected_output, output)
 
-    print("Done until last")
     # Test transcribe_in_chunks method: Note that the expected asr output is different
     expectd_batched_output_path = resources.path(
         f"aana.tests.files.expected.whisper.{model_size}",
@@ -129,7 +125,7 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     with Path(expectd_batched_output_path) as path, path.open() as f:
         expected_output_batched = json.load(f)
 
-    # get expected vad_segments
+    # Get expected vad segments
     vad_path = resources.path(
         "aana.tests.files.expected.vad", f"{audio_file_name}_vad.json"
     )
@@ -140,15 +136,15 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
 
     final_input = [
         VadSegment(time_interval=seg["time_interval"], segments=seg["segments"])
-        for seg in expected_output_vad["vad_segments"]
+        for seg in expected_output_vad["segments"]
     ]
 
     batched_stream = handle.options(stream=True).transcribe_in_chunks.remote(
-        media=audio,
-        vad_segments=final_input,
+        audio=audio,
+        segments=final_input,
         batch_size=16,
         params=WhisperParams(),
-    )  # TODO: Write tests with different conditions: eg: word_timestamps=True
+    )
 
     # Combine individual segments and compare with the final dict
     transcript = ""
@@ -157,13 +153,30 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
         chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
-        # grouped_dict["segments"].append(output.get("segments")[0])
         grouped_dict["segments"].extend(output.get("segments", []))
 
     grouped_dict["transcription"] = {"text": transcript}
     grouped_dict["transcription_info"] = output.get("transcription_info")
+
     compare_transcriptions(
         expected_output_batched,
         dict(grouped_dict),
-        words=False,
     )
+
+    # Still run even when user specifies "word_timestamps=True" (TODO: Implement warnings in aana SDK)
+    batched_stream = handle.options(stream=True).transcribe_in_chunks.remote(
+        audio=audio,
+        segments=final_input,
+        batch_size=16,
+        params=WhisperParams(word_timestamps=True),
+    )
+
+    # Combine individual segments and compare with the final dict
+    transcript = ""
+    grouped_dict = defaultdict(list)
+    async for chunk in batched_stream:
+        chunk = await chunk
+        output = pydantic_to_dict(chunk)
+        transcript += output["transcription"]["text"]
+        grouped_dict["segments"].extend(output.get("segments", []))
+        assert grouped_dict["segments"][0]["words"] == []
