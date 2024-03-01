@@ -120,7 +120,7 @@ def test_save_video_transcription(mock_session):
     )
 
     segments = AsrSegments(
-        __root__=[
+        [
             AsrSegment(
                 text="This is a transcript.",
                 time_interval=TimeInterval(start=0, end=1),
@@ -160,9 +160,7 @@ def test_save_captions_batch(mock_session):
     media_ids = ["0"]
     models = "test_model"
     captions = ["A caption", "Another caption", "A third caption"]
-    captions_list = [
-        CaptionsList(__root__=[Caption(__root__=caption) for caption in captions])
-    ]
+    captions_list = [CaptionsList([Caption(caption) for caption in captions])]
     timestamps = [[0.1, 0.2, 0.3, 0.4]]
     frame_ids = [[0, 1, 2]]
     with pytest.raises(NotImplementedError):
@@ -185,9 +183,7 @@ def test_save_captions_single(mock_session):
     media_id = "0"
     model_name = "test_model"
     captions = ["A caption", "Another caption", "A third caption"]
-    captions_list = CaptionsList(
-        __root__=[Caption(__root__=caption) for caption in captions]
-    )
+    captions_list = CaptionsList([Caption(caption) for caption in captions])
     timestamps = [0.1, 0.2, 0.3]
     frame_ids = [0, 1, 2]
 

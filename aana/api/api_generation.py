@@ -7,7 +7,7 @@ from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
-from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
+from pydantic import BaseModel, Field, ValidationError, create_model
 
 from aana.api.app import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
@@ -237,9 +237,9 @@ class Endpoint:
                 continue
 
             # check if pydantic model has file_upload field and it's set to True
-            file_upload_enabled = getattr(data_model.Config, "file_upload", False)
-            file_upload_description = getattr(
-                data_model.Config, "file_upload_description", ""
+            file_upload_enabled = data_model.model_config.get("file_upload", False)
+            file_upload_description = data_model.model_config.get(
+                "file_upload_description", ""
             )
 
             if file_upload_enabled and file_upload_field is None:
@@ -330,7 +330,7 @@ class Endpoint:
 
         async def route_func_body(body: str, files: list[UploadFile] | None = None):  # noqa: C901
             # parse form data as a pydantic model and validate it
-            data = parse_raw_as(RequestModel, body)
+            data = RequestModel.model_validate_json(body)
 
             # if the input requires file upload, add the files to the data
             if file_upload_field and files:
@@ -341,7 +341,7 @@ class Endpoint:
             # data.dict() will convert all nested models to dicts
             # and we want to keep them as pydantic models
             data_dict = {}
-            for field_name in data.__fields__:
+            for field_name in data.model_fields:
                 field_value = getattr(data, field_name)
                 data_dict[field_name] = field_value
 

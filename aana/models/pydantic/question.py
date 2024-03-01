@@ -1,4 +1,5 @@
-from types import MappingProxyType
+
+from pydantic import ConfigDict
 
 from aana.models.pydantic.base import BaseStringModel
 
@@ -6,5 +7,4 @@ from aana.models.pydantic.base import BaseStringModel
 class Question(BaseStringModel):
     """A model for a question."""
 
-    class Config:
-        schema_extra = MappingProxyType({"description": "A question."})
+    model_config = ConfigDict(json_schema_extra={"description": "A question."})

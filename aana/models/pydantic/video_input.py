@@ -1,8 +1,15 @@
 from pathlib import Path
-from types import MappingProxyType
 
-from pydantic import BaseModel, Field, ValidationError, root_validator, validator
-from pydantic.error_wrappers import ErrorWrapper
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
+from pydantic_core import InitErrorDetails
+from typing_extensions import Self
 
 from aana.models.core.video import Video
 from aana.models.pydantic.base import BaseListModel
@@ -40,7 +47,8 @@ class VideoInput(BaseModel):
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
 
-    @validator("url")
+    @field_validator("url")
+    @classmethod
     def check_url(cls, url: str) -> str:
         """Check that the URL is valid and supported.
 
@@ -58,7 +66,8 @@ class VideoInput(BaseModel):
         # TODO: implement the youtube URL validation
         return url
 
-    @validator("media_id")
+    @field_validator("media_id")
+    @classmethod
     def media_id_must_not_be_empty(cls, media_id):
         """Validates that the media_id is not an empty string.
 
@@ -75,29 +84,22 @@ class VideoInput(BaseModel):
             raise ValueError("media_id cannot be an empty string")  # noqa: TRY003
         return media_id
 
-    @root_validator
-    def check_only_one_field(cls, values):
+    @model_validator(mode="after")
+    def check_only_one_field(self) -> Self:
         """Check that exactly one of 'path', 'url', or 'content' is provided.
-
-        Args:
-            values (Dict): the values of the fields
-
-        Returns:
-            Dict: the values of the fields
 
         Raises:
             ValueError: if not exactly one of 'path', 'url', or 'content' is provided
+
+        Returns:
+            Self: the instance
         """
-        count = sum(
-            value is not None
-            for key, value in values.items()
-            if key in ["path", "url", "content"]
-        )
+        count = sum(value is not None for value in [self.path, self.url, self.content])
         if count != 1:
             raise ValueError(  # noqa: TRY003
                 "Exactly one of 'path', 'url', or 'content' must be provided."
             )
-        return values
+        return self
 
     def set_file(self, file: bytes):
         """Sets the file.
@@ -128,11 +130,21 @@ class VideoInput(BaseModel):
             ValidationError: if the number of files isn't 1
         """
         if len(files) != 1:
-            error = ErrorWrapper(
-                ValueError("The number of videos and files must be the same."),
-                loc=("video",),
+            raise ValidationError.from_exception_data(
+                title=self.__class__.__name__,
+                line_errors=[
+                    InitErrorDetails(
+                        loc=("video",),
+                        type="value_error",
+                        ctx={
+                            "error": ValueError(
+                                "The number of videos and files must be the same."
+                            )
+                        },
+                        input=None,
+                    )
+                ],
             )
-            raise ValidationError([error], self.__class__)
         self.set_file(files[0])
 
     def convert_input_to_object(self) -> Video:
@@ -152,22 +164,21 @@ class VideoInput(BaseModel):
             media_id=self.media_id,
         )
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": (
-                    "A video. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided. \n"
-                    "If 'path' is provided, the video will be loaded from the path. \n"
-                    "If 'url' is provided, the video will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        )
-        validate_assignment = True
-        file_upload = True
-        file_upload_description = "Upload video file."
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": (
+                "A video. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                "If 'path' is provided, the video will be loaded from the path. \n"
+                "If 'url' is provided, the video will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
+        validate_assignment=True,
+        file_upload=True,
+        file_upload_description="Upload video file.",
+    )
 
 
 class VideoInputList(BaseListModel):
@@ -178,24 +189,21 @@ class VideoInputList(BaseListModel):
     Convert it to a list of video objects with convert_input_to_object().
     """
 
-    __root__: list[VideoInput]
+    root: list[VideoInput]
 
-    @validator("__root__", pre=True)
-    def check_non_empty(cls, videos: list[VideoInput]) -> list[VideoInput]:
+    @model_validator(mode="after")
+    def check_non_empty(self) -> Self:
         """Check that the list of videos isn't empty.
-
-        Args:
-            videos (List[VideoInput]): the list of videos
-
-        Returns:
-            List[VideoInput]: the list of videos
 
         Raises:
             ValueError: if the list of videos is empty
+
+        Returns:
+            Self: the instance
         """
-        if len(videos) == 0:
+        if len(self.root) == 0:
             raise ValueError("The list of videos must not be empty.")  # noqa: TRY003
-        return videos
+        return self
 
     def set_files(self, files: list[bytes]):
         """Set the files for the videos.
@@ -206,13 +214,23 @@ class VideoInputList(BaseListModel):
         Raises:
             ValidationError: if the number of videos and files aren't the same
         """
-        if len(self.__root__) != len(files):
-            error = ErrorWrapper(
-                ValueError("The number of videos and files must be the same."),
-                loc=("videos",),
+        if len(self.root) != len(files):
+            raise ValidationError.from_exception_data(
+                title=self.__class__.__name__,
+                line_errors=[
+                    InitErrorDetails(
+                        loc=("videos",),
+                        type="value_error",
+                        ctx={
+                            "error": ValueError(
+                                "The number of videos and files must be the same."
+                            )
+                        },
+                        input=None,
+                    )
+                ],
             )
-            raise ValidationError([error], self.__class__)
-        for video, file in zip(self.__root__, files, strict=False):
+        for video, file in zip(self.root, files, strict=False):
             video.set_file(file)
 
     def convert_input_to_object(self) -> list[VideoInput]:
@@ -221,20 +239,19 @@ class VideoInputList(BaseListModel):
         Returns:
             List[VideoInput]: the list of video inputs
         """
-        return self.__root__
+        return self.root
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": (
-                    "A list of videos. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided for each video. \n"
-                    "If 'path' is provided, the video will be loaded from the path. \n"
-                    "If 'url' is provided, the video will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        )
-        file_upload = True
-        file_upload_description = "Upload video files."
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": (
+                "A list of videos. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided for each video. \n"
+                "If 'path' is provided, the video will be loaded from the path. \n"
+                "If 'url' is provided, the video will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
+        file_upload=True,
+        file_upload_description="Upload video files.",
+    )

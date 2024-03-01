@@ -28,7 +28,7 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
             error="ValidationError",
             message="Validation error",
             data=exc.errors(),
-        ).dict(),
+        ).model_dump(),
     )
 
 
@@ -77,7 +77,7 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
         status_code=status_code,
         content=ExceptionResponseModel(
             error=error, message=message, data=data, stacktrace=stacktrace
-        ).dict(),
+        ).model_dump(),
     )
 
 
