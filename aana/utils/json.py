@@ -26,7 +26,7 @@ def json_serializer_default(obj: object) -> object:
         TypeError: If the object is not a pydantic model, Path, or Media object.
     """
     if isinstance(obj, BaseModel):
-        return obj.dict()
+        return obj.model_dump()
     if isinstance(obj, Path):
         return str(obj)
     from aana.models.core.media import Media

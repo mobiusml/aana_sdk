@@ -1,13 +1,14 @@
 from enum import Enum
 from os import PathLike
 from pathlib import Path
-from typing import TypeAlias, TypedDict
+from typing import TypeAlias
 
 from alembic import command
 from alembic.config import Config
 from pydantic import BaseSettings
 from sqlalchemy import String, TypeDecorator, create_engine
 from sqlalchemy.engine import Engine
+from typing_extensions import TypedDict
 
 from aana.models.pydantic.media_id import MediaId
 

@@ -1,6 +1,5 @@
-from types import MappingProxyType
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class SamplingParams(BaseModel):
@@ -47,7 +46,7 @@ class SamplingParams(BaseModel):
         default=None, ge=1, description="The maximum number of tokens to generate."
     )
 
-    @validator("top_k", always=True, pre=True)
+    @field_validator("top_k")
     def check_top_k(cls, v: int):
         """Validates a top_k argument.
 
@@ -68,7 +67,6 @@ class SamplingParams(BaseModel):
             raise ValueError(f"top_k must be -1 (disable), or at least 1, got {v}.")  # noqa: TRY003
         return v
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {"description": "Sampling parameters for generating text."}
-        )
+    model_config = ConfigDict(
+        json_schema_extra={"description": "Sampling parameters for generating text."}
+    )

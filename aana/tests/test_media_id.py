@@ -7,7 +7,7 @@ from aana.models.pydantic.media_id import MediaId
 
 def test_media_id_creation():
     """Test that a media id can be created."""
-    media_id = MediaId(__root__="foo")
+    media_id = MediaId(root="foo")
     assert media_id == "foo"
 
     media_id = MediaId("foo")

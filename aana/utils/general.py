@@ -28,11 +28,11 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
     # options and default_options have to be of the same type
     if type(default_options) != type(options):
         raise ValueError("Option type mismatch.")  # noqa: TRY003
-    default_options_dict = default_options.dict()
-    for k, v in options.dict().items():
+    default_options_dict = default_options.model_dump()
+    for k, v in options.model_dump().items():
         if v is not None:
             default_options_dict[k] = v
-    return options.__class__.parse_obj(default_options_dict)
+    return options.__class__.model_validate(default_options_dict)
 
 
 def download_file(url: str) -> bytes:
@@ -65,7 +65,7 @@ def pydantic_to_dict(data: Any) -> Any:
         Any: the same structured data with Pydantic objects converted to dictionaries
     """
     if isinstance(data, BaseModel):
-        return data.dict()
+        return data.model_dump()
     elif isinstance(data, list):
         return [pydantic_to_dict(item) for item in data]
     elif isinstance(data, dict):
@@ -110,3 +110,9 @@ def get_object_hash(obj: Any) -> str:
         jsonify(obj).encode("utf-8"),
         usedforsecurity=False,
     ).hexdigest()
+
+
+def get_gpu_memory(gpu: int = 0) -> int:
+    """Get the total memory of a GPU in bytes."""
+    import torch
+    return torch.cuda.get_device_properties(gpu).total_memory
