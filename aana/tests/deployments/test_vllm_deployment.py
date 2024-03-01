@@ -57,7 +57,6 @@ async def test_vllm_deployments(setup_vllm_deployment):
     )
     text = ""
     async for chunk in stream:
-        chunk = await chunk
         text += chunk["text"]
 
     compare_texts(expected_text, text)
@@ -103,7 +102,6 @@ async def test_vllm_deployments(setup_vllm_deployment):
 
     text = ""
     async for chunk in stream:
-        chunk = await chunk
         text += chunk["text"]
 
     compare_texts(expected_text, text)

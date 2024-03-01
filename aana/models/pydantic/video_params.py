@@ -1,6 +1,5 @@
-from types import MappingProxyType
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class VideoParams(BaseModel):
@@ -26,7 +25,6 @@ class VideoParams(BaseModel):
             "extract_fps will be ignored if this is set to True."
         ),
     )
-
-    class Config:
-        schema_extra = MappingProxyType({"description": "Video parameters."})
-        validate_assignment = True
+    model_config = ConfigDict(
+        json_schema_extra={"description": "Video parameters."}, validate_assignment=True
+    )

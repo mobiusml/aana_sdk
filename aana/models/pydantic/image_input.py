@@ -1,10 +1,17 @@
 import io
 from pathlib import Path
-from types import MappingProxyType
 
 import numpy as np
-from pydantic import BaseModel, Field, ValidationError, root_validator, validator
-from pydantic.error_wrappers import ErrorWrapper
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
+from pydantic_core import InitErrorDetails
+from typing_extensions import Self
 
 from aana.models.core.image import Image
 from aana.models.pydantic.base import BaseListModel
@@ -50,7 +57,8 @@ class ImageInput(BaseModel):
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
 
-    @validator("media_id")
+    @field_validator("media_id")
+    @classmethod
     def media_id_must_not_be_empty(cls, media_id):
         """Validates that the media_id is not an empty string.
 
@@ -100,36 +108,42 @@ class ImageInput(BaseModel):
             ValidationError: if the number of images and files aren't the same
         """
         if len(files) != 1:
-            error = ErrorWrapper(
-                ValueError("The number of images and files must be the same."),
-                loc=("images",),
+            raise ValidationError.from_exception_data(
+                title=self.__class__.__name__,
+                line_errors=[
+                    InitErrorDetails(
+                        loc=("images",),
+                        type="value_error",
+                        ctx={
+                            "error": ValueError(
+                                "The number of images and files must be the same."
+                            )
+                        },
+                        input=None,
+                    )
+                ],
             )
-            raise ValidationError([error], self.__class__)
         self.set_file(files[0])
 
-    @root_validator
-    def check_only_one_field(cls, values: dict) -> dict:
+    @model_validator(mode="after")
+    def check_only_one_field(self) -> Self:
         """Check that exactly one of 'path', 'url', 'content' or 'numpy' is provided.
-
-        Args:
-            values (Dict): the values of the fields
-
-        Returns:
-            Dict: the values of the fields
 
         Raises:
             ValueError: if not exactly one of 'path', 'url', 'content' or 'numpy' is provided
+
+        Returns:
+            Self: the instance
         """
         count = sum(
             value is not None
-            for key, value in values.items()
-            if key in ["path", "url", "content", "numpy"]
+            for value in [self.path, self.url, self.content, self.numpy]
         )
         if count != 1:
             raise ValueError(  # noqa: TRY003
                 "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided."
             )
-        return values
+        return self
 
     def convert_input_to_object(self) -> Image:
         """Convert the image input to an image object.
@@ -158,22 +172,21 @@ class ImageInput(BaseModel):
             media_id=self.media_id,
         )
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": (
-                    "An image. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided. \n"
-                    "If 'path' is provided, the image will be loaded from the path. \n"
-                    "If 'url' is provided, the image will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        )
-        validate_assignment = True
-        file_upload = True
-        file_upload_description = "Upload image file."
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": (
+                "An image. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                "If 'path' is provided, the image will be loaded from the path. \n"
+                "If 'url' is provided, the image will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
+        validate_assignment=True,
+        file_upload=True,
+        file_upload_description="Upload image file.",
+    )
 
 
 class ImageInputList(BaseListModel):
@@ -183,24 +196,21 @@ class ImageInputList(BaseListModel):
     Convert it to a list of image objects with convert_input_to_object().
     """
 
-    __root__: list[ImageInput]
+    root: list[ImageInput]
 
-    @validator("__root__", pre=True)
-    def check_non_empty(cls, v: list[ImageInput]) -> list[ImageInput]:
+    @model_validator(mode="after")
+    def check_non_empty(self) -> Self:
         """Check that the list of images isn't empty.
-
-        Args:
-            v (List[ImageInput]): the list of images
-
-        Returns:
-            List[ImageInput]: the list of images
 
         Raises:
             ValueError: if the list of images is empty
+
+        Returns:
+            Self: the instance
         """
-        if len(v) == 0:
+        if len(self.root) == 0:
             raise ValueError("The list of images must not be empty.")  # noqa: TRY003
-        return v
+        return self
 
     def set_files(self, files: list[bytes]):
         """Set the files for the images.
@@ -211,13 +221,11 @@ class ImageInputList(BaseListModel):
         Raises:
             ValidationError: if the number of images and files aren't the same
         """
-        if len(self.__root__) != len(files):
-            error = ErrorWrapper(
-                ValueError("The number of images and files must be the same."),
-                loc=("images",),
-            )
-            raise ValidationError([error], self.__class__)
-        for image, file in zip(self.__root__, files, strict=False):
+        if len(self.root) != len(files):
+            error = ValueError("The number of images and files must be the same.")
+            # raise ValidationError(error,
+            raise error
+        for image, file in zip(self.root, files, strict=False):
             image.set_file(file)
 
     def convert_input_to_object(self) -> list[Image]:
@@ -226,20 +234,19 @@ class ImageInputList(BaseListModel):
         Returns:
             List[Image]: the list of image objects corresponding to the image inputs
         """
-        return [image.convert_input_to_object() for image in self.__root__]
+        return [image.convert_input_to_object() for image in self.root]
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": (
-                    "A list of images. \n"
-                    "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
-                    "If 'path' is provided, the image will be loaded from the path. \n"
-                    "If 'url' is provided, the image will be downloaded from the url. \n"
-                    "The 'content' will be loaded automatically "
-                    "if files are uploaded to the endpoint (should be set to 'file' for that)."
-                )
-            }
-        )
-        file_upload = True
-        file_upload_description = "Upload image files."
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": (
+                "A list of images. \n"
+                "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
+                "If 'path' is provided, the image will be loaded from the path. \n"
+                "If 'url' is provided, the image will be downloaded from the url. \n"
+                "The 'content' will be loaded automatically "
+                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+            )
+        },
+        file_upload=True,
+        file_upload_description="Upload image files.",
+    )
