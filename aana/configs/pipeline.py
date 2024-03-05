@@ -4,6 +4,7 @@ It is used to generate the pipeline and the API endpoints.
 """
 import PIL.Image
 
+from aana.models.core.image import Image
 from aana.models.pydantic.asr_output import (
     AsrSegments,
     AsrSegmentsList,
@@ -192,11 +193,32 @@ nodes = [
         ],
     },
     {
-        "name": "image",
+        "name": "image_input",
         "type": "input",
         "inputs": [],
         "outputs": [
-            {"name": "image", "key": "image", "path": "image", "data_model": ImageInput}
+            {
+                "name": "image_input",
+                "key": "image",
+                "path": "image_input",
+                "data_model": ImageInput,
+            }
+        ],
+    },
+    {
+        "name": "load_image",
+        "type": "function",
+        "function": "aana.utils.image.load_image_input",
+        "inputs": [
+            {
+                "name": "image_input",
+                "key": "image_input",
+                "path": "image_input",
+                "data_model": ImageInput,
+            }
+        ],
+        "outputs": [
+            {"name": "image", "key": "image", "path": "image", "data_model": Image}
         ],
     },
     {
