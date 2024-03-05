@@ -14,7 +14,7 @@ from aana.models.pydantic.asr_output import (
 )
 from aana.models.pydantic.captions import CaptionsList, VideoCaptionsList
 from aana.models.pydantic.chat_message import ChatDialog
-from aana.models.pydantic.image_input import ImageInputList
+from aana.models.pydantic.image_input import ImageInput, ImageInputList
 from aana.models.pydantic.media_id import MediaId
 from aana.models.pydantic.prompt import Prompt
 from aana.models.pydantic.question import Question
@@ -192,6 +192,14 @@ nodes = [
         ],
     },
     {
+        "name": "image",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {"name": "image", "key": "image", "path": "image", "data_model": ImageInput}
+        ],
+    },
+    {
         "name": "images",
         "type": "input",
         "inputs": [],
@@ -310,6 +318,25 @@ nodes = [
                 "path": "video_batch.videos.[*].duration",
             },
         ],
+    },
+    {
+        "name": "standard_concepts_v2_image",
+        "type": "ray_deployment",
+        "deployment_name": "standard_concepts_v2_deployment",
+        "method": "generate",
+        "inputs": [{"name": "image", "key": "image", "path": "image"}],
+        "outputs": {
+            {
+                "name": "standard_concepts_v2_features",
+                "key": "features",
+                "path": "image.standard_concepts_v2_features",
+            },
+            {
+                "name": "standard_concepts_v2_predictions",
+                "key": "predictions",
+                "path": "image.standard_concepts_v2_predictions",
+            },
+        },
     },
     {
         "name": "hf_blip2_opt_2_7b_videos",

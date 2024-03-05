@@ -199,4 +199,17 @@ endpoints = {
             ],
         )
     ],
+    "standardconceptsv2": [
+        Endpoint(
+            name="image_tagging",
+            path="/image/tagging/standard_concepts",
+            summary="Tags an image",
+            outputs=[
+                EndpointOutput(
+                    name="standard_concepts_v2_predictions",
+                    output="standard_concepts_v2_predictions",
+                )
+            ],
+        )
+    ],
 }

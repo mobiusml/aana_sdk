@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import ClassVar
 
 from pydantic_settings import BaseSettings
 
@@ -21,7 +22,8 @@ class Settings(BaseSettings):
     video_dir: Path = tmp_data_dir / "videos"
     num_workers: int = 2
 
-    db_config: DBConfig = {
+    # TODO: fixme mutability
+    db_config: ClassVar[DBConfig] = {
         "datastore_type": "sqlite",
         "datastore_config": {"path": Path("/var/lib/aana_data")},
     }
