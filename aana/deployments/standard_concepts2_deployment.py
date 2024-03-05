@@ -15,7 +15,6 @@ from aana.exceptions.general import ImageReadingException, InferenceException
 from aana.models.core.image import Image
 from aana.utils.test import test_cache  # noqa: F401
 
-
 class StandardConceptsV2Config(BaseModel):
     """The configuration for the Standrd Concepts V2 deployment.
 
@@ -88,16 +87,38 @@ class TaggingOutput(TypedDict):
 
 @serve.deployment
 class StandardConceptsV2Deployment(BaseDeployment):
-    """Deployment to serve StandardConcepts v2 models using local file."""
+    """Deployment to serve StandardConcepts v2 models using local file.
+    
+    For a production deployment, we wouldn't implement it this way. We would have
+    at least three separate deployments: one for resizing, another for inference, 
+    and a third for post-processing; with a shared backbone architecture like we
+    had for CLIP keywording, there would even be two inferences, one for feature  
+    extraction and a second one for actual tag predictions. Thihs allows you to 
+    optimally split up parts of the workflow to optimally use CPU, GPU, and multi-
+    server resources.
+    
+    These all should be in deployments because they require configuration to run, 
+    which is stateful, and hence unsuitable for a task or function. 
+
+    Actually, in an ideal world the concept configurations would live in a database, 
+    so it could be easily modified with other endpoints. Adding to the stop list 
+    or changing a mapping could be as easy as API calls, and adding a new language 
+    could be a few (okay: a lot) of API calls. The backbone model would need to be
+    precomposed but you could even put the concept weights and biases in the (TBC) 
+    vector datastore and build that whole layer up at runtime.
+
+    We'd also pass a parameters input object instead of requiring a single value for 
+    thresholding and `top_n`. 
+    """
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
 
         The method is called when the deployment is created or updated.
 
-        It loads the model and processor from HuggingFace.
+        It loads the model and processor from the filesystem.
 
-        The configuration should conform to the HFBlip2Config schema.
+        The configuration should conform to the StandardConceptsV2Config schema.
         """
         self._config = StandardConceptsV2Config(**config)
 
@@ -142,9 +163,7 @@ class StandardConceptsV2Deployment(BaseDeployment):
             }
 
     def generate(self, image: Image) -> TaggingOutput:  # noqa: C901
-        """Generate captions for the given images.
-
-        This method is called by the batch processor.
+        """Generate tags for the given image.
 
         Args:
             image (Image): the image to process.
@@ -153,6 +172,7 @@ class StandardConceptsV2Deployment(BaseDeployment):
             TaggingOutput: the features and predictions for the image
 
         Raises:
+            ImageReadingException: if the miage is not the right size
             InferenceException: if the inference fails
         """
         # Check that input is the right size
