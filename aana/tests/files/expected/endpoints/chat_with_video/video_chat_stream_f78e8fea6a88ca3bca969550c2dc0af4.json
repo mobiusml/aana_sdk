@@ -1,11 +1,605 @@
 [
     {
-        "data": {
-            "id": "dQw4w9WgXcQ",
-            "table": "transcripts"
-        },
-        "error": "NotFoundException",
-        "message": "NotFoundException(table=transcripts, id=dQw4w9WgXcQ)",
-        "stacktrace": "Traceback (most recent call last):\n  File \"/workspaces/aana_sdk/aana/api/api_generation.py\", line 381, in generator_wrapper\n    async for output in run_pipeline_streaming(\n  File \"/workspaces/aana_sdk/aana/api/api_generation.py\", line 67, in run_pipeline_streaming\n    async for output in pipeline.run_generator(\n  File \"/workspaces/aana_sdk/mobius-pipeline/mobius_pipeline/pipeline/pipeline.py\", line 295, in run_generator\n    raise node_graph_task.exception()\n  File \"/workspaces/aana_sdk/mobius-pipeline/mobius_pipeline/pipeline/node_graph.py\", line 220, in run\n    await asyncio.gather(*tasks)\n  File \"/workspaces/aana_sdk/mobius-pipeline/mobius_pipeline/node/base_node.py\", line 155, in run\n    output = await self.process(input_dict, part_input_index)\n  File \"/workspaces/aana_sdk/mobius-pipeline/mobius_pipeline/node/function_node.py\", line 31, in process\n    output = self.function(**input_dict, **self.kwargs)\n  File \"/workspaces/aana_sdk/aana/utils/db.py\", line 291, in load_video_transcription\n    entity: TranscriptEntity = repo.get_transcript(model_name, media_id)\n  File \"/workspaces/aana_sdk/aana/repository/datastore/transcript_repo.py\", line 37, in get_transcript\n    raise NotFoundException(self.table_name, media_id)\naana.exceptions.database.NotFoundException: NotFoundException(table=transcripts, id=dQw4w9WgXcQ)\n"
+        "completion": " "
+    },
+    {
+        "completion": " Based"
+    },
+    {
+        "completion": " on"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " provided"
+    },
+    {
+        "completion": " script"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " appears"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " music"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " for"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " song"
+    },
+    {
+        "completion": " \""
+    },
+    {
+        "completion": "N"
+    },
+    {
+        "completion": "ever"
+    },
+    {
+        "completion": " G"
+    },
+    {
+        "completion": "onna"
+    },
+    {
+        "completion": " Give"
+    },
+    {
+        "completion": " You"
+    },
+    {
+        "completion": " Up"
+    },
+    {
+        "completion": "\""
+    },
+    {
+        "completion": " by"
+    },
+    {
+        "completion": " Rick"
+    },
+    {
+        "completion": " Ast"
+    },
+    {
+        "completion": "ley"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " starts"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " black"
+    },
+    {
+        "completion": " screen"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " song"
+    },
+    {
+        "completion": "'"
+    },
+    {
+        "completion": "s"
+    },
+    {
+        "completion": " audio"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " then"
+    },
+    {
+        "completion": " visual"
+    },
+    {
+        "completion": " ca"
+    },
+    {
+        "completion": "ptions"
+    },
+    {
+        "completion": " appear"
+    },
+    {
+        "completion": " on"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " screen"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " lyr"
+    },
+    {
+        "completion": "ics"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " song"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " then"
+    },
+    {
+        "completion": " cut"
+    },
+    {
+        "completion": "s"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " various"
+    },
+    {
+        "completion": " scenes"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " dan"
+    },
+    {
+        "completion": "cing"
+    },
+    {
+        "completion": " along"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " song"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " including"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " group"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " large"
+    },
+    {
+        "completion": " window"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " woman"
+    },
+    {
+        "completion": " dan"
+    },
+    {
+        "completion": "cing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " large"
+    },
+    {
+        "completion": " window"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " group"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " ch"
+    },
+    {
+        "completion": "airs"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " also"
+    },
+    {
+        "completion": " includes"
+    },
+    {
+        "completion": " scenes"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " walking"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " talking"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " as"
+    },
+    {
+        "completion": " well"
+    },
+    {
+        "completion": " as"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " shot"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " tren"
+    },
+    {
+        "completion": "ch"
+    },
+    {
+        "completion": " coat"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " ends"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " shot"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " song"
+    },
+    {
+        "completion": "'"
+    },
+    {
+        "completion": "s"
+    },
+    {
+        "completion": " title"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " artist"
+    },
+    {
+        "completion": " on"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " screen"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " Over"
+    },
+    {
+        "completion": "all"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " appears"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " fun"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " up"
+    },
+    {
+        "completion": "be"
+    },
+    {
+        "completion": "at"
+    },
+    {
+        "completion": " music"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " that"
+    },
+    {
+        "completion": " matches"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " catch"
+    },
+    {
+        "completion": "y"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " memor"
+    },
+    {
+        "completion": "able"
+    },
+    {
+        "completion": " t"
+    },
+    {
+        "completion": "une"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " song"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": ""
     }
 ]
