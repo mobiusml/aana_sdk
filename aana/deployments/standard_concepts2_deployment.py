@@ -180,42 +180,35 @@ class StandardConceptsV2Deployment(BaseDeployment):
             key=lambda i: -pred[i],
         )
         scores = pred[indices].tolist()
-        print(type(self._concepts))
         tags = self._concepts[indices].tolist()
 
-        mapped_predictions = list[tuple[str, float]]()
-        seen_tags = set()
+        # Here we're abusing notation to use a type annotation as a constructor.
+        # The created list doesn't actually enforce the generic type annnotations
+        # at run time, but a typechecker can verify them before that.
+        processed_tags = list[tuple[str, float]]()
+        # Gets flagged by MyPy:
+        # processed_tags.append(0)
+        seen_tags: set = set()
         for tag, score in zip(tags, scores, strict=True):
             # map the tag to the value in the config
             tag = self._concept_config["mappings"].get(tag, tag)
-            # if already seen, don't add again
+            # If already seen, don't add again
             if tag in seen_tags:
                 continue
-            mapped_predictions.append((tag, score))
-            seen_tags.add(tag)
-        # filter tags
-        filtered_tags = list[tuple[str, float]]()
-        for tag, score in mapped_predictions:
-            # if score below threshold, don't add
+            # Filter if below threshohld or on stoplist
             if score < self._config.confidence_threshold:
                 continue
-            if tag in self._concept_config["stop_list"]:
+            if self._concept_config["stop_list"]:
                 continue
-            filtered_tags.append((tag, score))
-
-        # Remove antonyms
-        cleaned_tags = list[tuple[str, float]]()
-        seen_tags: set = set()
-        for tag, score in filtered_tags:
             # Add if we have not seen an antonym to this tag already
             # (~~Un~~Cool kids say, "Add if the set of seen tags and
             # the set of antonym tags is the empty set")
             if not seen_tags & self._concept_config["antonyms"].get(tag, set()):
                 seen_tags.add(tag)
-                cleaned_tags.append((tag, score))
-
-        # Having cleaned tags, we now take into account top_n
-        processed_tags = cleaned_tags[: self._config.top_n]
+                processed_tags.append((tag, score))
+            # Only take the top n results
+            if len(processed_tags) >= self._config.top_n:
+                break
 
         # Having cleaned tags and limited ourselves to n items,
         # we now structure output
