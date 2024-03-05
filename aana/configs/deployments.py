@@ -29,7 +29,7 @@ deployments = {
     "hf_blip2_deployment_opt_2_7b": HFBlip2Deployment.options(
         num_replicas=1,
         max_concurrent_queries=1000,
-        ray_actor_options={"num_gpus": 0.25},
+        ray_actor_options={"num_gpus": 0.51},
         user_config=HFBlip2Config(
             model="Salesforce/blip2-opt-2.7b",
             dtype=Dtype.FLOAT16,

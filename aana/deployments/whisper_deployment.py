@@ -204,21 +204,31 @@ class WhisperDeployment(BaseDeployment):
         if not params:
             params = WhisperParams()
         audio_array = media.get_numpy()
-        try:
-            segments, info = self.model.transcribe(audio_array, **params.dict())
-        except Exception as e:
-            raise InferenceException(self.model_name) from e
-
-        asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
-        for segment in segments:
-            asr_segments = [AsrSegment.from_whisper(segment)]
-            asr_transcription = AsrTranscription(text=segment.text)
-
+        if not audio_array.any():
+            # For silent audios/no audio tracks, return empty output with language as silence
             yield WhisperOutput(
-                segments=asr_segments,
-                transcription_info=asr_transcription_info,
-                transcription=asr_transcription,
+                segments=[],
+                transcription_info=AsrTranscriptionInfo(
+                    language="silence", language_confidence=1.0
+                ),
+                transcription=AsrTranscription(text=""),
             )
+        else:
+            try:
+                segments, info = self.model.transcribe(audio_array, **params.dict())
+            except Exception as e:
+                raise InferenceException(self.model_name) from e
+
+            asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
+            for segment in segments:
+                asr_segments = [AsrSegment.from_whisper(segment)]
+                asr_transcription = AsrTranscription(text=segment.text)
+
+                yield WhisperOutput(
+                    segments=asr_segments,
+                    transcription_info=asr_transcription_info,
+                    transcription=asr_transcription,
+                )
 
     async def transcribe_batch(
         self, media_batch: list[Audio], params: WhisperParams = None

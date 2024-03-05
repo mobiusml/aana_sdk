@@ -5,7 +5,6 @@
         "editor.formatOnSave": true,
     },
     "python.testing.pytestArgs": [
-        // "--import-mode=importlib",
         "aana"
     ],
     "python.testing.unittestEnabled": false,
