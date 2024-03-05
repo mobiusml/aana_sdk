@@ -10,7 +10,7 @@ class VideoEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "video"
 
-    id = Column(Integer, primary_key=True)  # noqa A003
+    id = Column(Integer, primary_key=True)
     media_id = Column(
         MediaIdSqlType,
         ForeignKey("media.id"),
