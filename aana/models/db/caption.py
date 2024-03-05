@@ -18,7 +18,7 @@ class CaptionEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "captions"
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)  # noqa A003
     model = Column(
         String, nullable=False, comment="Name of model used to generate the caption"
     )
