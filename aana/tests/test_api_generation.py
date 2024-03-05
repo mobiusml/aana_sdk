@@ -30,7 +30,10 @@ class FileUploadModel(BaseModel):
             if isinstance(files, list):
                 files = files[0]
             self.content = files
-    model_config = ConfigDict(extra="forbid", file_upload=True, file_upload_description="Upload image files.")
+
+    model_config = ConfigDict(
+        extra="forbid", file_upload=True, file_upload_description="Upload image files."
+    )
 
 
 class OutputModel(BaseModel):

@@ -1,4 +1,3 @@
-
 from pydantic import ConfigDict
 
 from aana.models.pydantic.base import BaseStringModel
