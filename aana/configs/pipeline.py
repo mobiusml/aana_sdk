@@ -325,7 +325,7 @@ nodes = [
         "deployment_name": "standard_concepts_v2_deployment",
         "method": "generate",
         "inputs": [{"name": "image", "key": "image", "path": "image"}],
-        "outputs": {
+        "outputs": [
             {
                 "name": "standard_concepts_v2_features",
                 "key": "features",
@@ -336,7 +336,7 @@ nodes = [
                 "key": "predictions",
                 "path": "image.standard_concepts_v2_predictions",
             },
-        },
+        ],
     },
     {
         "name": "hf_blip2_opt_2_7b_videos",

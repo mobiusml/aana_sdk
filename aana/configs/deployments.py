@@ -61,7 +61,7 @@ deployments = {
         user_config=StableDiffusion2Config(
             model="stabilityai/stable-diffusion-2",
             dtype=Dtype.FLOAT16,
-        ).dict(),
+        ).model_dump(),
     ),
     "standard_concepts_v2_deployment": StandardConceptsV2Deployment.options(
         num_replicas=1,
@@ -75,6 +75,6 @@ deployments = {
             image_size=[224, 224, 3],
             confidence_threshold=0.55,
             top_n=20,
-        ).dict(),
+        ).model_dump(),
     ),
 }
