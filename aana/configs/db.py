@@ -5,7 +5,7 @@ from typing import TypeAlias
 
 from alembic import command
 from alembic.config import Config
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from sqlalchemy import String, TypeDecorator, create_engine
 from sqlalchemy.engine import Engine
 from typing_extensions import TypedDict
