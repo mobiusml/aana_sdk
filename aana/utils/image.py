@@ -5,6 +5,7 @@ import PIL.Image
 
 from aana.configs.settings import settings
 from aana.models.core.file import PathResult
+from aana.models.pydantic.image_input import ImageInput
 
 
 def save_image(image: PIL.Image.Image, full_path: Path | None = None) -> PathResult:
@@ -21,3 +22,8 @@ def save_image(image: PIL.Image.Image, full_path: Path | None = None) -> PathRes
         full_path = settings.image_dir / f"{uuid4()}.png"
     image.save(full_path)
     return {"path": full_path}
+
+
+def load_image_input(image_input: ImageInput) -> dict:
+    """Loads an image_input and turns it into an Image object."""
+    return {"image": image_input.convert_input_to_object()}

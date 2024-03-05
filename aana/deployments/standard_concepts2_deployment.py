@@ -1,3 +1,4 @@
+# ruff: noqa: ASYNC101
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, TypeAlias
@@ -106,6 +107,8 @@ class StandardConceptsV2Deployment(BaseDeployment):
             if torch.cuda.is_available():
                 self._use_gpu = True
                 self._model = self._model.cuda()
+            else:
+                self._use_gpu = False
 
         with Path(self._config.path_keywords).open("rb") as f:
             concepts_list = np.load(f)
@@ -116,8 +119,9 @@ class StandardConceptsV2Deployment(BaseDeployment):
         with Path(self._config.path_config).open(
             encoding=self._config.encoding_config
         ) as f:
-            concepts = yaml.safe_load(f, Loader=yaml.CBaseLoader)
-            stop_list = {x[1] for x in concepts.get("stop_list", {}).items()}
+            concepts = yaml.safe_load(f)
+
+            stop_list = {x for xs in concepts.get("stop_list", {}).values() for x in xs}
             mappings = {
                 a: b
                 for mapping in concepts["mappings"].values()
@@ -125,8 +129,8 @@ class StandardConceptsV2Deployment(BaseDeployment):
             }
             antonyms: defaultdict[str, set] = defaultdict(set)
             for a, b in concepts.get("antonyms", {}):
-                antonyms[a] += b
-                antonyms[b] += a
+                antonyms[a].add(b)
+                antonyms[b].add(a)
             categories = concepts.get("categories", {})
             thresholds = concepts.get("thresholds", {})
             self._concept_config = {
@@ -153,17 +157,19 @@ class StandardConceptsV2Deployment(BaseDeployment):
         """
         # Check that input is the right size
         data = image.get_numpy()
-        if not data.shape == self._config.image_size:
+        if data.shape != tuple(self._config.image_size):
             raise ImageReadingException(image)
 
         # Inference
         try:
-            batch = torch.from_numpy([data])
+            batch = torch.from_numpy(np.stack((data, np.zeros_like(data))))
+
             if self._use_gpu:
                 batch = batch.cuda()
             result = self._model(batch)
             pred, features = tuple(x.cpu().detach().numpy() for x in result)
         except Exception as e:
+            print(e)
             raise InferenceException("standard_concepts_v2") from e
 
         # Postprocessing
@@ -212,8 +218,8 @@ class StandardConceptsV2Deployment(BaseDeployment):
         # Having cleaned tags and limited ourselves to n items,
         # we now structure output
         # TODO: allow uncategorized output
-        categories = defaultdict(list)
-        uncategorized = []
+        categories: defaultdict[str, list] = defaultdict(list)
+        uncategorized: UncategorizedTaggingOutput = []
         for tag, score in processed_tags:
             # Get categories for each tag
             # (one tag can have multiple categories, apparently)
@@ -223,14 +229,13 @@ class StandardConceptsV2Deployment(BaseDeployment):
                 continue
             for category in tag_categories:
                 categories[category].append({"name": tag, "score": score})
-        final_categories = [
-            {"category": category, "items": items}
-            for category, items in categories.items()
+        final_categories: list[CategoryOutput] = [
+            {"name": category, "items": items} for category, items in categories.items()
         ]
         if uncategorized:
             final_categories.append(
                 {
-                    "category": "uncategorized",
+                    "name": "uncategorized",
                     "items": uncategorized,
                 }
             )
