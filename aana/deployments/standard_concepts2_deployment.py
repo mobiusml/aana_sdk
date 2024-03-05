@@ -113,7 +113,7 @@ class StandardConceptsV2Deployment(BaseDeployment):
         with Path(self._config.path_keywords).open("rb") as f:
             concepts_list = np.load(f)
             self._concepts = np.array(
-                x.decode(self._config.encoding_keywords) for x in concepts_list
+                [x.decode(self._config.encoding_keywords) for x in concepts_list]
             )
 
         with Path(self._config.path_config).open(
@@ -174,11 +174,13 @@ class StandardConceptsV2Deployment(BaseDeployment):
 
         # Postprocessing
         # Get indices of preds exceeding confidence threshold, sorted by score
+        pred = pred[0]  # discard zeros output
         indices = sorted(
             np.where(pred > self._config.confidence_threshold)[0],
             key=lambda i: -pred[i],
         )
         scores = pred[indices].tolist()
+        print(type(self._concepts))
         tags = self._concepts[indices].tolist()
 
         mapped_predictions = list[tuple[str, float]]()
