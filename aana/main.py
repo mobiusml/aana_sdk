@@ -28,8 +28,7 @@ def run():
     from aana.api.request_handler import RequestHandler
     from aana.configs.build import get_configuration
     from aana.configs.deployments import deployments as all_deployments
-    from aana.configs.endpoints import endpoints as all_endpoints
-    from aana.configs.pipeline import nodes as all_nodes
+    from aana.configs.endpoints.endpoints import endpoints as all_endpoints
     from aana.configs.settings import settings as aana_settings
 
     run_alembic_migrations(aana_settings)
@@ -37,7 +36,6 @@ def run():
     configuration = get_configuration(
         args.target,
         endpoints=all_endpoints,
-        nodes=all_nodes,
         deployments=all_deployments,
     )
     endpoints = configuration["endpoints"]

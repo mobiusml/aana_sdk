@@ -5,7 +5,7 @@ import requests
 from pydantic import BaseModel
 
 from aana.api.api_generation import Endpoint
-from aana.configs.endpoints import endpoints as all_endpoints
+from aana.configs.endpoints.endpoints import endpoints as all_endpoints
 from aana.exceptions.general import DownloadException, EndpointNotFoundException
 from aana.utils.json import jsonify
 

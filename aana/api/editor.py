@@ -28,6 +28,9 @@ from pydantic import BaseModel
 
 
 def get_class_names_from_file(file_path):
+    aana_base_path = str(resources.path("aana", ""))
+    import_path = file_path.replace(aana_base_path, "aana").replace("/", ".")[:-3]
+
     class_names = []
 
     # Read the content of the file
@@ -41,7 +44,7 @@ def get_class_names_from_file(file_path):
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
             # class_names.append(node.name)
-            class_names.append(node)
+            class_names.append((import_path, node))
 
     return class_names
 
@@ -83,7 +86,9 @@ def get_pydantic_models() -> list:
     classes = get_class_names_from_directory(directory_path)
 
     # keep only pydantic models (BaseModel)
-    classes = [c for c in classes if "BaseModel" in [c.id for c in c.bases]]
+    classes = [
+        (path, c) for path, c in classes if "BaseModel" in [c.id for c in c.bases]
+    ]
     return classes
 
 
@@ -156,7 +161,7 @@ def get_all_deployments():
     classes = get_class_names_from_directory(directory_path)
 
     # keep only pydantic models (BaseModel)
-    classes = [c for c in classes if "BaseDeployment" in [c.id for c in c.bases]]
+    classes = [c for _, c in classes if "BaseDeployment" in [c.id for c in c.bases]]
     return classes
 
 
@@ -166,7 +171,7 @@ def get_deployments_typed_dicts() -> list:
     classes = get_class_names_from_directory(directory_path)
 
     # keep only TypedDict
-    classes = [c for c in classes if "TypedDict" in [c.id for c in c.bases]]
+    classes = [c for _, c in classes if "TypedDict" in [c.id for c in c.bases]]
     return classes
 
 
@@ -245,7 +250,7 @@ async def get_node_editor(request: Request):
     }
 
     pydantic_models = get_pydantic_models()
-    pydantic_model_names = [m.name for m in pydantic_models]
+    pydantic_model_names = [m.name for _, m in pydantic_models]
 
     # outputs = {}
     # output_dicts = get_deployments_typed_dicts()
@@ -266,7 +271,7 @@ async def get_node_editor(request: Request):
                 typed_dicts.extend(
                     [
                         c
-                        for c in classes
+                        for _, c in classes
                         if "TypedDict" in [c.id for c in c.bases if hasattr(c, "id")]
                     ]
                 )

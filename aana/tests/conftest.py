@@ -27,8 +27,8 @@ from aana.configs.db import (
     SQLiteConfig,
 )
 from aana.configs.deployments import deployments as all_deployments
-from aana.configs.endpoints import endpoints as all_endpoints
-from aana.configs.pipeline import nodes as all_nodes
+from aana.configs.endpoints.endpoints import endpoints as all_endpoints
+from aana.configs.pipelines.pipeline import nodes as all_nodes
 from aana.configs.settings import settings as aana_settings
 from aana.tests.utils import (
     call_and_check_endpoint,

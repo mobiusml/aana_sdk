@@ -7,6 +7,7 @@ from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from mobius_pipeline.node.socket import Socket
 from mobius_pipeline.pipeline.pipeline import Pipeline
+from mobius_pipeline.utils.general import import_from_path
 from pydantic import BaseModel, Field, ValidationError, create_model, parse_raw_as
 
 from aana.api.app import custom_exception_handler
@@ -169,8 +170,9 @@ class Endpoint:
 
         # if data model is None or Any, set it to Any
         if data_model is None or data_model == Any:
-            data_model = Any
-            return (data_model, Field(None))
+            return (Any, Field(None))
+
+        data_model = import_from_path(data_model)
 
         # try to instantiate the data model
         # to see if any of the fields are required
@@ -235,6 +237,8 @@ class Endpoint:
             # skip sockets with no data model
             if data_model is None or data_model == Any:
                 continue
+
+            data_model = import_from_path(data_model)
 
             # check if pydantic model has file_upload field and it's set to True
             file_upload_enabled = getattr(data_model.Config, "file_upload", False)

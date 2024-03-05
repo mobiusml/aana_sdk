@@ -1,0 +1,116 @@
+[
+  {
+    "name": "video_video",
+    "type": "input",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "video_video",
+        "key": "video_video",
+        "path": "video",
+        "data_model": "aana.models.pydantic.video_input.VideoInput"
+      }
+    ]
+  },
+  {
+    "name": "video_params_video_params",
+    "type": "input",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "video_params_video_params",
+        "key": "video_params_video_params",
+        "path": "video_params",
+        "data_model": "aana.models.pydantic.video_params.VideoParams"
+      }
+    ]
+  },
+  {
+    "name": "download_video",
+    "function": "aana.utils.video.download_video",
+    "type": "ray_task",
+    "dict_output": false,
+    "batched": false,
+    "inputs": [
+      {
+        "name": "video_video",
+        "key": "video_input",
+        "path": "video"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "download_video_output",
+        "key": "output",
+        "path": "video.video"
+      }
+    ]
+  },
+  {
+    "name": "generate_frames_for_video",
+    "function": "aana.utils.video.generate_frames_decord",
+    "type": "ray_task",
+    "dict_output": true,
+    "batched": false,
+    "data_type": "generator",
+    "generator_path": "video.video",
+    "kwargs": {
+      "batch_size": 4
+    },
+    "inputs": [
+      {
+        "name": "download_video_output",
+        "key": "video",
+        "path": "video.video"
+      },
+      {
+        "name": "video_params_video_params",
+        "key": "params",
+        "path": "video_params"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "generate_frames_for_video_frames",
+        "key": "frames",
+        "path": "video.frames.[*].image"
+      },
+      {
+        "name": "generate_frames_for_video_frame_ids",
+        "key": "frame_ids",
+        "path": "video.frames.[*].id"
+      },
+      {
+        "name": "generate_frames_for_video_timestamps",
+        "key": "timestamps",
+        "path": "video.timestamps"
+      },
+      {
+        "name": "generate_frames_for_video_duration",
+        "key": "duration",
+        "path": "video.duration"
+      }
+    ]
+  },
+  {
+    "name": "hf_blip2_opt_2_7b_video",
+    "type": "ray_deployment",
+    "deployment_name": "hf_blip2_deployment_opt_2_7b",
+    "method": "generate_batch",
+    "inputs": [
+      {
+        "name": "generate_frames_for_video_frames",
+        "key": "images",
+        "path": "video.frames.[*].image",
+        "partial": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "hf_blip2_opt_2_7b_video_captions",
+        "key": "captions",
+        "path": "video.frames.[*].caption_hf_blip2_opt_2_7b"
+      }
+    ]
+  }
+]

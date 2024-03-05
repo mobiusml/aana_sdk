@@ -1,8 +1,11 @@
+import json
+from importlib import resources
+
 from mobius_pipeline.node.node_definition import NodeDefinition
 from mobius_pipeline.pipeline.output_graph import OutputGraph
 
 
-def get_configuration(target: str, endpoints, nodes, deployments) -> dict:
+def get_configuration(target: str, endpoints, deployments) -> dict:
     """Returns the configuration for the specified target.
 
     A target is a set of endpoints that are to be deployed together.
@@ -11,13 +14,11 @@ def get_configuration(target: str, endpoints, nodes, deployments) -> dict:
 
     The function finds:
         - which endpoints are to be deployed
-        - which nodes are to be used in the pipeline
         - which Ray Deployments need to be deployed
 
     Args:
         target (str): The name of the target to be deployed.
         endpoints (Dict): The dictionary of endpoints.
-        nodes (List): The list of nodes.
         deployments (Dict): The dictionary of Ray Deployments.
 
     Returns:
@@ -32,6 +33,15 @@ def get_configuration(target: str, endpoints, nodes, deployments) -> dict:
         raise ValueError(  # noqa: TRY003
             f"Invalid target: {target}. Valid targets: {', '.join(endpoints.keys())}"
         )
+
+    pipeline_file = resources.path("aana.configs.pipelines", f"{target}.json")
+    if not pipeline_file.exists():
+        raise ValueError(  # noqa: TRY003
+            f"Pipeline file for target {target} does not exist."
+        )
+
+    with pipeline_file.open("r") as f:
+        nodes = json.load(f)
 
     # Find the endpoints that are to be deployed
     target_endpoints = endpoints[target]

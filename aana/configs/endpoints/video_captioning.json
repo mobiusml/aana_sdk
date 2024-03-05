@@ -1,0 +1,20 @@
+[
+  {
+    "name": "blip2_video_generate",
+    "path": "/video/generate_captions",
+    "summary": "Generate captions for videos using BLIP2 OPT-2.7B",
+    "streaming": false,
+    "outputs": [
+      {
+        "name": "captions",
+        "output": "hf_blip2_opt_2_7b_video_captions",
+        "streaming": false
+      },
+      {
+        "name": "timestamps",
+        "output": "generate_frames_for_video_timestamps",
+        "streaming": false
+      }
+    ]
+  }
+]
