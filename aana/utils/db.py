@@ -105,12 +105,14 @@ def save_video(video: Video, video_duration: float) -> dict:
         duration=video_duration,
         description=video.description,
     )
+    media_entity.video = video_entity
     with Session(engine) as session:
         media_repo = MediaRepository(session)
         _ = media_repo.create(media_entity)
         video_repo = VideoRepository(session)
         video_entity.media_id = media_entity.id
         _ = video_repo.create(video_entity)
+        media_entity.video_id = video_entity.id
         return {
             "media_id": media_entity.id,  # type: ignore
             "video_id": video_entity.id,
