@@ -12,7 +12,6 @@ from typing_extensions import TypedDict
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import ImageReadingException, InferenceException
 from aana.models.core.image import Image
-from aana.utils.batch_processor import BatchProcessor
 from aana.utils.test import test_cache  # noqa: F401
 
 
@@ -20,18 +19,20 @@ class StandardConceptsV2Config(BaseModel):
     """The configuration for the Standrd Concepts V2 deployment.
 
     Attributes:
-        model_path (str): string path to the model file
-        keywords_path (str): string path to the list of keywords
-        keywords_encoding (str): encoding of strings in the keywords file
-        config_path (str): sttringpath to the config yaml
+        path_model (str): string path to the model file
+        path_keywords (str): string path to the list of keywords
+        encoding_keywords (str): encoding of strings in the keywords file
+        encoding_config (str): encoding of the config file
+        path_config (str): sttringpath to the config yaml
         image_size (int | tuple[int,int]): size to resize the model
         confidence_threshold (float): confidence threshold to apply
     """
 
-    model_path: str
-    keywords_path: str
-    keywords_encoding: str
-    config_path: str
+    path_model: str
+    path_keywords: str
+    encoding_keywords: str
+    path_config: str
+    encoding_config: str
     image_size: int | tuple[int] | list[int]
     confidence_threshold: float = Field(default=0.55)
     top_n: int = Field(default=20)
@@ -58,7 +59,7 @@ class CategoryOutput(TypedDict):
     """
 
     name: str
-    keywords: list[KeywordOutput]
+    items: list[KeywordOutput]
 
 
 CategorizedTaggingOutput: TypeAlias = list[CategoryOutput]
@@ -99,34 +100,21 @@ class StandardConceptsV2Deployment(BaseDeployment):
         """
         self._config = StandardConceptsV2Config(**config)
 
-        # Create the batch processor to split the requests into batches
-        # and process them in parallel
-        self.batch_size = self._config.batch_size
-        self.num_processing_threads = self._config.num_processing_threads
-        # The actual inference is done in _generate()
-        # We use lambda because BatchProcessor expects dict as input
-        # and we use **kwargs to unpack the dict into named arguments for _generate()
-        self.batch_processor = BatchProcessor(
-            process_batch=lambda request: self._generate(**request),
-            batch_size=self.batch_size,
-            num_threads=self.num_processing_threads,
-        )
-
         # Load model
-        with Path.open(self._config.model_path, "rb") as f:
+        with Path(self._config.path_model).open("rb") as f:
             self._model = torch.jit.load(f)
             if torch.cuda.is_available():
                 self._use_gpu = True
                 self._model = self._model.cuda()
 
-        with Path.open(self._config.concepts_path, "rb") as f:
+        with Path(self._config.path_keywords).open("rb") as f:
             concepts_list = np.load(f)
-            self.concepts = np.array(
-                x.decode(self._config.keywords_encoding) for x in concepts_list
+            self._concepts = np.array(
+                x.decode(self._config.encoding_keywords) for x in concepts_list
             )
 
-        with Path.open(
-            self._config.config_path, encoding=self._config["conig_encoding"]
+        with Path(self._config.path_config).open(
+            encoding=self._config.encoding_config
         ) as f:
             concepts = yaml.safe_load(f, Loader=yaml.CBaseLoader)
             stop_list = {x[1] for x in concepts.get("stop_list", {}).items()}
@@ -135,7 +123,7 @@ class StandardConceptsV2Deployment(BaseDeployment):
                 for mapping in concepts["mappings"].values()
                 for a, b in mapping.items()
             }
-            antonyms = defaultdict(set)
+            antonyms: defaultdict[str, set] = defaultdict(set)
             for a, b in concepts.get("antonyms", {}):
                 antonyms[a] += b
                 antonyms[b] += a
@@ -181,7 +169,8 @@ class StandardConceptsV2Deployment(BaseDeployment):
         # Postprocessing
         # Get indices of preds exceeding confidence threshold, sorted by score
         indices = sorted(
-            np.where(pred > self.config.confidence_threshold)[0], lambda i: -pred[i]
+            np.where(pred > self._config.confidence_threshold)[0],
+            key=lambda i: -pred[i],
         )
         scores = pred[indices].tolist()
         tags = self._concepts[indices].tolist()
@@ -208,7 +197,7 @@ class StandardConceptsV2Deployment(BaseDeployment):
 
         # Remove antonyms
         cleaned_tags = list[tuple[str, float]]()
-        seen_tags = {}
+        seen_tags: set = set()
         for tag, score in filtered_tags:
             # Add if we have not seen an antonym to this tag already
             # (~~Un~~Cool kids say, "Add if the set of seen tags and
