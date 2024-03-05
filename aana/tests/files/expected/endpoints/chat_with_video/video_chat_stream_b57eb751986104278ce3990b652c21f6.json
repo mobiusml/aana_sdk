@@ -1,10 +1,1397 @@
 [
     {
-        "data": {
-            "model_name": "TheBloke/Llama-2-7b-Chat-AWQ"
-        },
-        "error": "InferenceException",
-        "message": "InferenceException(model_name=TheBloke/Llama-2-7b-Chat-AWQ)",
-        "stacktrace": "\u001b[36mray::py:VLLMDeployment.handle_request_streaming()\u001b[39m (pid=2231385, ip=172.17.0.5, actor_id=8f7c98042d31c2a59839124e01000000, repr=<ray.serve._private.replica.ServeReplica:aana_tests_integration_test_chat_with_video.py:VLLMDeployment object at 0x7f5b2051b7f0>)\n    async for result in generator:\n  File \"/root/.cache/pypoetry/virtualenvs/aana-vIr3-B0u-py3.10/lib/python3.10/site-packages/ray/serve/_private/replica.py\", line 896, in call_user_method_generator\n    async for result in result_generator:\n  File \"/workspaces/aana_sdk/aana/utils/test.py\", line 144, in wrapper_generator\n    async for item in func(*args, **kwargs):\n  File \"/workspaces/aana_sdk/aana/deployments/vllm_deployment.py\", line 248, in chat_stream\n    async for chunk in self.generate_stream(prompt, sampling_params):\n  File \"/workspaces/aana_sdk/aana/utils/test.py\", line 144, in wrapper_generator\n    async for item in func(*args, **kwargs):\n  File \"/workspaces/aana_sdk/aana/deployments/vllm_deployment.py\", line 175, in generate_stream\n    raise InferenceException(model_name=self.model) from e\naana.exceptions.general.InferenceException: InferenceException(model_name=TheBloke/Llama-2-7b-Chat-AWQ)"
+        "completion": " "
+    },
+    {
+        "completion": " Based"
+    },
+    {
+        "completion": " on"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " provided"
+    },
+    {
+        "completion": " tim"
+    },
+    {
+        "completion": "eline"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " audio"
+    },
+    {
+        "completion": "/"
+    },
+    {
+        "completion": "visual"
+    },
+    {
+        "completion": " ca"
+    },
+    {
+        "completion": "ptions"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " most"
+    },
+    {
+        "completion": " relevant"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " useful"
+    },
+    {
+        "completion": " moments"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " are"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " discuss"
+    },
+    {
+        "completion": "es"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " applies"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " p"
+    },
+    {
+        "completion": "end"
+    },
+    {
+        "completion": "ul"
+    },
+    {
+        "completion": "um"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " demonstr"
+    },
+    {
+        "completion": "ates"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conversion"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " gravit"
+    },
+    {
+        "completion": "ational"
+    },
+    {
+        "completion": " potential"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " kin"
+    },
+    {
+        "completion": "etic"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " by"
+    },
+    {
+        "completion": " lif"
+    },
+    {
+        "completion": "ting"
+    },
+    {
+        "completion": " an"
+    },
+    {
+        "completion": " object"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " letting"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " fall"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " explains"
+    },
+    {
+        "completion": " that"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "5"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " jou"
+    },
+    {
+        "completion": "les"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " enough"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " kill"
+    },
+    {
+        "completion": " someone"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " provides"
+    },
+    {
+        "completion": " examples"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " objects"
+    },
+    {
+        "completion": " that"
+    },
+    {
+        "completion": " can"
+    },
+    {
+        "completion": " cause"
+    },
+    {
+        "completion": " fatal"
+    },
+    {
+        "completion": " inj"
+    },
+    {
+        "completion": "uries"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "4"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " discuss"
+    },
+    {
+        "completion": "es"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " importance"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " applies"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " demol"
+    },
+    {
+        "completion": "ishing"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " building"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "4"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "5"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " provides"
+    },
+    {
+        "completion": " examples"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " can"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " applied"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " every"
+    },
+    {
+        "completion": "day"
+    },
+    {
+        "completion": " life"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "4"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "5"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "6"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " tal"
+    },
+    {
+        "completion": "ks"
+    },
+    {
+        "completion": " about"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " importance"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " trust"
+    },
+    {
+        "completion": "ing"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " can"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " applied"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " various"
+    },
+    {
+        "completion": " situations"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "5"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "6"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "7"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " provides"
+    },
+    {
+        "completion": " examples"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " can"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " applied"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " different"
+    },
+    {
+        "completion": " scenarios"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " such"
+    },
+    {
+        "completion": " as"
+    },
+    {
+        "completion": " lif"
+    },
+    {
+        "completion": "ting"
+    },
+    {
+        "completion": " an"
+    },
+    {
+        "completion": " object"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " letting"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " swing"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "6"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "7"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "8"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " discuss"
+    },
+    {
+        "completion": "es"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " concept"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " potential"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " converted"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " kin"
+    },
+    {
+        "completion": "etic"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "7"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "8"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "9"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " tal"
+    },
+    {
+        "completion": "ks"
+    },
+    {
+        "completion": " about"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " importance"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " understanding"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " physics"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " applies"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " various"
+    },
+    {
+        "completion": " situations"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "8"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "9"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " con"
+    },
+    {
+        "completion": "cludes"
+    },
+    {
+        "completion": " by"
+    },
+    {
+        "completion": " emphas"
+    },
+    {
+        "completion": "izing"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " importance"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " trust"
+    },
+    {
+        "completion": "ing"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " can"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " applied"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " every"
+    },
+    {
+        "completion": "day"
+    },
+    {
+        "completion": " life"
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "9"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")."
+    },
+    {
+        "completion": ""
     }
 ]
