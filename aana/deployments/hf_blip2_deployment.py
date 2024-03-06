@@ -163,7 +163,7 @@ class HFBlip2Deployment(BaseDeployment):
         )
 
         try:
-            generated_ids = self.model.generate(**inputs)
+            generated_ids = self.model.generate(**inputs, max_length=64)
             generated_texts = self.processor.batch_decode(
                 generated_ids, skip_special_tokens=True
             )
