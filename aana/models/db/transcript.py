@@ -45,7 +45,9 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
     )
     language_confidence = Column(
         Float,
-        CheckConstraint("0 <= language_confidence <= 1"),
+        CheckConstraint(
+            "0 <= language_confidence <= 1", name="language_confidence_value_range"
+        ),
         comment="Confidence score of language prediction",
     )
 

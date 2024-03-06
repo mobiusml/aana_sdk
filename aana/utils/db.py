@@ -99,6 +99,7 @@ def save_video(video: Video, video_duration: float) -> dict:
     media_entity = MediaEntity(id=video.media_id, media_type=MediaType.VIDEO)
     video_entity = VideoEntity(
         media=media_entity,
+        media_id=video.media_id,
         orig_filename=orig_filename,
         orig_url=orig_url,
         title=video.title,
