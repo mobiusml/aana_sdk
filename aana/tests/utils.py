@@ -256,11 +256,10 @@ def check_output(
             f"aana.tests.files.expected.endpoints.{target}",
             f"{endpoint_key}_{key}.json",
         )
-        # uncomment below block when writing new integration tests, it stores expected endpoint results as json files.
-
-        # if not expected_output_path.exists():
-        #    with expected_output_path.open("w") as f:
-        #        json.dump(output, f, indent=4, sort_keys=True)
+        # Below block stores expected endpoint results as json files (when path does not exist yet).
+        if not expected_output_path.exists():
+            with expected_output_path.open("w") as f:
+                json.dump(output, f, indent=4, sort_keys=True)
 
         expected_output = json.loads(expected_output_path.read_text())
         if endpoint.streaming:
