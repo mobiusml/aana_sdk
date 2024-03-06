@@ -37,13 +37,13 @@ class CaptionEntity(BaseEntity, TimeStampEntity):
 
     frame_id = Column(
         Integer,
-        CheckConstraint("frame_id >= 0"),
+        CheckConstraint("frame_id >= 0", "frame_id_positive"),
         comment="The 0-based frame id of video for caption",
     )
     caption = Column(String, comment="Frame caption")
     timestamp = Column(
         Float,
-        CheckConstraint("timestamp >= 0"),
+        CheckConstraint("timestamp >= 0", name="timestamp_positive"),
         comment="Frame timestamp in seconds",
     )
 

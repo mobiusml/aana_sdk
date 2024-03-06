@@ -18,8 +18,12 @@ from aana.utils.db import delete_media, save_video
 
 def test_save_video():
     """Tests saving a video against an in-memory SQLite database."""
+    # Ensure the tmp data directory exists
+    settings.tmp_data_dir.mkdir(parents=True, exist_ok=True)
     # Use a temp file and change the settings to use it for the SQLite data path.
-    with NamedTemporaryFile(dir=settings.tmp_data_dir) as tmp:
+    with NamedTemporaryFile(
+        dir=settings.tmp_data_dir,
+    ) as tmp:
         settings.db_config.datastore_config["path"] = tmp.name
         # Reset the engine if it has been created
         del settings.db_config.engine
@@ -59,7 +63,6 @@ def test_save_video():
 
                 # Check that delete function works
                 result = delete_media(media_id)
-                print(result)
                 with pytest.raises(NotFoundException):
                     _ = media_repo.read(media_id)
                 with pytest.raises(NotFoundException):
