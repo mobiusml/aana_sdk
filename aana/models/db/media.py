@@ -1,7 +1,7 @@
 from enum import Enum
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseEntity, TimeStampEntity
@@ -21,14 +21,14 @@ class MediaEntity(BaseEntity, TimeStampEntity):
     media_type = Column(String, comment="The type of media")
     video_id = Column(
         Integer,
-        ForeignKey("video.id"),
+        ForeignKey("video.id", ondelete="CASCADE"),
         nullable=True,
         comment="If media_type is `video`, the id of the video this entry represents.",
     )
 
     video = relationship(
         "VideoEntity",
-        back_populates="media",
+        backref=backref("video", passive_deletes=True),
         cascade="all, delete",
         uselist=False,
         post_update=True,
