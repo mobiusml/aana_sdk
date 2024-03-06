@@ -308,8 +308,8 @@ def call_and_check_endpoint(
     # so we need to replace it with a path that is the same on all systems
     # to make sure that the hash of the data is the same on all systems
     data_json = data_json.replace(
-        str(resources.path("aana.tests.files.videos", "")),
-        "/aana/tests/files/videos/",
+        str(resources.path("aana.tests.files", "")),
+        "/aana/tests/files/",
     )
     data_hash = hashlib.md5(
         data_json.encode("utf-8"),
