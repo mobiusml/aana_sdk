@@ -32,6 +32,7 @@ class HFBlip2Config(BaseModel):
     num_processing_threads: int = Field(default=1)
     max_new_tokens: int = Field(default=64)
 
+
 class CaptioningOutput(TypedDict):
     """The output of the captioning model.
 
@@ -165,7 +166,9 @@ class HFBlip2Deployment(BaseDeployment):
         )
 
         try:
-            generated_ids = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens)
+            generated_ids = self.model.generate(
+                **inputs, max_new_tokens=self.max_new_tokens
+            )
             generated_texts = self.processor.batch_decode(
                 generated_ids, skip_special_tokens=True
             )
