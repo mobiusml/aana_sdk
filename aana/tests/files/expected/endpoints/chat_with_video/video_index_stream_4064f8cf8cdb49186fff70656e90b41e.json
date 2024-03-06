@@ -44,28 +44,6 @@
         ]
     },
     {
-        "captions": [
-            "a man holding a white ball in front of a wall",
-            "a group of people sitting in a lecture hall",
-            "a man holding a white ball in his hand",
-            "a lecture hall with a blackboard and people sitting in front of it",
-            "a man in a blue shirt leaning against a wall",
-            "a man in a blue shirt leaning against a wall",
-            "a group of people sitting in a lecture hall",
-            "a man in a blue shirt is talking to a crowd"
-        ],
-        "timestamps": [
-            174.06700134277344,
-            183.66700744628906,
-            185.4669952392578,
-            187.66700744628906,
-            191.33299255371094,
-            194.1999969482422,
-            200.4669952392578,
-            201.4669952392578
-        ]
-    },
-    {
         "info": {
             "language": "en",
             "language_confidence": 0.98291015625
@@ -148,6 +126,28 @@
         "transcription": {
             "text": " and I can lift it up one meter, which I have done now."
         }
+    },
+    {
+        "captions": [
+            "a man holding a white ball in front of a wall",
+            "a group of people sitting in a lecture hall",
+            "a man holding a white ball in his hand",
+            "a lecture hall with a blackboard and people sitting in front of it",
+            "a man in a blue shirt leaning against a wall",
+            "a man in a blue shirt leaning against a wall",
+            "a group of people sitting in a lecture hall",
+            "a man in a blue shirt is talking to a crowd"
+        ],
+        "timestamps": [
+            174.06700134277344,
+            183.66700744628906,
+            185.4669952392578,
+            187.66700744628906,
+            191.33299255371094,
+            194.1999969482422,
+            200.4669952392578,
+            201.4669952392578
+        ]
     },
     {
         "info": {

@@ -169,28 +169,6 @@
         }
     },
     {
-        "captions": [
-            "a blonde woman with a yellow bow in her hair",
-            "a woman with blonde hair standing in front of a window",
-            "a man wearing sunglasses standing in front of a chain link fence",
-            "a man in a blue shirt and sunglasses is walking",
-            "a woman in a white dress and sunglasses is standing in front of a brick wall",
-            "a woman with blonde hair standing in front of a white wall",
-            "a woman with long blonde hair standing in front of a white wall",
-            "a man in a trench coat is standing in front of a brick wall"
-        ],
-        "timestamps": [
-            9.4399995803833,
-            10.079999923706055,
-            11.279999732971191,
-            12.039999961853027,
-            15.0,
-            17.399999618530273,
-            18.040000915527344,
-            18.239999771118164
-        ]
-    },
-    {
         "info": {
             "language": "en",
             "language_confidence": 0.7255859375
@@ -273,6 +251,28 @@
         "transcription": {
             "text": " Never gonna let you down Never gonna run around and desert you"
         }
+    },
+    {
+        "captions": [
+            "a blonde woman with a yellow bow in her hair",
+            "a woman with blonde hair standing in front of a window",
+            "a man wearing sunglasses standing in front of a chain link fence",
+            "a man in a blue shirt and sunglasses is walking",
+            "a woman in a white dress and sunglasses is standing in front of a brick wall",
+            "a woman with blonde hair standing in front of a white wall",
+            "a woman with long blonde hair standing in front of a white wall",
+            "a man in a trench coat is standing in front of a brick wall"
+        ],
+        "timestamps": [
+            9.4399995803833,
+            10.079999923706055,
+            11.279999732971191,
+            12.039999961853027,
+            15.0,
+            17.399999618530273,
+            18.040000915527344,
+            18.239999771118164
+        ]
     },
     {
         "info": {
@@ -401,28 +401,6 @@
         }
     },
     {
-        "captions": [
-            "a man in sunglasses and a blue shirt is walking",
-            "a young man wearing sunglasses and a blue shirt",
-            "a man wearing sunglasses and a blue shirt",
-            "a man in a blue jumpsuit and sunglasses walking by a fence",
-            "a young man wearing sunglasses and a blue shirt",
-            "the shadow of a person standing on the ground",
-            "a shadow of a person standing on a sidewalk",
-            "a man in a blue jumpsuit standing next to a fence"
-        ],
-        "timestamps": [
-            24.200000762939453,
-            24.520000457763672,
-            26.600000381469727,
-            27.799999237060547,
-            28.959999084472656,
-            30.440000534057617,
-            31.040000915527344,
-            32.0
-        ]
-    },
-    {
         "info": {
             "language": "en",
             "language_confidence": 0.7255859375
@@ -508,6 +486,28 @@
     },
     {
         "captions": [
+            "a man in sunglasses and a blue shirt is walking",
+            "a young man wearing sunglasses and a blue shirt",
+            "a man wearing sunglasses and a blue shirt",
+            "a man in a blue jumpsuit and sunglasses walking by a fence",
+            "a young man wearing sunglasses and a blue shirt",
+            "the shadow of a person standing on the ground",
+            "a shadow of a person standing on a sidewalk",
+            "a man in a blue jumpsuit standing next to a fence"
+        ],
+        "timestamps": [
+            24.200000762939453,
+            24.520000457763672,
+            26.600000381469727,
+            27.799999237060547,
+            28.959999084472656,
+            30.440000534057617,
+            31.040000915527344,
+            32.0
+        ]
+    },
+    {
+        "captions": [
             "a man in a white jacket is making a face",
             "a man standing in an alleyway with a brick wall behind him",
             "a man in a white jacket is singing",
@@ -526,28 +526,6 @@
             38.68000030517578,
             39.599998474121094,
             42.119998931884766
-        ]
-    },
-    {
-        "captions": [
-            "a large room with tables and chairs in front of a large window",
-            "a man in a suit is singing into a microphone",
-            "a man with a microphone in front of a window",
-            "david bowie - starman",
-            "a man in a white shirt and tie standing behind a bar",
-            "a man in a white shirt and suspenders sitting at a bar",
-            "a man in a suit singing into a microphone",
-            "a woman with blonde hair standing in front of a wall"
-        ],
-        "timestamps": [
-            42.31999969482422,
-            43.68000030517578,
-            47.84000015258789,
-            48.040000915527344,
-            51.15999984741211,
-            53.439998626708984,
-            57.08000183105469,
-            59.720001220703125
         ]
     },
     {
@@ -738,6 +716,28 @@
         "transcription": {
             "text": " desert you"
         }
+    },
+    {
+        "captions": [
+            "a large room with tables and chairs in front of a large window",
+            "a man in a suit is singing into a microphone",
+            "a man with a microphone in front of a window",
+            "david bowie - starman",
+            "a man in a white shirt and tie standing behind a bar",
+            "a man in a white shirt and suspenders sitting at a bar",
+            "a man in a suit singing into a microphone",
+            "a woman with blonde hair standing in front of a wall"
+        ],
+        "timestamps": [
+            42.31999969482422,
+            43.68000030517578,
+            47.84000015258789,
+            48.040000915527344,
+            51.15999984741211,
+            53.439998626708984,
+            57.08000183105469,
+            59.720001220703125
+        ]
     },
     {
         "captions": [
