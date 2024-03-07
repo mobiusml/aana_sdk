@@ -13,9 +13,10 @@ from typing_extensions import TypedDict
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import ImageReadingException, InferenceException
 from aana.models.core.image import Image
-from aana.utils.test import test_cache  # noqa: F401
+from aana.utils.test import test_cache
 
 
+# region Helper types
 class StandardConceptsV2Config(BaseModel):
     """The configuration for the Standrd Concepts V2 deployment.
 
@@ -84,6 +85,9 @@ class TaggingOutput(TypedDict):
 
     features: np.ndarray
     predictions: TaggingPredictions
+
+
+# endregion
 
 
 @serve.deployment
@@ -163,7 +167,8 @@ class StandardConceptsV2Deployment(BaseDeployment):
                 "thresholds": thresholds,
             }
 
-    def generate(self, image: Image) -> TaggingOutput:  # noqa: C901
+    @test_cache
+    async def generate(self, image: Image) -> TaggingOutput:
         """Generate tags for the given image.
 
         Args:
@@ -206,53 +211,106 @@ class StandardConceptsV2Deployment(BaseDeployment):
         # Here we're abusing notation to use a type annotation as a constructor.
         # The created list doesn't actually enforce the generic type annnotations
         # at run time, but a typechecker can verify them before that.
-        processed_tags = list[tuple[str, float]]()
-        # Gets flagged by MyPy:
-        # processed_tags.append(0)
-        seen_tags: set = set()
-        for tag, score in zip(tags, scores, strict=True):
-            # map the tag to the value in the config
-            tag = self._concept_config["mappings"].get(tag, tag)
-            # If already seen, don't add again
-            if tag in seen_tags:
-                continue
-            # Filter if below threshohld or on stoplist
-            if score < self._config.confidence_threshold:
-                continue
-            if self._concept_config["stop_list"]:
-                continue
-            # Add if we have not seen an antonym to this tag already
-            # (~~Un~~Cool kids say, "Add if the set of seen tags and
-            # the set of antonym tags is the empty set")
-            if not seen_tags & self._concept_config["antonyms"].get(tag, set()):
-                seen_tags.add(tag)
-                processed_tags.append((tag, score))
-            # Only take the top n results
-            if len(processed_tags) >= self._config.top_n:
-                break
+        mapped_predictions = map_predictions(
+            tags, scores, self._concept_config["mappings"]
+        )
+
+        # filter tags
+        filtered_tags = filter_tags(
+            mapped_predictions,
+            self._config.confidence_threshold,
+            self._concept_config["stop_list"],
+        )
+
+        # Remove antonyms
+        cleaned_tags = remove_antonyms(filtered_tags, self._concept_config["antonyms"])
+
+        # Having cleaned tags, we now take into account top_n
+        processed_tags = restrict_n(cleaned_tags, self._config.top_n)
 
         # Having cleaned tags and limited ourselves to n items,
         # we now structure output
         # TODO: allow uncategorized output
-        categories: defaultdict[str, list] = defaultdict(list)
-        uncategorized: UncategorizedTaggingOutput = []
-        for tag, score in processed_tags:
-            # Get categories for each tag
-            # (one tag can have multiple categories, apparently)
-            tag_categories = self._concept_config["categories"].get(tag, [])
-            if not tag_categories:
-                uncategorized.append({"name": tag, "score": score})
-                continue
-            for category in tag_categories:
-                categories[category].append({"name": tag, "score": score})
-        final_categories: list[CategoryOutput] = [
-            {"name": category, "items": items} for category, items in categories.items()
-        ]
-        if uncategorized:
-            final_categories.append(
-                {
-                    "name": "uncategorized",
-                    "items": uncategorized,
-                }
-            )
+        final_categories = categorize_data(
+            processed_tags, self._concept_config["categories"]
+        )
+
         return {"features": features, "predictions": final_categories}
+
+
+def map_predictions(tags, scores, mappings):
+    """Map predictions."""
+    # Here we're abusing notation to use a type annotation as a constructor.
+    # The created list doesn't actually enforce the generic type annnotations
+    # at run time, but a typechecker can verify them before that.
+    mapped_predictions = list[tuple[str, float]]()
+    # Gets flagged by MyPy:
+    # mapped_predictions.append(0)
+    seen_tags = set()
+    for tag, score in zip(tags, scores, strict=True):
+        # map the tag to the value in the config
+        tag = mappings.get(tag, tag)
+        # If already seen, don't add again
+        if tag in seen_tags:
+            continue
+        mapped_predictions.append((tag, score))
+        seen_tags.add(tag)
+    return mapped_predictions
+
+
+def filter_tags(predictions, confidence_threshold, stop_list):
+    """Filter tags."""
+    filtered_tags = list[tuple[str, float]]()
+    for tag, score in predictions:
+        # if score below threshold, don't add
+        if score < confidence_threshold:
+            continue
+        if tag in stop_list:
+            continue
+        filtered_tags.append((tag, score))
+    return filtered_tags
+
+
+def remove_antonyms(tags, antonyms):
+    """Remove antonyms."""
+    cleaned_tags = list[tuple[str, float]]()
+    seen_tags: set = set()
+    for tag, score in tags:
+        # Add if we have not seen an antonym to this tag already
+        # (~~Un~~Cool kids say, "Add if the set of seen tags and
+        # the set of antonym tags is the empty set")
+        if not seen_tags & antonyms.get(tag, set()):
+            seen_tags.add(tag)
+            cleaned_tags.append((tag, score))
+    return cleaned_tags
+
+
+def restrict_n(tags, top_n):
+    """Restrict tags to the first n values, or all if there are fewer than n."""
+    return tags[:top_n]
+
+
+def categorize_data(tags, categories):
+    """Structure tags into categories."""
+    categories: defaultdict[str, list] = defaultdict(list)
+    uncategorized: UncategorizedTaggingOutput = []
+    for tag, score in tags:
+        # Get categories for each tag
+        # (one tag can have multiple categories, apparently)
+        tag_categories = categories.get(tag, [])
+        if not tag_categories:
+            uncategorized.append({"name": tag, "score": score})
+            continue
+        for category in tag_categories:
+            categories[category].append({"name": tag, "score": score})
+    final_categories: list[CategoryOutput] = [
+        {"name": category, "items": items} for category, items in categories.items()
+    ]
+    if uncategorized:
+        final_categories.append(
+            {
+                "name": "uncategorized",
+                "items": uncategorized,
+            }
+        )
+    return final_categories
