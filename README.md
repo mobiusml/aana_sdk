@@ -30,7 +30,7 @@ sh install.sh
 5. Run the SDK.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 --target chat_with_video
+HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 --target chat_with_video
 ```
 
 The target parameter specifies the set of endpoints to deploy.
