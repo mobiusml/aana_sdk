@@ -114,9 +114,9 @@ class WhisperBatchOutput(TypedDict):
     """The output of the whisper model for a batch of inputs.
 
     Attributes:
-        segments (List[List[AsrSegment]]): The ASR segments for each media.
-        transcription_info (List[AsrTranscriptionInfo]): The ASR transcription info for each media.
-        transcription (List[AsrTranscription]): The ASR transcription for each media.
+        segments (List[List[AsrSegment]]): The ASR segments for each audio.
+        transcription_info (List[AsrTranscriptionInfo]): The ASR transcription info for each audio.
+        transcription (List[AsrTranscription]): The ASR transcription for each audio.
     """
 
     segments: list[list[AsrSegment]]
@@ -147,12 +147,12 @@ class WhisperDeployment(BaseDeployment):
 
     @test_cache
     async def transcribe(
-        self, media: Audio, params: WhisperParams | None = None
+        self, audio: Audio, params: WhisperParams | None = None
     ) -> WhisperOutput:
         """Transcribe the audio with the whisper model.
 
         Args:
-            media (Audio): The audio to transcribe.
+            audio (Audio): The audio to transcribe.
             params (WhisperParams): The parameters for the whisper model.
 
         Returns:
@@ -167,7 +167,7 @@ class WhisperDeployment(BaseDeployment):
         if not params:
             params = WhisperParams()
 
-        audio_array = media.get_numpy()
+        audio_array = audio.get_numpy()
 
         try:
             segments, info = self.model.transcribe(audio_array, **params.dict())
@@ -187,12 +187,12 @@ class WhisperDeployment(BaseDeployment):
 
     @test_cache
     async def transcribe_stream(
-        self, media: Audio, params: WhisperParams | None = None
+        self, audio: Audio, params: WhisperParams | None = None
     ) -> AsyncGenerator[WhisperOutput, None]:
         """Transcribe the audio with the whisper model in a streaming fashion.
 
         Args:
-            media (Audio): The audio to transcribe.
+            audio (Audio): The audio to transcribe.
             params (WhisperParams): The parameters for the whisper model.
 
         Yields:
@@ -203,7 +203,7 @@ class WhisperDeployment(BaseDeployment):
         """
         if not params:
             params = WhisperParams()
-        audio_array = media.get_numpy()
+        audio_array = audio.get_numpy()
         if not audio_array.any():
             # For silent audios/no audio tracks, return empty output with language as silence
             yield WhisperOutput(
@@ -231,12 +231,12 @@ class WhisperDeployment(BaseDeployment):
                 )
 
     async def transcribe_batch(
-        self, media_batch: list[Audio], params: WhisperParams = None
+        self, audio_batch: list[Audio], params: WhisperParams = None
     ) -> WhisperBatchOutput:
         """Transcribe the batch of audios with the Whisper model.
 
         Args:
-            media_batch (list[Audio]): The batch of audios to transcribe.
+            audio_batch (list[Audio]): The batch of audios to transcribe.
             params (WhisperParams): The parameters for the whisper model.
 
         Returns:
@@ -253,8 +253,8 @@ class WhisperDeployment(BaseDeployment):
         segments: list[list[AsrSegment]] = []
         infos: list[AsrTranscriptionInfo] = []
         transcriptions: list[AsrTranscription] = []
-        for media in media_batch:
-            output = await self.transcribe(media, params)
+        for audio in audio_batch:
+            output = await self.transcribe(audio, params)
             segments.append(cast(list[AsrSegment], output["segments"]))
             infos.append(cast(AsrTranscriptionInfo, output["transcription_info"]))
             transcriptions.append(cast(AsrTranscription, output["transcription"]))
@@ -271,7 +271,7 @@ class WhisperDeployment(BaseDeployment):
         batch_size: int = 16,
         params: WhisperParams | None = None,
     ) -> AsyncGenerator[WhisperOutput, None]:
-        """Transcribe a single audio as batches of segments with the Whisper model (4x faster).
+        """Transcribe a single audio by segmenting it into chunks (4x faster) in streaming mode.
 
         Args:
             audio (Audio): The audio to transcribe.
@@ -296,7 +296,7 @@ class WhisperDeployment(BaseDeployment):
             tokenizer = Tokenizer(
                 self.model.hf_tokenizer,
                 self.model.model.is_multilingual,
-                task="transcribe",  # TODO: need params.task
+                task="transcribe",
                 language=params.language,
             )
         else:
@@ -312,7 +312,7 @@ class WhisperDeployment(BaseDeployment):
 
         audio_array = audio.get_numpy()
 
-        vad_input = [seg.to_dict() for seg in segments]
+        vad_input = [seg.to_whisper_dict() for seg in segments]
         if not vad_input:
             # For silent audios/no audio tracks, return empty output with language as silence
             yield WhisperOutput(

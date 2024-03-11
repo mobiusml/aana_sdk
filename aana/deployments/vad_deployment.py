@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, TypedDict
 
 import torch
@@ -16,6 +17,7 @@ from aana.utils.general import download_model
 from aana.utils.test import test_cache
 
 
+@dataclass
 class SegmentX:
     """The vad segment format with optional speaker."""
 
@@ -36,11 +38,20 @@ class VadOutput(TypedDict):
 
 
 class VadConfig(BaseModel):
-    """The configuration for the vad deployment."""
+    """The configuration for the vad deployment.
 
-    # TODO: Can also be model ID on HF or a local model registry path
+    Attributes:
+        model (str): Model file url
+        onset (float): Threshold for voice activity
+        offset (float): Thereshold for silence
+        min_duration_on (float): Minimum voiced duration
+        min_duration_off (float): Minimum silence duration
+        sample_rate (int): The sample rate of the audio
+
+    """
+
     model: str = Field(
-        default="https://whisperx.s3.eu-west-2.amazonaws.com/model_weights/segmentation/0b5b3216d60a2d32fc086b47ea8c67589aaeb26b7e07fcbe620d6d0b83e209ea/pytorch_model.bin",
+        # default="https://whisperx.s3.eu-west-2.amazonaws.com/model_weights/segmentation/0b5b3216d60a2d32fc086b47ea8c67589aaeb26b7e07fcbe620d6d0b83e209ea/pytorch_model.bin",
         description="The VAD model url.",
     )
 
@@ -65,7 +76,7 @@ class VadConfig(BaseModel):
         default=0.1, ge=0.0, description="Minimum duration to consider as silence."
     )
 
-    sample_rate: int = Field(default=16000)
+    sample_rate: int = Field(default=16000, description="Sample rate of the audio.")
 
 
 @serve.deployment
@@ -77,7 +88,7 @@ class VadDeployment(BaseDeployment):
 
         The method is called when the deployment is created or updated.
 
-        It loads the model from from the default open url.
+        It loads the model and instantiate vad_pipeline.
 
         The configuration should conform to the VadConfig schema.
 
@@ -181,7 +192,7 @@ class VadDeployment(BaseDeployment):
         audio_array = audio.get_numpy()
         vad_input = {
             "waveform": torch.from_numpy(audio_array).unsqueeze(0),
-            "sample_rate": self.sample_rate,  # TODO:VadConfig?
+            "sample_rate": self.sample_rate,
         }
 
         try:

@@ -95,6 +95,26 @@ endpoints = {
             streaming=True,
         ),
         Endpoint(
+            name="whisper_transcribe_batch",
+            path="/video/transcribe_batch",
+            summary="Transcribe a batch of videos using Whisper Medium",
+            outputs=[
+                EndpointOutput(
+                    name="transcription",
+                    output="videos_transcriptions_whisper_medium",
+                ),
+                EndpointOutput(
+                    name="segments",
+                    output="videos_transcriptions_segments_whisper_medium",
+                ),
+                EndpointOutput(
+                    name="info",
+                    output="videos_transcriptions_info_whisper_medium",
+                ),
+                EndpointOutput(name="transcription_id", output="transcription_id"),
+            ],
+        ),
+        Endpoint(
             name="load_transcription",
             path="/video/get_transcription",
             summary="Load a transcription",
@@ -116,7 +136,7 @@ endpoints = {
         Endpoint(
             name="whisper_transcribe_in_chunks",
             path="/video/transcribe_in_chunks",
-            summary="Transcribe a video using Whisper Medium in batch mode",
+            summary="Transcribe a video using Whisper Medium by segmenting it into chunks",
             outputs=[
                 EndpointOutput(
                     name="transcription",
