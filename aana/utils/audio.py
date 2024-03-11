@@ -1,6 +1,7 @@
 from collections.abc import Callable
 
 import numpy as np
+import torch
 from pyannote.audio.core.io import AudioFile
 from pyannote.audio.pipelines import VoiceActivityDetection
 from pyannote.audio.pipelines.utils import PipelineModel
@@ -8,40 +9,42 @@ from pyannote.core import Annotation, Segment, SlidingWindowFeature
 
 
 class VoiceActivitySegmentation(VoiceActivityDetection):
-    """Pipeline for performing Voice Activity Segmentation based on the detection from the vad model.
+    """Pipeline wrapper class for performing Voice Activity Segmentation based on the detection from the VAD model."""
 
-    Args:
-        dict parameters of VoiceActivityDetection class from pyannote:
-        segmentation: loaded model.
-        device: torch.device to perform the segmentation.
-
-    Returns:
-        segmentations: segmented speech regions
-    """
-
-    def __init__(  # noqa: D107
+    def __init__(
         self,
         segmentation: PipelineModel = "pyannote/segmentation",
+        device: torch.device | None = None,
         fscore: bool = False,
         use_auth_token: str | None = None,
         **inference_kwargs,
     ):
+        """Initialize the pipeline with the model name and the optional device.
+
+        Args:
+            dict parameters of VoiceActivityDetection class from pyannote:
+            segmentation (PipelineModel): Loaded model name.
+            device (torch.device | None): Device to perform the segmentation.
+            fscore (bool): Flag indicating whether to compute F-score during inference.
+            use_auth_token (str | None): Optional authentication token for model access.
+        """
         super().__init__(
             segmentation=segmentation,
+            device=device,
             fscore=fscore,
             use_auth_token=use_auth_token,
             **inference_kwargs,
         )
 
     def apply(self, file: AudioFile, hook: Callable | None = None) -> Annotation:
-        """Apply voice activity detection.
+        """Apply voice activity detection on the audio file.
 
         Args:
             file (AudioFile): Processed file.
             hook (callable, optional): Hook called after each major step of the pipeline with the following signature: hook("step_name", step_artefact, file=file)
 
         Returns:
-            speech (Annotation): Speech regions.
+            segmentations (Annotation): Voice activity segmentation.
         """
         # setup hook (e.g. for debugging purposes)
         hook = self.setup_hook(file, hook=hook)
@@ -116,6 +119,14 @@ class BinarizeVadScores:
         self.max_duration = max_duration
 
     def __get_active_regions(self, scores: SlidingWindowFeature) -> Annotation:
+        """Extract active regions from VAD scores.
+
+        Args:
+            scores (SlidingWindowFeature): Detection scores.
+
+        Returns:
+            active (Annotation): Active regions.
+        """
         num_frames, num_classes = scores.data.shape
         frames = scores.sliding_window
         timestamps = [frames[i].middle for i in range(num_frames)]
@@ -176,12 +187,10 @@ class BinarizeVadScores:
         """Binarize detection scores.
 
         Args:
-            scores : SlidingWindowFeature
-                Detection scores.
+            scores (SlidingWindowFeature): Detection scores.
 
         Returns:
-            active : Annotation
-                Binarized scores.
+            active (Annotation): Binarized scores.
         """
         active = self.__get_active_regions(scores)
         # because of padding, some active regions might be overlapping: merge them.

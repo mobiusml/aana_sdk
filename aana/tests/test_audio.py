@@ -138,7 +138,8 @@ def test_extract_audio():
     assert audio.url is None
     assert audio.path is not None
 
-    # TODO: Test extract_audio with an audio url, currently only uses video.
+    # audio URL test- Issue: https://github.com/mobiusml/aana_sdk/issues/64
+
     try:
         url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
         video_input = VideoInput(url=url)
@@ -171,4 +172,5 @@ def test_extract_audio():
 
     # Paths will be different since Audio object is created from two different Video objects,
     # but the audio content should be the same
+    assert extracted_audio_1.path != extracted_audio_2.path
     assert (extracted_audio_1.get_numpy().all()) == extracted_audio_2.get_numpy().all()

@@ -7,11 +7,6 @@ class VadParams(BaseModel):
     """A model for the Voice Activity Detection model parameters.
 
     Attributes:
-        model (Path | str): Path or URL to the VAD model file.
-        onset (float): Threshold to decide a positive voice activity.
-        offset (float): Threshold to consider as a silence region.
-        min_duration_on (float): Minimum voiced duration.
-        min_duration_off (float): Minimum duration to consider as silence.
         chunk_size (float): The maximum lenth of each vad output chunk.
         merge_onset (float): Onset to be used for the merging operation.
         merge_offset (float): "Optional offset to be used for the merging operation.

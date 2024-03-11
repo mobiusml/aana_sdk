@@ -40,14 +40,37 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
     return options.__class__.parse_obj(default_options_dict)
 
 
+def get_sha256_hash_file(filename):
+    """Compute SHA-256 hash of a file without loading it entirely in memory.
+
+    Args:
+        filename (Path): Path to the file to be hashed.
+
+    Returns:
+        str: SHA-256 hash of the file in hexadecimal format.
+    """
+    # Create a sha256 hash object
+    sha256 = hashlib.sha256()
+
+    # Open the file in binary mode
+    with Path.open(filename, "rb") as f:
+        # Read and update hash in chunks of 4K
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+
+    # Return the hexadecimal representation of the digest
+    return sha256.hexdigest()
+
+
+# Issue-Enable HF download: https://github.com/mobiusml/aana_sdk/issues/73
 # model download from a url and cheking SHA sum of the URL.
-# TODO: To modify the download function to download model from HF as well.
-def download_model(url: str, model_path: Path | None = None) -> Path:
+def download_model(url: str, model_path: Path | None = None, check_sum=True) -> Path:
     """Download a model from a URL.
 
     Args:
         url (str): the URL of the file to download
         model_path (Path): optional model path where it needs to be downloaded
+        check_sum (bool): boolean to mention whether to check SHA-256 sum or not
 
     Returns:
         Path: the downloaded file path
@@ -62,9 +85,11 @@ def download_model(url: str, model_path: Path | None = None) -> Path:
         model_path = Path(model_dir) / "pytorch_model.bin"
 
     if Path(model_path).exists() and not Path(model_path).is_file():
-        raise RuntimeError(f"{model_path}")  # exists and is not a regular file
+        raise RuntimeError(
+            f"Not a regular file: {model_path}"
+        )  # exists and is not a regular file  # noqa: TRY003
 
-    if not Path(model_path).is_file():
+    if not Path(model_path).exists():
         try:
             with ExitStack() as stack:
                 source = stack.enter_context(urllib.request.urlopen(url))  # noqa: S310
@@ -89,9 +114,8 @@ def download_model(url: str, model_path: Path | None = None) -> Path:
         except Exception as e:
             raise DownloadException(url) from e
 
-    model_bytes = Path.open(model_path, "rb").read()
-
-    if hashlib.sha256(model_bytes).hexdigest() != str(url).split("/")[-2]:
+    model_sha256_hash = get_sha256_hash_file(model_path)
+    if check_sum and model_sha256_hash != str(url).split("/")[-2]:
         checksum_error = "Model has been downloaded but the SHA256 checksum does not not match. Please retry loading the model."
         raise RuntimeError(f"{checksum_error}")
 
@@ -110,9 +134,9 @@ def download_file(url: str) -> bytes:
     Raises:
         DownloadException: Request does not succeed.
     """
-    # TODO: add retries, check status code, etc.
+    # TODO: add retries, check status code, etc.: add issue link
     try:
-        response = requests.get(url)  # noqa: S113 TODO
+        response = requests.get(url)  # noqa: S113 TODO : add issue link
     except Exception as e:
         raise DownloadException(url) from e
     return response.content
@@ -140,7 +164,7 @@ def pydantic_to_dict(data: Any) -> Any:
 def get_endpoint(target: str, endpoint: str) -> Endpoint:
     """Get endpoint from endpoints config.
 
-    #TODO: make EndpointList a class and make this a method.
+    #TODO: make EndpointList a class and make this a method.: add issue link
 
     Args:
         target (str): the name of the target deployment

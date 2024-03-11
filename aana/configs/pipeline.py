@@ -261,6 +261,28 @@ nodes = [
         ],
     },
     {
+        "name": "extract_audios",
+        "type": "ray_task",
+        "function": "aana.utils.video.extract_audio",
+        "batched": True,
+        "flatten_by": "video_batch.videos.[*]",
+        "dict_output": False,
+        "inputs": [
+            {
+                "name": "video_objects",
+                "key": "video",
+                "path": "video_batch.videos.[*].video",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "audio_objects",
+                "key": "output",
+                "path": "video_batch.videos.[*].audio",
+            },
+        ],
+    },
+    {
         "name": "video_params",
         "type": "input",
         "inputs": [],
@@ -352,9 +374,9 @@ nodes = [
         "method": "transcribe_batch",
         "inputs": [
             {
-                "name": "video_objects",
-                "key": "media_batch",
-                "path": "video_batch.videos.[*].video",
+                "name": "audio_objects",
+                "key": "audio_batch",
+                "path": "video_batch.videos.[*].audio",
             },
             {
                 "name": "whisper_params",
@@ -507,7 +529,7 @@ nodes = [
         "inputs": [
             {
                 "name": "audio_object",
-                "key": "media",
+                "key": "audio",
                 "path": "video.audio",
             },
             {
