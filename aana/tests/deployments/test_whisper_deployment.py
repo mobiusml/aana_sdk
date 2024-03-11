@@ -32,14 +32,14 @@ def compare_transcriptions(expected_transcription, transcription):
     Raises:
         AssertionError: if transcriptions differ too much
     """
-    levenshtein_operator = [LevenshteinOperator([r"\['text'\]$", r"\['word'\]$"])]
+    custom_operators = [LevenshteinOperator([r"\['text'\]$", r"\['word'\]$"])]
 
     diff = DeepDiff(
         expected_transcription,
         transcription,
         math_epsilon=EPSILON,
         ignore_numeric_type_changes=True,
-        custom_operators=levenshtein_operator,
+        custom_operators=custom_operators,
     )
     assert not diff, diff
 

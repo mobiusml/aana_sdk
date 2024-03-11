@@ -29,7 +29,7 @@ def test_asr_segment_from_whisper():
         end=1.0,
         avg_logprob=-0.5,
         no_speech_prob=0.1,
-        words=[],  # changed rrom [] to cater for batched version without words.
+        words=[],
         text="hello world",
     )
 

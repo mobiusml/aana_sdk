@@ -1,29 +1,30 @@
-import hashlib  # noqa: I001
+import gc
+import hashlib
+import io
+import itertools
 import json
 from collections import defaultdict
 from collections.abc import Generator
 from math import floor
 from pathlib import Path
-from typing import TypedDict
-import numpy as np
-import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
-from decord import DECORDError
-import yt_dlp
-from yt_dlp.utils import DownloadError
+from typing import Optional, TypedDict
+
 import av
-import io
-import gc
-import itertools
+import decord
+import numpy as np
+import torch  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
+import yt_dlp
+from decord import DECORDError
+from yt_dlp.utils import DownloadError
 
 from aana.configs.settings import settings
 from aana.exceptions.general import (
     DownloadException,
     VideoReadingException,
 )
+from aana.models.core.audio import Audio
 from aana.models.core.image import Image
 from aana.models.core.video import Video
-from aana.models.core.audio import Audio
-
 from aana.models.pydantic.asr_output import (
     AsrSegments,
 )
@@ -215,7 +216,18 @@ def download_video(video_input: VideoInput | Video) -> Video:
         return video_input.convert_input_to_object()
 
 
-def _ignore_invalid_frames(frames):
+def _ignore_invalid_frames(frames: Generator) -> Generator:
+    """Filter out invalid frames from the input generator.
+
+    Args:
+        frames (Generator): The input generator of frames.
+
+    Yields:
+        av.audio.frame.AudioFrame: Valid audio frames.
+
+    Raises:
+        StopIteration: When the input generator is exhausted.
+    """
     iterator = iter(frames)
 
     while True:
@@ -227,7 +239,16 @@ def _ignore_invalid_frames(frames):
             continue
 
 
-def _group_frames(frames, num_samples=None):
+def _group_frames(frames: Generator, num_samples: int | None = None) -> Generator:
+    """Group audio frames and yield groups of frames based on the specified number of samples.
+
+    Args:
+        frames (Generator): The input generator of audio frames.
+        num_samples (Optional[int]): The target number of samples for each group.
+
+    Yields:
+        av.audio.frame.AudioFrame: Grouped audio frames.
+    """
     fifo = av.audio.fifo.AudioFifo()
 
     for frame in frames:
@@ -241,21 +262,30 @@ def _group_frames(frames, num_samples=None):
         yield fifo.read()
 
 
-def _resample_frames(frames, resampler):
+def _resample_frames(frames: Generator, resampler) -> Generator:
+    """Resample audio frames using the provided resampler.
+
+    Args:
+        frames (Generator): The input generator of audio frames.
+        resampler: The audio resampler.
+
+    Yields:
+        av.audio.frame.AudioFrame: Resampled audio frames.
+    """
     # Add None to flush the resampler.
     for frame in itertools.chain(frames, [None]):
         yield from resampler.resample(frame)
 
 
-def load_audio(file: Path | None, sr: int = 16000):
+def load_audio(file: Path | None, sample_rate: int = 16000) -> bytes:
     """Open an audio file and read as mono waveform, resampling as necessary.
 
     Args:
         file (Path): The audio/video file to open.
-        sr (int): The sample rate to resample the audio if necessary.
+        sample_rate (int): The sample rate to resample the audio if necessary.
 
     Returns:
-        A NumPy array containing the audio waveform, in float32 dtype.
+        bytes: The content of the audio as bytes.
 
     Raises:
         RuntimeError: if ffmpeg fails to convert and load the audio.
@@ -263,7 +293,7 @@ def load_audio(file: Path | None, sr: int = 16000):
     resampler = av.audio.resampler.AudioResampler(
         format="s16",
         layout="mono",
-        rate=sr,
+        rate=sample_rate,
     )
 
     raw_buffer = io.BytesIO()
@@ -302,11 +332,13 @@ def extract_audio(video: Video) -> Audio:
         video (Video): The video file to extract audio.
 
     Returns:
-        An Audio object containing the extracted audio.
+        Audio: an Audio object containing the extracted audio.
 
     """
     audio_bytes = load_audio(video.path)
-    # Only difference will be in path where WAV file will be stored  and in content but has same media_id
+
+    # Only difference will be in path where WAV file will be stored
+    # and in content but has same media_id
     return Audio(
         url=video.url,
         media_id=video.media_id,
