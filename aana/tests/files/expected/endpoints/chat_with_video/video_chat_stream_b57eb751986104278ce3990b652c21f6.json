@@ -21,22 +21,28 @@
         "completion": "eline"
     },
     {
-        "completion": " and"
+        "completion": " of"
     },
     {
         "completion": " audio"
     },
     {
-        "completion": "/"
+        "completion": " and"
     },
     {
-        "completion": "visual"
+        "completion": " visual"
     },
     {
-        "completion": " ca"
+        "completion": " activities"
     },
     {
-        "completion": "ptions"
+        "completion": " in"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " video"
     },
     {
         "completion": ","
@@ -60,16 +66,22 @@
         "completion": " moments"
     },
     {
-        "completion": " in"
+        "completion": " can"
     },
     {
-        "completion": " the"
+        "completion": " be"
     },
     {
-        "completion": " video"
+        "completion": " summar"
     },
     {
-        "completion": " are"
+        "completion": "ized"
+    },
+    {
+        "completion": " as"
+    },
+    {
+        "completion": " follows"
     },
     {
         "completion": ":"
@@ -111,106 +123,28 @@
         "completion": " and"
     },
     {
-        "completion": " their"
-    },
-    {
-        "completion": " willing"
-    },
-    {
-        "completion": "ness"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " put"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " life"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " line"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " demonstrate"
+        "completion": " how"
     },
     {
         "completion": " it"
     },
     {
-        "completion": " ("
+        "completion": " is"
     },
     {
-        "completion": "start"
+        "completion": " used"
     },
     {
-        "completion": "ing"
+        "completion": " in"
     },
     {
-        "completion": " at"
+        "completion": " demol"
     },
     {
-        "completion": " "
-    },
-    {
-        "completion": "8"
-    },
-    {
-        "completion": "0"
+        "completion": "ition"
     },
     {
         "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " ending"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ")"
     },
     {
         "completion": "\n"
@@ -225,13 +159,58 @@
         "completion": " speaker"
     },
     {
-        "completion": " releases"
+        "completion": " demonstr"
     },
     {
-        "completion": " an"
+        "completion": "ates"
     },
     {
-        "completion": " object"
+        "completion": " the"
+    },
+    {
+        "completion": " concept"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " gravit"
+    },
+    {
+        "completion": "ational"
+    },
+    {
+        "completion": " potential"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " kin"
+    },
+    {
+        "completion": "etic"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " by"
+    },
+    {
+        "completion": " dro"
+    },
+    {
+        "completion": "pping"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " ball"
     },
     {
         "completion": " from"
@@ -246,7 +225,7 @@
         "completion": " and"
     },
     {
-        "completion": " shows"
+        "completion": " showing"
     },
     {
         "completion": " how"
@@ -255,103 +234,22 @@
         "completion": " it"
     },
     {
-        "completion": " can"
+        "completion": " sw"
     },
     {
-        "completion": " never"
-    },
-    {
-        "completion": " come"
+        "completion": "ings"
     },
     {
         "completion": " back"
     },
     {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " point"
-    },
-    {
-        "completion": " where"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " height"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " larger"
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "start"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "9"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
         "completion": " and"
     },
     {
-        "completion": " ending"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
+        "completion": " forth"
     },
     {
         "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ")"
     },
     {
         "completion": "\n"
@@ -375,16 +273,10 @@
         "completion": " the"
     },
     {
-        "completion": " object"
+        "completion": " conversion"
     },
     {
-        "completion": " can"
-    },
-    {
-        "completion": " go"
-    },
-    {
-        "completion": " from"
+        "completion": " of"
     },
     {
         "completion": " gravit"
@@ -411,118 +303,25 @@
         "completion": " energy"
     },
     {
-        "completion": " and"
+        "completion": " can"
     },
     {
-        "completion": " back"
+        "completion": " be"
     },
     {
-        "completion": " to"
-    },
-    {
-        "completion": " gravit"
-    },
-    {
-        "completion": "ational"
-    },
-    {
-        "completion": " potential"
-    },
-    {
-        "completion": " energy"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " how"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " will"
-    },
-    {
-        "completion": " come"
+        "completion": " used"
     },
     {
         "completion": " to"
     },
     {
-        "completion": " a"
+        "completion": " break"
     },
     {
-        "completion": " stop"
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "start"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "0"
+        "completion": " things"
     },
     {
         "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " ending"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "2"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ")"
     },
     {
         "completion": "\n"
@@ -537,10 +336,7 @@
         "completion": " speaker"
     },
     {
-        "completion": " demonstr"
-    },
-    {
-        "completion": "ates"
+        "completion": " shows"
     },
     {
         "completion": " how"
@@ -549,154 +345,112 @@
         "completion": " the"
     },
     {
-        "completion": " object"
+        "completion": " same"
     },
     {
-        "completion": " will"
+        "completion": " principle"
     },
     {
-        "completion": " swing"
-    },
-    {
-        "completion": " back"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " forth"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " how"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " should"
-    },
-    {
-        "completion": " not"
+        "completion": " can"
     },
     {
         "completion": " be"
     },
     {
-        "completion": " able"
+        "completion": " applied"
     },
     {
         "completion": " to"
     },
     {
-        "completion": " reach"
+        "completion": " a"
     },
     {
-        "completion": " any"
+        "completion": " p"
     },
     {
-        "completion": " higher"
+        "completion": "end"
     },
     {
-        "completion": " provided"
+        "completion": "ul"
     },
     {
-        "completion": " that"
+        "completion": "um"
     },
     {
-        "completion": " they"
+        "completion": ","
     },
     {
-        "completion": " do"
+        "completion": " demonstr"
     },
     {
-        "completion": " not"
+        "completion": "ating"
     },
     {
-        "completion": " give"
+        "completion": " how"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " potential"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " p"
+    },
+    {
+        "completion": "end"
+    },
+    {
+        "completion": "ul"
+    },
+    {
+        "completion": "um"
+    },
+    {
+        "completion": " can"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " converted"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " kin"
+    },
+    {
+        "completion": "etic"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " as"
     },
     {
         "completion": " it"
     },
     {
-        "completion": " an"
+        "completion": " sw"
     },
     {
-        "completion": " initial"
-    },
-    {
-        "completion": " speed"
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "start"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "3"
-    },
-    {
-        "completion": "0"
+        "completion": "ings"
     },
     {
         "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " ending"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "4"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ")"
     },
     {
         "completion": "\n"
@@ -711,19 +465,22 @@
         "completion": " speaker"
     },
     {
-        "completion": " discuss"
+        "completion": " emphas"
     },
     {
-        "completion": "es"
+        "completion": "izes"
     },
     {
-        "completion": " their"
+        "completion": " the"
     },
     {
-        "completion": " trust"
+        "completion": " importance"
     },
     {
-        "completion": " in"
+        "completion": " of"
+    },
+    {
+        "completion": " understanding"
     },
     {
         "completion": " the"
@@ -747,406 +504,40 @@
         "completion": " how"
     },
     {
-        "completion": " they"
-    },
-    {
-        "completion": " hope"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " release"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " object"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " zero"
-    },
-    {
-        "completion": " speed"
-    },
-    {
-        "completion": " so"
-    },
-    {
-        "completion": " that"
-    },
-    {
         "completion": " it"
     },
     {
-        "completion": " may"
+        "completion": " is"
     },
     {
-        "completion": " touch"
+        "completion": " used"
     },
     {
-        "completion": " their"
+        "completion": " in"
     },
     {
-        "completion": " ch"
+        "completion": " various"
     },
     {
-        "completion": "in"
-    },
-    {
-        "completion": " but"
-    },
-    {
-        "completion": " not"
-    },
-    {
-        "completion": " cr"
-    },
-    {
-        "completion": "ush"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " ch"
-    },
-    {
-        "completion": "in"
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "start"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "5"
-    },
-    {
-        "completion": "0"
+        "completion": " applications"
     },
     {
         "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " ending"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "6"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ")"
     },
     {
         "completion": "\n"
     },
     {
-        "completion": "*"
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " con"
-    },
-    {
-        "completion": "cludes"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " lecture"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " thanks"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " audience"
-    },
-    {
-        "completion": " for"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " attention"
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "start"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "7"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " ending"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "8"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ")"
-    },
-    {
         "completion": "\n"
     },
     {
-        "completion": "*"
+        "completion": "Over"
     },
     {
-        "completion": " The"
+        "completion": "all"
     },
     {
-        "completion": " speaker"
-    },
-    {
-        "completion": " express"
-    },
-    {
-        "completion": "es"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " grat"
-    },
-    {
-        "completion": "itude"
-    },
-    {
-        "completion": " for"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " opportunity"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " share"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " knowledge"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " how"
-    },
-    {
-        "completion": " physics"
-    },
-    {
-        "completion": " works"
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "start"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "9"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " ending"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "2"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ")"
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "*"
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " thanks"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " audience"
-    },
-    {
-        "completion": " again"
-    },
-    {
-        "completion": " and"
+        "completion": ","
     },
     {
         "completion": " the"
@@ -1155,73 +546,157 @@
         "completion": " video"
     },
     {
-        "completion": " ends"
+        "completion": " provides"
     },
     {
-        "completion": " ("
+        "completion": " a"
     },
     {
-        "completion": "start"
+        "completion": " clear"
     },
     {
-        "completion": "ing"
+        "completion": " explanation"
     },
     {
-        "completion": " at"
+        "completion": " of"
     },
     {
-        "completion": " "
+        "completion": " the"
     },
     {
-        "completion": "2"
+        "completion": " concepts"
     },
     {
-        "completion": "1"
+        "completion": " of"
     },
     {
-        "completion": "0"
+        "completion": " gravit"
     },
     {
-        "completion": "."
+        "completion": "ational"
     },
     {
-        "completion": "0"
+        "completion": " potential"
     },
     {
-        "completion": " seconds"
+        "completion": " energy"
     },
     {
         "completion": " and"
     },
     {
-        "completion": " ending"
+        "completion": " kin"
     },
     {
-        "completion": " at"
+        "completion": "etic"
     },
     {
-        "completion": " "
+        "completion": " energy"
     },
     {
-        "completion": "2"
+        "completion": ","
     },
     {
-        "completion": "1"
+        "completion": " and"
     },
     {
-        "completion": "0"
+        "completion": " how"
+    },
+    {
+        "completion": " they"
+    },
+    {
+        "completion": " are"
+    },
+    {
+        "completion": " used"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " demol"
+    },
+    {
+        "completion": "ition"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " other"
+    },
+    {
+        "completion": " applications"
     },
     {
         "completion": "."
     },
     {
-        "completion": "0"
+        "completion": " The"
     },
     {
-        "completion": " seconds"
+        "completion": " speaker"
     },
     {
-        "completion": ")"
+        "completion": "'"
+    },
+    {
+        "completion": "s"
+    },
+    {
+        "completion": " use"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " visual"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": "ids"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " demonstr"
+    },
+    {
+        "completion": "ations"
+    },
+    {
+        "completion": " makes"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " concepts"
+    },
+    {
+        "completion": " more"
+    },
+    {
+        "completion": " accessible"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " easier"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " understand"
+    },
+    {
+        "completion": "."
     },
     {
         "completion": ""
