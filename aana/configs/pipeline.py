@@ -758,36 +758,6 @@ nodes = [
         ],
     },
     {
-        "name": "save_video",
-        "type": "function",
-        "function": "aana.utils.db.save_video",
-        "dict_output": True,
-        "inputs": [
-            {
-                "name": "video_object",
-                "key": "video",
-                "path": "video.video",
-            },
-            {
-                "name": "video_duration",
-                "key": "duration",
-                "path": "video.duration",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "video_media_id",
-                "key": "media_id",
-                "path": "video.media_id",
-            },
-            {
-                "name": "video_id",
-                "key": "video_id",
-                "path": "video.id",
-            },
-        ],
-    },
-    {
         "name": "delete_media",
         "type": "function",
         "function": "aana.utils.db.delete_media",
@@ -808,31 +778,6 @@ nodes = [
         ],
     },
     {
-        "name": "save_videos_info",
-        "type": "function",
-        "function": "aana.utils.db.save_video_batch",
-        "dict_output": True,
-        "inputs": [
-            {
-                "name": "video_objects",
-                "key": "videos",
-                "path": "video_batch.videos.[*].video",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "videos_media_ids",
-                "key": "media_ids",
-                "path": "video_batch.[*].media_id",
-            },
-            {
-                "name": "video_ids",
-                "key": "video_ids",
-                "path": "video_batch.[*].id",
-            },
-        ],
-    },
-    {
         "name": "save_video_transcription",
         "type": "function",
         "function": "aana.utils.db.save_video_transcription",
@@ -842,9 +787,14 @@ nodes = [
         "dict_output": True,
         "inputs": [
             {
-                "name": "video_media_id",
-                "key": "media_id",
-                "path": "video.media_id",
+                "name": "video_object",
+                "key": "video",
+                "path": "video.video",
+            },
+            {
+                "name": "video_duration",
+                "key": "duration",
+                "path": "video.duration",
             },
             {
                 "name": "video_transcriptions_info_whisper_medium",
@@ -871,44 +821,6 @@ nodes = [
         ],
     },
     {
-        "name": "save_transcripts_batch_medium",
-        "type": "function",
-        "function": "aana.utils.db.save_transcripts_batch",
-        "kwargs": {
-            "model_name": "whisper_medium",
-        },
-        "dict_output": True,
-        "inputs": [
-            {
-                "name": "videos_media_ids",
-                "key": "media_ids",
-                "path": "video_batch.[*].media_id",
-            },
-            {
-                "name": "videos_transcriptions_info_whisper_medium",
-                "key": "transcription_info_list",
-                "path": "video_batch.videos.[*].transcription_info",
-            },
-            {
-                "name": "videos_transcriptions_segments_whisper_medium",
-                "key": "segments_list",
-                "path": "video_batch.videos.[*].segments",
-            },
-            {
-                "name": "videos_transcriptions_whisper_medium",
-                "key": "transcription_list",
-                "path": "video_batch.videos.[*].transcription",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "videos_transcription_ids",
-                "key": "transcription_ids",
-                "path": "video_batch.videos.[*].transcription.id",
-            }
-        ],
-    },
-    {
         "name": "save_video_captions_hf_blip2_opt_2_7b",
         "type": "function",
         "function": "aana.utils.db.save_video_captions",
@@ -918,9 +830,14 @@ nodes = [
         "dict_output": True,
         "inputs": [
             {
-                "name": "video_media_id",
-                "key": "media_id",
-                "path": "video.media_id",
+                "name": "video_object",
+                "key": "video",
+                "path": "video.video",
+            },
+            {
+                "name": "video_duration",
+                "key": "duration",
+                "path": "video.duration",
             },
             {
                 "name": "video_captions_hf_blip2_opt_2_7b",

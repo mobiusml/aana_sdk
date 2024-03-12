@@ -61,6 +61,9 @@ def test_save_video():
                 assert video_by_video_id.media == media_by_media_id
                 assert media_by_media_id.video == video_by_video_id
 
+            # Use a second session here because deleted objects sometimes linger
+            # as long as a session persists.
+            with Session(settings.db_config.get_engine()) as session:
                 # Check that delete function works
                 result = delete_media(media_id)
                 with pytest.raises(NotFoundException):
@@ -69,3 +72,4 @@ def test_save_video():
                     _ = video_repo.get_by_media_id(media_id)
                 with pytest.raises(NotFoundException):
                     _ = video_repo.read(video_id)
+

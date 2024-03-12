@@ -51,8 +51,6 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
         comment="Confidence score of language prediction",
     )
 
-    video = relationship("VideoEntity", back_populates="transcripts")
-
     @classmethod
     def from_asr_output(
         cls,
