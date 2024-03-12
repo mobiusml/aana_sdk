@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from aana.api.api_generation import Endpoint
 from aana.configs.endpoints.endpoints import endpoints as all_endpoints
 from aana.exceptions.general import DownloadException, EndpointNotFoundException
+from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.utils.json import jsonify
 
 OptionType = TypeVar("OptionType", bound=BaseModel)
@@ -110,3 +111,63 @@ def get_object_hash(obj: Any) -> str:
         jsonify(obj).encode("utf-8"),
         usedforsecurity=False,
     ).hexdigest()
+
+
+def get_attribute(obj: Any, attribute: str) -> Any:
+    """Get an attribute of an object.
+
+    Args:
+        obj (Any): the object
+        attribute (str): the attribute name
+
+    Returns:
+        Any: the attribute value
+    """
+    return getattr(obj, attribute)
+
+
+def format_prompt_as_chat_dialog(
+    system_prompt: str, prompt_template: str, text: str
+) -> ChatDialog:
+    """Format a prompt template with text.
+
+    Args:
+        system_prompt (str): the system prompt
+        prompt_template (str): the prompt template
+        text (str): the text to insert into the template
+
+    Returns:
+        ChatDialog: the formatted prompt as a ChatDialog with two ChatMessage objects:
+            one that contains the system prompt
+            one that contains the formatted prompt
+    """
+    system_prompt_message = ChatMessage(
+        content=system_prompt,
+        role="system",
+    )
+    formatted_prompt_message = ChatMessage(
+        content=prompt_template.format(text=text),
+        role="user",
+    )
+    dialog = ChatDialog(
+        messages=[
+            system_prompt_message,
+            formatted_prompt_message,
+        ]
+    )
+    print(dialog)
+    return dialog
+
+    # """Format a prompt template with text.
+
+    # Args:
+    #     prompt_template (str): the prompt template
+    #     text (str): the text to insert into the template
+
+    # Returns:
+    #     str: the formatted prompt
+    # """
+    # print(prompt_template)
+    # print(text)
+    # print(prompt_template.format(text=text))
+    # return prompt_template.format(text=text)

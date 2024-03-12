@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipelines</title>
+</head>
+
+<body>
+    <h1>Pipeline List</h1>
+    <ul>
+        {% for pipeline in pipelines %}
+        <!-- <li>{{ pipeline}} </li> -->
+        <li> <a href="/pipeline/{{ pipeline }}">{{ pipeline }}</a> </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Add New Pipeline</h2>
+    <form action="/add_pipeline" method="POST">
+        <input type="text" name="name" placeholder="Pipeline Name" required>
+        <button type="submit">Add</button>
+    </form>
+</body>
+
+</html>

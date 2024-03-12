@@ -13,6 +13,7 @@
         <div class="litegraph litegraph-editor">
             <div class="header">
                 <div class="tools tools-left">
+                    <button onclick="window.location.href = '/'">Home</button>
                     <button onclick="save()">Save</button>
                     <button onclick="graph.arrange()">Arrange</button>
                 </div>
@@ -29,7 +30,7 @@
             // serialize graph to JSON and send to /save
             var data = graph.serialize();
             // console.log(data);
-            fetch("/save", {
+            fetch("/save/{{ pipeline_name }}", {
                 method: "POST",
                 body: JSON.stringify(data),
                 headers: {
@@ -38,9 +39,11 @@
             }).then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
+                    alert("Successfull saved");
                 })
                 .catch((error) => {
                     console.error('Error:', error);
+                    alert("Error: " + error);
                 });
         }
     </script>
@@ -217,8 +220,11 @@
 
             this.addWidget("text", "path", "", function (value) {
                 node.title = "Endpoint: " + value;
+                node.setProperty("path", value);
             });
-            this.addWidget("text", "summary", "", function (value) { });
+            this.addWidget("text", "summary", "", function (value) {
+                node.setProperty("summary", value);
+            });
             this.addWidget("number", "count_outputs", 1, function (value) {
                 // console.log("count_outputs", value, node.inputs.length);
                 node.setProperty("count_outputs", value);
@@ -296,6 +302,7 @@
                 is_generator: false,
                 dict_output: false,
                 batched: false,
+                is_ray_task: false,
             }
 
             this.serialize_widgets = true;
@@ -356,9 +363,16 @@
                 node.setProperty("batched", false);
                 setWidgetValue(node, "batched", false);
 
+                node.setProperty("is_ray_task", false);
+                setWidgetValue(node, "is_ray_task", false);
+
                 node.title = value;
                 // node.size = [400, 200];
             }, { "values": Object.keys(available_functions) })
+
+            this.addWidget("toggle", "is_ray_task", false, function (value) {
+                node.setProperty("is_ray_task", value);
+            });
 
             this.addWidget("toggle", "batched", false, function (value) {
                 node.setProperty("batched", value);
@@ -586,6 +600,7 @@
 
 
         graph.start()
+        graph.arrange();
 
 
     </script>
