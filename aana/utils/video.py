@@ -1,13 +1,12 @@
 import gc
 import hashlib
 import io
-import itertools
 import json
 from collections import defaultdict
 from collections.abc import Generator
 from math import floor
 from pathlib import Path
-from typing import Optional, TypedDict
+from typing import TypedDict
 
 import av
 import decord
@@ -22,7 +21,12 @@ from aana.exceptions.general import (
     DownloadException,
     VideoReadingException,
 )
-from aana.models.core.audio import Audio
+from aana.models.core.audio import (
+    Audio,
+    group_frames,
+    ignore_invalid_frames,
+    resample_frames,
+)
 from aana.models.core.image import Image
 from aana.models.core.video import Video
 from aana.models.pydantic.asr_output import (
@@ -216,67 +220,6 @@ def download_video(video_input: VideoInput | Video) -> Video:
         return video_input.convert_input_to_object()
 
 
-def _ignore_invalid_frames(frames: Generator) -> Generator:
-    """Filter out invalid frames from the input generator.
-
-    Args:
-        frames (Generator): The input generator of frames.
-
-    Yields:
-        av.audio.frame.AudioFrame: Valid audio frames.
-
-    Raises:
-        StopIteration: When the input generator is exhausted.
-    """
-    iterator = iter(frames)
-
-    while True:
-        try:
-            yield next(iterator)
-        except StopIteration:  # noqa: PERF203
-            break
-        except av.error.InvalidDataError:
-            continue
-
-
-def _group_frames(frames: Generator, num_samples: int | None = None) -> Generator:
-    """Group audio frames and yield groups of frames based on the specified number of samples.
-
-    Args:
-        frames (Generator): The input generator of audio frames.
-        num_samples (Optional[int]): The target number of samples for each group.
-
-    Yields:
-        av.audio.frame.AudioFrame: Grouped audio frames.
-    """
-    fifo = av.audio.fifo.AudioFifo()
-
-    for frame in frames:
-        frame.pts = None  # Ignore timestamp check.
-        fifo.write(frame)
-
-        if num_samples is not None and fifo.samples >= num_samples:
-            yield fifo.read()
-
-    if fifo.samples > 0:
-        yield fifo.read()
-
-
-def _resample_frames(frames: Generator, resampler) -> Generator:
-    """Resample audio frames using the provided resampler.
-
-    Args:
-        frames (Generator): The input generator of audio frames.
-        resampler: The audio resampler.
-
-    Yields:
-        av.audio.frame.AudioFrame: Resampled audio frames.
-    """
-    # Add None to flush the resampler.
-    for frame in itertools.chain(frames, [None]):
-        yield from resampler.resample(frame)
-
-
 def load_audio(file: Path | None, sample_rate: int = 16000) -> bytes:
     """Open an audio file and read as mono waveform, resampling as necessary.
 
@@ -306,9 +249,9 @@ def load_audio(file: Path | None, sample_rate: int = 16000) -> bytes:
                 return b""
 
             frames = container.decode(audio=0)
-            frames = _ignore_invalid_frames(frames)
-            frames = _group_frames(frames, 500000)
-            frames = _resample_frames(frames, resampler)
+            frames = ignore_invalid_frames(frames)
+            frames = group_frames(frames, 500000)
+            frames = resample_frames(frames, resampler)
 
             for frame in frames:
                 array = frame.to_ndarray()
@@ -341,7 +284,7 @@ def extract_audio(video: Video) -> Audio:
     # and in content but has same media_id
     return Audio(
         url=video.url,
-        media_id=video.media_id,
+        media_id="audio_" + video.media_id,
         content=audio_bytes,
         title=video.title,
         description=video.description,

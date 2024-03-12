@@ -51,6 +51,9 @@ def setup_vad_deployment(setup_deployment, request):
     return name, deployment, *setup_deployment(deployment, bind=True)
 
 
+# Issue: test silent audio (add expected files): https://github.com/mobiusml/aana_sdk/issues/77
+
+
 @pytest.mark.skipif(
     not is_gpu_available() and not is_using_deployment_cache(),
     reason="GPU is not available",

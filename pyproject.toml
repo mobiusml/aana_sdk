@@ -13,7 +13,7 @@ python = "~3.10"
 mobius-pipeline = { path = "./mobius-pipeline", develop = true }
 accelerate = "^0.26.1"
 alembic = "^1.12.1"
-av = "^10.*"
+av = "==10.*"
 bitsandbytes = "^0.42.0"
 decord = "^0.6.0"
 deepdiff = "^6.7.0"

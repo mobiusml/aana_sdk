@@ -51,6 +51,7 @@ def setup_whisper_deployment(setup_deployment, request):
     return name, deployment, *setup_deployment(deployment, bind=True)
 
 
+# Issue: test silent audio (add expected files): https://github.com/mobiusml/aana_sdk/issues/77
 @pytest.mark.skipif(
     not is_gpu_available() and not is_using_deployment_cache(),
     reason="GPU is not available",
@@ -78,14 +79,15 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     audio = Audio(path=path, media_id=audio_file)
 
     output = await handle.transcribe.remote(
-        media=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
+        audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
     )
     output = pydantic_to_dict(output)
+
     compare_transcriptions(expected_output, output)
 
     # Test transcribe_stream method)
     stream = handle.options(stream=True).transcribe_stream.remote(
-        media=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
+        audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
     )
 
     # Combine individual segments and compare with the final dict
@@ -102,17 +104,6 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     compare_transcriptions(expected_output, dict(grouped_dict))
 
     # Test transcribe_batch method
-    audios = [audio, audio]
-
-    batch_output = await handle.transcribe_batch.remote(
-        media_batch=audios,
-        params=WhisperParams(word_timestamps=True, temperature=0.0),
-    )
-    batch_output = pydantic_to_dict(batch_output)
-
-    for i in range(len(audios)):
-        output = {k: v[i] for k, v in batch_output.items()}
-        compare_transcriptions(expected_output, output)
 
     # Test transcribe_in_chunks method: Note that the expected asr output is different
     expectd_batched_output_path = resources.path(

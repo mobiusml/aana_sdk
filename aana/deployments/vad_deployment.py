@@ -51,7 +51,6 @@ class VadConfig(BaseModel):
     """
 
     model: str = Field(
-        # default="https://whisperx.s3.eu-west-2.amazonaws.com/model_weights/segmentation/0b5b3216d60a2d32fc086b47ea8c67589aaeb26b7e07fcbe620d6d0b83e209ea/pytorch_model.bin",
         description="The VAD model url.",
     )
 
