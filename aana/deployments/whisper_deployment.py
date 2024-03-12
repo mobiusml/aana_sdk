@@ -230,8 +230,9 @@ class WhisperDeployment(BaseDeployment):
                     transcription=asr_transcription,
                 )
 
+    @test_cache
     async def transcribe_batch(
-        self, audio_batch: list[Audio], params: WhisperParams = None
+        self, audio_batch: list[Audio], params: WhisperParams | None = None
     ) -> WhisperBatchOutput:
         """Transcribe the batch of audios with the Whisper model.
 

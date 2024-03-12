@@ -27,6 +27,7 @@ class VoiceActivitySegmentation(VoiceActivityDetection):
             device (torch.device | None): Device to perform the segmentation.
             fscore (bool): Flag indicating whether to compute F-score during inference.
             use_auth_token (str | None): Optional authentication token for model access.
+            inference_kwargs (dict): Optional additional arguments from VoiceActivityDetection pipeline.
         """
         super().__init__(
             segmentation=segmentation,

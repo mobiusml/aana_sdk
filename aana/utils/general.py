@@ -85,9 +85,7 @@ def download_model(url: str, model_path: Path | None = None, check_sum=True) -> 
         model_path = Path(model_dir) / "pytorch_model.bin"
 
     if Path(model_path).exists() and not Path(model_path).is_file():
-        raise RuntimeError(
-            f"Not a regular file: {model_path}"
-        )  # exists and is not a regular file  # noqa: TRY003
+        raise RuntimeError(f"Not a regular file: {model_path}")  # noqa: TRY003
 
     if not Path(model_path).exists():
         try:
