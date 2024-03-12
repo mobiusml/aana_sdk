@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import io, gc
 import itertools
 from pathlib import Path
+from collections.abc import Generator
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 from decord import DECORDError
 import numpy as np
@@ -19,7 +20,7 @@ class AbstractAudioLibrary:
 
     @classmethod
     def read_file(cls, path: Path) -> np.ndarray:
-        """Read an audio file from path.
+        """Read an audio file from path and return as numpy audio array.
 
         Args:
             path (Path): The path of the file to read.
@@ -99,9 +100,9 @@ class pyAVWrapper(AbstractAudioLibrary):
 
         with av.open(str(path), mode="r", metadata_errors="ignore") as container:
             frames = container.decode(audio=0)
-            frames = _ignore_invalid_frames(frames)
-            frames = _group_frames(frames, 500000)
-            frames = _resample_frames(frames, resampler)
+            frames = ignore_invalid_frames(frames)
+            frames = group_frames(frames, 500000)
+            frames = resample_frames(frames, resampler)
 
             for frame in frames:
                 array = frame.to_ndarray()
@@ -119,19 +120,15 @@ class pyAVWrapper(AbstractAudioLibrary):
         return audio
 
     @classmethod
-    def read_from_bytes(cls, content: bytes, sample_rate=16000) -> np.ndarray:
+    def read_from_bytes(cls, content: bytes) -> np.ndarray:
         """Read audio bytes as numpy array.
 
         Args:
             content (bytes): The content of the file to read.
-            sample_rate (int): sample rate of the audio
+
         Returns:
             np.ndarray: The file as a numpy array.
         """
-        # Open the audio stream
-        # container = av.open(BytesIO(content))
-        # frames = av.AudioFrame.from_ndarray(np.zeros(0, dtype=np.int16), format="s16")
-        # frames.planes[0].buffer = content
         # Create an in-memory file-like object
         content_io = io.BytesIO(content)
 
@@ -204,7 +201,18 @@ class pyAVWrapper(AbstractAudioLibrary):
             wav_file.writeframes(audio)
 
 
-def _ignore_invalid_frames(frames):
+def ignore_invalid_frames(frames: Generator) -> Generator:
+    """Filter out invalid frames from the input generator.
+
+    Args:
+        frames (Generator): The input generator of frames.
+
+    Yields:
+        av.audio.frame.AudioFrame: Valid audio frames.
+
+    Raises:
+        StopIteration: When the input generator is exhausted.
+    """
     iterator = iter(frames)
 
     while True:
@@ -216,7 +224,16 @@ def _ignore_invalid_frames(frames):
             continue
 
 
-def _group_frames(frames, num_samples=None):
+def group_frames(frames: Generator, num_samples: int | None = None) -> Generator:
+    """Group audio frames and yield groups of frames based on the specified number of samples.
+
+    Args:
+        frames (Generator): The input generator of audio frames.
+        num_samples (int | None): The target number of samples for each group.
+
+    Yields:
+        av.audio.frame.AudioFrame: Grouped audio frames.
+    """
     fifo = av.audio.fifo.AudioFifo()
 
     for frame in frames:
@@ -230,7 +247,16 @@ def _group_frames(frames, num_samples=None):
         yield fifo.read()
 
 
-def _resample_frames(frames, resampler):
+def resample_frames(frames: Generator, resampler) -> Generator:
+    """Resample audio frames using the provided resampler.
+
+    Args:
+        frames (Generator): The input generator of audio frames.
+        resampler: The audio resampler.
+
+    Yields:
+        av.audio.frame.AudioFrame: Resampled audio frames.
+    """
     # Add None to flush the resampler.
     for frame in itertools.chain(frames, [None]):
         yield from resampler.resample(frame)

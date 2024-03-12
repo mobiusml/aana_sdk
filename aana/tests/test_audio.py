@@ -26,6 +26,18 @@ def test_audio():
         audio.cleanup()
 
     # TODO: Test creation of audio object from a URL
+    # Test creation from content
+    try:
+        path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+        content = path.read_bytes()
+        audio = Audio(content=content, save_on_disk=False)
+        assert audio.path is None
+        assert audio.content == content
+        assert audio.url is None
+
+        assert audio.get_content() == content
+    finally:
+        audio.cleanup()
 
     # Test creation from content
     try:
@@ -62,16 +74,14 @@ def test_save_audio():
         audio.cleanup()
     assert audio.path.exists()  # Cleanup should NOT delete the file if path is provided
 
-    # TODO: Test saving from URL to disk (load audio physicsworks.wav to aws for audio)
-
-    # Test saving from content to disk
+    # Test saving from video URL to disk and read
     try:
-        path = resources.path("aana.tests.files.audios", "physicsworks.wav")
-        content = path.read_bytes()
-        audio = Audio(content=content, save_on_disk=True)
-        assert audio.content == content
-        assert audio.url is None
-        assert audio.path.exists()
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
+
+        audio = Audio(url=url, save_on_disk=True)
+        assert audio.content is None
+        assert audio.url is not None
+        assert audio.get_numpy() is not None
     finally:
         audio.cleanup()
 
@@ -150,7 +160,7 @@ def test_extract_audio():
         assert audio.content is not None
         assert audio.path.exists()
         assert video.media_id == video_input.media_id
-        assert audio.media_id == video.media_id
+        assert audio.media_id == "audio_" + video.media_id
 
     finally:
         video.cleanup()
@@ -174,3 +184,5 @@ def test_extract_audio():
     # but the audio content should be the same
     assert extracted_audio_1.path != extracted_audio_2.path
     assert (extracted_audio_1.get_numpy().all()) == extracted_audio_2.get_numpy().all()
+
+    # Issue: test silent audio (add empty bytes expected result): https://github.com/mobiusml/aana_sdk/issues/77
