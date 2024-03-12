@@ -98,7 +98,6 @@ def save_video(video: Video, video_duration: float) -> dict:
         orig_filename = None
     media_entity = MediaEntity(id=video.media_id, media_type=MediaType.VIDEO)
     video_entity = VideoEntity(
-        media=media_entity,
         media_id=video.media_id,
         orig_filename=orig_filename,
         orig_url=orig_url,
@@ -132,47 +131,16 @@ def delete_media(media_id: MediaId) -> dict:
     with Session(engine) as session:
         media_repo = MediaRepository(session)
         media_entity = media_repo.delete(media_id, check=True)
-        video_repo = VideoRepository(session)
-        video_entity = video_repo.delete_by_media_id(media_id)
     return {
         "media_id": media_entity.id,
-        "video_id": video_entity.id,
+        "video_id": media_entity.video_id,
     }
-
-
-def save_captions_batch(
-    media_ids: list[MediaId],
-    model_name: str,
-    captions_list: list[CaptionsList],
-    timestamps_list: list[list[float]],
-    frame_ids_list: list[list[int]],
-) -> dict:
-    """Save captions."""
-    raise NotImplementedError("Needs to be fixed")
-
-    with Session(engine) as session:
-        entities = [
-            CaptionEntity.from_caption_output(
-                model_name, media_id, frame_id, timestamp, caption
-            )
-            for media_id, captions, timestamps, frame_ids in zip(
-                media_ids, captions_list, timestamps_list, frame_ids_list, strict=True
-            )
-            for caption, timestamp, frame_id in zip(
-                captions, timestamps[:-1], frame_ids, strict=True
-            )
-        ]
-        repo = CaptionRepository(session)
-        results = repo.create_multiple(entities)
-        # return [c.id for c in results]
-        return {
-            "caption_ids": [c.id for c in results]  # type: ignore
-        }
 
 
 def save_video_captions(
     model_name: str,
-    media_id: MediaId,
+    video: Video,
+    duration: float,
     captions: CaptionsList,
     timestamps: list[float],
     frame_ids: list[int],
@@ -181,7 +149,8 @@ def save_video_captions(
 
     Args:
         model_name (str): The name of the model used to generate the captions.
-        media_id (MediaId): The media ID.
+        video (Video): The pydantic video model for this video
+        duration (float): The duration of the video in seconds
         captions (CaptionsList): The captions.
         timestamps (list[float]): The timestamps.
         frame_ids (list[int]): The frame IDs.
@@ -190,10 +159,17 @@ def save_video_captions(
         dict: The dictionary with the IDs of the saved entities.
     """
     with Session(engine) as session:
-        video_entity = VideoRepository(session).get_by_media_id(media_id)
+        video_repo = VideoRepository(session)
+
+        if not MediaRepository(session).check_media_exists(video.media_id):
+            result = save_video(video, duration)
+            video_id = result["video_id"]
+        else:
+            video_entity = video_repo.get_by_media_id(video.media_id)
+            video_id = video_entity.id
         entities = [
             CaptionEntity.from_caption_output(
-                model_name, media_id, video_entity.id, frame_id, timestamp, caption
+                model_name, video.media_id, video_id, frame_id, timestamp, caption
             )
             for caption, timestamp, frame_id in zip(
                 captions, timestamps, frame_ids, strict=True
@@ -206,43 +182,10 @@ def save_video_captions(
         }
 
 
-def save_transcripts_batch(
-    model_name: str,
-    media_ids: list[MediaId],
-    transcription_info_list: list[AsrTranscriptionInfo],
-    transcription_list: list[AsrTranscription],
-    segments_list: list[list[AsrSegment]],
-) -> dict:
-    """Save transcripts batch."""
-    with Session(engine) as session:
-        video_repo = VideoRepository(session)
-        entities = [
-            TranscriptEntity.from_asr_output(
-                model_name,
-                media_id,
-                video_repo.get_by_media_id(media_id).id,
-                transcript_info,
-                transcript,
-                segments,
-            )
-            for media_id, transcript_info, transcript, segments in zip(
-                media_ids,
-                transcription_info_list,
-                transcription_list,
-                segments_list,
-                strict=True,
-            )
-        ]
-        repo = TranscriptRepository(session)
-        entities = repo.create_multiple(entities)
-        return {
-            "transcription_ids": [c.id for c in entities]  # type: ignore
-        }
-
-
 def save_video_transcription(
     model_name: str,
-    media_id: MediaId,
+    video: Video,
+    duration: float,
     transcription_info: AsrTranscriptionInfo,
     transcription: AsrTranscription,
     segments: AsrSegments,
@@ -251,7 +194,8 @@ def save_video_transcription(
 
     Args:
         model_name (str): The name of the model used to generate the transcript.
-        media_id (MediaId): The media ID.
+        video (Video): The pydantic video model for this video
+        duration (float): The duration of the video in seconds
         transcription_info (AsrTranscriptionInfo): The ASR transcription info.
         transcription (AsrTranscription): The ASR transcription.
         segments (AsrSegments): The ASR segments.
@@ -260,12 +204,19 @@ def save_video_transcription(
         dict: The dictionary with the IDs of the saved entities.
     """
     with Session(engine) as session:
-        video_entity = VideoRepository(session).get_by_media_id(media_id)
-        video_id = int(video_entity.id)
+        video_repo = VideoRepository(session)
+
+        if not MediaRepository(session).check_media_exists(video.media_id):
+            result = save_video(video, duration)
+            video_id = result["video_id"]
+        else:
+            video_entity = video_repo.get_by_media_id(video.media_id)
+            video_id = video_entity.id
+
         entities = [
             TranscriptEntity.from_asr_output(
                 model_name=model_name,
-                media_id=media_id,
+                media_id=video.media_id,
                 video_id=video_id,
                 transcription=transcription,
                 segments=segments,

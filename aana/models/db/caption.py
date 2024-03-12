@@ -47,8 +47,6 @@ class CaptionEntity(BaseEntity, TimeStampEntity):
         comment="Frame timestamp in seconds",
     )
 
-    video = relationship("VideoEntity", back_populates="captions")
-
     @classmethod
     def from_caption_output(
         cls,
