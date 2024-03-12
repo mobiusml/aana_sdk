@@ -28,7 +28,7 @@ class MediaEntity(BaseEntity, TimeStampEntity):
 
     video = relationship(
         "VideoEntity",
-        backref=backref("video", passive_deletes=True),
+        backref=backref("media", passive_deletes=True, uselist=False),
         cascade="all, delete",
         uselist=False,
         post_update=True,
