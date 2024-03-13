@@ -57,6 +57,6 @@ deployments = {
         user_config=StableDiffusion2Config(
             model="stabilityai/stable-diffusion-2",
             dtype=Dtype.FLOAT16,
-        ).dict(),
+        ).model_dump(),
     ),
 }

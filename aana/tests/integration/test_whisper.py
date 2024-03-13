@@ -20,22 +20,24 @@ VIDEO_DELETE_ENDPOINT = "/video/delete"
 )
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
-    "video",
+    "video, whisper_params",
     [
-        {
+        ({
             "path": str(resources.path("aana.tests.files.videos", "physicsworks.webm")),
             "media_id": "physicsworks.webm",
-        }
+        }, {
+            "temperature": 0.0
+        }),
     ],
 )
-def test_video_transcribe(call_endpoint, video):
+def test_video_transcribe(call_endpoint, video, whisper_params):
     """Test video transcribe endpoint."""
     media_id = video["media_id"]
 
     # transcribe video
     call_endpoint(
         VIDEO_TRANSCRIBE_ENDPOINT,
-        {"video": video},
+        {"video": video, "whisper_params": whisper_params},
     )
 
     # load transcription
@@ -47,7 +49,7 @@ def test_video_transcribe(call_endpoint, video):
     # try to transcribe video again, it should fail with MediaIdAlreadyExistsException
     call_endpoint(
         VIDEO_TRANSCRIBE_ENDPOINT,
-        {"video": video},
+        {"video": video, "whisper_params": whisper_params},
         expected_error="MediaIdAlreadyExistsException",
     )
 
@@ -75,5 +77,5 @@ def test_video_transcribe(call_endpoint, video):
     # transcribe video again after deleting it
     call_endpoint(
         VIDEO_TRANSCRIBE_ENDPOINT,
-        {"video": video},
+        {"video": video, "whisper_params": whisper_params},
     )
