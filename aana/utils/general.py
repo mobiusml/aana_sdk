@@ -40,7 +40,7 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
     return options.__class__.parse_obj(default_options_dict)
 
 
-def get_sha256_hash_file(filename):
+def get_sha256_hash_file(filename: Path) -> str:
     """Compute SHA-256 hash of a file without loading it entirely in memory.
 
     Args:
@@ -62,13 +62,16 @@ def get_sha256_hash_file(filename):
     return sha256.hexdigest()
 
 
-# Issue-Enable HF download: https://github.com/mobiusml/aana_sdk/issues/73
+# Issue-Enable HF download: https://github.com/mobiusml/aana_sdk/issues/65
 # model download from a url and cheking SHA sum of the URL.
-def download_model(url: str, model_path: Path | None = None, check_sum=True) -> Path:
+def download_model(
+    url: str, model_hash: str = "", model_path: Path | None = None, check_sum=True
+) -> Path:
     """Download a model from a URL.
 
     Args:
         url (str): the URL of the file to download
+        model_hash (str): hash of the model file for checking sha256 hash if checksum is True
         model_path (Path): optional model path where it needs to be downloaded
         check_sum (bool): boolean to mention whether to check SHA-256 sum or not
 
@@ -84,10 +87,10 @@ def download_model(url: str, model_path: Path | None = None, check_sum=True) -> 
             Path(model_dir).mkdir(parents=True)
         model_path = Path(model_dir) / "pytorch_model.bin"
 
-    if Path(model_path).exists() and not Path(model_path).is_file():
+    if model_path.exists() and not model_path.is_file():
         raise RuntimeError(f"Not a regular file: {model_path}")  # noqa: TRY003
 
-    if not Path(model_path).exists():
+    if not model_path.exists():
         try:
             with ExitStack() as stack:
                 source = stack.enter_context(urllib.request.urlopen(url))  # noqa: S310
@@ -113,11 +116,11 @@ def download_model(url: str, model_path: Path | None = None, check_sum=True) -> 
             raise DownloadException(url) from e
 
     model_sha256_hash = get_sha256_hash_file(model_path)
-    if check_sum and model_sha256_hash != str(url).split("/")[-2]:
+    if check_sum and model_sha256_hash != model_hash:
         checksum_error = "Model has been downloaded but the SHA256 checksum does not not match. Please retry loading the model."
         raise RuntimeError(f"{checksum_error}")
 
-    return Path(model_path)
+    return model_path
 
 
 def download_file(url: str) -> bytes:
