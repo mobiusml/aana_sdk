@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     image_dir = tmp_data_dir / "images"
     video_dir = tmp_data_dir / "videos"
     audio_dir = tmp_data_dir / "audios"
-
+    model_dir = tmp_data_dir / "models"
     db_config: DBConfig = {
         "datastore_type": "sqlite",
         "datastore_config": {"path": Path("/var/lib/aana_data")},
