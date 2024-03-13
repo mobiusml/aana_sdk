@@ -74,6 +74,20 @@ class DbSettings(BaseSettings):
             self.engine = _create_database_engine(self)
         return self.engine
 
+    def __getstate__(self):
+        """Used by pickle to pickle an object."""
+        # We need to remove the "engine" property because SqlAlchemy engines
+        # are not picklable
+        state = self.__dict__.copy()
+        state.pop("engine", None)
+        return state
+
+    def __setstate__(self, state):
+        """Used to restore a runtime object from pickle; the opposite of __getstate__()."""
+        # We don't need to do anything special here, since the engine will be recreated
+        # if needed.
+        self.__dict__.update(state)
+
 
 def _create_database_engine(db_config):
     """Create SQLAlchemy engine based on the provided configuration.
