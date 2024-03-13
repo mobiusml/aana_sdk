@@ -23,12 +23,14 @@ class HFBlip2Config(BaseModel):
         dtype (str): the data type (optional, default: "auto"), one of "auto", "float32", "float16"
         batch_size (int): the batch size (optional, default: 1)
         num_processing_threads (int): the number of processing threads (optional, default: 1)
+        max_new_tokens (int): The maximum numbers of tokens to generate. (optional, default: 64)
     """
 
     model: str
     dtype: Dtype = Field(default=Dtype.AUTO)
     batch_size: int = Field(default=1)
     num_processing_threads: int = Field(default=1)
+    max_new_tokens: int = Field(default=64)
 
 
 class CaptioningOutput(TypedDict):
@@ -89,6 +91,7 @@ class HFBlip2Deployment(BaseDeployment):
             load_in_8bit = False
             self.torch_dtype = self.dtype.to_torch()
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.max_new_tokens = config_obj.max_new_tokens
         self.model = Blip2ForConditionalGeneration.from_pretrained(
             self.model_id,
             torch_dtype=self.torch_dtype,
@@ -163,7 +166,9 @@ class HFBlip2Deployment(BaseDeployment):
         )
 
         try:
-            generated_ids = self.model.generate(**inputs)
+            generated_ids = self.model.generate(
+                **inputs, max_new_tokens=self.max_new_tokens
+            )
             generated_texts = self.processor.batch_decode(
                 generated_ids, skip_special_tokens=True
             )

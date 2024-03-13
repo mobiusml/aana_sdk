@@ -2,12 +2,12 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.361572265625
+            "language_confidence": 0.360107421875
         },
         "segments": [
             {
                 "confidence": 0.6431313717877822,
-                "no_speech_confidence": 0.93408203125,
+                "no_speech_confidence": 0.9345703125,
                 "text": " you",
                 "time_interval": {
                     "end": 2.06,
