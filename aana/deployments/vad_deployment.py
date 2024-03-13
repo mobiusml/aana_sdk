@@ -21,10 +21,9 @@ from aana.utils.test import test_cache
 class SegmentX:
     """The vad segment format with optional speaker."""
 
-    def __init__(self, start, end, speaker=None):  # noqa: D107
-        self.start = start
-        self.end = end
-        self.speaker = speaker
+    start: float
+    end: float
+    speaker: str = ""
 
 
 class VadOutput(TypedDict):
@@ -101,7 +100,9 @@ class VadDeployment(BaseDeployment):
         }
         self.sample_rate = config_obj.sample_rate
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.filepath = download_model(config_obj.model)
+        # model hash for vad_model
+        model_hash = str(config_obj.model).split("/")[-2]
+        self.filepath = download_model(config_obj.model, model_hash)
 
         self.vad_model = Model.from_pretrained(self.filepath, use_auth_token=None)
 
