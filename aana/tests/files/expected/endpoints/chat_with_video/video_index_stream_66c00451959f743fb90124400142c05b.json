@@ -1,5 +1,131 @@
 [
     {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60302734375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry",
+                "time_interval": {
+                    "end": 53.607,
+                    "start": 35.932
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60302734375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you",
+                "time_interval": {
+                    "end": 95.006,
+                    "start": 82.246
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60302734375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Never gonna make you cry Never gonna say goodbye",
+                "time_interval": {
+                    "end": 114.443,
+                    "start": 107.827
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna make you cry Never gonna say goodbye"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60302734375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " But you're too shy to say it Inside we both know what's been",
+                "time_interval": {
+                    "end": 147.208,
+                    "start": 142.263
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " But you're too shy to say it Inside we both know what's been"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60302734375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye",
+                "time_interval": {
+                    "end": 172.89,
+                    "start": 163.731
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60302734375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " ever gonna turn back.",
+                "time_interval": {
+                    "end": 210.143,
+                    "start": 207.792
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " ever gonna turn back."
+        }
+    },
+    {
         "captions": [
             "a black background with a white background",
             "a man in a suit is singing into a microphone",
@@ -22,237 +148,6 @@
         ]
     },
     {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.7878626618989174,
-                "no_speech_confidence": 0.87646484375,
-                "text": " We're no strangers to love You know the rules and so do I",
-                "time_interval": {
-                    "end": 26.5,
-                    "start": 2.74
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " We're no strangers to love You know the rules and so do I"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.7878626618989174,
-                "no_speech_confidence": 0.87646484375,
-                "text": " I feel commitments while I'm thinking of You wouldn't get this from any other guy",
-                "time_interval": {
-                    "end": 34.5,
-                    "start": 26.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " I feel commitments while I'm thinking of You wouldn't get this from any other guy"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.7878626618989174,
-                "no_speech_confidence": 0.87646484375,
-                "text": " I just wanna tell you how I'm feeling Gotta make you understand",
-                "time_interval": {
-                    "end": 42.5,
-                    "start": 34.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " I just wanna tell you how I'm feeling Gotta make you understand"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9262582207552706,
-                "no_speech_confidence": 0.0654296875,
-                "text": " Never gonna give you up Never gonna let you down",
-                "time_interval": {
-                    "end": 46.5,
-                    "start": 42.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna give you up Never gonna let you down"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9262582207552706,
-                "no_speech_confidence": 0.0654296875,
-                "text": " Never gonna run around and desert you Never gonna make you cry",
-                "time_interval": {
-                    "end": 52.5,
-                    "start": 46.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna run around and desert you Never gonna make you cry"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9262582207552706,
-                "no_speech_confidence": 0.0654296875,
-                "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
-                "time_interval": {
-                    "end": 59.5,
-                    "start": 52.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna say goodbye Never gonna tell a lie and hurt you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9262582207552706,
-                "no_speech_confidence": 0.0654296875,
-                "text": " We've known each other for so long Your heart's been aching but",
-                "time_interval": {
-                    "end": 66.5,
-                    "start": 59.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " We've known each other for so long Your heart's been aching but"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9343743015971341,
-                "no_speech_confidence": 0.65576171875,
-                "text": " You're too shy to say it Inside we both know what's been going on",
-                "time_interval": {
-                    "end": 72.5,
-                    "start": 66.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " You're too shy to say it Inside we both know what's been going on"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9343743015971341,
-                "no_speech_confidence": 0.65576171875,
-                "text": " We know the game and we're gonna play it Ask me how I'm feeling",
-                "time_interval": {
-                    "end": 82.01,
-                    "start": 72.5
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " We know the game and we're gonna play it Ask me how I'm feeling"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9343743015971341,
-                "no_speech_confidence": 0.65576171875,
-                "text": " Don't tell me you're too blind to see Never gonna give you up",
-                "time_interval": {
-                    "end": 87.01,
-                    "start": 82.01
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Don't tell me you're too blind to see Never gonna give you up"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9343743015971341,
-                "no_speech_confidence": 0.65576171875,
-                "text": " Never gonna let you down Never gonna run around and desert you",
-                "time_interval": {
-                    "end": 93.01,
-                    "start": 87.01
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna let you down Never gonna run around and desert you"
-        }
-    },
-    {
         "captions": [
             "a blonde woman with a yellow bow in her hair",
             "a woman with blonde hair standing in front of a window",
@@ -273,216 +168,6 @@
             18.040000915527344,
             18.239999771118164
         ]
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8901471906119277,
-                "no_speech_confidence": 0.84716796875,
-                "text": " Never gonna make you cry Never gonna say goodbye",
-                "time_interval": {
-                    "end": 97.01,
-                    "start": 93.01
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna make you cry Never gonna say goodbye"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8901471906119277,
-                "no_speech_confidence": 0.84716796875,
-                "text": " Never gonna say goodbye and hurt you",
-                "time_interval": {
-                    "end": 101.01,
-                    "start": 97.01
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna say goodbye and hurt you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8901471906119277,
-                "no_speech_confidence": 0.84716796875,
-                "text": " Never gonna give you up Never gonna let you down",
-                "time_interval": {
-                    "end": 105.58,
-                    "start": 101.01
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna give you up Never gonna let you down"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8901471906119277,
-                "no_speech_confidence": 0.84716796875,
-                "text": " Never gonna run around and desert you",
-                "time_interval": {
-                    "end": 109.58,
-                    "start": 105.58
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna run around and desert you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8901471906119277,
-                "no_speech_confidence": 0.84716796875,
-                "text": " Never gonna make you cry Never gonna say goodbye",
-                "time_interval": {
-                    "end": 114.58,
-                    "start": 109.58
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna make you cry Never gonna say goodbye"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8901471906119277,
-                "no_speech_confidence": 0.84716796875,
-                "text": " Never gonna say goodbye and hurt you",
-                "time_interval": {
-                    "end": 118.58,
-                    "start": 114.58
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna say goodbye and hurt you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9266306963866335,
-                "no_speech_confidence": 0.371826171875,
-                "text": " We've known each other for so long Your heart's been aching but",
-                "time_interval": {
-                    "end": 142.46,
-                    "start": 125.58
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " We've known each other for so long Your heart's been aching but"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9266306963866335,
-                "no_speech_confidence": 0.371826171875,
-                "text": " You're too shy to say it Inside we both know what's been going on",
-                "time_interval": {
-                    "end": 148.46,
-                    "start": 142.46
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " You're too shy to say it Inside we both know what's been going on"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9266306963866335,
-                "no_speech_confidence": 0.371826171875,
-                "text": " We know the game and we're gonna play it I just wanna tell you how I'm feeling",
-                "time_interval": {
-                    "end": 157.54,
-                    "start": 148.46
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " We know the game and we're gonna play it I just wanna tell you how I'm feeling"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9266306963866335,
-                "no_speech_confidence": 0.371826171875,
-                "text": " Gotta make you understand Never gonna give you up",
-                "time_interval": {
-                    "end": 162.54,
-                    "start": 157.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Gotta make you understand Never gonna give you up"
-        }
     },
     {
         "captions": [
@@ -527,195 +212,6 @@
             39.599998474121094,
             42.119998931884766
         ]
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9563193494191091,
-                "no_speech_confidence": 0.576171875,
-                "text": " Never gonna let you down Never gonna run around and desert you",
-                "time_interval": {
-                    "end": 168.54,
-                    "start": 162.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna let you down Never gonna run around and desert you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9563193494191091,
-                "no_speech_confidence": 0.576171875,
-                "text": " Never gonna make you cry Never gonna say goodbye",
-                "time_interval": {
-                    "end": 173.54,
-                    "start": 168.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna make you cry Never gonna say goodbye"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9563193494191091,
-                "no_speech_confidence": 0.576171875,
-                "text": " Never gonna say goodbye and hurt you",
-                "time_interval": {
-                    "end": 177.54,
-                    "start": 173.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna say goodbye and hurt you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9563193494191091,
-                "no_speech_confidence": 0.576171875,
-                "text": " Never gonna give you up Never gonna let you down",
-                "time_interval": {
-                    "end": 181.54,
-                    "start": 177.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna give you up Never gonna let you down"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9563193494191091,
-                "no_speech_confidence": 0.576171875,
-                "text": " Never gonna run around and desert you",
-                "time_interval": {
-                    "end": 185.54,
-                    "start": 181.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna run around and desert you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.9563193494191091,
-                "no_speech_confidence": 0.576171875,
-                "text": " Never gonna make you cry Never gonna say goodbye",
-                "time_interval": {
-                    "end": 190.54,
-                    "start": 185.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna make you cry Never gonna say goodbye"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8871496613094875,
-                "no_speech_confidence": 0.354248046875,
-                "text": " Never gonna say goodbye and hurt you",
-                "time_interval": {
-                    "end": 194.54,
-                    "start": 190.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna say goodbye and hurt you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8871496613094875,
-                "no_speech_confidence": 0.354248046875,
-                "text": " Never gonna give you up Never gonna let you down",
-                "time_interval": {
-                    "end": 198.54,
-                    "start": 194.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna give you up Never gonna let you down"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.7255859375
-        },
-        "segments": [
-            {
-                "confidence": 0.8871496613094875,
-                "no_speech_confidence": 0.354248046875,
-                "text": " desert you",
-                "time_interval": {
-                    "end": 202.69,
-                    "start": 198.54
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " desert you"
-        }
     },
     {
         "captions": [
