@@ -32,12 +32,12 @@ def sqlite_settings():
     )
 
 
-@pytest.mark.parameterize("db_settings", [sqlite_settings, pg_settings])
-def test_et_engine_idempotent(db_settings):
+def test_get_engine_idempotent(pg_settings, sqlite_settings):
     """Tests that get_engine returns the same engine on subsequent calls."""
-    e1 = db_settings.get_engine()
-    e2 = db_settings.get_engine()
-    assert e1 is e2
+    for db_settings in (pg_settings, sqlite_settings):
+        e1 = db_settings.get_engine()
+        e2 = db_settings.get_engine()
+        assert e1 is e2
 
 
 def test_pg_datastore_config(pg_settings):
