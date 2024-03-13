@@ -4,12 +4,10 @@ from importlib import resources
 from pathlib import Path
 
 import pytest
-from deepdiff import DeepDiff
 
 from aana.models.core.audio import Audio
 from aana.models.pydantic.vad_params import VadParams
 from aana.tests.utils import (
-    LevenshteinOperator,
     get_deployments_by_type,
     is_gpu_available,
     is_using_deployment_cache,
