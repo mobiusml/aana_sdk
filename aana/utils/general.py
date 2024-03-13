@@ -82,10 +82,10 @@ def download_model(
         DownloadException: Request does not succeed.
     """
     if model_path is None:
-        model_dir = torch.hub._get_torch_home()
-        if not Path(model_dir).exists():
-            Path(model_dir).mkdir(parents=True)
-        model_path = Path(model_dir) / "pytorch_model.bin"
+        model_dir = Path(torch.hub._get_torch_home())
+        if not model_dir.exists():
+            model_dir.mkdir(parents=True)
+        model_path = model_dir / "pytorch_model.bin"
 
     if model_path.exists() and not model_path.is_file():
         raise RuntimeError(f"Not a regular file: {model_path}")  # noqa: TRY003
