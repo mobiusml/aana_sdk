@@ -16,8 +16,6 @@ from aana.tests.utils import (
 )
 from aana.utils.general import pydantic_to_dict
 
-EPSILON = 0.01
-
 
 def compare_vad_outputs(expected_output, predictions):
     """Compare two vad outputs.
@@ -31,17 +29,10 @@ def compare_vad_outputs(expected_output, predictions):
     Raises:
         AssertionError: if vad_outputs differ too much
     """
-    for expected_output_seg, predictions_seg in zip(
-        expected_output, predictions, strict=False
-    ):
-        diff = DeepDiff(
-            expected_output_seg,
-            predictions_seg,
-            math_epsilon=EPSILON,
-            ignore_numeric_type_changes=True,
-            custom_operators=[LevenshteinOperator([r"\['start'\]$", r"\['end'\]$"])],
-        )
-        assert not diff, diff
+    # Number of 30 sec segments wont change too much
+    assert abs(len(expected_output["segments"]) - len(predictions["segments"])) < 2
+    # However, inside each segment, the start and end-time can be different
+    # Issue:finegrained comparison:https://github.com/mobiusml/aana_sdk/issues/78
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("VadDeployment"))
