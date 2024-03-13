@@ -77,7 +77,7 @@ class AbstractAudioLibrary:
 
 
 class pyAVWrapper(AbstractAudioLibrary):
-    """Class for audio libraries."""
+    """Class for audio libraries using pyAV libaray."""
 
     @classmethod
     def read_file(cls, path: Path, sample_rate=16000) -> np.ndarray:
@@ -85,7 +85,8 @@ class pyAVWrapper(AbstractAudioLibrary):
 
         Args:
             path (Path): The path of the file to read.
-            sample_rate (int): sample rate of the audio
+            sample_rate (int): sample rate of the audio.
+
         Returns:
             np.ndarray: The audio file as a numpy array.
         """
@@ -120,11 +121,12 @@ class pyAVWrapper(AbstractAudioLibrary):
         return audio
 
     @classmethod
-    def read_from_bytes(cls, content: bytes) -> np.ndarray:
+    def read_from_bytes(cls, content: bytes, sample_rate=16000) -> np.ndarray:
         """Read audio bytes as numpy array.
 
         Args:
             content (bytes): The content of the file to read.
+            sample_rate (int): sample rate of the audio.
 
         Returns:
             np.ndarray: The file as a numpy array.
@@ -132,17 +134,34 @@ class pyAVWrapper(AbstractAudioLibrary):
         # Create an in-memory file-like object
         content_io = io.BytesIO(content)
 
-        # Open the in-memory file with av
-        with av.open(content_io, format="wav", mode="r") as container:
-            # Iterate through audio frames
-            frames = [frame.to_ndarray() for frame in container.decode(audio=0)]
+        resampler = av.audio.resampler.AudioResampler(
+            format="s16",
+            layout="mono",
+            rate=sample_rate,
+        )
 
-        # Concatenate the frames
-        array = np.concatenate(frames)
+        raw_buffer = io.BytesIO()
+        dtype = None
 
+        with av.open(content_io, mode="r", metadata_errors="ignore") as container:
+            frames = container.decode(audio=0)
+            frames = ignore_invalid_frames(frames)
+            frames = group_frames(frames, 500000)
+            frames = resample_frames(frames, resampler)
+
+            for frame in frames:
+                array = frame.to_ndarray()
+                dtype = array.dtype
+                raw_buffer.write(array)
+
+        # It appears that some objects related to the resampler are not freed
+        # unless the garbage collector is manually run.
+        del resampler
+        gc.collect()
+
+        audio = np.frombuffer(raw_buffer.getbuffer(), dtype=dtype)
         # Convert s16 back to f32.
-        audio = array.astype(np.float32) / 32768.0
-
+        audio = audio.astype(np.float32) / 32768.0
         return audio
 
     @classmethod
@@ -183,7 +202,6 @@ class pyAVWrapper(AbstractAudioLibrary):
         frame = av.AudioFrame(format="s16", layout="mono", samples=len(audio))
         frame.planes[0].update(audio.astype(np.int16).tobytes())
         return frame.planes[0].to_bytes()
-        # return audio.tobytes()
 
     @classmethod
     def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate=16000):
