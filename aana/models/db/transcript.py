@@ -3,7 +3,6 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 from typing import TYPE_CHECKING
 
 from sqlalchemy import JSON, CheckConstraint, Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
 
 from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseEntity, TimeStampEntity

@@ -72,4 +72,3 @@ def test_save_video():
                     _ = video_repo.get_by_media_id(media_id)
                 with pytest.raises(NotFoundException):
                     _ = video_repo.read(video_id)
-
