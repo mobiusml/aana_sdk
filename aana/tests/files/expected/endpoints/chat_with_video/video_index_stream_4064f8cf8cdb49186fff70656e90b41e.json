@@ -22,6 +22,28 @@
         ]
     },
     {
+        "captions": [
+            "a man standing in front of a blackboard with a calculator",
+            "a man is putting a piece of metal on a wall",
+            "a man is fixing a wall mounted television",
+            "a man standing in front of a blackboard with a man pointing",
+            "a group of students sitting in a lecture hall",
+            "a man is holding a ball in his hand",
+            "a man holding a white ball in his hands",
+            "a man holding a white ball in his hand"
+        ],
+        "timestamps": [
+            73.86699676513672,
+            89.86699676513672,
+            105.86699676513672,
+            121.86699676513672,
+            131.5330047607422,
+            133.66700744628906,
+            142.06700134277344,
+            158.06700134277344
+        ]
+    },
+    {
         "info": {
             "language": "en",
             "language_confidence": 0.98193359375
@@ -188,28 +210,6 @@
         "transcription": {
             "text": " Physics works, and I'm still alive."
         }
-    },
-    {
-        "captions": [
-            "a man standing in front of a blackboard with a calculator",
-            "a man is putting a piece of metal on a wall",
-            "a man is fixing a wall mounted television",
-            "a man standing in front of a blackboard with a man pointing",
-            "a group of students sitting in a lecture hall",
-            "a man is holding a ball in his hand",
-            "a man holding a white ball in his hands",
-            "a man holding a white ball in his hand"
-        ],
-        "timestamps": [
-            73.86699676513672,
-            89.86699676513672,
-            105.86699676513672,
-            121.86699676513672,
-            131.5330047607422,
-            133.66700744628906,
-            142.06700134277344,
-            158.06700134277344
-        ]
     },
     {
         "captions": [

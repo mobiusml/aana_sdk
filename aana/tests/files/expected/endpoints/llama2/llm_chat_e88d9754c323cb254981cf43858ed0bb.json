@@ -4,7 +4,7 @@
         "prompt": 0,
         "sampling_params": 0,
         "vllm_llama2_7b_chat": 0,
-        "vllm_llama2_7b_chat_dialog": 9.49226188659668,
+        "vllm_llama2_7b_chat_dialog": 10.916354417800903,
         "vllm_llama2_7b_chat_dialog_stream": 0,
         "vllm_stream_llama2_7b_chat": 0
     },
