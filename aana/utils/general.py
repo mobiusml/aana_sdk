@@ -5,12 +5,12 @@ from pathlib import Path
 from typing import Any, TypeVar
 
 import requests
-import torch
 from pydantic import BaseModel
 from tqdm import tqdm
 
 from aana.api.api_generation import Endpoint
 from aana.configs.endpoints import endpoints as all_endpoints
+from aana.configs.settings import settings
 from aana.exceptions.general import DownloadException, EndpointNotFoundException
 from aana.utils.json import jsonify
 
@@ -82,10 +82,10 @@ def download_model(
         DownloadException: Request does not succeed.
     """
     if model_path is None:
-        model_dir = Path(torch.hub._get_torch_home())
+        model_dir = settings.model_dir
         if not model_dir.exists():
             model_dir.mkdir(parents=True)
-        model_path = model_dir / "pytorch_model.bin"
+        model_path = model_dir / "model.bin"
 
     if model_path.exists() and not model_path.is_file():
         raise RuntimeError(f"Not a regular file: {model_path}")  # noqa: TRY003
