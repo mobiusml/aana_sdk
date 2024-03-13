@@ -24,7 +24,7 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
     """
     # if options is None, return default_options
     if options is None:
-        return default_options.copy()
+        return default_options.model_copy()
     # options and default_options have to be of the same type
     if type(default_options) != type(options):
         raise ValueError("Option type mismatch.")  # noqa: TRY003
@@ -115,4 +115,5 @@ def get_object_hash(obj: Any) -> str:
 def get_gpu_memory(gpu: int = 0) -> int:
     """Get the total memory of a GPU in bytes."""
     import torch
+
     return torch.cuda.get_device_properties(gpu).total_memory
