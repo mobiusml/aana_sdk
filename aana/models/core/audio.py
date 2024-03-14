@@ -81,7 +81,7 @@ class pyAVWrapper(AbstractAudioLibrary):
 
     @classmethod
     def read_file(cls, path: Path, sample_rate=16000) -> np.ndarray:
-        """Read an audio file from path.
+        """Read an audio file from path and return it as a numpy array.
 
         Args:
             path (Path): The path of the file to read.
@@ -122,7 +122,7 @@ class pyAVWrapper(AbstractAudioLibrary):
 
     @classmethod
     def read_from_bytes(cls, content: bytes, sample_rate=16000) -> np.ndarray:
-        """Read audio bytes as numpy array.
+        """Read audio bytes and return as a numpy array.
 
         Args:
             content (bytes): The content of the file to read.
@@ -166,7 +166,7 @@ class pyAVWrapper(AbstractAudioLibrary):
 
     @classmethod
     def write_file(cls, path: Path, audio: np.ndarray, sample_rate=16000):
-        """Write a file to wav from numpy array.
+        """Write an audio file in wav format to the path from numpy array.
 
         Args:
             path (Path): The path of the file to write.
@@ -191,7 +191,7 @@ class pyAVWrapper(AbstractAudioLibrary):
 
     @classmethod
     def write_to_bytes(cls, audio: np.ndarray) -> bytes:
-        """Write bytes using the audio library.
+        """Write bytes using the audio library from numpy array.
 
         Args:
             audio (np.ndarray): The audio to write.
@@ -205,7 +205,7 @@ class pyAVWrapper(AbstractAudioLibrary):
 
     @classmethod
     def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate=16000):
-        """Write a file to wav from the normalized audio bytes.
+        """Write an audio file in wav format to path from the normalized audio bytes.
 
         Args:
             path (Path): The path of the file to write.
