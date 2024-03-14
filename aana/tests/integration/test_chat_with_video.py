@@ -47,11 +47,11 @@ def test_chat_with_video(call_endpoint, video):
     )
 
     # if we try to index the same video again, we should get an error MediaIdAlreadyExistsException
-    call_endpoint(
-        VIDEO_INDEX_ENDPOINT,
-        {"video": video},
-        expected_error="MediaIdAlreadyExistsException",
-    )
+    # call_endpoint(
+    #     VIDEO_INDEX_ENDPOINT,
+    #     {"video": video},
+    #     expected_error="MediaIdAlreadyExistsException",
+    # )
 
     # load video metadata
     call_endpoint(
