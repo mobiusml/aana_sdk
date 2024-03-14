@@ -1,4 +1,3 @@
-
 import numpy as np
 from faster_whisper.transcribe import (
     Segment as WhisperSegment,
