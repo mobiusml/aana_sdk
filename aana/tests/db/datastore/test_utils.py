@@ -88,16 +88,15 @@ def test_save_video_transcription(mock_session):
         ]
     )
 
-    video = Video(
-        path=resources.path("aana.tests.files.videos", "squirrel.mp4"),
-        media_id=media_id,
-    )
-    duration = 0.25
+    # video = Video(
+    #     path=resources.path("aana.tests.files.videos", "squirrel.mp4"),
+    #     media_id=media_id,
+    # )
+    # duration = 0.25
 
     result = save_video_transcription(
         model_name=model,
-        video=video,
-        duration=duration,
+        media_id=media_id,
         transcription_info=transcription_info,
         transcription=transcript,
         segments=segments,
@@ -106,7 +105,7 @@ def test_save_video_transcription(mock_session):
 
     mock_session.context_var.add_all.assert_called_once()
     # Once for media, once for video, once for transcript
-    assert mock_session.context_var.commit.call_count == 3
+    assert mock_session.context_var.commit.call_count == 1
 
 
 def test_save_captions_single(mock_session):
@@ -118,14 +117,14 @@ def test_save_captions_single(mock_session):
     timestamps = [0.1, 0.2, 0.3]
     frame_ids = [0, 1, 2]
 
-    video = Video(
-        path=resources.path("aana.tests.files.videos", "squirrel.mp4"),
-        media_id=media_id,
-    )
-    duration = 0.25
+    # video = Video(
+    #     path=resources.path("aana.tests.files.videos", "squirrel.mp4"),
+    #     media_id=media_id,
+    # )
+    # duration = 0.25
 
     result = save_video_captions(
-        model_name, video, duration, captions_list, timestamps, frame_ids
+        model_name, media_id, captions_list, timestamps, frame_ids
     )
 
     assert (
@@ -136,4 +135,4 @@ def test_save_captions_single(mock_session):
     )
     mock_session.context_var.add_all.assert_called_once()
     # Once for media, once for video, once for captions
-    assert mock_session.context_var.commit.call_count == 3
+    assert mock_session.context_var.commit.call_count == 1
