@@ -23,7 +23,7 @@ class CaptionRepository(BaseRepository[CaptionEntity]):
         """
         entities: list[CaptionEntity] = (
             self.session.query(self.model_class)
-            .filter_by(media_id=media_id, model=model_name)
+            .filter_by(media_id=str(media_id), model=model_name)
             .order_by(self.model_class.frame_id)
             .all()
         )

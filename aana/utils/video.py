@@ -215,7 +215,7 @@ def generate_combined_timeline(
     captions: list[str],
     caption_timestamps: list[float],
     chunk_size: float = 10.0,
-):
+) -> dict:
     """Generates a combined timeline from the ASR segments and the captions.
 
     Args:
@@ -260,9 +260,7 @@ def generate_combined_timeline(
         for chunk_index in range(num_chunks)
     ]
 
-    return {
-        "timeline": timeline,
-    }
+    return timeline
 
 
 def generate_dialog(

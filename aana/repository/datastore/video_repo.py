@@ -27,7 +27,7 @@ class VideoRepository(BaseRepository[VideoEntity]):
             VideoEntity: the video.
         """
         statement = select(self.model_class).where(
-            self.model_class.media_id == media_id
+            self.model_class.media_id == str(media_id)
         )
         entity = self.session.scalars(statement).first()
         if not entity:

@@ -30,7 +30,7 @@ class TranscriptRepository(BaseRepository[TranscriptEntity]):
         """
         entity: TranscriptEntity | None = (
             self.session.query(self.model_class)
-            .filter_by(model=model_name, media_id=media_id)
+            .filter_by(model=model_name, media_id=str(media_id))
             .first()
         )
         if not entity:
