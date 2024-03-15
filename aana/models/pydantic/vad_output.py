@@ -17,8 +17,12 @@ class VadSegment(BaseModel):
         description="List of voiced segments within a Segment for ASR"
     )
 
-    def to_whisper_dict(self):
-        """Generate dictionary with start, end and segments keys from VADSegment for faster whisper."""
+    def to_whisper_dict(self) -> dict:
+        """Generate dictionary with start, end and segments keys from VADSegment for faster whisper.
+
+        Returns:
+            dict: Dictionary with start, end and segments keys
+        """
         return {
             "start": self.time_interval.start,
             "end": self.time_interval.end,

@@ -277,7 +277,6 @@ def extract_audio(video: Video) -> Audio:
 
     Returns:
         Audio: an Audio object containing the extracted audio.
-
     """
     audio_bytes = load_audio(video.path)
 
