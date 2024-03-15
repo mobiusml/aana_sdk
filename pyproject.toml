@@ -20,6 +20,7 @@ deepdiff = "^6.7.0"
 diffusers = "^0.23.1"
 fastapi = "^0.104.0"
 faster-whisper = { git = "https://github.com/mobiusml/faster-whisper.git", tag = "v0.10.0_mobiusml" }
+hf-transfer = "^0.1.6"
 onnxruntime = "1.16.1"
 opencv-python = "^4.8.1.78"
 portpicker = "^1.6.0"
