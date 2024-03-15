@@ -1,6 +1,4 @@
-from types import MappingProxyType
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class VadParams(BaseModel):
@@ -25,7 +23,8 @@ class VadParams(BaseModel):
         description="Optional offset to be used for the merging operation.",
     )
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {"description": "Parameters for the voice activity detection model."}
-        )
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "Parameters for the voice activity detection model.",
+        }
+    )

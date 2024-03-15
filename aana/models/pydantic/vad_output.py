@@ -1,6 +1,4 @@
-from types import MappingProxyType  # for immutable dictionary
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from aana.models.pydantic.base import BaseListModel
 from aana.models.pydantic.time_interval import TimeInterval
@@ -27,24 +25,22 @@ class VadSegment(BaseModel):
             "segments": self.segments,
         }
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": "VAD Segment for ASR",
-            }
-        )
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "VAD Segment for ASR",
+        }
+    )
 
 
 class VadSegments(BaseListModel):
     """Pydantic schema for the list of ASR segments."""
 
-    __root__: list[VadSegment] = Field(
+    root: list[VadSegment] = Field(
         description="List of VAD segments", default_factory=list
     )
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {
-                "description": "List of VAD segments",
-            }
-        )
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "List of VAD segments",
+        }
+    )

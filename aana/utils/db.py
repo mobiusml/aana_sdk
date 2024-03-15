@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 
 from sqlalchemy.orm import Session
 
-from aana.configs.db import media_id_type
 from aana.models.core.video import Video
 from aana.models.db import (
     CaptionEntity,
@@ -20,6 +19,7 @@ from aana.models.pydantic.asr_output import (
     AsrTranscriptionInfo,
 )
 from aana.models.pydantic.captions import CaptionsList
+from aana.models.pydantic.media_id import MediaId
 from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.repository.datastore.caption_repo import CaptionRepository
 from aana.repository.datastore.engine import engine
@@ -111,11 +111,11 @@ def save_video(
         }
 
 
-def delete_media(media_id: media_id_type) -> dict:
+def delete_media(media_id: MediaId) -> dict:
     """Deletes a media file from the database.
 
     Args:
-        media_id (media_id_type): The media ID.
+        media_id (MediaId): The media ID.
 
     Returns:
         dict: The dictionary with the ID of the deleted entity.
@@ -132,7 +132,7 @@ def delete_media(media_id: media_id_type) -> dict:
 
 
 def save_captions_batch(
-    media_ids: list[media_id_type],
+    media_ids: list[MediaId],
     model_name: str,
     captions_list: list[CaptionsList],
     timestamps_list: list[list[float]],
@@ -163,7 +163,7 @@ def save_captions_batch(
 
 def save_video_captions(
     model_name: str,
-    media_id: media_id_type,
+    media_id: MediaId,
     captions: CaptionsList,
     timestamps: list[float],
     frame_ids: list[int],
@@ -172,7 +172,7 @@ def save_video_captions(
 
     Args:
         model_name (str): The name of the model used to generate the captions.
-        media_id (media_id_type): The media ID.
+        media_id (MediaId): The media ID.
         captions (CaptionsList): The captions.
         timestamps (list[float]): The timestamps.
         frame_ids (list[int]): The frame IDs.
@@ -199,7 +199,7 @@ def save_video_captions(
 
 def save_transcripts_batch(
     model_name: str,
-    media_ids: list[media_id_type],
+    media_ids: list[MediaId],
     transcription_info_list: list[AsrTranscriptionInfo],
     transcription_list: list[AsrTranscription],
     segments_list: list[list[AsrSegment]],
@@ -233,7 +233,7 @@ def save_transcripts_batch(
 
 def save_video_transcription(
     model_name: str,
-    media_id: media_id_type,
+    media_id: MediaId,
     transcription_info: AsrTranscriptionInfo,
     transcription: AsrTranscription,
     segments: AsrSegments,
@@ -242,7 +242,7 @@ def save_video_transcription(
 
     Args:
         model_name (str): The name of the model used to generate the transcript.
-        media_id (media_id_type): The media ID.
+        media_id (MediaId): The media ID.
         transcription_info (AsrTranscriptionInfo): The ASR transcription info.
         transcription (AsrTranscription): The ASR transcription.
         segments (AsrSegments): The ASR segments.
@@ -275,13 +275,13 @@ def save_video_transcription(
 
 def load_video_transcription(
     model_name: str,
-    media_id: media_id_type,
+    media_id: MediaId,
 ) -> dict:
     """Load transcript from database.
 
     Args:
         model_name (str): The name of the model used to generate the transcript.
-        media_id (media_id_type): The media ID.
+        media_id (MediaId): The media ID.
 
     Returns:
         dict: The dictionary with the transcription, segments, and info.
@@ -304,13 +304,13 @@ def load_video_transcription(
 
 def load_video_captions(
     model_name: str,
-    media_id: media_id_type,
+    media_id: MediaId,
 ) -> dict:
     """Load captions from database.
 
     Args:
         model_name (str): The name of the model used to generate the captions.
-        media_id (media_id_type): The media ID.
+        media_id (MediaId): The media ID.
 
     Returns:
         dict: The dictionary with the captions, timestamps, and frame IDs.
@@ -329,12 +329,12 @@ def load_video_captions(
 
 
 def load_video_metadata(
-    media_id: media_id_type,
+    media_id: MediaId,
 ) -> VideoMetadata:
     """Load video metadata from database.
 
     Args:
-        media_id (media_id_type): The media ID.
+        media_id (MediaId): The media ID.
 
     Returns:
         VideoMetadata: The video metadata.

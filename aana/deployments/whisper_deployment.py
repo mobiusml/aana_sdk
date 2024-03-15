@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator
 from enum import Enum
-from typing import Any, TypedDict, cast
+from typing import Any, cast
 
 import torch
 from faster_whisper import BatchedInferencePipeline, WhisperModel
@@ -8,6 +8,7 @@ from faster_whisper.tokenizer import Tokenizer
 from faster_whisper.transcribe import TranscriptionOptions
 from pydantic import BaseModel, Field
 from ray import serve
+from typing_extensions import TypedDict
 
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException
@@ -170,7 +171,7 @@ class WhisperDeployment(BaseDeployment):
         audio_array = audio.get_numpy()
 
         try:
-            segments, info = self.model.transcribe(audio_array, **params.dict())
+            segments, info = self.model.transcribe(audio_array, **params.model_dump())
         except Exception as e:
             raise InferenceException(self.model_name) from e
 
@@ -215,7 +216,9 @@ class WhisperDeployment(BaseDeployment):
             )
         else:
             try:
-                segments, info = self.model.transcribe(audio_array, **params.dict())
+                segments, info = self.model.transcribe(
+                    audio_array, **params.model_dump()
+                )
             except Exception as e:
                 raise InferenceException(self.model_name) from e
 

@@ -4,9 +4,9 @@ from typing import Generic, TypeVar
 
 from sqlalchemy.orm import Session
 
-from aana.configs.db import media_id_type
 from aana.exceptions.database import NotFoundException
 from aana.models.db import BaseEntity
+from aana.models.pydantic.media_id import MediaId
 
 T = TypeVar("T", bound=BaseEntity)
 
@@ -42,11 +42,11 @@ class BaseRepository(Generic[T]):
         self.session.commit()
         return entities
 
-    def read(self, item_id: int | media_id_type) -> T:
+    def read(self, item_id: int | MediaId) -> T:
         """Reads a single item by id from the database.
 
         Args:
-            item_id (int): id of the item to retrieve
+            item_id (int | MediaId): id of the item to retrieve
 
         Returns:
             The corresponding entity from the database if found.
@@ -54,16 +54,30 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        entity: T | None = self.session.query(self.model_class).get(item_id)
+        entity: T | None = self.session.query(self.model_class).get(str(item_id))
         if not entity:
             raise NotFoundException(self.table_name, item_id)
         return entity
 
-    def delete(self, id: int | media_id_type, check: bool = False) -> T | None:
+    # def check_id_exists(self, id: int | MediaId) -> bool:
+    #     """Checks if a record with the given id exists in the database.
+
+    #     Args:
+    #         id (int | MediaId): id to check for.
+
+    #     Returns:
+    #         bool: True if the record exists, False otherwise.
+    #     """
+    #     # return (
+    #     #     self.session.query(self.model_class).filter_by(id=str(media_id)).first()
+    #     #     is not None
+    #     # )
+
+    def delete(self, id: int | MediaId, check: bool = False) -> T | None:
         """Deletes an entity.
 
         Args:
-            id (int): the id of the item to be deleted.
+            id (int | MediaId): the id of the item to be deleted.
             check (bool): whether to raise if the entity is not found (defaults to True).
 
         Returns:
@@ -72,7 +86,7 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        entity = self.read(id)
+        entity = self.read(str(id))
         if entity:
             self.session.delete(entity)
             self.session.commit()

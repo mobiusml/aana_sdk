@@ -1,7 +1,6 @@
 import collections.abc
-from types import MappingProxyType
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class WhisperParams(BaseModel):
@@ -45,7 +44,8 @@ class WhisperParams(BaseModel):
         description="Whether to enable voice activity detection filtering.",
     )
 
-    @validator("temperature")
+    @field_validator("temperature")
+    @classmethod
     def check_temperature(cls, v: float):
         """Validates a temperature value.
 
@@ -68,10 +68,11 @@ class WhisperParams(BaseModel):
             )
         return v
 
-    class Config:
-        schema_extra = MappingProxyType(
-            {"description": "Parameters for the Whisper audio-to-text model."}
-        )
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "Parameters for the Whisper audio-to-text model."
+        }
+    )
 
 
 # Issue: https://github.com/mobiusml/aana_sdk/issues/79
