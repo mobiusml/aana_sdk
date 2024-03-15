@@ -696,64 +696,40 @@
         "completion": " of"
     },
     {
-        "completion": " zero"
+        "completion": " gravit"
     },
     {
-        "completion": " speed"
+        "completion": "ational"
     },
     {
-        "completion": " by"
-    },
-    {
-        "completion": " re"
-    },
-    {
-        "completion": "le"
-    },
-    {
-        "completion": "asing"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " ball"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " catch"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " showing"
-    },
-    {
-        "completion": " how"
-    },
-    {
-        "completion": " the"
+        "completion": " potential"
     },
     {
         "completion": " energy"
     },
     {
-        "completion": " is"
+        "completion": " by"
     },
     {
-        "completion": " conser"
+        "completion": " fixing"
     },
     {
-        "completion": "ved"
+        "completion": " a"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "mount"
+    },
+    {
+        "completion": "ed"
+    },
+    {
+        "completion": " television"
     },
     {
         "completion": "."
@@ -777,7 +753,7 @@
         "completion": "1"
     },
     {
-        "completion": "3"
+        "completion": "0"
     },
     {
         "completion": "0"
@@ -801,7 +777,7 @@
         "completion": "1"
     },
     {
-        "completion": "4"
+        "completion": "1"
     },
     {
         "completion": "0"
@@ -855,9 +831,6 @@
         "completion": " in"
     },
     {
-        "completion": " scientific"
-    },
-    {
         "completion": " experiments"
     },
     {
@@ -868,6 +841,297 @@
     },
     {
         "completion": "ations"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "Start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")"
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "7"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " tal"
+    },
+    {
+        "completion": "ks"
+    },
+    {
+        "completion": " about"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " relation"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " experiment"
+    },
+    {
+        "completion": " he"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " conduct"
+    },
+    {
+        "completion": "ing"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "Start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "4"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "5"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")"
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "8"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " demonstr"
+    },
+    {
+        "completion": "ates"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " concept"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " zero"
+    },
+    {
+        "completion": " speed"
+    },
+    {
+        "completion": " by"
+    },
+    {
+        "completion": " re"
+    },
+    {
+        "completion": "le"
+    },
+    {
+        "completion": "asing"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " ball"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " showing"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " touch"
+    },
+    {
+        "completion": "es"
+    },
+    {
+        "completion": " his"
+    },
+    {
+        "completion": " ch"
+    },
+    {
+        "completion": "in"
+    },
+    {
+        "completion": " but"
+    },
+    {
+        "completion": " does"
+    },
+    {
+        "completion": " not"
+    },
+    {
+        "completion": " cr"
+    },
+    {
+        "completion": "ush"
+    },
+    {
+        "completion": " it"
     },
     {
         "completion": "."
@@ -936,7 +1200,7 @@
         "completion": "\n"
     },
     {
-        "completion": "7"
+        "completion": "9"
     },
     {
         "completion": "."
@@ -999,24 +1263,6 @@
         "completion": " physics"
     },
     {
-        "completion": " in"
-    },
-    {
-        "completion": " understanding"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " world"
-    },
-    {
-        "completion": " around"
-    },
-    {
-        "completion": " us"
-    },
-    {
         "completion": "."
     },
     {
@@ -1062,7 +1308,118 @@
         "completion": "1"
     },
     {
+        "completion": "8"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ")"
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " thanks"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " audience"
+    },
+    {
+        "completion": " for"
+    },
+    {
+        "completion": " their"
+    },
+    {
+        "completion": " attention"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " ends"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "Start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "1"
+    },
+    {
         "completion": "9"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " "
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
     },
     {
         "completion": "0"

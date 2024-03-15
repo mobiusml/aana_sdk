@@ -1,134 +1,8 @@
 [
     {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60302734375
-        },
-        "segments": [
-            {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry",
-                "time_interval": {
-                    "end": 53.607,
-                    "start": 35.932
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60302734375
-        },
-        "segments": [
-            {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you",
-                "time_interval": {
-                    "end": 95.006,
-                    "start": 82.246
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60302734375
-        },
-        "segments": [
-            {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " Never gonna make you cry Never gonna say goodbye",
-                "time_interval": {
-                    "end": 114.443,
-                    "start": 107.827
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna make you cry Never gonna say goodbye"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60302734375
-        },
-        "segments": [
-            {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " But you're too shy to say it Inside we both know what's been",
-                "time_interval": {
-                    "end": 147.208,
-                    "start": 142.263
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " But you're too shy to say it Inside we both know what's been"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60302734375
-        },
-        "segments": [
-            {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye",
-                "time_interval": {
-                    "end": 172.89,
-                    "start": 163.731
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60302734375
-        },
-        "segments": [
-            {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " ever gonna turn back.",
-                "time_interval": {
-                    "end": 210.143,
-                    "start": 207.792
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " ever gonna turn back."
-        }
-    },
-    {
         "captions": [
             "a black background with a white background",
-            "a man with his eyes closed singing into a microphone",
+            "a man in a suit is singing into a microphone",
             "a man in a suit is singing into a microphone",
             "a person is holding a black jacket and a white shirt",
             "a man in a suit is singing into a microphone",
@@ -153,7 +27,7 @@
             "a woman with blonde hair standing in front of a window",
             "a man wearing sunglasses standing in front of a chain link fence",
             "a man in a blue shirt and sunglasses is walking",
-            "a woman in a white dress and sunglasses is standing in front of a brick wall",
+            "a woman in a white dress and sunglasses is standing in front of a white brick wall",
             "a woman with blonde hair standing in front of a white wall",
             "a woman with long blonde hair standing in front of a white wall",
             "a man in a trench coat is standing in front of a brick wall"
@@ -168,6 +42,132 @@
             18.040000915527344,
             18.239999771118164
         ]
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.6025390625
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry",
+                "time_interval": {
+                    "end": 53.607,
+                    "start": 35.932
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.6025390625
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you",
+                "time_interval": {
+                    "end": 95.006,
+                    "start": 82.246
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.6025390625
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Never gonna make you cry Never gonna say goodbye",
+                "time_interval": {
+                    "end": 114.443,
+                    "start": 107.827
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna make you cry Never gonna say goodbye"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.6025390625
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " But you're too shy to say it Inside we both know what's been",
+                "time_interval": {
+                    "end": 147.208,
+                    "start": 142.263
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " But you're too shy to say it Inside we both know what's been"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.6025390625
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye",
+                "time_interval": {
+                    "end": 172.89,
+                    "start": 163.731
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.6025390625
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " ever gonna turn back.",
+                "time_interval": {
+                    "end": 210.143,
+                    "start": 207.792
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " ever gonna turn back."
+        }
     },
     {
         "captions": [
@@ -222,7 +222,7 @@
             "a man in a white shirt and tie standing behind a bar",
             "a man in a white shirt and suspenders sitting at a bar",
             "a man in a suit singing into a microphone",
-            "a woman in a black dress is dancing"
+            "a woman with blonde hair standing in front of a wall"
         ],
         "timestamps": [
             42.31999969482422,
@@ -262,7 +262,7 @@
             "three women are standing on chairs in front of a large window",
             "a man in suspenders holding a glass",
             "three women stand in front of a large window",
-            "a man in a suit is singing into a microphone",
+            "david bowie - starman",
             "a man in a white shirt is holding a glass",
             "a man standing in front of a wall with wine glasses",
             "a man in a suit is singing into a microphone",
@@ -352,7 +352,7 @@
             "a man walking under an arched tunnel at night",
             "a man in shorts is jumping over a fence",
             "a young man wearing sunglasses and a blue shirt",
-            "a shadow of a person standing on a sidewalk",
+            "a shadow of a person standing on a concrete floor",
             "a shadow of a person standing on a sidewalk",
             "a shadow of a person holding a cell phone"
         ],
@@ -438,7 +438,7 @@
             "a man is dancing in front of a brick wall",
             "david bowie - the man who sold the world - david bowie stock videos & royalty-free footage",
             "a man and woman are dancing on a stage",
-            "david bowie - starman - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie -",
+            "david bowie - starman",
             "a man in a white shirt is standing next to a bar",
             "three women in black outfits are dancing on a stage",
             "a man in a striped shirt singing into a microphone",
