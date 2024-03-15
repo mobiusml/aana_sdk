@@ -18,7 +18,7 @@ deployments = {
     "vllm_deployment_llama2_7b_chat": VLLMDeployment.options(
         num_replicas=1,
         max_concurrent_queries=1000,
-        ray_actor_options={"num_gpus": 0.51},
+        ray_actor_options={"num_gpus": 0.25},
         user_config=VLLMConfig(
             model="TheBloke/Llama-2-7b-Chat-AWQ",
             dtype="auto",
