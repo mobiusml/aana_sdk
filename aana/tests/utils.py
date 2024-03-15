@@ -140,7 +140,11 @@ def compare_streaming_output(expected_output: list[dict], output: list[dict]):
         AssertionError: if the output is different from the expected output.
     """
     # check that the output and expected output have the same length
-    assert len(expected_output) == len(output)
+    assert len(expected_output) == len(output), (
+        len(expected_output),
+        len(output),
+        output,
+    )
 
     # if error is expected or occurs, compare the errors
     if "error" in expected_output[0] or "error" in output[0]:
@@ -244,9 +248,9 @@ def check_output(
     # if we expect an error, then we only check the error
     if expected_error:
         if endpoint.streaming:
-            assert output[0]["error"] == expected_error
+            assert output[0]["error"] == expected_error, output
         else:
-            assert output["error"] == expected_error
+            assert output["error"] == expected_error, output
     # if we don't expect an error and we don't ignore the expected output, then we compare
     elif not ignore_expected_output:
         endpoint_key = endpoint_path.replace("/", "_")[
@@ -258,22 +262,28 @@ def check_output(
         )
         # Below block stores expected endpoint results as json files (when path does not exist yet).
         # if not expected_output_path.exists():
-        #    with expected_output_path.open("w") as f:
-        #        json.dump(output, f, indent=4, sort_keys=True)
+        #     with expected_output_path.open("w") as f:
+        #         json.dump(output, f, indent=4, sort_keys=True)
 
         expected_output = json.loads(expected_output_path.read_text())
-        if endpoint.streaming:
-            compare_streaming_output(expected_output, output)
-        else:
-            compare_output(expected_output, output)
+        try:
+            if endpoint.streaming:
+                compare_streaming_output(expected_output, output)
+            else:
+                compare_output(expected_output, output)
+        except AssertionError as e:
+            raise AssertionError(  # noqa: TRY003
+                f"Output of {endpoint_path} with key {key} is different from the expected output: {e}"
+            ) from e
+
     # if we don't expect an error and we ignore the expected output,
     # then only check that the output does not contain an error
     else:
         if endpoint.streaming:
             for chunk in output:
-                assert "error" not in chunk
+                assert "error" not in chunk, chunk
         else:
-            assert "error" not in output
+            assert "error" not in output, output
 
 
 def call_and_check_endpoint(

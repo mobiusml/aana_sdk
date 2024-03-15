@@ -6,7 +6,6 @@ from collections import defaultdict
 from collections.abc import Generator
 from math import floor
 from pathlib import Path
-from typing import TypedDict
 
 import av
 import decord
@@ -14,6 +13,7 @@ import numpy as np
 import torch  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 import yt_dlp
 from decord import DECORDError
+from typing_extensions import TypedDict
 from yt_dlp.utils import DownloadError
 
 from aana.configs.settings import settings
@@ -33,6 +33,7 @@ from aana.models.pydantic.asr_output import (
     AsrSegments,
 )
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
+from aana.models.pydantic.question import Question
 from aana.models.pydantic.video_input import VideoInput
 from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
@@ -284,7 +285,7 @@ def extract_audio(video: Video) -> Audio:
     # and in content but has same media_id
     return Audio(
         url=video.url,
-        media_id="audio_" + video.media_id,
+        media_id=f"audio_{video.media_id}",
         content=audio_bytes,
         title=video.title,
         description=video.description,
@@ -349,7 +350,7 @@ def generate_combined_timeline(
 def generate_dialog(
     metadata: VideoMetadata,
     timeline: list[dict],
-    question: str,
+    question: Question,
     max_timeline_len: int | None = 1024,
 ) -> ChatDialog:
     """Generates a dialog from the metadata and timeline of a video.
@@ -357,7 +358,7 @@ def generate_dialog(
     Args:
         metadata (VideoMetadata): the metadata of the video
         timeline (list[dict]): the timeline of the video
-        question (str): the question to ask
+        question (Question): the question to ask
         max_timeline_len (int, optional): the maximum length of the timeline in tokens.
                                           Defaults to 1024.
                                           If the timeline is longer than this, it will be truncated.

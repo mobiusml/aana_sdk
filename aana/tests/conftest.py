@@ -42,7 +42,7 @@ from aana.utils.general import jsonify
 @pytest.fixture(scope="session")
 def ray_setup():
     """Setup Ray cluster."""
-    ray.init(num_cpus=6)  # pretend we have 6 cpus
+    ray.init(num_cpus=10)  # pretend we have 10 cpus
     yield
     ray.shutdown()
 
@@ -90,7 +90,8 @@ def ray_serve_setup(setup_deployment, request):  # noqa: D417
         if runtime_env is None:
             runtime_env = {}
         server = RequestHandler.options(
-            ray_actor_options={"runtime_env": runtime_env}
+            num_replicas=aana_settings.num_workers,
+            ray_actor_options={"runtime_env": runtime_env},
         ).bind(endpoints, nodes, context)
         return setup_deployment(server)
 

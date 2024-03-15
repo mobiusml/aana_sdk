@@ -21,35 +21,48 @@ VIDEO_DELETE_ENDPOINT = "/video/delete"
 )
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
-    "video",
+    "video, whisper_params",
     [
-        {
-            "url": "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4",
-            "media_id": "squirrel.mp4",
-        },
-        {
-            "path": str(resources.path("aana.tests.files.videos", "physicsworks.webm")),
-            "media_id": "physicsworks.webm",
-        },
-        {
+        (
+            
+            {
+                "url": "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4",
+                "media_id": "squirrel.mp4",
+            }, {
+                "temperature": 0.0
+            }
+        ),
+        (
+            {
+                "path": str(resources.path("aana.tests.files.videos", "physicsworks.webm")),
+                "media_id": "physicsworks.webm",
+            }, {
+                "temperature": 0.0
+            }
+        ),
+        (
+            {
             "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
             "media_id": "dQw4w9WgXcQ",
-        },
+            }, {
+                "temperature": 0.0
+            }
+        )
     ],
 )
-def test_chat_with_video(call_endpoint, video):
+def test_chat_with_video(call_endpoint, video, whisper_params):
     """Test chat with video endpoint."""
     media_id = video["media_id"]
 
     call_endpoint(
         VIDEO_INDEX_ENDPOINT,
-        {"video": video},
+        {"video": video, "whisper_params": whisper_params},
     )
 
     # if we try to index the same video again, we should get an error MediaIdAlreadyExistsException
     call_endpoint(
         VIDEO_INDEX_ENDPOINT,
-        {"video": video},
+        {"video": video, "whisper_params": whisper_params},
         expected_error="MediaIdAlreadyExistsException",
     )
 
@@ -76,7 +89,7 @@ def test_chat_with_video(call_endpoint, video):
     # after deleting the video, we should be able to index it again
     call_endpoint(
         VIDEO_INDEX_ENDPOINT,
-        {"video": video},
+        {"video": video, "whisper_params": whisper_params},
     )
 
     # load video metadata
@@ -108,23 +121,22 @@ def test_chat_with_video(call_endpoint, video):
     )
 
 
-# FIX: See https://github.com/mobiusml/aana_sdk/issues/42
-# @pytest.mark.parametrize(
-#     "endpoint, data",
-#     [
-#         (VIDEO_METADATA_ENDPOINT, {}),
-#         (VIDEO_CHAT_ENDPOINT, {}),
-#         (VIDEO_CHAT_ENDPOINT, {"media_id": "squirrel.mp4"}),
-#         (VIDEO_CHAT_ENDPOINT, {"question": "Summarize the video"}),
-#         (VIDEO_INDEX_ENDPOINT, {}),
-#         (VIDEO_DELETE_ENDPOINT, {}),
-#     ],
-# )
-# @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
-# def test_missing_params(call_endpoint, endpoint, data):
-#     """Test missing params."""
-#     call_endpoint(
-#         endpoint,
-#         data,
-#         expected_error="ValidationError",
-#     )
+@pytest.mark.parametrize(
+    "endpoint, data",
+    [
+        (VIDEO_METADATA_ENDPOINT, {}),
+        (VIDEO_CHAT_ENDPOINT, {}),
+        (VIDEO_CHAT_ENDPOINT, {"media_id": "squirrel.mp4"}),
+        (VIDEO_CHAT_ENDPOINT, {"question": "Summarize the video"}),
+        (VIDEO_INDEX_ENDPOINT, {}),
+        (VIDEO_DELETE_ENDPOINT, {}),
+    ],
+)
+@pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
+def test_missing_params(call_endpoint, endpoint, data):
+    """Test missing params."""
+    call_endpoint(
+        endpoint,
+        data,
+        expected_error="ValidationError",
+    )

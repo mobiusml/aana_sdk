@@ -160,7 +160,7 @@ def test_extract_audio():
         assert audio.content is not None
         assert audio.path.exists()
         assert video.media_id == video_input.media_id
-        assert audio.media_id == "audio_" + video.media_id
+        assert audio.media_id == f"audio_{video.media_id}"
 
     finally:
         video.cleanup()

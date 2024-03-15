@@ -329,6 +329,46 @@
                 "start": 200.81
             },
             "words": []
+        },
+        {
+            "confidence": 0.8780664047938203,
+            "no_speech_confidence": 0.07843017578125,
+            "text": " Physics works and I am still alive.",
+            "time_interval": {
+                "end": 211.0,
+                "start": 205.0
+            },
+            "words": []
+        },
+        {
+            "confidence": 0.8780664047938203,
+            "no_speech_confidence": 0.07843017578125,
+            "text": " Physics works and I am still alive.",
+            "time_interval": {
+                "end": 217.0,
+                "start": 211.0
+            },
+            "words": []
+        },
+        {
+            "confidence": 0.8780664047938203,
+            "no_speech_confidence": 0.07843017578125,
+            "text": " Physics works and I am still alive.",
+            "time_interval": {
+                "end": 223.0,
+                "start": 217.0
+            },
+            "words": []
+        },
+        {
+            "confidence": 0.8780664047938203,
+            "no_speech_confidence": 0.07843017578125,
+            "text": " Physics works and I am still alive.",
+            "time_interval": {
+                "end": 227.0,
+                "start": 223.0
+            },
+            "words": []
         }
     ],
     "transcription": {
