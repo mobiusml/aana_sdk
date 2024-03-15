@@ -19,7 +19,13 @@ from aana.utils.test import test_cache
 
 @dataclass
 class SegmentX:
-    """The vad segment format with optional speaker."""
+    """The vad segment format with optional speaker.
+
+    Attributes:
+        start (float): The start time of the segment.
+        end (float): The end time of the segment.
+        speaker (str, optional): The speaker of the segment. Defaults to "".
+    """
 
     start: float
     end: float
@@ -40,13 +46,12 @@ class VadConfig(BaseModel):
     """The configuration for the vad deployment.
 
     Attributes:
-        model (str): Model file url
-        onset (float): Threshold for voice activity
-        offset (float): Thereshold for silence
-        min_duration_on (float): Minimum voiced duration
-        min_duration_off (float): Minimum silence duration
-        sample_rate (int): The sample rate of the audio
-
+        model (str): Model file url.
+        onset (float): Threshold for voice activity, default 0.5.
+        offset (float): Thereshold for silence, default 0.363.
+        min_duration_on (float): Minimum voiced duration, default 0.1.
+        min_duration_off (float): Minimum silence duration, default 0.1.
+        sample_rate (int): The sample rate of the audio, default 16000.
     """
 
     model: str = Field(
@@ -122,13 +127,12 @@ class VadDeployment(BaseDeployment):
             params (VadParams): The parameters for the vad model.  #dict[str, Any]
 
         Returns:
-            merged_segments list(VadSegment): The list of segments.
-
+            list[VadSegment]: The list of segments.
         """
-        curr_end = 0
+        curr_end = 0.0
         merged_segments: list[VadSegment] = []
         seg_idxs: list[tuple[float, float]] = []
-        speaker_idxs = [str]
+        speaker_idxs: list[str] = []
 
         if not params.chunk_size > 0:
             chunk_error = "Expected positive value."
@@ -213,7 +217,10 @@ class VadDeployment(BaseDeployment):
             params (VadParams): The parameters for the vad model.
 
         Returns:
-            egments (VadOutput): Output vad segments to the asr model.
+            VadOutput: Output vad segments to the asr model.
+
+        Raises:
+            InferenceException: If the vad inference fails.
         """
         if not params:
             params = VadParams()

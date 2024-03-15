@@ -65,7 +65,7 @@ class AbstractAudioLibrary:
         raise NotImplementedError
 
     @classmethod
-    def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate=16000):
+    def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate: int = 16000):
         """Write a file to wav from the normalized audio bytes.
 
         Args:
@@ -77,15 +77,15 @@ class AbstractAudioLibrary:
 
 
 class pyAVWrapper(AbstractAudioLibrary):
-    """Class for audio libraries using pyAV libaray."""
+    """Class for audio handling using PyAV library."""
 
     @classmethod
-    def read_file(cls, path: Path, sample_rate=16000) -> np.ndarray:
+    def read_file(cls, path: Path, sample_rate: int = 16000) -> np.ndarray:
         """Read an audio file from path and return it as a numpy array.
 
         Args:
             path (Path): The path of the file to read.
-            sample_rate (int): sample rate of the audio.
+            sample_rate (int): sample rate of the audio, default is 16000.
 
         Returns:
             np.ndarray: The audio file as a numpy array.
@@ -121,12 +121,12 @@ class pyAVWrapper(AbstractAudioLibrary):
         return audio
 
     @classmethod
-    def read_from_bytes(cls, content: bytes, sample_rate=16000) -> np.ndarray:
+    def read_from_bytes(cls, content: bytes, sample_rate: int = 16000) -> np.ndarray:
         """Read audio bytes and return as a numpy array.
 
         Args:
             content (bytes): The content of the file to read.
-            sample_rate (int): sample rate of the audio.
+            sample_rate (int): sample rate of the audio, default is 16000.
 
         Returns:
             np.ndarray: The file as a numpy array.
@@ -165,13 +165,13 @@ class pyAVWrapper(AbstractAudioLibrary):
         return audio
 
     @classmethod
-    def write_file(cls, path: Path, audio: np.ndarray, sample_rate=16000):
+    def write_file(cls, path: Path, audio: np.ndarray, sample_rate: int = 16000):
         """Write an audio file in wav format to the path from numpy array.
 
         Args:
             path (Path): The path of the file to write.
             audio (np.ndarray): The audio to write.
-            sample_rate (int): The sample rate of the audio to save.
+            sample_rate (int): The sample rate of the audio to save, default is 16000.
         """
         audio = (audio * 32768.0).astype(np.int16)
         # Create an AV container
@@ -204,13 +204,13 @@ class pyAVWrapper(AbstractAudioLibrary):
         return frame.planes[0].to_bytes()
 
     @classmethod
-    def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate=16000):
+    def write_audio_bytes(cls, path: Path, audio: bytes, sample_rate: int = 16000):
         """Write an audio file in wav format to path from the normalized audio bytes.
 
         Args:
             path (Path): The path of the file to write.
             audio (bytes): The audio to in 16-bit PCM byte write.
-            sample_rate (int): The sample rate of the audio.
+            sample_rate (int): The sample rate of the audio, default is 16000.
         """
         with wave.open(str(path), "wb") as wav_file:
             wav_file.setnchannels(1)  # Mono audio
