@@ -115,9 +115,9 @@ class WhisperBatchOutput(TypedDict):
     """The output of the whisper model for a batch of inputs.
 
     Attributes:
-        segments (List[List[AsrSegment]]): The ASR segments for each audio.
-        transcription_info (List[AsrTranscriptionInfo]): The ASR transcription info for each audio.
-        transcription (List[AsrTranscription]): The ASR transcription for each audio.
+        segments (list[list[AsrSegment]]): The ASR segments for each audio.
+        transcription_info (list[AsrTranscriptionInfo]): The ASR transcription info for each audio.
+        transcription (list[AsrTranscription]): The ASR transcription for each audio.
     """
 
     segments: list[list[AsrSegment]]
@@ -198,7 +198,7 @@ class WhisperDeployment(BaseDeployment):
 
         Yields:
             WhisperOutput: The transcription output as a dictionary:
-                segments (List[AsrSegment]): The ASR segments.
+                segments (list[AsrSegment]): The ASR segments.
                 transcription_info (AsrTranscriptionInfo): The ASR transcription info.
                 transcription (AsrTranscription): The ASR transcription.
         """
@@ -283,10 +283,9 @@ class WhisperDeployment(BaseDeployment):
             batch_size (int): Maximum batch size for the batched inference.
             params (WhisperParams): The parameters for the whisper model.
 
-
         Yields:
             WhisperOutput: The transcription output as a dictionary:
-                segments (List[AsrSegment]): The ASR segments.
+                segments (list[AsrSegment]): The ASR segments.
                 transcription_info (AsrTranscriptionInfo): The ASR transcription info.
                 transcription (AsrTranscription): The ASR transcription.
 

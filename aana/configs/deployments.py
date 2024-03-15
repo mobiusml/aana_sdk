@@ -65,7 +65,10 @@ deployments = {
         max_concurrent_queries=1000,
         ray_actor_options={"num_gpus": 0.05},
         user_config=VadConfig(
-            model="https://whisperx.s3.eu-west-2.amazonaws.com/model_weights/segmentation/0b5b3216d60a2d32fc086b47ea8c67589aaeb26b7e07fcbe620d6d0b83e209ea/pytorch_model.bin",
+            model=(
+                "https://whisperx.s3.eu-west-2.amazonaws.com/model_weights/segmentation/"
+                "0b5b3216d60a2d32fc086b47ea8c67589aaeb26b7e07fcbe620d6d0b83e209ea/pytorch_model.bin"
+            ),
             onset=0.5,
             sample_rate=16000,
         ).model_dump(),
