@@ -94,7 +94,6 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     grouped_dict = defaultdict(list)
     transcript = ""
     async for chunk in stream:
-        chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
         grouped_dict["segments"].extend(output.get("segments", []))
@@ -141,7 +140,6 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     transcript = ""
     grouped_dict = defaultdict(list)
     async for chunk in batched_stream:
-        chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
         grouped_dict["segments"].extend(output.get("segments", []))
@@ -166,7 +164,6 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     transcript = ""
     grouped_dict = defaultdict(list)
     async for chunk in batched_stream:
-        chunk = await chunk
         output = pydantic_to_dict(chunk)
         transcript += output["transcription"]["text"]
         grouped_dict["segments"].extend(output.get("segments", []))
