@@ -19,7 +19,7 @@ def test_whisper_params_default():
     assert params.best_of == 5
     assert params.temperature == (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
     assert params.word_timestamps is False
-    assert params.vad_filter is False
+    assert params.vad_filter is True
 
 
 @pytest.mark.parametrize(

@@ -2,12 +2,21 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9158259730943162,
+                "no_speech_confidence": 0.007335662841796875,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9155454257136106,
                 "no_speech_confidence": 0.006999969482421875,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " Now I want to return to the conservation of mechanical energy.",
                 "time_interval": {
                     "end": 6.0,
@@ -23,12 +32,21 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9158259730943162,
+                "no_speech_confidence": 0.007335662841796875,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9155454257136106,
                 "no_speech_confidence": 0.006999969482421875,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " I have here a pendulum.",
                 "time_interval": {
                     "end": 12.0,
@@ -44,12 +62,21 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9158259730943162,
+                "no_speech_confidence": 0.007335662841796875,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9155454257136106,
                 "no_speech_confidence": 0.006999969482421875,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " I have an object that weighs 15 kilograms",
                 "time_interval": {
                     "end": 18.0,
@@ -65,12 +92,21 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9158259730943162,
+                "no_speech_confidence": 0.007335662841796875,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9155454257136106,
                 "no_speech_confidence": 0.006999969482421875,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " and I can lift it up one meter, which I have done now.",
                 "time_interval": {
                     "end": 24.0,
@@ -86,12 +122,16 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+========
             "language_confidence": 0.982421875
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
+                "confidence": 0.8942957440327974,
+                "no_speech_confidence": 0.478759765625,
                 "text": " If I let it fall, then that will be converted to kinetic energy.",
                 "time_interval": {
                     "end": 30.0,
@@ -107,15 +147,19 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+========
             "language_confidence": 0.982421875
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
+                "confidence": 0.8942957440327974,
+                "no_speech_confidence": 0.478759765625,
                 "text": " If I would let it swing from one meter height",
                 "time_interval": {
-                    "end": 36.0,
+                    "end": 37.5,
                     "start": 30.0
                 },
                 "words": []
@@ -128,16 +172,20 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+========
             "language_confidence": 0.982421875
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
+                "confidence": 0.8942957440327974,
+                "no_speech_confidence": 0.478759765625,
                 "text": " and you would be there and it would hit you, you'd be dead.",
                 "time_interval": {
-                    "end": 42.0,
-                    "start": 36.0
+                    "end": 43.5,
+                    "start": 37.5
                 },
                 "words": []
             }
@@ -149,16 +197,20 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+========
             "language_confidence": 0.982421875
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
         },
         "segments": [
             {
-                "confidence": 0.8998440065155437,
-                "no_speech_confidence": 0.423828125,
+                "confidence": 0.8942957440327974,
+                "no_speech_confidence": 0.478759765625,
                 "text": " 150 joules is enough to kill you.",
                 "time_interval": {
-                    "end": 48.0,
-                    "start": 42.0
+                    "end": 49.5,
+                    "start": 43.5
                 },
                 "words": []
             }
@@ -170,6 +222,14 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8931678357435094,
+                "no_speech_confidence": 0.6650390625,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -197,10 +257,11 @@
             {
                 "confidence": 0.8811879148457943,
                 "no_speech_confidence": 0.59521484375,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " You lift up a very heavy object, even heavier than this,",
                 "time_interval": {
-                    "end": 60.0,
-                    "start": 54.0
+                    "end": 55.5,
+                    "start": 49.5
                 },
                 "words": []
             }
@@ -212,16 +273,25 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8931678357435094,
+                "no_speech_confidence": 0.6650390625,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.8811879148457943,
                 "no_speech_confidence": 0.59521484375,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " and then you let it go, you swing it,",
                 "time_interval": {
-                    "end": 66.0,
-                    "start": 60.0
+                    "end": 61.5,
+                    "start": 55.5
                 },
                 "words": []
             }
@@ -233,16 +303,25 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8931678357435094,
+                "no_speech_confidence": 0.6650390625,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.8811879148457943,
                 "no_speech_confidence": 0.59521484375,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " thereby converting gravitational potential energy into kinetic energy",
                 "time_interval": {
-                    "end": 72.0,
-                    "start": 66.0
+                    "end": 67.5,
+                    "start": 61.5
                 },
                 "words": []
             }
@@ -254,6 +333,15 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8931678357435094,
+                "no_speech_confidence": 0.6650390625,
+                "text": " and that way you can demolish a building.",
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -261,20 +349,30 @@
                 "confidence": 0.8715343445859605,
                 "no_speech_confidence": 0.40087890625,
                 "text": " which is the whole idea of wrecking.",
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "time_interval": {
-                    "end": 78.0,
-                    "start": 72.0
+                    "end": 73.5,
+                    "start": 67.5
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " which is the whole idea of wrecking."
+            "text": " and that way you can demolish a building."
         }
     },
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.886018756865865,
+                "no_speech_confidence": 0.151611328125,
+                "text": " So you are using then the conversion of gravitational potential energy",
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -282,30 +380,61 @@
                 "confidence": 0.8715343445859605,
                 "no_speech_confidence": 0.40087890625,
                 "text": " So you are using then the conversion of gravitational potential energy to kinetic energy.",
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "time_interval": {
-                    "end": 84.0,
-                    "start": 78.0
+                    "end": 80.5,
+                    "start": 74.5
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " So you are using then the conversion of gravitational potential energy to kinetic energy."
+            "text": " So you are using then the conversion of gravitational potential energy"
         }
     },
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.886018756865865,
+                "no_speech_confidence": 0.151611328125,
+                "text": " to kinetic energy.",
+                "time_interval": {
+                    "end": 86.5,
+                    "start": 80.5
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " to kinetic energy."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.886018756865865,
+                "no_speech_confidence": 0.151611328125,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.8715343445859605,
                 "no_speech_confidence": 0.40087890625,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " Now, I am such a strong believer of the conservation of mechanical energy",
                 "time_interval": {
-                    "end": 90.0,
-                    "start": 84.0
+                    "end": 92.5,
+                    "start": 86.5
                 },
                 "words": []
             }
@@ -317,16 +446,25 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.886018756865865,
+                "no_speech_confidence": 0.151611328125,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.8715343445859605,
                 "no_speech_confidence": 0.40087890625,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " that I am willing to put my life on the line.",
                 "time_interval": {
-                    "end": 96.0,
-                    "start": 90.0
+                    "end": 100.39,
+                    "start": 92.5
                 },
                 "words": []
             }
@@ -338,16 +476,25 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8880297792454512,
+                "no_speech_confidence": 0.255615234375,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9383433771074657,
                 "no_speech_confidence": 0.01447296142578125,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " If I release that bob from a certain height,",
                 "time_interval": {
-                    "end": 103.0,
-                    "start": 97.0
+                    "end": 106.39,
+                    "start": 100.39
                 },
                 "words": []
             }
@@ -359,16 +506,25 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8880297792454512,
+                "no_speech_confidence": 0.255615234375,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9383433771074657,
                 "no_speech_confidence": 0.01447296142578125,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " then that bob can never come back to a point where the height is any larger.",
                 "time_interval": {
-                    "end": 109.0,
-                    "start": 103.0
+                    "end": 112.39,
+                    "start": 106.39
                 },
                 "words": []
             }
@@ -380,16 +536,25 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8880297792454512,
+                "no_speech_confidence": 0.255615234375,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9383433771074657,
                 "no_speech_confidence": 0.01447296142578125,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " If I release it from this height and it swings,",
                 "time_interval": {
-                    "end": 117.0,
-                    "start": 111.0
+                    "end": 118.39,
+                    "start": 112.39
                 },
                 "words": []
             }
@@ -401,16 +566,25 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8880297792454512,
+                "no_speech_confidence": 0.255615234375,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9383433771074657,
                 "no_speech_confidence": 0.01447296142578125,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " then when it reaches here, it could not be higher.",
                 "time_interval": {
-                    "end": 121.0,
-                    "start": 117.0
+                    "end": 124.39,
+                    "start": 118.39
                 },
                 "words": []
             }
@@ -422,6 +596,15 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8114389842593486,
+                "no_speech_confidence": 0.435302734375,
+                "text": " It should not be able to reach any higher",
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -429,20 +612,29 @@
                 "confidence": 0.8513452785243097,
                 "no_speech_confidence": 0.2396240234375,
                 "text": " It could go from gravitational potential energy to kinetic energy",
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "time_interval": {
-                    "end": 127.0,
-                    "start": 121.0
+                    "end": 130.39,
+                    "start": 124.39
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " It could go from gravitational potential energy to kinetic energy"
+            "text": " It should not be able to reach any higher"
         }
     },
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8114389842593486,
+                "no_speech_confidence": 0.435302734375,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -491,10 +683,11 @@
             {
                 "confidence": 0.8513452785243097,
                 "no_speech_confidence": 0.2396240234375,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " provided that I do not give this object an initial speed when I stand here.",
                 "time_interval": {
-                    "end": 145.0,
-                    "start": 139.0
+                    "end": 136.39,
+                    "start": 130.39
                 },
                 "words": []
             }
@@ -506,16 +699,46 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8114389842593486,
+                "no_speech_confidence": 0.435302734375,
+                "text": " I trust the conservation of mechanical energy for 100%.",
+                "time_interval": {
+                    "end": 143.77,
+                    "start": 136.39
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " I trust the conservation of mechanical energy for 100%."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8114389842593486,
+                "no_speech_confidence": 0.435302734375,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9217725291204704,
                 "no_speech_confidence": 0.0235748291015625,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " I may not trust myself.",
                 "time_interval": {
-                    "end": 151.0,
-                    "start": 145.0
+                    "end": 151.66,
+                    "start": 143.77
                 },
                 "words": []
             }
@@ -527,6 +750,15 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9162691014512296,
+                "no_speech_confidence": 0.1353759765625,
+                "text": " And I hope I will be able to do it at zero speed",
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -534,20 +766,34 @@
                 "confidence": 0.9217725291204704,
                 "no_speech_confidence": 0.0235748291015625,
                 "text": " I am going to release this object and I hope I will be able to do it at zero speed",
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "time_interval": {
-                    "end": 157.0,
-                    "start": 151.0
+                    "end": 157.66,
+                    "start": 151.66
                 },
                 "words": []
             }
         ],
         "transcription": {
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "text": " And I hope I will be able to do it at zero speed"
+========
             "text": " I am going to release this object and I hope I will be able to do it at zero speed"
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
         }
     },
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9162691014512296,
+                "no_speech_confidence": 0.1353759765625,
+                "text": " so that when it comes back, it may touch my chin,",
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -555,30 +801,61 @@
                 "confidence": 0.9217725291204704,
                 "no_speech_confidence": 0.0235748291015625,
                 "text": " so that when it comes back it may touch my chin but it may not crush my chin.",
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "time_interval": {
-                    "end": 163.0,
-                    "start": 157.0
+                    "end": 165.16,
+                    "start": 157.66
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " so that when it comes back it may touch my chin but it may not crush my chin."
+            "text": " so that when it comes back, it may touch my chin,"
         }
     },
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9162691014512296,
+                "no_speech_confidence": 0.1353759765625,
+                "text": " but it may not crush my chin.",
+                "time_interval": {
+                    "end": 171.16,
+                    "start": 165.16
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " but it may not crush my chin."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.9162691014512296,
+                "no_speech_confidence": 0.1353759765625,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": 0.9217725291204704,
                 "no_speech_confidence": 0.0235748291015625,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " I want you to be extremely quiet because this is no joke.",
                 "time_interval": {
-                    "end": 169.0,
-                    "start": 163.0
+                    "end": 178.86,
+                    "start": 171.16
                 },
                 "words": []
             }
@@ -590,6 +867,15 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8203560433115938,
+                "no_speech_confidence": 0.429443359375,
+                "text": " I want you to be very quiet. I almost didn't sleep all night.",
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -597,20 +883,29 @@
                 "confidence": 0.8646648422853658,
                 "no_speech_confidence": 0.429931640625,
                 "text": " If I release this object at zero speed, then this will be my last lecture.",
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "time_interval": {
-                    "end": 175.0,
-                    "start": 169.0
+                    "end": 186.62,
+                    "start": 178.86
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " If I release this object at zero speed, then this will be my last lecture."
+            "text": " I want you to be very quiet. I almost didn't sleep all night."
         }
     },
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8203560433115938,
+                "no_speech_confidence": 0.429443359375,
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -659,10 +954,11 @@
             {
                 "confidence": 0.8646648422853658,
                 "no_speech_confidence": 0.429931640625,
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 "text": " Three, two, one, zero.",
                 "time_interval": {
-                    "end": 193.0,
-                    "start": 187.0
+                    "end": 200.81,
+                    "start": 186.62
                 },
                 "words": []
             }
@@ -674,6 +970,18 @@
     {
         "info": {
             "language": "en",
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+            "language_confidence": 0.98291015625
+        },
+        "segments": [
+            {
+                "confidence": 0.8203560433115938,
+                "no_speech_confidence": 0.429443359375,
+                "text": " Physics works and I am still alive.",
+                "time_interval": {
+                    "end": 206.81,
+                    "start": 200.81
+========
             "language_confidence": 0.982421875
         },
         "segments": [
@@ -684,12 +992,15 @@
                 "time_interval": {
                     "end": 205.0,
                     "start": 199.0
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
                 },
                 "words": []
             }
         ],
         "transcription": {
             "text": " Physics works and I am still alive."
+<<<<<<<< HEAD:aana/tests/files/expected/endpoints/whisper/video_transcribe_4064f8cf8cdb49186fff70656e90b41e.json
+========
         }
     },
     {
@@ -774,6 +1085,7 @@
         ],
         "transcription": {
             "text": " Physics works and I am still alive."
+>>>>>>>> main:aana/tests/files/expected/endpoints/whisper/video_transcribe_939a73622958d6746f38d629039ac1fe.json
         }
     },
     {
