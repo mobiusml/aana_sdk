@@ -75,39 +75,6 @@
         "completion": "."
     },
     {
-        "completion": " Here"
-    },
-    {
-        "completion": "'"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " conc"
-    },
-    {
-        "completion": "ise"
-    },
-    {
-        "completion": " summary"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": ":"
-    },
-    {
         "completion": "\n"
     },
     {
@@ -123,13 +90,16 @@
         "completion": " the"
     },
     {
-        "completion": " provided"
-    },
-    {
         "completion": " tim"
     },
     {
         "completion": "eline"
+    },
+    {
+        "completion": " you"
+    },
+    {
+        "completion": " provided"
     },
     {
         "completion": ","
@@ -141,10 +111,25 @@
         "completion": " video"
     },
     {
-        "completion": " primarily"
+        "completion": " appears"
     },
     {
-        "completion": " features"
+        "completion": " to"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " short"
+    },
+    {
+        "completion": " clip"
+    },
+    {
+        "completion": " showing"
     },
     {
         "completion": " a"
@@ -178,66 +163,6 @@
     },
     {
         "completion": ","
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " some"
-    },
-    {
-        "completion": " variations"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " position"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " fa"
-    },
-    {
-        "completion": "cial"
-    },
-    {
-        "completion": " expressions"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " starts"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " sitting"
     },
     {
         "completion": " with"
@@ -250,78 +175,6 @@
     },
     {
         "completion": " open"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " s"
-    },
-    {
-        "completion": "its"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " top"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " finally"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " s"
-    },
-    {
-        "completion": "its"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " mouth"
-    },
-    {
-        "completion": " closed"
     },
     {
         "completion": "."
@@ -342,6 +195,9 @@
         "completion": " for"
     },
     {
+        "completion": " approximately"
+    },
+    {
         "completion": " "
     },
     {
@@ -360,124 +216,7 @@
         "completion": "\n"
     },
     {
-        "completion": "In"
-    },
-    {
-        "completion": " terms"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " title"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " description"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " title"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " \""
-    },
-    {
-        "completion": "squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": "\""
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " description"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " \"["
-    },
-    {
-        "completion": "/"
-    },
-    {
-        "completion": "INST"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": "]"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": " Great"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " thank"
-    },
-    {
-        "completion": " you"
-    },
-    {
-        "completion": " for"
-    },
-    {
-        "completion": " providing"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " additional"
-    },
-    {
-        "completion": " information"
-    },
-    {
-        "completion": "!"
-    },
-    {
-        "completion": " Here"
+        "completion": "Here"
     },
     {
         "completion": "'"
@@ -487,12 +226,6 @@
     },
     {
         "completion": " a"
-    },
-    {
-        "completion": " re"
-    },
-    {
-        "completion": "vised"
     },
     {
         "completion": " summary"
@@ -519,18 +252,6 @@
         "completion": " provided"
     },
     {
-        "completion": " tim"
-    },
-    {
-        "completion": "eline"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " other"
-    },
-    {
         "completion": " information"
     },
     {
@@ -540,40 +261,13 @@
         "completion": "\n"
     },
     {
-        "completion": "B"
-    },
-    {
-        "completion": "ased"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " provided"
-    },
-    {
-        "completion": " tim"
-    },
-    {
-        "completion": "eline"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
+        "completion": "The"
     },
     {
         "completion": " video"
     },
     {
-        "completion": " primarily"
-    },
-    {
-        "completion": " features"
+        "completion": " shows"
     },
     {
         "completion": " a"
@@ -609,52 +303,25 @@
         "completion": ","
     },
     {
-        "completion": " with"
+        "completion": " looking"
     },
     {
-        "completion": " some"
+        "completion": " relax"
     },
     {
-        "completion": " variations"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " position"
+        "completion": "ed"
     },
     {
         "completion": " and"
     },
     {
-        "completion": " fa"
-    },
-    {
-        "completion": "cial"
-    },
-    {
-        "completion": " expressions"
+        "completion": " calm"
     },
     {
         "completion": "."
     },
     {
         "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " starts"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " the"
     },
     {
         "completion": " squ"
@@ -666,259 +333,82 @@
         "completion": "rel"
     },
     {
-        "completion": " sitting"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " mouth"
-    },
-    {
-        "completion": " open"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " s"
-    },
-    {
-        "completion": "its"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " top"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " finally"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " s"
-    },
-    {
-        "completion": "its"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " mouth"
-    },
-    {
-        "completion": " closed"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " last"
+        "completion": "'"
     },
     {
         "completion": "s"
     },
     {
-        "completion": " for"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "In"
-    },
-    {
-        "completion": " terms"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " title"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " description"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " title"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " \""
-    },
-    {
-        "completion": "squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": "\""
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " description"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " \""
-    },
-    {
-        "completion": "a"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " sitting"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " top"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " its"
-    },
-    {
         "completion": " mouth"
+    },
+    {
+        "completion": " is"
     },
     {
         "completion": " open"
     },
     {
-        "completion": " and"
+        "completion": ","
     },
     {
-        "completion": " closed"
+        "completion": " but"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " does"
+    },
+    {
+        "completion": " not"
+    },
+    {
+        "completion": " appear"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " making"
+    },
+    {
+        "completion": " any"
+    },
+    {
+        "completion": " noise"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " quite"
+    },
+    {
+        "completion": " short"
     },
     {
         "completion": ","
     },
     {
-        "completion": " for"
+        "completion": " last"
+    },
+    {
+        "completion": "ing"
+    },
+    {
+        "completion": " only"
     },
     {
         "completion": " "
@@ -933,7 +423,61 @@
         "completion": " seconds"
     },
     {
-        "completion": ".\""
+        "completion": ","
+    },
+    {
+        "completion": " but"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " provides"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brief"
+    },
+    {
+        "completion": " g"
+    },
+    {
+        "completion": "limp"
+    },
+    {
+        "completion": "se"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " life"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " this"
+    },
+    {
+        "completion": " ad"
+    },
+    {
+        "completion": "or"
+    },
+    {
+        "completion": "able"
+    },
+    {
+        "completion": " animal"
+    },
+    {
+        "completion": "."
     },
     {
         "completion": ""
