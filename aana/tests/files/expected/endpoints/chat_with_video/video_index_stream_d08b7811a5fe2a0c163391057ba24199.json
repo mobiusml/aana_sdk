@@ -1,23 +1,12 @@
 [
     {
         "info": {
-            "language": "en",
-            "language_confidence": 0.360107421875
+            "language": "silence",
+            "language_confidence": 1.0
         },
-        "segments": [
-            {
-                "confidence": 0.6431313717877822,
-                "no_speech_confidence": 0.9345703125,
-                "text": " you",
-                "time_interval": {
-                    "end": 2.06,
-                    "start": 0.0
-                },
-                "words": []
-            }
-        ],
+        "segments": [],
         "transcription": {
-            "text": " you"
+            "text": ""
         }
     },
     {

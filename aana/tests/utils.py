@@ -260,14 +260,22 @@ def check_output(
             f"aana.tests.files.expected.endpoints.{target}",
             f"{endpoint_key}_{key}.json",
         )
+        # Below block stores expected endpoint results as json files (when path does not exist yet).
         # if not expected_output_path.exists():
         #     with expected_output_path.open("w") as f:
         #         json.dump(output, f, indent=4, sort_keys=True)
+
         expected_output = json.loads(expected_output_path.read_text())
-        if endpoint.streaming:
-            compare_streaming_output(expected_output, output)
-        else:
-            compare_output(expected_output, output)
+        try:
+            if endpoint.streaming:
+                compare_streaming_output(expected_output, output)
+            else:
+                compare_output(expected_output, output)
+        except AssertionError as e:
+            raise AssertionError(  # noqa: TRY003
+                f"Output of {endpoint_path} with key {key} is different from the expected output: {e}"
+            ) from e
+
     # if we don't expect an error and we ignore the expected output,
     # then only check that the output does not contain an error
     else:
@@ -309,8 +317,8 @@ def call_and_check_endpoint(
     # so we need to replace it with a path that is the same on all systems
     # to make sure that the hash of the data is the same on all systems
     data_json = data_json.replace(
-        str(resources.path("aana.tests.files.videos", "")),
-        "/aana/tests/files/videos/",
+        str(resources.path("aana.tests.files", "")),
+        "/aana/tests/files/",
     )
     data_hash = hashlib.md5(
         data_json.encode("utf-8"),
