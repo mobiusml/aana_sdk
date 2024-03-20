@@ -105,14 +105,14 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     # Test transcribe_batch method
 
     # Test transcribe_in_chunks method: Note that the expected asr output is different
-    expectd_batched_output_path = resources.path(
+    expected_batched_output_path = resources.path(
         f"aana.tests.files.expected.whisper.{model_size}",
         f"{audio_file_name}_batched.json",
     )
     assert (
-        expectd_batched_output_path.exists()
-    ), f"Expected output not found: {expectd_batched_output_path}"
-    with Path(expectd_batched_output_path) as path, path.open() as f:
+        expected_batched_output_path.exists()
+    ), f"Expected output not found: {expected_batched_output_path}"
+    with Path(expected_batched_output_path) as path, path.open() as f:
         expected_output_batched = json.load(f)
 
     # Get expected vad segments
