@@ -265,6 +265,9 @@ def check_output(
         #     with expected_output_path.open("w") as f:
         #         json.dump(output, f, indent=4, sort_keys=True)
 
+        if not expected_output_path.exists():
+            raise FileNotFoundError(f"Expected result file is not found: {expected_output_path}")
+
         expected_output = json.loads(expected_output_path.read_text())
         try:
             if endpoint.streaming:
