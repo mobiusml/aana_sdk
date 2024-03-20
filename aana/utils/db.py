@@ -224,6 +224,40 @@ def save_video_transcription(
         }
 
 
+def save_transcripts_batch(
+    model_name: str,
+    media_ids: list[MediaId],
+    transcription_info_list: list[AsrTranscriptionInfo],
+    transcription_list: list[AsrTranscription],
+    segments_list: list[list[AsrSegment]],
+) -> dict:
+    """Save transcripts batch."""
+    with Session(engine) as session:
+        video_repo = VideoRepository(session)
+        entities = [
+            TranscriptEntity.from_asr_output(
+                model_name,
+                media_id,
+                video_repo.get_by_media_id(media_id).id,
+                transcript_info,
+                transcript,
+                segments,
+            )
+            for media_id, transcript_info, transcript, segments in zip(
+                media_ids,
+                transcription_info_list,
+                transcription_list,
+                segments_list,
+                strict=True,
+            )
+        ]
+        repo = TranscriptRepository(session)
+        entities = repo.create_multiple(entities)
+        return {
+            "transcription_ids": [c.id for c in entities]  # type: ignore
+        }
+
+
 def load_video_transcription(
     model_name: str,
     media_id: MediaId,
