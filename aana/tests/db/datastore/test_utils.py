@@ -72,7 +72,6 @@ def test_save_videos_batch(mock_session):
     assert mock_session.context_var.commit.call_count == 2
 
 
-
 def test_save_video_transcription(mock_session):
     """Tests save transcripts function."""
     media_id = "0"

@@ -24,30 +24,28 @@ VIDEO_DELETE_ENDPOINT = "/video/delete"
     "video, whisper_params",
     [
         (
-
             {
                 "url": "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4",
                 "media_id": "squirrel.mp4",
-            }, {
-                "temperature": 0.0
-            }
+            },
+            {"temperature": 0.0},
         ),
         (
             {
-                "path": str(resources.path("aana.tests.files.videos", "physicsworks.webm")),
+                "path": str(
+                    resources.path("aana.tests.files.videos", "physicsworks.webm")
+                ),
                 "media_id": "physicsworks.webm",
-            }, {
-                "temperature": 0.0
-            }
+            },
+            {"temperature": 0.0},
         ),
         (
             {
-            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-            "media_id": "dQw4w9WgXcQ",
-            }, {
-                "temperature": 0.0
-            }
-        )
+                "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "media_id": "dQw4w9WgXcQ",
+            },
+            {"temperature": 0.0},
+        ),
     ],
 )
 def test_chat_with_video(call_endpoint, video, whisper_params):
