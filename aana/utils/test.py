@@ -84,7 +84,7 @@ def test_cache(func):  # noqa: C901
         candidate_cache_files = list(cache_path.parent.glob(pattern))
 
         if len(candidate_cache_files) == 0:
-            raise FileNotFoundError(f'No cache file is found for "{cache_path.parent}/{pattern}" pattern')
+            raise FileNotFoundError(f"{cache_path.parent}/{pattern}")
 
         # find the cache with the closest args
         path = min(
