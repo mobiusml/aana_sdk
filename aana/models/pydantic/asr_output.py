@@ -51,15 +51,17 @@ class AsrSegment(BaseModel):
     Attributes:
         text (str): The text of the segment (transcript/translation)
         time_interval (TimeInterval): Time interval of the segment
-        confidence (float): Confidence of the segment
-        no_speech_confidence (float): Chance of being a silence segment
-        words (List[AsrWord]): List of words in the segment
+        confidence (float): Confidence of the segment (Optional)
+        no_speech_confidence (float): Chance of being a silence segment (Optional)
+        words (list[AsrWord]): List of words in the segment (Optional)
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
     time_interval: TimeInterval = Field(description="Time interval of the segment")
-    confidence: float = Field(ge=0.0, le=1.0, description="Confidence of the segment")
-    no_speech_confidence: float = Field(
+    confidence: float | None = Field(
+        ge=0.0, le=1.0, description="Confidence of the segment"
+    )
+    no_speech_confidence: float | None = Field(
         ge=0.0, le=1.0, description="Chance of being a silence segment"
     )
     words: list[AsrWord] = Field(
@@ -72,17 +74,28 @@ class AsrSegment(BaseModel):
         time_interval = TimeInterval(
             start=whisper_segment.start, end=whisper_segment.end
         )
-        confidence = np.exp(whisper_segment.avg_logprob)
-        if whisper_segment.words:
+        try:
+            avg_logprob = whisper_segment.avg_logprob
+            confidence = np.exp(avg_logprob)
+        except AttributeError:
+            confidence = None
+
+        try:
             words = [AsrWord.from_whisper(word) for word in whisper_segment.words]
-        else:
+        except TypeError:  # "None type object is not iterable"
             words = []
+        except AttributeError:  # "'StreamSegment' object has no attribute 'words'"
+            words = []
+        try:
+            no_speech_confidence = whisper_segment.no_speech_prob
+        except AttributeError:
+            no_speech_confidence = None
 
         return cls(
             text=whisper_segment.text,
             time_interval=time_interval,
             confidence=confidence,
-            no_speech_confidence=whisper_segment.no_speech_prob,
+            no_speech_confidence=no_speech_confidence,
             words=words,
         )
 
