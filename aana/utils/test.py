@@ -80,13 +80,15 @@ def test_cache(func):  # noqa: C901
             return cache["args"]
 
         args_str = jsonify({"args": args[1:], "kwargs": kwargs})
-        pattern = cache_path.parent.glob(
-            cache_path.name.replace(cache_path.name.split("_")[-1], "*")
-        )
+        pattern = cache_path.name.replace(cache_path.name.split("_")[-1], "*")
+        candidate_cache_files = list(cache_path.parent.glob(pattern))
+
+        if len(candidate_cache_files) == 0:
+            raise FileNotFoundError(f"{cache_path.parent}/{pattern}")
 
         # find the cache with the closest args
         path = min(
-            pattern,
+            candidate_cache_files,
             key=lambda path: rapidfuzz.distance.Levenshtein.distance(
                 args_str, get_args(path)
             ),
