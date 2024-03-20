@@ -12,6 +12,7 @@ TARGET = "whisper"
 VIDEO_TRANSCRIBE_ENDPOINT = "/video/transcribe"
 VIDEO_GET_TRANSCRIPTION_ENDPOINT = "/video/get_transcription"
 VIDEO_DELETE_ENDPOINT = "/video/delete"
+VIDEO_TRANSCRIBE_BATCH_ENDPOINT = "/video/transcribe_in_chunks"
 
 
 @pytest.mark.skipif(
@@ -20,22 +21,58 @@ VIDEO_DELETE_ENDPOINT = "/video/delete"
 )
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
-    "video",
+    "video, whisper_params, transcription_endpoint",
     [
-        {
-            "path": str(resources.path("aana.tests.files.videos", "physicsworks.webm")),
-            "media_id": "physicsworks.webm",
-        }
+        (
+            {
+                "path": str(
+                    resources.path("aana.tests.files.videos", "physicsworks.webm")
+                ),
+                "media_id": "physicsworks.webm",
+            },
+            {"temperature": 0.0},
+            VIDEO_TRANSCRIBE_ENDPOINT,
+        ),
+        (
+            {
+                "path": str(
+                    resources.path("aana.tests.files.videos", "physicsworks.webm")
+                ),
+                "media_id": "physicsworks.webm_batched",
+            },
+            {"temperature": 0.0},
+            VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
+        ),
+        (
+            {
+                "path": str(
+                    resources.path("aana.tests.files.audios", "physicsworks.wav")
+                ),
+                "media_id": "physicsworks.wav_batched",
+            },
+            {"temperature": 0.0},
+            VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
+        ),
+        (
+            {
+                "path": str(
+                    resources.path("aana.tests.files.audios", "physicsworks.wav")
+                ),
+                "media_id": "physicsworks.wav",
+            },
+            {"temperature": 0.0},
+            VIDEO_TRANSCRIBE_ENDPOINT,
+        ),
     ],
 )
-def test_video_transcribe(call_endpoint, video):
+def test_video_transcribe(call_endpoint, video, whisper_params, transcription_endpoint):
     """Test video transcribe endpoint."""
     media_id = video["media_id"]
 
     # transcribe video
     call_endpoint(
-        VIDEO_TRANSCRIBE_ENDPOINT,
-        {"video": video},
+        transcription_endpoint,
+        {"video": video, "whisper_params": whisper_params},
     )
 
     # load transcription
@@ -46,8 +83,8 @@ def test_video_transcribe(call_endpoint, video):
 
     # try to transcribe video again, it should fail with MediaIdAlreadyExistsException
     call_endpoint(
-        VIDEO_TRANSCRIBE_ENDPOINT,
-        {"video": video},
+        transcription_endpoint,
+        {"video": video, "whisper_params": whisper_params},
         expected_error="MediaIdAlreadyExistsException",
     )
 
@@ -74,6 +111,20 @@ def test_video_transcribe(call_endpoint, video):
 
     # transcribe video again after deleting it
     call_endpoint(
-        VIDEO_TRANSCRIBE_ENDPOINT,
-        {"video": video},
+        transcription_endpoint,
+        {"video": video, "whisper_params": whisper_params},
+    )
+
+    # delete video
+    call_endpoint(
+        VIDEO_DELETE_ENDPOINT,
+        {"media_id": media_id},
+        ignore_expected_output=True,
+    )
+
+    # no found exception for deleted transcription
+    call_endpoint(
+        VIDEO_GET_TRANSCRIPTION_ENDPOINT,
+        {"media_id": media_id},
+        expected_error="NotFoundException",
     )
