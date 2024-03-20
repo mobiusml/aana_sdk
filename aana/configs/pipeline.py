@@ -937,6 +937,31 @@ nodes = [
         ],
     },
     {
+        "name": "save_videos_info",
+        "type": "function",
+        "function": "aana.utils.db.save_video_batch",
+        "dict_output": True,
+        "inputs": [
+            {
+                "name": "video_objects",
+                "key": "videos",
+                "path": "video_batch.videos.[*].video",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "videos_media_ids",
+                "key": "media_ids",
+                "path": "video_batch.[*].media_id",
+            },
+            {
+                "name": "video_ids",
+                "key": "video_ids",
+                "path": "video_batch.[*].id",
+            },
+        ],
+    },
+    {
         "name": "save_video_transcription",
         "type": "function",
         "function": "aana.utils.db.save_video_transcription",
