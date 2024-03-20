@@ -15,7 +15,13 @@
         "completion": " provided"
     },
     {
-        "completion": " script"
+        "completion": " video"
+    },
+    {
+        "completion": " tim"
+    },
+    {
+        "completion": "eline"
     },
     {
         "completion": ","
@@ -24,76 +30,91 @@
         "completion": " the"
     },
     {
-        "completion": " video"
+        "completion": " most"
     },
     {
-        "completion": " appears"
+        "completion": " relevant"
     },
     {
-        "completion": " to"
-    },
-    {
-        "completion": " be"
+        "completion": " and"
     },
     {
         "completion": " a"
     },
     {
-        "completion": " music"
+        "completion": "est"
     },
     {
-        "completion": " video"
+        "completion": "het"
     },
     {
-        "completion": " for"
+        "completion": "ically"
     },
     {
-        "completion": " the"
+        "completion": " ple"
     },
     {
-        "completion": " song"
+        "completion": "asing"
     },
     {
-        "completion": " \""
+        "completion": " moments"
     },
     {
-        "completion": "N"
+        "completion": " can"
     },
     {
-        "completion": "ever"
+        "completion": " be"
     },
     {
-        "completion": " G"
+        "completion": " summar"
     },
     {
-        "completion": "onna"
+        "completion": "ized"
     },
     {
-        "completion": " Give"
+        "completion": " as"
     },
     {
-        "completion": " You"
+        "completion": " follows"
     },
     {
-        "completion": " Up"
+        "completion": ":"
     },
     {
-        "completion": "\""
+        "completion": "\n"
     },
     {
-        "completion": " by"
+        "completion": "0"
     },
     {
-        "completion": " Rick"
+        "completion": ":"
     },
     {
-        "completion": " Ast"
+        "completion": "0"
     },
     {
-        "completion": "ley"
+        "completion": "0"
     },
     {
-        "completion": "."
+        "completion": "-"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
     },
     {
         "completion": " The"
@@ -120,10 +141,2041 @@
         "completion": " and"
     },
     {
-        "completion": " the"
+        "completion": " a"
     },
     {
-        "completion": " song"
+        "completion": " white"
+    },
+    {
+        "completion": " background"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " followed"
+    },
+    {
+        "completion": " by"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " bl"
+    },
+    {
+        "completion": "onde"
+    },
+    {
+        "completion": " woman"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " yellow"
+    },
+    {
+        "completion": " bow"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " her"
+    },
+    {
+        "completion": " hair"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " suit"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " micro"
+    },
+    {
+        "completion": "phone"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " trans"
+    },
+    {
+        "completion": "itions"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " woman"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " bl"
+    },
+    {
+        "completion": "onde"
+    },
+    {
+        "completion": " hair"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " window"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " we"
+    },
+    {
+        "completion": "aring"
+    },
+    {
+        "completion": " s"
+    },
+    {
+        "completion": "ung"
+    },
+    {
+        "completion": "lass"
+    },
+    {
+        "completion": "es"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " chain"
+    },
+    {
+        "completion": " link"
+    },
+    {
+        "completion": " f"
+    },
+    {
+        "completion": "ence"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " blue"
+    },
+    {
+        "completion": " sh"
+    },
+    {
+        "completion": "irt"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " s"
+    },
+    {
+        "completion": "ung"
+    },
+    {
+        "completion": "lass"
+    },
+    {
+        "completion": "es"
+    },
+    {
+        "completion": " walking"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " shows"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " jack"
+    },
+    {
+        "completion": "et"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " making"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " face"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " an"
+    },
+    {
+        "completion": " al"
+    },
+    {
+        "completion": "ley"
+    },
+    {
+        "completion": "way"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": " behind"
+    },
+    {
+        "completion": " him"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " jack"
+    },
+    {
+        "completion": "et"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "4"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " trans"
+    },
+    {
+        "completion": "itions"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " large"
+    },
+    {
+        "completion": " room"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " tables"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " ch"
+    },
+    {
+        "completion": "airs"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " large"
+    },
+    {
+        "completion": " window"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " suit"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " micro"
+    },
+    {
+        "completion": "phone"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " his"
+    },
+    {
+        "completion": " eyes"
+    },
+    {
+        "completion": " closed"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "4"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "5"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " shows"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " tren"
+    },
+    {
+        "completion": "ch"
+    },
+    {
+        "completion": " coat"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " sh"
+    },
+    {
+        "completion": "irt"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " black"
+    },
+    {
+        "completion": " jack"
+    },
+    {
+        "completion": "et"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " jack"
+    },
+    {
+        "completion": "et"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "5"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "6"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " trans"
+    },
+    {
+        "completion": "itions"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " suit"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " micro"
+    },
+    {
+        "completion": "phone"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " woman"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " bl"
+    },
+    {
+        "completion": "onde"
+    },
+    {
+        "completion": " hair"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " group"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " ch"
+    },
+    {
+        "completion": "airs"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "6"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "7"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " shows"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " coat"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " coat"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " tren"
+    },
+    {
+        "completion": "ch"
+    },
+    {
+        "completion": " coat"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "7"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "8"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " trans"
+    },
+    {
+        "completion": "itions"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " sh"
+    },
+    {
+        "completion": "irt"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " black"
+    },
+    {
+        "completion": " jack"
+    },
+    {
+        "completion": "et"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " behind"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " bar"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " glass"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " group"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " on"
+    },
+    {
+        "completion": " ch"
+    },
+    {
+        "completion": "airs"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " large"
+    },
+    {
+        "completion": " window"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "8"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "9"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " shows"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " woman"
+    },
+    {
+        "completion": " dan"
+    },
+    {
+        "completion": "cing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " large"
+    },
+    {
+        "completion": " window"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " behind"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " bar"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " glass"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " group"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " on"
+    },
+    {
+        "completion": " stage"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " tables"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "9"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " trans"
+    },
+    {
+        "completion": "itions"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " micro"
+    },
+    {
+        "completion": "phone"
+    },
+    {
+        "completion": " while"
+    },
+    {
+        "completion": " we"
+    },
+    {
+        "completion": "aring"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " suit"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " micro"
+    },
+    {
+        "completion": "phone"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " his"
+    },
+    {
+        "completion": " eyes"
+    },
+    {
+        "completion": " closed"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " group"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " ch"
+    },
+    {
+        "completion": "airs"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " shows"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " shadow"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " person"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " on"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " side"
+    },
+    {
+        "completion": "walk"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " red"
+    },
+    {
+        "completion": " hair"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " micro"
+    },
+    {
+        "completion": "phone"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " strip"
+    },
+    {
+        "completion": "ed"
+    },
+    {
+        "completion": " sh"
+    },
+    {
+        "completion": "irt"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " jack"
+    },
+    {
+        "completion": "et"
+    },
+    {
+        "completion": " singing"
+    },
+    {
+        "completion": " into"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " micro"
+    },
+    {
+        "completion": "phone"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " trans"
+    },
+    {
+        "completion": "itions"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " blue"
+    },
+    {
+        "completion": " je"
+    },
+    {
+        "completion": "ans"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " sh"
+    },
+    {
+        "completion": "irt"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " walking"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " David"
+    },
+    {
+        "completion": " B"
+    },
+    {
+        "completion": "owie"
+    },
+    {
+        "completion": " -"
+    },
+    {
+        "completion": " Star"
+    },
+    {
+        "completion": "man"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " group"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " people"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " large"
+    },
+    {
+        "completion": " window"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "2"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "1"
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": "0"
+    },
+    {
+        "completion": ":"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " shows"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
     },
     {
         "completion": "'"
@@ -132,49 +2184,205 @@
         "completion": "s"
     },
     {
-        "completion": " audio"
+        "completion": " feet"
     },
     {
-        "completion": ","
+        "completion": " in"
     },
     {
-        "completion": " and"
+        "completion": " black"
     },
     {
-        "completion": " then"
+        "completion": " sho"
     },
     {
-        "completion": " visual"
+        "completion": "es"
     },
     {
-        "completion": " ca"
-    },
-    {
-        "completion": "ptions"
-    },
-    {
-        "completion": " appear"
+        "completion": " standing"
     },
     {
         "completion": " on"
     },
     {
+        "completion": " a"
+    },
+    {
+        "completion": " side"
+    },
+    {
+        "completion": "walk"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " man"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " t"
+    },
+    {
+        "completion": "-"
+    },
+    {
+        "completion": "sh"
+    },
+    {
+        "completion": "irt"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " je"
+    },
+    {
+        "completion": "ans"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " brick"
+    },
+    {
+        "completion": " wall"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " and"
+    },
+    {
         "completion": " the"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " ends"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " black"
     },
     {
         "completion": " screen"
     },
     {
-        "completion": " with"
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " white"
+    },
+    {
+        "completion": " background"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "Over"
+    },
+    {
+        "completion": "all"
+    },
+    {
+        "completion": ","
     },
     {
         "completion": " the"
     },
     {
-        "completion": " lyr"
+        "completion": " most"
     },
     {
-        "completion": "ics"
+        "completion": " relevant"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": "est"
+    },
+    {
+        "completion": "het"
+    },
+    {
+        "completion": "ically"
+    },
+    {
+        "completion": " ple"
+    },
+    {
+        "completion": "asing"
+    },
+    {
+        "completion": " moments"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " are"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " visual"
+    },
+    {
+        "completion": "s"
     },
     {
         "completion": " of"
@@ -183,2892 +2391,90 @@
         "completion": " the"
     },
     {
-        "completion": " song"
+        "completion": " people"
     },
     {
-        "completion": "."
+        "completion": " singing"
     },
     {
-        "completion": " The"
+        "completion": ","
     },
     {
-        "completion": " video"
+        "completion": " dan"
     },
     {
-        "completion": " then"
+        "completion": "cing"
     },
     {
-        "completion": " cut"
+        "completion": ","
     },
     {
-        "completion": "s"
+        "completion": " and"
     },
     {
-        "completion": " to"
+        "completion": " standing"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " front"
+    },
+    {
+        "completion": " of"
     },
     {
         "completion": " various"
     },
     {
-        "completion": " scenes"
+        "completion": " background"
     },
     {
-        "completion": " of"
+        "completion": "s"
     },
     {
-        "completion": " people"
+        "completion": ","
     },
     {
-        "completion": " singing"
+        "completion": " as"
     },
     {
-        "completion": " and"
+        "completion": " well"
     },
     {
-        "completion": " dan"
-    },
-    {
-        "completion": "cing"
-    },
-    {
-        "completion": " along"
-    },
-    {
-        "completion": " to"
+        "completion": " as"
     },
     {
         "completion": " the"
     },
     {
-        "completion": " song"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " including"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " group"
+        "completion": " audio"
     },
     {
         "completion": " of"
+    },
+    {
+        "completion": " the"
     },
     {
         "completion": " people"
     },
     {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " large"
-    },
-    {
-        "completion": " window"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " woman"
-    },
-    {
-        "completion": " dan"
-    },
-    {
-        "completion": "cing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " window"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " behind"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " bar"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " glass"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " coat"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " tren"
-    },
-    {
-        "completion": "ch"
-    },
-    {
-        "completion": " coat"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
         "completion": " singing"
     },
     {
-        "completion": " into"
+        "completion": " and"
     },
     {
-        "completion": " a"
+        "completion": " playing"
     },
     {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
+        "completion": " instruments"
     },
     {
         "completion": "."
     },
     {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " suit"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " wine"
-    },
-    {
-        "completion": " glass"
-    },
-    {
-        "completion": "es"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " black"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " susp"
-    },
-    {
-        "completion": "enders"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " bar"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " his"
-    },
-    {
-        "completion": " eyes"
-    },
-    {
-        "completion": " closed"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " group"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " people"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " ch"
-    },
-    {
-        "completion": "airs"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": " while"
-    },
-    {
-        "completion": " we"
-    },
-    {
-        "completion": "aring"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " suit"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " behind"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " bar"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " glass"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " woman"
-    },
-    {
-        "completion": " dan"
-    },
-    {
-        "completion": "cing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " large"
-    },
-    {
-        "completion": " window"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " strip"
-    },
-    {
-        "completion": "ed"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " coat"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " tren"
-    },
-    {
-        "completion": "ch"
-    },
-    {
-        "completion": " coat"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " suit"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " wine"
-    },
-    {
-        "completion": " glass"
-    },
-    {
-        "completion": "es"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " black"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " susp"
-    },
-    {
-        "completion": "enders"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " bar"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " his"
-    },
-    {
-        "completion": " eyes"
-    },
-    {
-        "completion": " closed"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " group"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " people"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " ch"
-    },
-    {
-        "completion": "airs"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": " while"
-    },
-    {
-        "completion": " we"
-    },
-    {
-        "completion": "aring"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " suit"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " behind"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " bar"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " glass"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " woman"
-    },
-    {
-        "completion": " dan"
-    },
-    {
-        "completion": "cing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " large"
-    },
-    {
-        "completion": " window"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " strip"
-    },
-    {
-        "completion": "ed"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " coat"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " tren"
-    },
-    {
-        "completion": "ch"
-    },
-    {
-        "completion": " coat"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " brick"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " suit"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " wall"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " wine"
-    },
-    {
-        "completion": " glass"
-    },
-    {
-        "completion": "es"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " black"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " white"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " susp"
-    },
-    {
-        "completion": "enders"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " bar"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " his"
-    },
-    {
-        "completion": " eyes"
-    },
-    {
-        "completion": " closed"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " group"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " people"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " ch"
-    },
-    {
-        "completion": "airs"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": " while"
-    },
-    {
-        "completion": " we"
-    },
-    {
-        "completion": "aring"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " suit"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " standing"
-    },
-    {
-        "completion": " behind"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " bar"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " glass"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " woman"
-    },
-    {
-        "completion": " dan"
-    },
-    {
-        "completion": "cing"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " front"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " large"
-    },
-    {
-        "completion": " window"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " man"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " strip"
-    },
-    {
-        "completion": "ed"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "irt"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " jack"
-    },
-    {
-        "completion": "et"
-    },
-    {
-        "completion": " singing"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " micro"
-    },
-    {
-        "completion": "phone"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " then"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
+        "completion": ""
     }
 ]

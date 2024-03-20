@@ -76,7 +76,7 @@ def save_video_batch(
 
 
 def save_video(video: Video, duration: float) -> dict:
-    """Saves a batch of videos to datastore.
+    """Saves a video to datastore.
 
     Args:
         video (Video): The video object.

@@ -1,21 +1,31 @@
-import hashlib  # noqa: I001
+import gc
+import hashlib
+import io
 import json
 from collections import defaultdict
 from collections.abc import Generator
 from math import floor
 from pathlib import Path
-from typing_extensions import TypedDict
 
+import av
+import decord
 import numpy as np
-import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
-from decord import DECORDError
+import torch  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 import yt_dlp
+from decord import DECORDError
+from typing_extensions import TypedDict
 from yt_dlp.utils import DownloadError
 
 from aana.configs.settings import settings
 from aana.exceptions.general import (
     DownloadException,
     VideoReadingException,
+)
+from aana.models.core.audio import (
+    Audio,
+    group_frames,
+    ignore_invalid_frames,
+    resample_frames,
 )
 from aana.models.core.image import Image
 from aana.models.core.video import Video
@@ -209,6 +219,76 @@ def download_video(video_input: VideoInput | Video) -> Video:
             raise DownloadException(url=video_input.url, msg=error_message) from e
     else:
         return video_input.convert_input_to_object()
+
+
+def load_audio(file: Path | None, sample_rate: int = 16000) -> bytes:
+    """Open an audio file and read as mono waveform, resampling as necessary.
+
+    Args:
+        file (Path): The audio/video file to open.
+        sample_rate (int): The sample rate to resample the audio if necessary.
+
+    Returns:
+        bytes: The content of the audio as bytes.
+
+    Raises:
+        RuntimeError: if ffmpeg fails to convert and load the audio.
+    """
+    resampler = av.audio.resampler.AudioResampler(
+        format="s16",
+        layout="mono",
+        rate=sample_rate,
+    )
+
+    raw_buffer = io.BytesIO()
+
+    # Try loading audio and check for empty audio in one shot.
+    try:
+        with av.open(str(file), mode="r", metadata_errors="ignore") as container:
+            # check for empty audio
+            if container.streams.audio == tuple():
+                return b""
+
+            frames = container.decode(audio=0)
+            frames = ignore_invalid_frames(frames)
+            frames = group_frames(frames, 500000)
+            frames = resample_frames(frames, resampler)
+
+            for frame in frames:
+                array = frame.to_ndarray()
+                raw_buffer.write(array)
+
+        # It appears that some objects related to the resampler are not freed
+        # unless the garbage collector is manually run.
+        del resampler
+        gc.collect()
+
+        return raw_buffer.getvalue()
+
+    except Exception as e:
+        raise RuntimeError(f"{e!s}") from e
+
+
+def extract_audio(video: Video) -> Audio:
+    """Extract the audio file from a Video and return an Audio object.
+
+    Args:
+        video (Video): The video file to extract audio.
+
+    Returns:
+        Audio: an Audio object containing the extracted audio.
+    """
+    audio_bytes = load_audio(video.path)
+
+    # Only difference will be in path where WAV file will be stored
+    # and in content but has same media_id
+    return Audio(
+        url=video.url,
+        media_id=f"audio_{video.media_id}",
+        content=audio_bytes,
+        title=video.title,
+        description=video.description,
+    )
 
 
 def generate_combined_timeline(
