@@ -35,7 +35,15 @@ def save_video_batch(
     durations: list[float],
     # , video_params: list[VideoParams]
 ) -> dict:
-    """Saves a batch of videos to datastore."""
+    """Saves a batch of videos to datastore.
+
+    Args:
+        videos (list[Video]): The video objects.
+        durations (list[float]): the duration of each video object
+
+    Returns:
+        dict: The dictionary with video and media IDs.
+    """
     media_entities = []
     video_entities = []
     for video_object, duration in zip(videos, durations, strict=True):
@@ -159,10 +167,6 @@ def save_video_captions(
     with Session(engine) as session:
         video_repo = VideoRepository(session)
 
-        # if not MediaRepository(session).check_media_exists(video.media_id):
-        #     result = save_video(video, duration)
-        #     video_id = result["video_id"]
-        # else:
         video_entity = video_repo.get_by_media_id(media_id)
         video_id = video_entity.id
         entities = [
@@ -191,7 +195,7 @@ def save_video_transcription(
 
     Args:
         model_name (str): The name of the model used to generate the transcript.
-        media_id (MediaId): The database id of the video
+        media_id (MediaId): The media id of the video
         transcription_info (AsrTranscriptionInfo): The ASR transcription info.
         transcription (AsrTranscription): The ASR transcription.
         segments (AsrSegments): The ASR segments.
@@ -231,7 +235,18 @@ def save_transcripts_batch(
     transcription_list: list[AsrTranscription],
     segments_list: list[list[AsrSegment]],
 ) -> dict:
-    """Save transcripts batch."""
+    """Save transcripts in a batch.
+
+    Arguments:
+        model_name (str): the nameof the model used to generate the batch of transcripts
+        media_ids (list[MediaId]): the media ids of each video in the batch
+        transcription_info_list (list[AsrTranscriptionInfo]): list of transcript metadata
+        transcription_list (list[AsrTranscription]): list of transcripts
+        segments_list (list[list[AsrSegment]]): list of audio segment definitions
+
+    Returns:
+        dict with key "transcription_ids"
+    """
     with Session(engine) as session:
         video_repo = VideoRepository(session)
         entities = [
