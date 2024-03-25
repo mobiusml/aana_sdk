@@ -887,31 +887,6 @@ nodes = [
         ],
     },
     {
-        "name": "save_video",
-        "type": "function",
-        "function": "aana.utils.db.save_video",
-        "dict_output": True,
-        "inputs": [
-            {
-                "name": "video_object",
-                "key": "video",
-                "path": "video.video",
-            },
-        ],
-        "outputs": [
-            {
-                "name": "video_media_id",
-                "key": "media_id",
-                "path": "video.media_id",
-            },
-            {
-                "name": "video_id",
-                "key": "video_id",
-                "path": "video.id",
-            },
-        ],
-    },
-    {
         "name": "delete_media",
         "type": "function",
         "function": "aana.utils.db.delete_media",
@@ -929,6 +904,36 @@ nodes = [
                 "key": "media_id",
                 "path": "deleted_media_id",
             }
+        ],
+    },
+    {
+        "name": "save_video",
+        "type": "function",
+        "function": "aana.utils.db.save_video",
+        "dict_output": True,
+        "inputs": [
+            {
+                "name": "video_object",
+                "key": "video",
+                "path": "video.video",
+            },
+            {
+                "name": "video_duration",
+                "key": "duration",
+                "path": "video.duration",
+            },
+        ],
+        "outputs": [
+            {
+                "name": "video_media_id",
+                "key": "media_id",
+                "path": "video.media_id",
+            },
+            {
+                "name": "video_id",
+                "key": "video_id",
+                "path": "video.id",
+            },
         ],
     },
     {

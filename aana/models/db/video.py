@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 
 from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseEntity, TimeStampEntity
@@ -23,13 +23,15 @@ class VideoEntity(BaseEntity, TimeStampEntity):
     title = Column(String, comment="Title of the video")
     description = Column(String, comment="Description of the video")
 
-    media = relationship(
-        "MediaEntity",
-        foreign_keys=[media_id],
-    )
     captions = relationship(
-        "CaptionEntity", back_populates="video", cascade="all, delete-orphan"
+        "CaptionEntity",
+        backref=backref("video", passive_deletes=True),
+        cascade="all, delete",
+        uselist=True,
     )
     transcripts = relationship(
-        "TranscriptEntity", back_populates="video", cascade="all, delete-orphan"
+        "TranscriptEntity",
+        backref=backref("video", passive_deletes=True),
+        cascade="all, delete",
+        uselist=True,
     )
