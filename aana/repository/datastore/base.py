@@ -89,6 +89,7 @@ class BaseRepository(Generic[T]):
         entity = self.read(str(id))
         if entity:
             self.session.delete(entity)
+            self.session.flush()
             self.session.commit()
             return entity
         elif check:

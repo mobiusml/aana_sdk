@@ -22,7 +22,7 @@ from ray import serve
 from aana.api.request_handler import RequestHandler
 from aana.configs.build import get_configuration
 from aana.configs.db import (
-    DBConfig,
+    DbSettings,
     DbType,
     SQLiteConfig,
 )
@@ -109,7 +109,7 @@ def app_setup(ray_serve_setup):  # noqa: D417
     """
     # create temporary database
     tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
-    db_config = DBConfig(
+    db_config = DbSettings(
         datastore_type=DbType.SQLITE,
         datastore_config=SQLiteConfig(path=tmp_database_path),
     )
