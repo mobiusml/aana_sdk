@@ -3,7 +3,6 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 from typing import TYPE_CHECKING
 
 from sqlalchemy import JSON, CheckConstraint, Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
 
 from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseEntity, TimeStampEntity
@@ -45,11 +44,11 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
     )
     language_confidence = Column(
         Float,
-        CheckConstraint("0 <= language_confidence <= 1"),
+        CheckConstraint(
+            "0 <= language_confidence <= 1", name="language_confidence_value_range"
+        ),
         comment="Confidence score of language prediction",
     )
-
-    video = relationship("VideoEntity", back_populates="transcripts")
 
     @classmethod
     def from_asr_output(

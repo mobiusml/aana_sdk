@@ -3,7 +3,6 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 import typing
 
 from sqlalchemy import CheckConstraint, Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
 
 from aana.configs.db import MediaIdSqlType
 from aana.models.db.base import BaseEntity, TimeStampEntity
@@ -37,17 +36,15 @@ class CaptionEntity(BaseEntity, TimeStampEntity):
 
     frame_id = Column(
         Integer,
-        CheckConstraint("frame_id >= 0"),
+        CheckConstraint("frame_id >= 0", "frame_id_positive"),
         comment="The 0-based frame id of video for caption",
     )
     caption = Column(String, comment="Frame caption")
     timestamp = Column(
         Float,
-        CheckConstraint("timestamp >= 0"),
+        CheckConstraint("timestamp >= 0", name="timestamp_positive"),
         comment="Frame timestamp in seconds",
     )
-
-    video = relationship("VideoEntity", back_populates="captions")
 
     @classmethod
     def from_caption_output(

@@ -3,7 +3,6 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from aana.configs.db import create_database_engine
 from aana.configs.settings import settings
 from aana.models.db.base import BaseEntity
 
@@ -38,12 +37,13 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    engine = create_database_engine(settings.db_config)
+    engine = settings.db_config.get_engine()
     context.configure(
         url=engine.url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        render_as_batched=True,
     )
 
     with context.begin_transaction():
@@ -58,7 +58,7 @@ def run_migrations_online() -> None:
 
     """
     config_section = config.get_section(config.config_ini_section, {})
-    engine = create_database_engine(settings.db_config)
+    engine = settings.db_config.get_engine()
     config_section["sqlalchemy.url"] = engine.url
     connectable = engine_from_config(
         config_section,
@@ -67,7 +67,9 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection, target_metadata=target_metadata, render_as_batch=True
+        )
 
         with context.begin_transaction():
             context.run_migrations()

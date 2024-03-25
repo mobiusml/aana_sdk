@@ -337,8 +337,8 @@ class Endpoint:
                 files_as_bytes = [await file.read() for file in files]
                 getattr(data, file_upload_field.name).set_files(files_as_bytes)
 
-            # We have to do this instead of data.dict() because
-            # data.dict() will convert all nested models to dicts
+            # We have to do this instead of data.model_dump() because
+            # data.model_dump() will convert all nested models to dicts
             # and we want to keep them as pydantic models
             data_dict = {}
             for field_name in data.model_fields:
