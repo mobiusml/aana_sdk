@@ -1,4 +1,5 @@
 from aana.api.api_generation import Endpoint, EndpointOutput
+from aana.api.event_handlers.rate_limit_handler import RateLimitHandler
 
 endpoints = {
     "llama2": [
@@ -225,6 +226,7 @@ endpoints = {
                     output="image_path_stablediffusion2",
                 )
             ],
+            event_handlers=[RateLimitHandler(1, 60)],
         )
     ],
 }

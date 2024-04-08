@@ -1,3 +1,4 @@
+import contextlib
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -10,8 +11,13 @@ from mobius_pipeline.pipeline.pipeline import Pipeline
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 from aana.api.app import custom_exception_handler
+from aana.api.event_handlers.event_handler import EventHandler
+from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
-from aana.exceptions.general import MultipleFileUploadNotAllowed
+from aana.exceptions.general import (
+    HandlerAlreadyRegisteredException,
+    MultipleFileUploadNotAllowed,
+)
 from aana.models.pydantic.exception_response import ExceptionResponseModel
 
 
@@ -125,6 +131,8 @@ class Endpoint:
         output_filter (Optional[OutputFilter]): The parameter will be added to the request and
                                 will allow to choose subset of `outputs` to return.
         streaming (bool): Whether the endpoint outputs a stream of data.
+        event_handlers (list[EventHandler]): list of event handlers to regist for this endpoint (optional)
+
     """
 
     name: str
@@ -133,6 +141,7 @@ class Endpoint:
     outputs: list[EndpointOutput]
     output_filter: OutputFilter | None = None
     streaming: bool = False
+    event_handlers: list[EventHandler] | None = None
 
     def __post_init__(self):
         """Post init method.
@@ -325,10 +334,16 @@ class Endpoint:
         pipeline: Pipeline,
         RequestModel: type[BaseModel],
         file_upload_field: FileUploadField | None = None,
+        event_manager: EventManager | None = None,
     ) -> Callable:
         """Create a function for routing an endpoint."""
+        # Copy path to a bound variable so we don't retain an external reference
+        bound_path = self.path
 
         async def route_func_body(body: str, files: list[UploadFile] | None = None):  # noqa: C901
+            if event_manager:
+                event_manager.handle(bound_path)
+
             # parse form data as a pydantic model and validate it
             data = RequestModel.model_validate_json(body)
 
@@ -408,7 +423,11 @@ class Endpoint:
         return route_func
 
     def register(
-        self, app: FastAPI, pipeline: Pipeline, custom_schemas: dict[str, dict]
+        self,
+        app: FastAPI,
+        pipeline: Pipeline,
+        custom_schemas: dict[str, dict],
+        event_manager: EventManager,
     ):
         """Register an endpoint to the FastAPI app and add schemas to the custom schemas dictionary.
 
@@ -416,6 +435,7 @@ class Endpoint:
             app (FastAPI): FastAPI app to register the endpoint to.
             pipeline (Pipeline): Pipeline to register the endpoint to.
             custom_schemas (Dict[str, Dict]): Dictionary of custom schemas.
+            event_manager (EventManager): The event manager for the associated app
         """
         input_sockets, output_sockets = pipeline.get_sockets(
             [output.output for output in self.outputs]
@@ -423,10 +443,15 @@ class Endpoint:
         RequestModel = self.get_request_model(input_sockets)
         ResponseModel = self.get_response_model(output_sockets)
         file_upload_field = self.get_file_upload_field(input_sockets)
+        if self.event_handlers:
+            for handler in self.event_handlers:
+                with contextlib.suppress(HandlerAlreadyRegisteredException):
+                    event_manager.register_handler(handler)
         route_func = self.create_endpoint_func(
             pipeline=pipeline,
             RequestModel=RequestModel,
             file_upload_field=file_upload_field,
+            event_manager=event_manager,
         )
         app.post(
             self.path,

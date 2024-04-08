@@ -1,13 +1,14 @@
-# This file is used to define fixtures that are used in the integration tests.
-# The fixtures are used to setup Ray and Ray Serve, and to call the endpoints.
-# The fixtures depend on each other, to setup the environment for the tests.
-# Here is a dependency graph of the fixtures:
-# ray_setup (session scope, starts Ray cluster)
-#   -> setup_deployment (module scope, starts Ray deployment, args: deployment)
-#     -> ray_serve_setup (module scope, starts Ray Serve app, args: endpoints, nodes, context, runtime_env)
-#       -> app_setup (module scope, starts Ray Serve app for a specific target, args: target)
-#         -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
+"""Defines fixtures that are used in the integration tests.
 
+The fixtures are used to setup Ray and Ray Serve, and to call the endpoints.
+The fixtures depend on each other, to setup the environment for the tests.
+Here is a dependency graph of the fixtures:
+ray_setup (session scope, starts Ray cluster)
+  -> setup_deployment (module scope, starts Ray deployment, args: deployment)
+    -> ray_serve_setup (module scope, starts Ray Serve app, args: endpoints, nodes, context, runtime_env)
+      -> app_setup (module scope, starts Ray Serve app for a specific target, args: target)
+        -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
+"""
 
 # ruff: noqa: S101
 import os
