@@ -10,7 +10,6 @@ class EventManager:
 
     def __init__(self):
         """Constructor."""
-        # TODO: 
         self._handlers = list[EventHandler]()
 
     def handle(self, event_name: str, *args, **kwargs):
