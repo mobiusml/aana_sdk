@@ -51,6 +51,7 @@ pytest-dotenv = "^0.5.2"
 pytest-env = "^1.1.3"
 pytest-mock = "^3.12.0"
 sqlalchemy-utils = "^0.41.1"
+portpicker = "^1.6.0"
 
 [build-system]
 requires = ["poetry-core"]
