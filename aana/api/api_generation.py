@@ -465,13 +465,13 @@ def add_custom_schemas_to_openapi_schema(
     Returns:
         dict: The openapi schema with the custom schemas added.
     """
-    if "definitions" not in openapi_schema:
-        openapi_schema["definitions"] = {}
+    if "$defs" not in openapi_schema:
+        openapi_schema["$defs"] = {}
     for schema_name, schema in custom_schemas.items():
         # if we have a definitions then we need to move them out to the top level of the schema
-        if "definitions" in schema:
-            openapi_schema["definitions"].update(schema["definitions"])
-            del schema["definitions"]
+        if "$defs" in schema:
+            openapi_schema["$defs"].update(schema["$defs"])
+            del schema["$defs"]
         openapi_schema["components"]["schemas"][f"Body_{schema_name}"]["properties"][
             "body"
         ] = schema
