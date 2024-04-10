@@ -226,7 +226,7 @@ endpoints = {
                     output="image_path_stablediffusion2",
                 )
             ],
-            event_handlers=[RateLimitHandler(1, 60)],
+            event_handlers=[RateLimitHandler(1, 30)],
         )
     ],
 }
