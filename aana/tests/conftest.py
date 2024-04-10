@@ -43,7 +43,7 @@ from aana.utils.general import jsonify
 @pytest.fixture(scope="session")
 def ray_setup():
     """Setup Ray cluster."""
-    ray.init(num_cpus=10)  # pretend we have 10 cpus
+    ray.init(num_cpus=10, log_to_driver=False)  # pretend we have 10 cpus
     yield
     ray.shutdown()
 
