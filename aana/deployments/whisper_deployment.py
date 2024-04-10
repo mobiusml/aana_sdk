@@ -117,7 +117,11 @@ class WhisperBatchOutput(TypedDict):
 
 @serve.deployment
 class WhisperDeployment(BaseDeployment):
-    """Deployment to serve Whisper models from faster-whisper."""
+    """Deployment to serve Whisper models from faster-whisper.
+
+    Available methods:
+        transcribe(media: Video, params: WhisperParams | None = None) -> WhisperOutput(segments, transcription_info, transcription)
+    """
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.

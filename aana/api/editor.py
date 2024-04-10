@@ -290,7 +290,8 @@ async def add_pipeline(request: Request):
     return RedirectResponse(url=f"/pipeline/{pipeline_name}", status_code=303)
 
 
-@app.get("/from_pipeline/{pipeline_name}")
+# @app.get("/from_pipeline/{pipeline_name}")
+@app.get("/pipeline/{pipeline_name}")
 async def get_node_editor_from_pipeline(request: Request, pipeline_name: str):
     """The endpoint for getting the node editor.
 
@@ -716,80 +717,80 @@ async def get_node_editor_from_pipeline(request: Request, pipeline_name: str):
     )
 
 
-@app.get("/pipeline/{pipeline_name}")
-async def get_node_editor(request: Request, pipeline_name: str):
-    """The endpoint for getting the node editor.
+# @app.get("/pipeline/{pipeline_name}")
+# async def get_node_editor(request: Request, pipeline_name: str):
+#     """The endpoint for getting the node editor.
 
-    Returns:
-        AanaJSONResponse: The response containing the node editor.
-    """
-    deployment_class_to_name = {
-        deployment.name: deployment_name
-        for deployment_name, deployment in all_deployments.items()
-    }
+#     Returns:
+#         AanaJSONResponse: The response containing the node editor.
+#     """
+#     deployment_class_to_name = {
+#         deployment.name: deployment_name
+#         for deployment_name, deployment in all_deployments.items()
+#     }
 
-    pydantic_models = get_pydantic_models()
-    pydantic_model_names = [m.name for _, m in pydantic_models]
+#     pydantic_models = get_pydantic_models()
+#     pydantic_model_names = [m.name for _, m in pydantic_models]
 
-    # outputs = {}
-    # output_dicts = get_deployments_typed_dicts()
-    # for output in output_dicts:
-    #     # print(output.name)
-    #     # print(deployment_output_to_outputs(output))
-    #     outputs[output.name] = deployment_output_to_outputs(output)
-    # walk all the files in the aana and get all the typed dicts
-    typed_dicts = []
-    for root, dirs, files in os.walk(resources.path("aana", "")):
-        for file in files:
-            # Check if the file ends with .py
-            if file.endswith(".py"):
-                path = os.path.join(root, file)
-                # print(path)
-                classes = get_class_names_from_file(path)
-                # keep only TypedDict
-                typed_dicts.extend(
-                    [
-                        c
-                        for _, c in classes
-                        if "TypedDict" in [c.id for c in c.bases if hasattr(c, "id")]
-                    ]
-                )
-    outputs = {}
-    for output in typed_dicts:
-        # print(output.name)
-        # print(deployment_output_to_outputs(output))
-        outputs[output.name] = deployment_output_to_outputs(output)
+#     # outputs = {}
+#     # output_dicts = get_deployments_typed_dicts()
+#     # for output in output_dicts:
+#     #     # print(output.name)
+#     #     # print(deployment_output_to_outputs(output))
+#     #     outputs[output.name] = deployment_output_to_outputs(output)
+#     # walk all the files in the aana and get all the typed dicts
+#     typed_dicts = []
+#     for root, dirs, files in os.walk(resources.path("aana", "")):
+#         for file in files:
+#             # Check if the file ends with .py
+#             if file.endswith(".py"):
+#                 path = os.path.join(root, file)
+#                 # print(path)
+#                 classes = get_class_names_from_file(path)
+#                 # keep only TypedDict
+#                 typed_dicts.extend(
+#                     [
+#                         c
+#                         for _, c in classes
+#                         if "TypedDict" in [c.id for c in c.bases if hasattr(c, "id")]
+#                     ]
+#                 )
+#     outputs = {}
+#     for output in typed_dicts:
+#         # print(output.name)
+#         # print(deployment_output_to_outputs(output))
+#         outputs[output.name] = deployment_output_to_outputs(output)
 
-    deployments = {}
-    for deployment in get_all_deployments():
-        deployments[deployment_class_to_name[deployment.name]] = {}
-        for method in get_deployment_methods(deployment):
-            deployments[deployment_class_to_name[deployment.name]][method["name"]] = {
-                "inputs": method["args"],
-                "is_generator": method["is_generator"],
-                # "return_type": method["return_type"],
-                "outputs": outputs.get(method["return_type"], []),
-            }
+#     deployments = {}
+#     for deployment in get_all_deployments():
+#         deployments[deployment_class_to_name[deployment.name]] = {}
+#         for method in get_deployment_methods(deployment):
+#             deployments[deployment_class_to_name[deployment.name]][method["name"]] = {
+#                 "inputs": method["args"],
+#                 "is_generator": method["is_generator"],
+#                 # "return_type": method["return_type"],
+#                 "outputs": outputs.get(method["return_type"], []),
+#             }
 
-    functions = {}
-    for func in available_functions:
-        functions[func] = get_function_details(func, outputs)
+#     functions = {}
+#     for func in available_functions:
+#         functions[func] = get_function_details(func, outputs)
 
-    editor_file = resources.path("aana.configs.editor", f"{pipeline_name}.json")
-    with open(editor_file, "r") as f:
-        editor_pipeline = json.load(f)
+#     editor_file = resources.path("aana.configs.editor", f"{pipeline_name}.json")
+#     with open(editor_file, "r") as f:
+#         editor_pipeline = json.load(f)
 
-    return templates.TemplateResponse(
-        "editor.html",
-        {
-            "request": request,
-            "data_models": pydantic_model_names,
-            "deployments": json.dumps(deployments),
-            "functions": json.dumps(functions),
-            "pipeline": json.dumps(editor_pipeline),
-            "pipeline_name": pipeline_name,
-        },
-    )
+#     return templates.TemplateResponse(
+#         "editor.html",
+#         {
+#             "request": request,
+#             "data_models": pydantic_model_names,
+#             "deployments": json.dumps(deployments),
+#             "functions": json.dumps(functions),
+#             "pipeline": json.dumps(editor_pipeline),
+#             "pipeline_name": pipeline_name,
+#         },
+#     )
 
 
 @app.post("/save/{pipeline_name}")
