@@ -11,7 +11,8 @@ class AanaSDK:
     def __init__(self, port=8000):
         self.port = port
         self.endpoints = {}
-        ray.init()
+        # ray.init(address="auto", ignore_reinit_error=True)
+        ray.init(ignore_reinit_error=True)
 
     def register_deployment(self, name, deployment_instance):
         handle = serve.run(
