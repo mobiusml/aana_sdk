@@ -1,10 +1,8 @@
-import portpicker
 import ray
 from ray import serve
-from ray.serve.handle import RayServeSyncHandle
 
-from aana.api.new_api_generation import Endpoint
-from aana.api.new_request_handler import RequestHandler
+from aana.api.api_generation import Endpoint
+from aana.api.request_handler import RequestHandler
 
 
 class AanaSDK:
