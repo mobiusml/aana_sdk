@@ -1,3 +1,4 @@
+import inspect
 from typing import Any
 
 from aana.configs.settings import settings
@@ -37,3 +38,20 @@ class BaseDeployment:
             config (dict): the configuration
         """
         raise NotImplementedError
+
+    async def get_methods(self) -> dict:
+        """Returns the methods of the deployment.
+
+        Returns:
+            dict: the methods of the deployment with annotations and docstrings
+        """
+        cls = self.__class__
+        methods = inspect.getmembers(cls, predicate=inspect.isfunction)
+        methods_info = {}
+        for name, method in methods:
+            methods_info[name] = {}
+            if method.__annotations__:
+                methods_info[name]["annotations"] = method.__annotations__
+            if method.__doc__:
+                methods_info[name]["doc"] = method.__doc__
+        return methods_info

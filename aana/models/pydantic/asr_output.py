@@ -1,3 +1,5 @@
+from typing import Annotated
+
 import numpy as np
 from faster_whisper.transcribe import (
     Segment as WhisperSegment,
@@ -175,17 +177,9 @@ class AsrTranscription(BaseModel):
     )
 
 
-class AsrSegments(BaseListModel):
-    """Pydantic schema for the list of ASR segments."""
-
-    root: list[AsrSegment] = Field(
-        description="List of ASR segments", default_factory=list
-    )
-    model_config = ConfigDict(
-        json_schema_extra={
-            "description": "List of ASR segments",
-        }
-    )
+AsrSegments = Annotated[
+    list[AsrSegment], Field(..., description="List of ASR segments")
+]
 
 
 class AsrSegmentsList(BaseListModel):
