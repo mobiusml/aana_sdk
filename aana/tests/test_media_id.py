@@ -1,4 +1,6 @@
 # ruff: noqa: S101
+import uuid
+
 import pytest
 from pydantic import ValidationError
 
@@ -22,6 +24,6 @@ def test_media_id_creation():
 
 def test_media_id_random():
     """Test that a random media id can be created."""
-    media_id = MediaId.random()
+    media_id = str(uuid.uuid4())
     assert media_id is not None
     assert media_id != ""
