@@ -52,8 +52,12 @@ class RateLimitHandler(EventHandler):
     def handle(self, event_name: str, *args, **kwargs):
         """Handle the event by checking against rate limiting parameters.
 
+        Arguments:
+            event_name (str): the name of the event to handle
+            *args (list): args for the event
+            **kwargs (dict): keyword args for the event
+
         Raises:
             TooManyRequestsException: if the rate limit has been reached
         """
-        # Ignore event_name for now
         self._acquire()

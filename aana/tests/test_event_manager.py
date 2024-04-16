@@ -37,7 +37,7 @@ def test_event_dispatch():
         assert args == expected_args
         assert kwargs == expected_kwargs
 
-    event_manager.register_handler(CallbackHandler(callback))
+    event_manager.register_handler_for_events(CallbackHandler(callback))
 
     event_manager.handle("foo", 1, 2, 3, 4, 5, a="A", b="B")
 
@@ -46,9 +46,9 @@ def test_double_add():
     """Tests that adding a handler twice raises an error."""
     event_manager = EventManager()
     handler = CallbackHandler(lambda _x, *_args, **_kwargs: None)
-    event_manager.register_handler(handler)
+    event_manager.register_handler_for_events(handler)
     with pytest.raises(HandlerAlreadyRegisteredException):
-        event_manager.register_handler(handler)
+        event_manager.register_handler_for_events(handler)
 
 
 def test_remove():

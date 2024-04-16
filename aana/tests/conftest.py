@@ -188,3 +188,10 @@ def call_endpoint(app_setup, request):  # noqa: D417
         )
 
     return _call_endpoint
+
+
+@pytest.fixture(scope="module")
+def one_request_worker():
+    """Fixture to update settings to only run one request worker."""
+    aana_settings.num_workers = 1
+    yield

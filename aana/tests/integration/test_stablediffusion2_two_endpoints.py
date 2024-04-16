@@ -19,22 +19,36 @@ NON_RATE_LIMITED_ENDPOINT = "/generate_image2"
 )
 @pytest.mark.parametrize("call_endpoint", [TARGET], indirect=True)
 @pytest.mark.parametrize(
-    "prompt, endpoint",
+    "prompt, rate_limited_endpoint, non_rate_limited_endpoint",
     [
         (
             "Les Demoiselles d'Avignon but by Hans Holbein the Younger",
             IMAGE_GENERATE_ENDPOINT,
+            NON_RATE_LIMITED_ENDPOINT,
         ),
     ],
 )
-def test_image_generate(one_request_worker, call_endpoint, prompt, endpoint):
-    """Test image generate endpoint. Also tests rate limiting."""
+def test_image_generate(
+    one_request_worker,
+    call_endpoint,
+    prompt,
+    rate_limited_endpoint,
+    non_rate_limited_endpoint,
+):
+    """Test image generate2 endpoint. Also tests rate limiting."""
     # Generate image. Ignore output for this because it's meaningless.
-    call_endpoint(endpoint, {"prompt": prompt}, ignore_expected_output=True)
+    call_endpoint(
+        rate_limited_endpoint, {"prompt": prompt}, ignore_expected_output=True
+    )
+
+    # Call non-rate-limited endpoint, it should not trigger TooManyRequestsException
+    call_endpoint(
+        non_rate_limited_endpoint, {"prompt": prompt}, ignore_expected_output=True
+    )
 
     # Call again, it should trigger TooManyRequestsException
     call_endpoint(
-        endpoint,
+        rate_limited_endpoint,
         {"prompt": prompt},
         expected_error="TooManyRequestsException",
     )
@@ -43,4 +57,6 @@ def test_image_generate(one_request_worker, call_endpoint, prompt, endpoint):
     time.sleep(30)
 
     # Call again, it should work again (still ignoring output).
-    call_endpoint(endpoint, {"prompt": prompt}, ignore_expected_output=True)
+    call_endpoint(
+        rate_limited_endpoint, {"prompt": prompt}, ignore_expected_output=True
+    )

@@ -227,6 +227,17 @@ endpoints = {
                 )
             ],
             event_handlers=[RateLimitHandler(1, 30)],
-        )
+        ),
+        Endpoint(
+            name="imagegen2",
+            path="/generate_image2",
+            summary="Generates an image from a text prompt",
+            outputs=[
+                EndpointOutput(
+                    name="image_path_stablediffusion2",
+                    output="image_path_stablediffusion2",
+                )
+            ],
+        ),
     ],
 }

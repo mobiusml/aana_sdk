@@ -1,4 +1,3 @@
-import contextlib
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -15,7 +14,6 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 from aana.exceptions.general import (
-    HandlerAlreadyRegisteredException,
     MultipleFileUploadNotAllowed,
 )
 from aana.models.pydantic.exception_response import ExceptionResponseModel
@@ -445,8 +443,7 @@ class Endpoint:
         file_upload_field = self.get_file_upload_field(input_sockets)
         if self.event_handlers:
             for handler in self.event_handlers:
-                with contextlib.suppress(HandlerAlreadyRegisteredException):
-                    event_manager.register_handler(handler)
+                event_manager.register_handler_for_events(handler, [self.path])
         route_func = self.create_endpoint_func(
             pipeline=pipeline,
             RequestModel=RequestModel,
