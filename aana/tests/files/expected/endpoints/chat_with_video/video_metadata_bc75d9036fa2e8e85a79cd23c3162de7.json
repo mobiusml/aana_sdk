@@ -1,5 +1,6 @@
 {
     "execution_time": {
+        "batched_whisper_params": 0,
         "delete_media": 0,
         "download_video": 0,
         "extract_audio": 0,
@@ -8,7 +9,7 @@
         "generate_frames_for_video": 0,
         "hf_blip2_opt_2_7b_video": 0,
         "load_video_captions_hf_blip2_opt_2_7b": 0,
-        "load_video_metadata": 0.0021975040435791016,
+        "load_video_metadata": 0.026407241821289062,
         "load_video_transcription": 0,
         "media_id": 0,
         "question": 0,
@@ -21,8 +22,7 @@
         "video": 0,
         "video_params": 0,
         "vllm_llama2_7b_chat_dialog_stream_video": 0,
-        "whisper_medium_transcribe_in_chunks_video": 0,
-        "whisper_params": 0
+        "whisper_medium_transcribe_in_chunks_video": 0
     },
     "metadata": {
         "description": "",
