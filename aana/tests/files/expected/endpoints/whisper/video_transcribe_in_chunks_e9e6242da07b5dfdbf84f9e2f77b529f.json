@@ -2,13 +2,13 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. mgh is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules.",
+                "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall,",
                 "time_interval": {
                     "end": 27.788,
                     "start": 0.0
@@ -17,19 +17,19 @@
             }
         ],
         "transcription": {
-            "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. mgh is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules."
+            "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices. They're called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this",
+                "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this,",
                 "time_interval": {
                     "end": 54.204,
                     "start": 28.117
@@ -38,19 +38,19 @@
             }
         ],
         "transcription": {
-            "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices. They're called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this"
+            "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit... and it breaks a building. And that's the whole idea of wrecking. So you are using, then, the conversion of gravitational potential energy to kinetic energy.",
+                "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit, and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy.",
                 "time_interval": {
                     "end": 83.18,
                     "start": 54.362
@@ -59,19 +59,19 @@
             }
         ],
         "transcription": {
-            "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit... and it breaks a building. And that's the whole idea of wrecking. So you are using, then, the conversion of gravitational potential energy to kinetic energy."
+            "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit, and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy."
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height then that bob can never come back to a point where the height is any larger.",
+                "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height,",
                 "time_interval": {
                     "end": 113.76,
                     "start": 83.851
@@ -80,19 +80,19 @@
             }
         ],
         "transcription": {
-            "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height then that bob can never come back to a point where the height is any larger."
+            "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height,"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " and it swings, then when it reaches here it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here.",
+                "text": " and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here. I trust",
                 "time_interval": {
                     "end": 140.945,
                     "start": 114.175
@@ -101,13 +101,13 @@
             }
         ],
         "transcription": {
-            "text": " and it swings, then when it reaches here it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here."
+            "text": " and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here. I trust"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
@@ -128,7 +128,7 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
@@ -149,7 +149,7 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.98193359375
+            "language_confidence": 0.982421875
         },
         "segments": [
             {
