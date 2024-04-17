@@ -10,7 +10,6 @@ readme = "README.md"
 # Apart from python (1st) and other internal deps (2nd), please
 # keep this list alphabetized!
 python = "~3.10"
-mobius-pipeline = { path = "./mobius-pipeline", develop = true }
 accelerate = "^0.26.1"
 alembic = "^1.12.1"
 av = "==10.*"
