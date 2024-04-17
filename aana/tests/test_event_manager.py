@@ -37,23 +37,32 @@ def test_event_dispatch():
         assert args == expected_args
         assert kwargs == expected_kwargs
 
-    event_manager.register_handler_for_events(CallbackHandler(callback))
+    event_manager.register_handler_for_events(CallbackHandler(callback), ["foo"])
 
     event_manager.handle("foo", 1, 2, 3, 4, 5, a="A", b="B")
 
 
-def test_double_add():
-    """Tests that adding a handler twice raises an error."""
-    event_manager = EventManager()
-    handler = CallbackHandler(lambda _x, *_args, **_kwargs: None)
-    event_manager.register_handler_for_events(handler)
-    with pytest.raises(HandlerAlreadyRegisteredException):
-        event_manager.register_handler_for_events(handler)
-
-
-def test_remove():
-    """Tests that removing a handler not added raises an error."""
+def test_remove_all_raises():
+    """Tests that removing handler not added from all events raises an error."""
     event_manager = EventManager()
     handler = CallbackHandler(lambda _, *_args, **_kwargs: None)
     with pytest.raises(HandlerNotRegisteredException):
-        event_manager.deregister_handler(handler)
+        event_manager.deregister_handler_from_all_events(handler)
+
+
+def test_remove_works():
+    """Tests that removing a handler works."""
+    event_manager = EventManager()
+    handler = CallbackHandler(lambda _, *_args, **_kwargs: None)
+    event_manager.register_handler_for_events(handler, ["foo"])
+    event_manager.deregister_handler_from_event(handler, "foo")
+    assert len(event_manager._handlers["foo"]) == 0
+
+
+def test_remove_all_works():
+    """Tests that removing all handlers works."""
+    event_manager = EventManager()
+    handler = CallbackHandler(lambda _, *_args, **_kwargs: None)
+    event_manager.register_handler_for_events(handler, ["foo"])
+    event_manager.deregister_handler_from_all_events(handler)
+    assert len(event_manager._handlers["foo"]) == 0

@@ -44,5 +44,5 @@ def test_event_manager_discriminates():
     event_manager = EventManager()
     rate_limiter = RateLimitHandler(1, sys.float_info.max)
     event_manager.register_handler_for_events(rate_limiter, ["bar"])
-    # Shoudl not raise
+    # Should not raise
     event_manager.handle("foo")
