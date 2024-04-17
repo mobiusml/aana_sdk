@@ -32,7 +32,7 @@ class RateLimitHandler(EventHandler):
             expired: timestamp before which to clear, as output from time.monotonic()
         """
         while self._calls and self._calls[0] < expired:
-            self._calls.pop()
+            self._calls.pop(0)
 
     def _acquire(self):
         """Checks if we can acquire (process) a resource.
