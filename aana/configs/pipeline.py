@@ -24,7 +24,7 @@ from aana.models.pydantic.vad_params import VadParams
 from aana.models.pydantic.video_input import VideoInput, VideoInputList
 from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
-from aana.models.pydantic.whisper_params import WhisperParams
+from aana.models.pydantic.whisper_params import BatchedWhisperParams, WhisperParams
 
 # container data model
 # we don't enforce this data model for now but it's a good reference for writing paths and flatten_by
@@ -371,6 +371,19 @@ nodes = [
         ],
     },
     {
+        "name": "batched_whisper_params",
+        "type": "input",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "batched_whisper_params",
+                "key": "whisper_params",
+                "path": "video_batch.whisper_params",
+                "data_model": BatchedWhisperParams,
+            }
+        ],
+    },
+    {
         "name": "whisper_medium_transcribe_videos",
         "type": "ray_deployment",
         "deployment_name": "whisper_deployment_medium",
@@ -621,10 +634,10 @@ nodes = [
                 "path": "video.vad_segments",
             },
             {
-                "name": "whisper_params",
+                "name": "batched_whisper_params",
                 "key": "params",
                 "path": "video_batch.whisper_params",
-                "data_model": WhisperParams,
+                "data_model": BatchedWhisperParams,
             },
         ],
         "outputs": [
