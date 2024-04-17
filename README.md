@@ -7,19 +7,14 @@ Aana is a multi-model SDK for deploying and serving machine learning models.
 ## Installation
 
 1. Clone this repository.
-2. Update submodules.
 
-```bash
-git submodule update --init --recursive
-```
-
-3. Install additional libraries.
+2. Install additional libraries.
 
 ```bash
 apt update && apt install -y libgl1
 ```
 
-4. Install the package with poetry.
+3. Install the package with poetry.
 
 It will install the package and all dependencies in a virtual environment.
 
@@ -27,7 +22,7 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-5. Run the SDK.
+4. Run the SDK.
 
 ```bash
 HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana --port 8000 --host 0.0.0.0 --target chat_with_video

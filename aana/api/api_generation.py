@@ -35,13 +35,18 @@ class Endpoint:
         name (str): Name of the endpoint.
         path (str): Path of the endpoint.
         summary (str): Description of the endpoint that will be shown in the API documentation.
-        func (Callable): Function that will be called when the endpoint is hit.
     """
 
     name: str
     path: str
     summary: str
-    func: Callable
+    initialized: bool = False
+
+    async def initialize(self):
+        pass
+
+    async def run(self, *args, **kwargs):
+        raise NotImplementedError
 
     def register(self, app, custom_schemas):
         """Register the endpoint in the FastAPI application.
@@ -76,10 +81,7 @@ class Endpoint:
         Returns:
             str: Generated model name.
         """
-        return (
-            "".join([word.capitalize() for word in self.func.__name__.split("_")])
-            + suffix
-        )
+        return self.__class__.__name__ + suffix
 
     def type_to_field(self, arg_type: Any) -> tuple[Any, Any]:
         """Convert an argument type to a Pydantic field.
@@ -112,7 +114,7 @@ class Endpoint:
             dict[str, tuple[Any, Field]]: Dictionary of fields for the request Pydantic model.
         """
         fields = {}
-        for arg_name, arg_type in self.func.__annotations__.items():
+        for arg_name, arg_type in self.run.__annotations__.items():
             if arg_name == "return":
                 continue
             fields[arg_name] = self.type_to_field(arg_type)
@@ -134,10 +136,10 @@ class Endpoint:
         Returns:
             dict[str, tuple[Any, Any]]: Dictionary of fields for the response Pydantic model.
         """
-        if isasyncgenfunction(self.func):
-            return_type = self.func.__annotations__["return"].__args__[0]
+        if isasyncgenfunction(self.run):
+            return_type = self.run.__annotations__["return"].__args__[0]
         else:
-            return_type = self.func.__annotations__["return"]
+            return_type = self.run.__annotations__["return"]
         fields = {}
         for arg_name, arg_type in return_type.__annotations__.items():
             fields[arg_name] = self.type_to_field(arg_type)
@@ -163,7 +165,7 @@ class Endpoint:
             MultipleFileUploadNotAllowed: If multiple inputs require file upload.
         """
         file_upload_field = None
-        for arg_name, arg_type in self.func.__annotations__.items():
+        for arg_name, arg_type in self.run.__annotations__.items():
             if arg_name == "return":
                 continue
 
@@ -194,6 +196,9 @@ class Endpoint:
         """Create a function for routing an endpoint."""
 
         async def route_func_body(body: str, files: list[UploadFile] | None = None):
+            if not self.initialized:
+                await self.initialize()
+
             # parse form data as a pydantic model and validate it
             data = RequestModel.model_validate_json(body)
 
@@ -210,12 +215,12 @@ class Endpoint:
                 field_value = getattr(data, field_name)
                 data_dict[field_name] = field_value
 
-            if isasyncgenfunction(self.func):
+            if isasyncgenfunction(self.run):
 
                 async def generator_wrapper() -> AsyncGenerator[bytes, None]:
                     """Serializes the output of the generator using ORJSONResponseCustom."""
                     try:
-                        async for output in self.func(**data_dict):
+                        async for output in self.run(**data_dict):
                             yield AanaJSONResponse(content=output).body
                     except Exception as e:
                         yield custom_exception_handler(None, e).body
@@ -224,7 +229,7 @@ class Endpoint:
                     generator_wrapper(), media_type="application/json"
                 )
             else:
-                output = await self.func(**data_dict)
+                output = await self.run(**data_dict)
                 return AanaJSONResponse(content=output)
 
         if file_upload_field:
