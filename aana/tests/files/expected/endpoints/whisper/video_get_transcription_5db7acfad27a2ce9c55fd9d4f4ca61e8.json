@@ -1,9 +1,11 @@
 {
     "execution_time": {
+        "batched_whisper_params": 0,
         "delete_media": 0,
         "download_video": 0,
         "extract_audio": 0,
-        "load_video_transcription": 0.021538496017456055,
+        "generate_frames_for_video": 0,
+        "load_video_transcription": 0.006531476974487305,
         "media_id": 0,
         "save_video": 0,
         "save_video_transcription": 0,
@@ -11,18 +13,19 @@
         "vad_params": 0,
         "vad_transcribe_in_chunks_audio": 0,
         "video": 0,
+        "video_params": 0,
         "whisper_medium_transcribe_in_chunks_video": 0,
         "whisper_medium_transcribe_video": 0,
         "whisper_params": 0
     },
     "info": {
         "language": "en",
-        "language_confidence": 0.982421875
+        "language_confidence": 0.98291015625
     },
     "segments": [
         {
-            "confidence": 0.9159662723300377,
-            "no_speech_confidence": 0.007564544677734375,
+            "confidence": 0.9158259730943162,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " Now I want to return to the conservation of mechanical energy.",
             "time_interval": {
                 "end": 6.0,
@@ -31,8 +34,8 @@
             "words": []
         },
         {
-            "confidence": 0.9159662723300377,
-            "no_speech_confidence": 0.007564544677734375,
+            "confidence": 0.9158259730943162,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " I have here a pendulum.",
             "time_interval": {
                 "end": 12.0,
@@ -41,8 +44,8 @@
             "words": []
         },
         {
-            "confidence": 0.9159662723300377,
-            "no_speech_confidence": 0.007564544677734375,
+            "confidence": 0.9158259730943162,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " I have an object that weighs 15 kilograms",
             "time_interval": {
                 "end": 18.0,
@@ -51,8 +54,8 @@
             "words": []
         },
         {
-            "confidence": 0.9159662723300377,
-            "no_speech_confidence": 0.007564544677734375,
+            "confidence": 0.9158259730943162,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " and I can lift it up one meter, which I have done now.",
             "time_interval": {
                 "end": 24.0,
@@ -61,7 +64,7 @@
             "words": []
         },
         {
-            "confidence": 0.8942957440327974,
+            "confidence": 0.8944121932626876,
             "no_speech_confidence": 0.478759765625,
             "text": " If I let it fall, then that will be converted to kinetic energy.",
             "time_interval": {
@@ -71,7 +74,7 @@
             "words": []
         },
         {
-            "confidence": 0.8942957440327974,
+            "confidence": 0.8944121932626876,
             "no_speech_confidence": 0.478759765625,
             "text": " If I would let it swing from one meter height",
             "time_interval": {
@@ -81,7 +84,7 @@
             "words": []
         },
         {
-            "confidence": 0.8942957440327974,
+            "confidence": 0.8944121932626876,
             "no_speech_confidence": 0.478759765625,
             "text": " and you would be there and it would hit you, you'd be dead.",
             "time_interval": {
@@ -91,7 +94,7 @@
             "words": []
         },
         {
-            "confidence": 0.8942957440327974,
+            "confidence": 0.8944121932626876,
             "no_speech_confidence": 0.478759765625,
             "text": " 150 joules is enough to kill you.",
             "time_interval": {
@@ -101,8 +104,8 @@
             "words": []
         },
         {
-            "confidence": 0.8928324226328321,
-            "no_speech_confidence": 0.66162109375,
+            "confidence": 0.8926982952688367,
+            "no_speech_confidence": 0.6650390625,
             "text": " You lift up a very heavy object, even heavier than this,",
             "time_interval": {
                 "end": 55.5,
@@ -111,8 +114,8 @@
             "words": []
         },
         {
-            "confidence": 0.8928324226328321,
-            "no_speech_confidence": 0.66162109375,
+            "confidence": 0.8926982952688367,
+            "no_speech_confidence": 0.6650390625,
             "text": " and then you let it go, you swing it,",
             "time_interval": {
                 "end": 61.5,
@@ -121,8 +124,8 @@
             "words": []
         },
         {
-            "confidence": 0.8928324226328321,
-            "no_speech_confidence": 0.66162109375,
+            "confidence": 0.8926982952688367,
+            "no_speech_confidence": 0.6650390625,
             "text": " thereby converting gravitational potential energy into kinetic energy",
             "time_interval": {
                 "end": 67.5,
@@ -131,8 +134,8 @@
             "words": []
         },
         {
-            "confidence": 0.8928324226328321,
-            "no_speech_confidence": 0.66162109375,
+            "confidence": 0.8926982952688367,
+            "no_speech_confidence": 0.6650390625,
             "text": " and that way you can demolish a building.",
             "time_interval": {
                 "end": 73.5,
@@ -142,7 +145,7 @@
         },
         {
             "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.151611328125,
+            "no_speech_confidence": 0.1556396484375,
             "text": " So you are using, then, the conversion of gravitational potential energy",
             "time_interval": {
                 "end": 80.5,
@@ -152,7 +155,7 @@
         },
         {
             "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.151611328125,
+            "no_speech_confidence": 0.1556396484375,
             "text": " to kinetic energy.",
             "time_interval": {
                 "end": 86.5,
@@ -162,7 +165,7 @@
         },
         {
             "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.151611328125,
+            "no_speech_confidence": 0.1556396484375,
             "text": " Now, I am such a strong believer of the conservation of mechanical energy",
             "time_interval": {
                 "end": 92.5,
@@ -172,7 +175,7 @@
         },
         {
             "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.151611328125,
+            "no_speech_confidence": 0.1556396484375,
             "text": " that I am willing to put my life on the line.",
             "time_interval": {
                 "end": 100.39,
@@ -181,8 +184,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872785100575402,
-            "no_speech_confidence": 0.280029296875,
+            "confidence": 0.8872207479522947,
+            "no_speech_confidence": 0.27392578125,
             "text": " If I release that bob from a certain height,",
             "time_interval": {
                 "end": 106.39,
@@ -191,8 +194,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872785100575402,
-            "no_speech_confidence": 0.280029296875,
+            "confidence": 0.8872207479522947,
+            "no_speech_confidence": 0.27392578125,
             "text": " then that bob can never come back to a point where the height is any larger.",
             "time_interval": {
                 "end": 112.39,
@@ -201,8 +204,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872785100575402,
-            "no_speech_confidence": 0.280029296875,
+            "confidence": 0.8872207479522947,
+            "no_speech_confidence": 0.27392578125,
             "text": " If I release it from this height and it swings,",
             "time_interval": {
                 "end": 118.39,
@@ -211,8 +214,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872785100575402,
-            "no_speech_confidence": 0.280029296875,
+            "confidence": 0.8872207479522947,
+            "no_speech_confidence": 0.27392578125,
             "text": " then when it reaches here, it could not be higher.",
             "time_interval": {
                 "end": 124.39,
@@ -221,8 +224,8 @@
             "words": []
         },
         {
-            "confidence": 0.8103210531848889,
-            "no_speech_confidence": 0.443115234375,
+            "confidence": 0.8106935256393258,
+            "no_speech_confidence": 0.44287109375,
             "text": " It should not be able to reach any higher",
             "time_interval": {
                 "end": 130.39,
@@ -231,8 +234,8 @@
             "words": []
         },
         {
-            "confidence": 0.8103210531848889,
-            "no_speech_confidence": 0.443115234375,
+            "confidence": 0.8106935256393258,
+            "no_speech_confidence": 0.44287109375,
             "text": " provided that I do not give this object an initial speed when I stand here.",
             "time_interval": {
                 "end": 136.39,
@@ -241,8 +244,8 @@
             "words": []
         },
         {
-            "confidence": 0.8103210531848889,
-            "no_speech_confidence": 0.443115234375,
+            "confidence": 0.8106935256393258,
+            "no_speech_confidence": 0.44287109375,
             "text": " I trust the conservation of mechanical energy for 100%.",
             "time_interval": {
                 "end": 143.77,
@@ -251,8 +254,8 @@
             "words": []
         },
         {
-            "confidence": 0.8103210531848889,
-            "no_speech_confidence": 0.443115234375,
+            "confidence": 0.8106935256393258,
+            "no_speech_confidence": 0.44287109375,
             "text": " I may not trust myself.",
             "time_interval": {
                 "end": 151.66,
@@ -261,7 +264,7 @@
             "words": []
         },
         {
-            "confidence": 0.9170229259778386,
+            "confidence": 0.9171486192048013,
             "no_speech_confidence": 0.1318359375,
             "text": " And I hope I will be able to do it at zero speed",
             "time_interval": {
@@ -271,7 +274,7 @@
             "words": []
         },
         {
-            "confidence": 0.9170229259778386,
+            "confidence": 0.9171486192048013,
             "no_speech_confidence": 0.1318359375,
             "text": " so that when it comes back, it may touch my chin,",
             "time_interval": {
@@ -281,7 +284,7 @@
             "words": []
         },
         {
-            "confidence": 0.9170229259778386,
+            "confidence": 0.9171486192048013,
             "no_speech_confidence": 0.1318359375,
             "text": " but it may not crush my chin.",
             "time_interval": {
@@ -291,7 +294,7 @@
             "words": []
         },
         {
-            "confidence": 0.9170229259778386,
+            "confidence": 0.9171486192048013,
             "no_speech_confidence": 0.1318359375,
             "text": " I want you to be extremely quiet because this is no joke.",
             "time_interval": {
@@ -301,8 +304,8 @@
             "words": []
         },
         {
-            "confidence": 0.8185503647836212,
-            "no_speech_confidence": 0.426513671875,
+            "confidence": 0.8273700625370954,
+            "no_speech_confidence": 0.53173828125,
             "text": " I want you to be very quiet. I almost didn't sleep all night.",
             "time_interval": {
                 "end": 186.62,
@@ -311,8 +314,8 @@
             "words": []
         },
         {
-            "confidence": 0.8185503647836212,
-            "no_speech_confidence": 0.426513671875,
+            "confidence": 0.8273700625370954,
+            "no_speech_confidence": 0.53173828125,
             "text": " Three, two, one, zero.",
             "time_interval": {
                 "end": 200.81,
@@ -321,8 +324,8 @@
             "words": []
         },
         {
-            "confidence": 0.8185503647836212,
-            "no_speech_confidence": 0.426513671875,
+            "confidence": 0.8273700625370954,
+            "no_speech_confidence": 0.53173828125,
             "text": " Physics works and I am still alive.",
             "time_interval": {
                 "end": 206.81,

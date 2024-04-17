@@ -2,7 +2,7 @@
     {
         "captions": [
             "a black background with a white background",
-            "a man in a suit is singing into a microphone",
+            "a man with his eyes closed singing into a microphone",
             "a man in a suit is singing into a microphone",
             "a person is holding a black jacket and a white shirt",
             "a man in a suit is singing into a microphone",
@@ -22,31 +22,9 @@
         ]
     },
     {
-        "captions": [
-            "a blonde woman with a yellow bow in her hair",
-            "a woman with blonde hair standing in front of a window",
-            "a man wearing sunglasses standing in front of a chain link fence",
-            "a man in a blue shirt and sunglasses is walking",
-            "a woman in a white dress and sunglasses is standing in front of a white brick wall",
-            "a woman with blonde hair standing in front of a white wall",
-            "a woman with long blonde hair standing in front of a white wall",
-            "a man in a trench coat is standing in front of a brick wall"
-        ],
-        "timestamps": [
-            9.4399995803833,
-            10.079999923706055,
-            11.279999732971191,
-            12.039999961853027,
-            15.0,
-            17.399999618530273,
-            18.040000915527344,
-            18.239999771118164
-        ]
-    },
-    {
         "info": {
             "language": "en",
-            "language_confidence": 0.6025390625
+            "language_confidence": 0.599609375
         },
         "segments": [
             {
@@ -67,7 +45,7 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.6025390625
+            "language_confidence": 0.599609375
         },
         "segments": [
             {
@@ -88,13 +66,13 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.6025390625
+            "language_confidence": 0.599609375
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " Never gonna make you cry Never gonna say goodbye",
+                "text": " You're gonna say goodbye",
                 "time_interval": {
                     "end": 114.443,
                     "start": 107.827
@@ -103,19 +81,19 @@
             }
         ],
         "transcription": {
-            "text": " Never gonna make you cry Never gonna say goodbye"
+            "text": " You're gonna say goodbye"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.6025390625
+            "language_confidence": 0.599609375
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " But you're too shy to say it Inside we both know what's been",
+                "text": " You're too shy to say it It's time we both know what's been",
                 "time_interval": {
                     "end": 147.208,
                     "start": 142.263
@@ -124,19 +102,19 @@
             }
         ],
         "transcription": {
-            "text": " But you're too shy to say it Inside we both know what's been"
+            "text": " You're too shy to say it It's time we both know what's been"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.6025390625
+            "language_confidence": 0.599609375
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye",
+                "text": " I'm gonna let you down I'm gonna run around and desert you I'm gonna make you cry I'm gonna say",
                 "time_interval": {
                     "end": 172.89,
                     "start": 163.731
@@ -145,19 +123,19 @@
             }
         ],
         "transcription": {
-            "text": " Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye"
+            "text": " I'm gonna let you down I'm gonna run around and desert you I'm gonna make you cry I'm gonna say"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.6025390625
+            "language_confidence": 0.599609375
         },
         "segments": [
             {
                 "confidence": null,
                 "no_speech_confidence": null,
-                "text": " ever gonna turn back.",
+                "text": " you",
                 "time_interval": {
                     "end": 210.143,
                     "start": 207.792
@@ -166,8 +144,30 @@
             }
         ],
         "transcription": {
-            "text": " ever gonna turn back."
+            "text": " you"
         }
+    },
+    {
+        "captions": [
+            "a blonde woman with a yellow bow in her hair",
+            "a woman with blonde hair standing in front of a window",
+            "a man wearing sunglasses standing in front of a chain link fence",
+            "a man in a blue shirt and sunglasses is walking",
+            "a woman in a white dress and sunglasses is standing in front of a brick wall",
+            "a woman with blonde hair standing in front of a white wall",
+            "a woman with long blonde hair standing in front of a white wall",
+            "a man in a trench coat is standing in front of a brick wall"
+        ],
+        "timestamps": [
+            9.4399995803833,
+            10.079999923706055,
+            11.279999732971191,
+            12.039999961853027,
+            15.0,
+            17.399999618530273,
+            18.040000915527344,
+            18.239999771118164
+        ]
     },
     {
         "captions": [
@@ -222,7 +222,7 @@
             "a man in a white shirt and tie standing behind a bar",
             "a man in a white shirt and suspenders sitting at a bar",
             "a man in a suit singing into a microphone",
-            "a woman with blonde hair standing in front of a wall"
+            "a woman in a black dress is dancing"
         ],
         "timestamps": [
             42.31999969482422,
@@ -262,7 +262,7 @@
             "three women are standing on chairs in front of a large window",
             "a man in suspenders holding a glass",
             "three women stand in front of a large window",
-            "david bowie - starman",
+            "a man in a suit is singing into a microphone",
             "a man in a white shirt is holding a glass",
             "a man standing in front of a wall with wine glasses",
             "a man in a suit is singing into a microphone",
@@ -352,7 +352,7 @@
             "a man walking under an arched tunnel at night",
             "a man in shorts is jumping over a fence",
             "a young man wearing sunglasses and a blue shirt",
-            "a shadow of a person standing on a concrete floor",
+            "a shadow of a person standing on a sidewalk",
             "a shadow of a person standing on a sidewalk",
             "a shadow of a person holding a cell phone"
         ],
@@ -438,7 +438,7 @@
             "a man is dancing in front of a brick wall",
             "david bowie - the man who sold the world - david bowie stock videos & royalty-free footage",
             "a man and woman are dancing on a stage",
-            "david bowie - starman",
+            "david bowie - starman - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie -",
             "a man in a white shirt is standing next to a bar",
             "three women in black outfits are dancing on a stage",
             "a man in a striped shirt singing into a microphone",
