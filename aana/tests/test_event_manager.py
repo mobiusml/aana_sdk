@@ -7,7 +7,6 @@ from typing_extensions import override
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.exceptions.general import (
-    HandlerAlreadyRegisteredException,
     HandlerNotRegisteredException,
 )
 
