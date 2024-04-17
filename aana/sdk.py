@@ -2,6 +2,7 @@ import sys
 import time
 import traceback
 from collections.abc import Callable
+from typing import Type
 
 import ray
 from ray import serve
@@ -55,20 +56,21 @@ class AanaSDK:
         """
         serve.delete(name)
 
-    def register_endpoint(self, name: str, path: str, summary: str, func: Callable):
+    def register_endpoint(
+        self, name: str, path: str, summary: str, endpoint_cls: type[Endpoint]
+    ):
         """Register an endpoint.
 
         Args:
             name (str): The name of the endpoint.
             path (str): The path of the endpoint.
             summary (str): The summary of the endpoint.
-            func (Callable): The function to be executed when the endpoint is called.
+            endpoint_cls (Type[Endpoint]): The class of the endpoint.
         """
-        endpoint = Endpoint(
+        endpoint = endpoint_cls(
             name=name,
             path=path,
             summary=summary,
-            func=func,
         )
         self.endpoints[name] = endpoint
 
