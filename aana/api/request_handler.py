@@ -6,6 +6,7 @@ from ray import serve
 
 from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
 from aana.api.app import app
+from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 
 # TODO: improve type annotations
@@ -34,11 +35,15 @@ class RequestHandler:
         self.context = context
         self.endpoints = endpoints
         self.pipeline = Pipeline(pipeline_nodes, context)
+        self.event_manager = EventManager()
 
         self.custom_schemas: dict[str, dict] = {}
         for endpoint in self.endpoints:
             endpoint.register(
-                app=app, pipeline=self.pipeline, custom_schemas=self.custom_schemas
+                app=app,
+                pipeline=self.pipeline,
+                custom_schemas=self.custom_schemas,
+                event_manager=self.event_manager,
             )
 
         app.openapi = self.custom_openapi

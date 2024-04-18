@@ -9,6 +9,7 @@ from ray import serve
 from aana.deployments.base_deployment import BaseDeployment
 from aana.models.core.dtype import Dtype
 from aana.models.pydantic.prompt import Prompt
+from aana.utils.test import test_cache
 
 
 class StableDiffusion2Output(TypedDict):
@@ -63,6 +64,7 @@ class StableDiffusion2Deployment(BaseDeployment):
 
         self.model.to(self.device)
 
+    @test_cache
     async def generate(self, prompt: Prompt) -> StableDiffusion2Output:
         """Runs the model on a given prompt and returns the first output.
 

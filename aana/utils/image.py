@@ -19,5 +19,6 @@ def save_image(image: PIL.Image.Image, full_path: Path | None = None) -> PathRes
     """
     if not full_path:
         full_path = settings.image_dir / f"{uuid4()}.png"
+    full_path.parent.mkdir(parents=True, exist_ok=True)
     image.save(full_path)
     return {"path": full_path}
