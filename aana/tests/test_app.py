@@ -4,7 +4,7 @@ import json
 import requests
 from ray import serve
 
-from aana.api.api_generation import Endpoint, EndpointOutput
+# from aana.api.api_generation import Endpoint, EndpointOutput
 
 
 @serve.deployment
@@ -54,12 +54,12 @@ context = {
 
 
 endpoints = [
-    Endpoint(
-        name="lowercase",
-        path="/lowercase",
-        summary="Lowercase text",
-        outputs=[EndpointOutput(name="text", output="lowercase_text")],
-    )
+    # Endpoint(
+    #     name="lowercase",
+    #     path="/lowercase",
+    #     summary="Lowercase text",
+    #     outputs=[EndpointOutput(name="text", output="lowercase_text")],
+    # )
 ]
 
 
