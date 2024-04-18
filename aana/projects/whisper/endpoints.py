@@ -53,7 +53,10 @@ class DeleteMediaOutput(TypedDict):
 
 
 class TranscribeVideoEndpoint(Endpoint):
+    """Transcribe video endpoint."""
+
     async def initialize(self):
+        """Initialize the endpoint."""
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(
@@ -96,7 +99,10 @@ class TranscribeVideoEndpoint(Endpoint):
 
 
 class TranscribeVideoInChunksEndpoint(Endpoint):
+    """Transcribe video in chunks endpoint."""
+
     async def initialize(self):
+        """Initialize the endpoint."""
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         self.vad_handle = await AanaDeploymentHandle.create("vad_deployment")
 
@@ -163,6 +169,8 @@ class LoadTranscriptionEndpoint(Endpoint):
 
 
 class DeleteMediaEndpoint(Endpoint):
+    """Delete media endpoint."""
+
     async def run(self, media_id: MediaId) -> DeleteMediaOutput:
         """Delete media."""
         delete_media(media_id=media_id)
