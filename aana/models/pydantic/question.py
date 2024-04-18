@@ -1,9 +1,5 @@
-from pydantic import ConfigDict
+from typing import Annotated
 
-from aana.models.pydantic.base import BaseStringModel
+from pydantic import Field
 
-
-class Question(BaseStringModel):
-    """A model for a question."""
-
-    model_config = ConfigDict(json_schema_extra={"description": "A question."})
+Question = Annotated[str, Field(alias="question", description="The question.")]

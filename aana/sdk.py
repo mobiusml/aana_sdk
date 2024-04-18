@@ -1,11 +1,10 @@
 import sys
 import time
 import traceback
-from collections.abc import Callable
-from typing import Type
 
 import ray
 from ray import serve
+from ray.serve.config import HTTPOptions
 from ray.serve.deployment import Deployment
 
 from aana.api.api_generation import Endpoint
@@ -17,18 +16,29 @@ from aana.configs.settings import settings as aana_settings
 class AanaSDK:
     """Aana SDK to deploy and manage Aana deployments and endpoints."""
 
-    def __init__(self, port: int = 8000):
+    def __init__(
+        self, port: int = 8000, address: str = "auto", show_logs: bool = False
+    ):
         """Aana SDK to deploy and manage Aana deployments and endpoints.
 
         Args:
             port (int, optional): The port to run the Aana server on. Defaults to 8000.
+            address (str, optional): The address of the Ray cluster. Defaults to "auto".
+            show_logs (bool, optional): If True, the logs will be shown, otherwise
+                they will be hidden but can be accessed in the Ray dashboard. Defaults to False.
         """
         self.port: int = port
         self.endpoints: dict[str, Endpoint] = {}
 
         run_alembic_migrations(aana_settings)
 
-        ray.init(ignore_reinit_error=True, log_to_driver=False)
+        try:
+            # Try to connect to an existing Ray cluster
+            ray.init(address=address, ignore_reinit_error=True, log_to_driver=show_logs)
+        except ConnectionError:
+            # If connection fails, start a new Ray cluster and serve instance
+            ray.init(ignore_reinit_error=True, log_to_driver=show_logs)
+            serve.start(http_options=HTTPOptions(port=self.port))
 
     def register_deployment(
         self, name: str, deployment_instance: Deployment, blocking: bool = False
@@ -42,10 +52,9 @@ class AanaSDK:
         """
         serve.run(
             deployment_instance.bind(),
-            port=self.port,
             name=name,
             route_prefix=f"/{name}",
-            _blocking=blocking,
+            blocking=blocking,
         )
 
     def unregister_deployment(self, name: str):
@@ -94,10 +103,9 @@ class AanaSDK:
                 RequestHandler.options(num_replicas=aana_settings.num_workers).bind(
                     endpoints=self.endpoints.values()
                 ),
-                port=self.port,
                 name="RequestHandler",
                 route_prefix="/",
-                _blocking=blocking,
+                blocking=False,  # blocking manually after to display the message "Deployed successfully."
             )
             print("Deployed successfully.")
             while blocking:
