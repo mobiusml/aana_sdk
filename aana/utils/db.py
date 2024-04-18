@@ -1,5 +1,6 @@
 # ruff: noqa: A002
 from pathlib import Path
+from typing import TypedDict
 from urllib.parse import urlparse
 
 from sqlalchemy.orm import Session
@@ -145,13 +146,19 @@ def delete_media(media_id: MediaId) -> dict:
     }
 
 
+class SaveVideoCaptionOutput(TypedDict):
+    """The output of the save video caption endpoint."""
+
+    caption_ids: list[int]
+
+
 def save_video_captions(
     model_name: str,
     media_id: MediaId,
     captions: CaptionsList,
     timestamps: list[float],
     frame_ids: list[int],
-) -> dict:
+) -> SaveVideoCaptionOutput:
     """Save captions.
 
     Args:
@@ -162,7 +169,7 @@ def save_video_captions(
         frame_ids (list[int]): The frame IDs.
 
     Returns:
-        dict: The dictionary with the IDs of the saved entities.
+        SaveVideoCaptionOutput: The dictionary with the IDs of the saved entities.
     """
     with Session(engine) as session:
         video_repo = VideoRepository(session)
