@@ -1,4 +1,5 @@
 from aana.api.api_generation import Endpoint, EndpointOutput
+from aana.api.event_handlers.rate_limit_handler import RateLimitHandler
 
 endpoints = {
     "llama2": [
@@ -225,6 +226,18 @@ endpoints = {
                     output="image_path_stablediffusion2",
                 )
             ],
-        )
+            event_handlers=[RateLimitHandler(1, 30)],
+        ),
+        Endpoint(
+            name="imagegen2",
+            path="/generate_image2",
+            summary="Generates an image from a text prompt",
+            outputs=[
+                EndpointOutput(
+                    name="image_path_stablediffusion2",
+                    output="image_path_stablediffusion2",
+                )
+            ],
+        ),
     ],
 }

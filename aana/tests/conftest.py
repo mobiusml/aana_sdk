@@ -1,13 +1,14 @@
-# This file is used to define fixtures that are used in the integration tests.
-# The fixtures are used to setup Ray and Ray Serve, and to call the endpoints.
-# The fixtures depend on each other, to setup the environment for the tests.
-# Here is a dependency graph of the fixtures:
-# ray_setup (session scope, starts Ray cluster)
-#   -> setup_deployment (module scope, starts Ray deployment, args: deployment)
-#     -> ray_serve_setup (module scope, starts Ray Serve app, args: endpoints, nodes, context, runtime_env)
-#       -> app_setup (module scope, starts Ray Serve app for a specific target, args: target)
-#         -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
+"""Defines fixtures that are used in the integration tests.
 
+The fixtures are used to setup Ray and Ray Serve, and to call the endpoints.
+The fixtures depend on each other, to setup the environment for the tests.
+Here is a dependency graph of the fixtures:
+ray_setup (session scope, starts Ray cluster)
+  -> setup_deployment (module scope, starts Ray deployment, args: deployment)
+    -> ray_serve_setup (module scope, starts Ray Serve app, args: endpoints, nodes, context, runtime_env)
+      -> app_setup (module scope, starts Ray Serve app for a specific target, args: target)
+        -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
+"""
 
 # ruff: noqa: S101
 import os
@@ -42,7 +43,7 @@ from aana.utils.general import jsonify
 @pytest.fixture(scope="session")
 def ray_setup():
     """Setup Ray cluster."""
-    ray.init(num_cpus=10)  # pretend we have 10 cpus
+    ray.init(num_cpus=10, log_to_driver=False)  # pretend we have 10 cpus
     yield
     ray.shutdown()
 
@@ -187,3 +188,10 @@ def call_endpoint(app_setup, request):  # noqa: D417
         )
 
     return _call_endpoint
+
+
+@pytest.fixture(scope="module")
+def one_request_worker():
+    """Fixture to update settings to only run one request worker."""
+    aana_settings.num_workers = 1
+    yield

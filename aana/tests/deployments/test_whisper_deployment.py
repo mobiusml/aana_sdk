@@ -9,7 +9,7 @@ from deepdiff import DeepDiff
 
 from aana.models.core.audio import Audio
 from aana.models.pydantic.vad_output import VadSegment
-from aana.models.pydantic.whisper_params import WhisperParams, BatchedWhisperParams
+from aana.models.pydantic.whisper_params import BatchedWhisperParams, WhisperParams
 from aana.tests.utils import (
     LevenshteinOperator,
     get_deployments_by_type,
