@@ -327,7 +327,7 @@ class Audio(Media):
 
         # check that the audio is valid
         if self.path and not self.is_audio():
-            raise AudioReadingException(video=self)
+            raise AudioReadingException(audio=self)
 
     def is_audio(self) -> bool:
         """Checks if it's a valid audio."""
