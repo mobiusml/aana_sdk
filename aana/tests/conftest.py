@@ -10,6 +10,7 @@
 
 
 # ruff: noqa: S101
+import importlib
 import os
 import tempfile
 from pathlib import Path
@@ -20,15 +21,11 @@ import ray
 from ray import serve
 
 from aana.api.request_handler import RequestHandler
-from aana.configs.build import get_configuration
 from aana.configs.db import (
     DbSettings,
     DbType,
     SQLiteConfig,
 )
-from aana.configs.deployments import deployments as all_deployments
-from aana.configs.endpoints import endpoints as all_endpoints
-from aana.configs.pipeline import nodes as all_nodes
 from aana.configs.settings import settings as aana_settings
 from aana.tests.utils import (
     call_and_check_endpoint,
@@ -123,33 +120,38 @@ def app_setup(ray_serve_setup):  # noqa: D417
     clear_database(aana_settings)
 
     def start_app(target):
-        # get configuration for the target deployment
-        configuration = get_configuration(
-            target,
-            endpoints=all_endpoints,
-            nodes=all_nodes,
-            deployments=all_deployments,
-        )
-        endpoints = configuration["endpoints"]
-        pipeline_nodes = configuration["nodes"]
-        deployments = configuration["deployments"]
-        runtime_env = {
-            "env_vars": {
-                "DB_CONFIG": jsonify(db_config),
-            }
-        }
-        context = {"deployments": {}}
-        for name, deployment in deployments.items():
-            if not is_gpu_available() and is_using_deployment_cache():
-                # if GPU is not available and we are using deployment cache,
-                # then we don't want to request GPU resources
-                context["deployments"][name] = deployment.options(
-                    ray_actor_options={"num_gpus": 0}
-                ).bind()
-            else:
-                context["deployments"][name] = deployment.bind()
+        module = importlib.import_module(f"aana.projects.{target}.app")
+        aana_app = module.__dict__["aana_app"]
+        aana_app.deploy(blocking=False)
+        return aana_app
 
-        return ray_serve_setup(endpoints, pipeline_nodes, context, runtime_env)
+        # # get configuration for the target deployment
+        # configuration = get_configuration(
+        #     target,
+        #     endpoints=all_endpoints,
+        #     nodes=all_nodes,
+        #     deployments=all_deployments,
+        # )
+        # endpoints = configuration["endpoints"]
+        # pipeline_nodes = configuration["nodes"]
+        # deployments = configuration["deployments"]
+        # runtime_env = {
+        #     "env_vars": {
+        #         "DB_CONFIG": jsonify(db_config),
+        #     }
+        # }
+        # context = {"deployments": {}}
+        # for name, deployment in deployments.items():
+        #     if not is_gpu_available() and is_using_deployment_cache():
+        #         # if GPU is not available and we are using deployment cache,
+        #         # then we don't want to request GPU resources
+        #         context["deployments"][name] = deployment.options(
+        #             ray_actor_options={"num_gpus": 0}
+        #         ).bind()
+        #     else:
+        #         context["deployments"][name] = deployment.bind()
+
+        # return ray_serve_setup(endpoints, pipeline_nodes, context, runtime_env)
 
     yield start_app
 
