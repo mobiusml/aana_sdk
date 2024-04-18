@@ -5,7 +5,6 @@ from typing import Any, cast
 import torch
 from faster_whisper import BatchedInferencePipeline, WhisperModel
 from faster_whisper.tokenizer import Tokenizer
-from faster_whisper.transcribe import TranscriptionOptions
 from pydantic import BaseModel, Field
 from ray import serve
 from typing_extensions import TypedDict
