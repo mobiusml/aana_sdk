@@ -280,10 +280,18 @@ def save_transcripts_batch(
         }
 
 
+class LoadTranscriptionOutput(TypedDict):
+    """The output of the load transcription endpoint."""
+
+    transcription: AsrTranscription
+    segments: AsrSegments
+    transcription_info: AsrTranscriptionInfo
+
+
 def load_video_transcription(
     model_name: str,
     media_id: MediaId,
-) -> dict:
+) -> LoadTranscriptionOutput:
     """Load transcript from database.
 
     Args:
@@ -291,7 +299,7 @@ def load_video_transcription(
         media_id (MediaId): The media ID.
 
     Returns:
-        dict: The dictionary with the transcription, segments, and info.
+        LoadTranscriptionOutput: The dictionary with the transcript, segments, and info.
     """
     with Session(engine) as session:
         repo = TranscriptRepository(session)
@@ -309,10 +317,18 @@ def load_video_transcription(
         }
 
 
+class LoadVideoCaptionsOutput(TypedDict):
+    """The output of the load video captions endpoint."""
+
+    captions: CaptionsList
+    timestamps: list[float]
+    frame_ids: list[int]
+
+
 def load_video_captions(
     model_name: str,
     media_id: MediaId,
-) -> dict:
+) -> LoadVideoCaptionsOutput:
     """Load captions from database.
 
     Args:
@@ -320,7 +336,10 @@ def load_video_captions(
         media_id (MediaId): The media ID.
 
     Returns:
-        dict: The dictionary with the captions, timestamps, and frame IDs.
+        LoadVideoCaptionsOutput: The dictionary with the captions, timestamps, and frame IDs.
+            captions: CaptionsList
+            timestamps: list[float]
+            frame_ids: list[int]
     """
     with Session(engine) as session:
         repo = CaptionRepository(session)

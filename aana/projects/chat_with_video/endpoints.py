@@ -10,14 +10,32 @@ from aana.models.pydantic.asr_output import (
     AsrTranscription,
     AsrTranscriptionInfo,
 )
+from aana.models.pydantic.media_id import MediaId
+from aana.models.pydantic.question import Question
+from aana.models.pydantic.sampling_params import SamplingParams
 from aana.models.pydantic.vad_params import VadParams
 from aana.models.pydantic.video_input import VideoInput
+from aana.models.pydantic.video_metadata import VideoMetadata
 from aana.models.pydantic.video_params import VideoParams
 from aana.models.pydantic.whisper_params import WhisperParams
-from aana.projects.whisper.const import asr_model_name, captioning_model_name
-from aana.utils.db import save_video, save_video_captions, save_video_transcription
+from aana.projects.chat_with_video.const import asr_model_name, captioning_model_name
+from aana.utils.db import (
+    delete_media,
+    load_video_captions,
+    load_video_metadata,
+    load_video_transcription,
+    save_video,
+    save_video_captions,
+    save_video_transcription,
+)
 from aana.utils.general import run_remote
-from aana.utils.video import download_video, extract_audio, generate_frames_decord
+from aana.utils.video import (
+    download_video,
+    extract_audio,
+    generate_combined_timeline,
+    generate_dialog,
+    generate_frames_decord,
+)
 
 if TYPE_CHECKING:
     from aana.models.core.audio import Audio
@@ -38,6 +56,24 @@ class IndexVideoOutput(TypedDict):
 
     transcription_id: Annotated[int, Field(..., description="Transcription Id")]
     caption_ids: Annotated[list[int], Field(..., description="Caption Ids")]
+
+
+class VideoChatEndpointOutput(TypedDict):
+    """Video chat endpoint output."""
+
+    completion: Annotated[str, Field(description="Generated text.")]
+
+
+class LoadVideoMetadataOutput(TypedDict):
+    """The output of the load video metadata endpoint."""
+
+    metadata: VideoMetadata
+
+
+class DeleteMediaOutput(TypedDict):
+    """The output of the delete media endpoint."""
+
+    media_id: MediaId
 
 
 class IndexVideoEndpoint(Endpoint):
@@ -128,3 +164,62 @@ class IndexVideoEndpoint(Endpoint):
             "transcription_id": save_video_transcription_output["transcription_id"],
             "caption_ids": save_video_captions_output["caption_ids"],
         }
+
+
+class VideoChatEndpoint(Endpoint):
+    """Video chat endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
+
+    async def run(
+        self, media_id: MediaId, question: Question, sampling_params: SamplingParams
+    ) -> AsyncGenerator[VideoChatEndpointOutput, None]:
+        """Run the video chat endpoint."""
+        load_video_transcription_output = load_video_transcription(
+            media_id=media_id, model_name=asr_model_name
+        )
+
+        load_video_captions_output = load_video_captions(
+            media_id=media_id, model_name=captioning_model_name
+        )
+
+        video_metadata = load_video_metadata(media_id=media_id)
+
+        timeline_output = generate_combined_timeline(
+            transcription_segments=load_video_transcription_output["segments"],
+            captions=load_video_captions_output["captions"],
+            caption_timestamps=load_video_captions_output["timestamps"],
+        )
+
+        dialog = generate_dialog(
+            metadata=video_metadata,
+            timeline=timeline_output["timeline"],
+            question=question,
+        )
+
+        async for item in self.llm_handle.chat_stream(
+            dialog=dialog, sampling_params=sampling_params
+        ):
+            yield {"completion": item["text"]}
+
+
+class LoadVideoMetadataEndpoint(Endpoint):
+    """Load video metadata endpoint."""
+
+    async def run(self, media_id: MediaId) -> LoadVideoMetadataOutput:
+        """Load video metadata."""
+        video_metadata: VideoMetadata = load_video_metadata(media_id=media_id)
+        return {
+            "metadata": video_metadata,
+        }
+
+
+class DeleteMediaEndpoint(Endpoint):
+    """Delete media endpoint."""
+
+    async def run(self, media_id: MediaId) -> DeleteMediaOutput:
+        """Delete media."""
+        delete_media(media_id=media_id)
+        return {"media_id": media_id}

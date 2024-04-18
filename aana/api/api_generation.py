@@ -43,9 +43,11 @@ class Endpoint:
     initialized: bool = False
 
     async def initialize(self):
+        """Initialize the endpoint."""
         pass
 
     async def run(self, *args, **kwargs):
+        """Run the endpoint."""
         raise NotImplementedError
 
     def register(self, app, custom_schemas):
@@ -188,7 +190,7 @@ class Endpoint:
                 raise MultipleFileUploadNotAllowed(arg_name)
         return file_upload_field
 
-    def create_endpoint_func(
+    def create_endpoint_func(  # noqa: C901
         self,
         RequestModel: type[BaseModel],
         file_upload_field: FileUploadField | None = None,
