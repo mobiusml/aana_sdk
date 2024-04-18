@@ -5,7 +5,7 @@ import pytest
 from mobius_pipeline.node.socket import Socket
 from pydantic import BaseModel, ConfigDict, Field
 
-from aana.api.api_generation import Endpoint, EndpointOutput
+# from aana.api.api_generation import Endpoint, EndpointOutput
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 
 

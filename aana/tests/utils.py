@@ -13,7 +13,6 @@ from aana.configs.db import (
 )
 from aana.configs.settings import Settings
 from aana.tests.const import ALLOWED_LEVENSTEIN_ERROR_RATE
-from aana.utils.general import get_endpoint, jsonify
 
 
 def is_gpu_available() -> bool:
@@ -343,10 +342,11 @@ def get_deployments_by_type(deployment_type: str):
     Returns:
         list: List of deployments with the given type.
     """
-    from aana.configs.deployments import deployments
+    # from aana.configs.deployments import deployments
 
-    return [
-        (name, deployment)
-        for name, deployment in deployments.items()
-        if deployment.name == deployment_type
-    ]
+    # return [
+    #     (name, deployment)
+    #     for name, deployment in deployments.items()
+    #     if deployment.name == deployment_type
+    # ]
+    pass

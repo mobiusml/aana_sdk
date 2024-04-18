@@ -2,8 +2,7 @@
 import pytest
 from mobius_pipeline.exceptions import OutputNotFoundException
 
-from aana.api.api_generation import Endpoint, EndpointOutput
-from aana.configs.build import get_configuration
+from aana.api.api_generation import Endpoint
 
 nodes = [
     {
@@ -65,54 +64,54 @@ nodes = [
 # don't define the deployment for "Capitalize" to test if get_configuration raises an error
 deployments = {"Lowercase": "Lowercase", "Uppercase": "Uppercase"}
 
-endpoints = {
-    "lowercase": [
-        Endpoint(
-            name="lowercase",
-            path="/lowercase",
-            summary="Lowercase text",
-            outputs=[EndpointOutput(name="lowercase_text", output="lowercase_text")],
-        )
-    ],
-    "uppercase": [
-        Endpoint(
-            name="uppercase",
-            path="/uppercase",
-            summary="Uppercase text",
-            outputs=[EndpointOutput(name="uppercase_text", output="uppercase_text")],
-        )
-    ],
-    "both": [
-        Endpoint(
-            name="lowercase",
-            path="/lowercase",
-            summary="Lowercase text",
-            outputs=[EndpointOutput(name="lowercase_text", output="lowercase_text")],
-        ),
-        Endpoint(
-            name="uppercase",
-            path="/uppercase",
-            summary="Uppercase text",
-            outputs=[EndpointOutput(name="uppercase_text", output="uppercase_text")],
-        ),
-    ],
-    "non_existent": [
-        Endpoint(
-            name="non_existent",
-            path="/non_existent",
-            summary="Non existent endpoint",
-            outputs=[EndpointOutput(name="non_existent", output="non_existent")],
-        )
-    ],
-    "capitalize": [
-        Endpoint(
-            name="capitalize",
-            path="/capitalize",
-            summary="Capitalize text",
-            outputs=[EndpointOutput(name="capitalize_text", output="capitalize_text")],
-        )
-    ],
-}
+# endpoints = {
+#     "lowercase": [
+#         Endpoint(
+#             name="lowercase",
+#             path="/lowercase",
+#             summary="Lowercase text",
+#             outputs=[EndpointOutput(name="lowercase_text", output="lowercase_text")],
+#         )
+#     ],
+#     "uppercase": [
+#         Endpoint(
+#             name="uppercase",
+#             path="/uppercase",
+#             summary="Uppercase text",
+#             outputs=[EndpointOutput(name="uppercase_text", output="uppercase_text")],
+#         )
+#     ],
+#     "both": [
+#         Endpoint(
+#             name="lowercase",
+#             path="/lowercase",
+#             summary="Lowercase text",
+#             outputs=[EndpointOutput(name="lowercase_text", output="lowercase_text")],
+#         ),
+#         Endpoint(
+#             name="uppercase",
+#             path="/uppercase",
+#             summary="Uppercase text",
+#             outputs=[EndpointOutput(name="uppercase_text", output="uppercase_text")],
+#         ),
+#     ],
+#     "non_existent": [
+#         Endpoint(
+#             name="non_existent",
+#             path="/non_existent",
+#             summary="Non existent endpoint",
+#             outputs=[EndpointOutput(name="non_existent", output="non_existent")],
+#         )
+#     ],
+#     "capitalize": [
+#         Endpoint(
+#             name="capitalize",
+#             path="/capitalize",
+#             summary="Capitalize text",
+#             outputs=[EndpointOutput(name="capitalize_text", output="capitalize_text")],
+#         )
+#     ],
+# }
 
 
 @pytest.mark.parametrize(

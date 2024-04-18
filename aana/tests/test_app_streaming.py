@@ -5,8 +5,6 @@ from collections.abc import AsyncGenerator
 import requests
 from ray import serve
 
-from aana.api.api_generation import Endpoint, EndpointOutput
-
 
 @serve.deployment
 class Lowercase:
@@ -60,13 +58,13 @@ context = {
 
 
 endpoints = [
-    Endpoint(
-        name="lowercase",
-        path="/lowercase",
-        summary="Lowercase text",
-        outputs=[EndpointOutput(name="text", output="lowercase_text", streaming=True)],
-        streaming=True,
-    )
+    # Endpoint(
+    #     name="lowercase",
+    #     path="/lowercase",
+    #     summary="Lowercase text",
+    #     outputs=[EndpointOutput(name="text", output="lowercase_text", streaming=True)],
+    #     streaming=True,
+    # )
 ]
 
 
