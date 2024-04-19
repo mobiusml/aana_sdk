@@ -127,9 +127,9 @@ def test_sum_asr_segments():
     segments = sum([segment_1, segment_2], AsrSegments())
 
     assert len(segments) == 6
-    assert segments.root == [asr_segment_1] * 3 + [asr_segment_2] * 3
-    assert segments.root[:3] == segment_1.root
-    assert segments.root[3:] == segment_2.root
+    assert segments == [asr_segment_1] * 3 + [asr_segment_2] * 3
+    assert segments[:3] == segment_1
+    assert segments[3:] == segment_2
 
 
 def test_sum_asr_transcription():

@@ -138,7 +138,7 @@ class Endpoint:
         Returns:
             dict[str, tuple[Any, Any]]: Dictionary of fields for the response Pydantic model.
         """
-        if isasyncgenfunction(self.run):
+        if self.is_streaming_response():
             return_type = self.run.__annotations__["return"].__args__[0]
         else:
             return_type = self.run.__annotations__["return"]
@@ -189,6 +189,15 @@ class Endpoint:
                 # raise an exception if multiple inputs require file upload
                 raise MultipleFileUploadNotAllowed(arg_name)
         return file_upload_field
+
+    @classmethod
+    def is_streaming_response(cls) -> bool:
+        """Check if the endpoint returns a streaming response.
+
+        Returns:
+            bool: True if the endpoint returns a streaming response, False otherwise.
+        """
+        return isasyncgenfunction(cls.run)
 
     def create_endpoint_func(  # noqa: C901
         self,
