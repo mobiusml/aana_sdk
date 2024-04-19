@@ -13,6 +13,7 @@ from aana.configs.db import (
 )
 from aana.configs.settings import Settings
 from aana.tests.const import ALLOWED_LEVENSTEIN_ERROR_RATE
+from aana.utils.json import jsonify
 
 
 def is_gpu_available() -> bool:
@@ -100,7 +101,12 @@ def call_streaming_endpoint(
 
 
 def call_endpoint(
-    target: str, port: int, route_prefix: str, endpoint_path: str, data: dict
+    target: str,
+    port: int,
+    route_prefix: str,
+    endpoint_path: str,
+    is_streaming: bool,
+    data: dict,
 ) -> dict | list:
     """Call an endpoint.
 
@@ -109,6 +115,7 @@ def call_endpoint(
         port (int): Port of the server.
         route_prefix (str): Route prefix of the server.
         endpoint_path (str): Endpoint to call.
+        is_streaming (bool): If True, the endpoint is a streaming endpoint.
         data (dict): Data to send to the endpoint.
 
     Returns:
@@ -116,8 +123,7 @@ def call_endpoint(
             If the endpoint is not a streaming endpoint, the output will be a dict.
             If an error occurs, the output will be a dict with the error message.
     """
-    endpoint = get_endpoint(target, endpoint_path)
-    if endpoint.streaming:
+    if is_streaming:
         return call_streaming_endpoint(port, route_prefix, endpoint_path, data)
     else:
         r = requests.post(
@@ -222,12 +228,13 @@ def clear_database(aana_settings: Settings):
 
 
 def check_output(
-    target,
-    endpoint_path,
-    key,
-    output,
-    ignore_expected_output=False,
-    expected_error=None,
+    target: str,
+    endpoint_path: str,
+    key: str,
+    output: dict | list,
+    is_streaming: bool,
+    ignore_expected_output: bool = False,
+    expected_error: str | None = None,
 ):
     """Compare output with expected output.
 
@@ -236,6 +243,7 @@ def check_output(
         endpoint_path (str): Endpoint path.
         key (str): Key of the expected output.
         output (dict | list): Output of the endpoint.
+        is_streaming (bool): If True, the endpoint is a streaming endpoint.
         ignore_expected_output (bool, optional): If True, do not compare the output with the expected output. Defaults to False.
         expected_error (str | None, optional): Expected error. If not None, the output will be compared with the expected error
             and the expected output will be ignored. Defaults to None.
@@ -243,10 +251,9 @@ def check_output(
     Raises:
         AssertionError: if the output is different from the expected output.
     """
-    endpoint = get_endpoint(target, endpoint_path)
     # if we expect an error, then we only check the error
     if expected_error:
-        if endpoint.streaming:
+        if is_streaming:
             assert output[0]["error"] == expected_error, output
         else:
             assert output["error"] == expected_error, output
@@ -269,7 +276,7 @@ def check_output(
 
         expected_output = json.loads(expected_output_path.read_text())
         try:
-            if endpoint.streaming:
+            if is_streaming:
                 compare_streaming_output(expected_output, output)
             else:
                 compare_output(expected_output, output)
@@ -281,7 +288,7 @@ def check_output(
     # if we don't expect an error and we ignore the expected output,
     # then only check that the output does not contain an error
     else:
-        if endpoint.streaming:
+        if is_streaming:
             for chunk in output:
                 assert "error" not in chunk, chunk
         else:
@@ -294,6 +301,7 @@ def call_and_check_endpoint(
     route_prefix: str,
     endpoint_path: str,
     data: dict,
+    is_streaming: bool,
     ignore_expected_output: bool = False,
     expected_error: str | None = None,
 ) -> dict | list:
@@ -305,6 +313,7 @@ def call_and_check_endpoint(
         route_prefix (str): Route prefix of the server.
         endpoint_path (str): Endpoint to call.
         data (dict): Data to send to the endpoint.
+        is_streaming (bool): If True, the endpoint is a streaming endpoint.
         ignore_expected_output (bool, optional): If True, do not compare the output with the expected output. Defaults to False.
         expected_error (str | None, optional): Expected error. If not None, the output will be compared with the expected error
             and the expected output will be ignored. Defaults to None.
@@ -326,14 +335,27 @@ def call_and_check_endpoint(
         data_json.encode("utf-8"),
         usedforsecurity=False,
     ).hexdigest()
-    output = call_endpoint(target, port, route_prefix, endpoint_path, data)
+    output = call_endpoint(
+        target=target,
+        port=port,
+        route_prefix=route_prefix,
+        endpoint_path=endpoint_path,
+        is_streaming=is_streaming,
+        data=data,
+    )
     check_output(
-        target, endpoint_path, data_hash, output, ignore_expected_output, expected_error
+        target=target,
+        endpoint_path=endpoint_path,
+        key=data_hash,
+        output=output,
+        is_streaming=is_streaming,
+        ignore_expected_output=ignore_expected_output,
+        expected_error=expected_error,
     )
     return output
 
 
-def get_deployments_by_type(deployment_type: str):
+def get_deployments_by_type(deployment_type: str) -> list:
     """Get deployments by type from the list of all available deployments.
 
     Args:
@@ -342,11 +364,10 @@ def get_deployments_by_type(deployment_type: str):
     Returns:
         list: List of deployments with the given type.
     """
-    # from aana.configs.deployments import deployments
+    from aana.configs.deployments import available_deployments
 
-    # return [
-    #     (name, deployment)
-    #     for name, deployment in deployments.items()
-    #     if deployment.name == deployment_type
-    # ]
-    pass
+    return [
+        (name, deployment)
+        for name, deployment in available_deployments.items()
+        if deployment.name == deployment_type
+    ]

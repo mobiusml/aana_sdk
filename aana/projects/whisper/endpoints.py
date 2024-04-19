@@ -60,11 +60,11 @@ class TranscribeVideoEndpoint(Endpoint):
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(
-        self, video_input: VideoInput, whisper_params: WhisperParams
+        self, video: VideoInput, whisper_params: WhisperParams
     ) -> AsyncGenerator[TranscribeVideoOutput, None]:
         """Transcribe video."""
-        video: Video = await run_remote(download_video)(video_input=video_input)
-        audio: Audio = extract_audio(video=video)
+        video_obj: Video = await run_remote(download_video)(video_input=video)
+        audio: Audio = extract_audio(video=video_obj)
 
         transcription_list = []
         segments_list = []
@@ -85,12 +85,12 @@ class TranscribeVideoEndpoint(Endpoint):
         transcription_info = sum(transcription_info_list, AsrTranscriptionInfo())
 
         save_video(
-            video=video, duration=0.0
+            video=video_obj, duration=0.0
         )  # set duration to 0.0 as we don't have the actual duration
 
         transcription_record = save_video_transcription(
             model_name=asr_model_name,
-            media_id=video.media_id,
+            media_id=video_obj.media_id,
             transcription=transcription,
             segments=segments,
             transcription_info=transcription_info,
@@ -108,13 +108,13 @@ class TranscribeVideoInChunksEndpoint(Endpoint):
 
     async def run(
         self,
-        video_input: VideoInput,
+        video: VideoInput,
         whisper_params: WhisperParams,
         vad_params: VadParams,
     ) -> AsyncGenerator[TranscribeVideoOutput, None]:
         """Transcribe video in chunks."""
-        video: Video = await run_remote(download_video)(video_input=video_input)
-        audio: Audio = extract_audio(video=video)
+        video_obj: Video = await run_remote(download_video)(video_input=video)
+        audio: Audio = extract_audio(video=video_obj)
 
         vad_output = await self.vad_handle.asr_preprocess_vad(
             audio=audio, params=vad_params
@@ -140,12 +140,12 @@ class TranscribeVideoInChunksEndpoint(Endpoint):
         transcription_info = sum(transcription_info_list, AsrTranscriptionInfo())
 
         save_video(
-            video=video, duration=0.0
+            video=video_obj, duration=0.0
         )  # set duration to 0.0 as we don't have the actual duration
 
         transcription_record = save_video_transcription(
             model_name=asr_model_name,
-            media_id=video.media_id,
+            media_id=video_obj.media_id,
             transcription=transcription,
             segments=segments,
             transcription_info=transcription_info,
