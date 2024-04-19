@@ -41,17 +41,17 @@ class AanaSDK:
             serve.start(http_options=HTTPOptions(port=self.port))
 
     def register_deployment(
-        self, name: str, deployment_instance: Deployment, blocking: bool = False
+        self, name: str, instance: Deployment, blocking: bool = False
     ):
         """Register a deployment.
 
         Args:
             name (str): The name of the deployment.
-            deployment_instance (Deployment): The instance of the deployment to be registered.
+            instance (Deployment): The instance of the deployment to be registered.
             blocking (bool, optional): If True, the function will block until deployment is complete. Defaults to False.
         """
         serve.run(
-            deployment_instance.bind(),
+            instance.bind(),
             name=name,
             route_prefix=f"/{name}",
             blocking=blocking,
@@ -122,3 +122,8 @@ class AanaSDK:
             )
             serve.shutdown()
             sys.exit()
+
+    def shutdown(self):
+        """Shutdown the Aana server."""
+        serve.shutdown()
+        ray.shutdown()

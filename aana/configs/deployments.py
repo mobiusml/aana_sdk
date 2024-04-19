@@ -14,6 +14,8 @@ from aana.deployments.whisper_deployment import (
 from aana.models.core.dtype import Dtype
 from aana.models.pydantic.sampling_params import SamplingParams
 
+available_deployments = {}
+
 vllm_llama2_7b_chat_deployment = VLLMDeployment.options(
     num_replicas=1,
     max_concurrent_queries=1000,
@@ -30,6 +32,7 @@ vllm_llama2_7b_chat_deployment = VLLMDeployment.options(
         chat_template="llama2",
     ).model_dump(),
 )
+available_deployments["vllm_llama2_7b_chat_deployment"] = vllm_llama2_7b_chat_deployment
 
 hf_blip2_opt_2_7b_deployment = HFBlip2Deployment.options(
     num_replicas=1,
@@ -42,6 +45,7 @@ hf_blip2_opt_2_7b_deployment = HFBlip2Deployment.options(
         num_processing_threads=2,
     ).model_dump(),
 )
+available_deployments["hf_blip2_opt_2_7b_deployment"] = hf_blip2_opt_2_7b_deployment
 
 whisper_medium_deployment = WhisperDeployment.options(
     num_replicas=1,
@@ -52,6 +56,7 @@ whisper_medium_deployment = WhisperDeployment.options(
         compute_type=WhisperComputeType.FLOAT16,
     ).model_dump(),
 )
+available_deployments["whisper_medium_deployment"] = whisper_medium_deployment
 
 stablediffusion2_deployment = StableDiffusion2Deployment.options(
     num_replicas=1,
@@ -62,6 +67,7 @@ stablediffusion2_deployment = StableDiffusion2Deployment.options(
         dtype=Dtype.FLOAT16,
     ).model_dump(),
 )
+available_deployments["stablediffusion2_deployment"] = stablediffusion2_deployment
 
 vad_deployment = VadDeployment.options(
     num_replicas=1,
@@ -76,3 +82,4 @@ vad_deployment = VadDeployment.options(
         sample_rate=16000,
     ).model_dump(),
 )
+available_deployments["vad_deployment"] = vad_deployment
