@@ -164,7 +164,7 @@ class LoadTranscriptionEndpoint(Endpoint):
         return {
             "transcription": transcription_record["transcription"],
             "segments": transcription_record["segments"],
-            "transcription_info": transcription_record["transcription_info"],
+            "info": transcription_record["transcription_info"],
         }
 
 

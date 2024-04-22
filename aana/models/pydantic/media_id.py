@@ -14,6 +14,6 @@ def verify_media_id_must_not_be_empty(
 
 MediaId = Annotated[
     str,
-    Field(alias="media_id", description="The media ID."),
+    Field(description="The media ID."),
     WrapValidator(verify_media_id_must_not_be_empty),
 ]
