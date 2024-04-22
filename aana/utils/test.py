@@ -154,8 +154,7 @@ def test_cache(func):  # noqa: C901
                 if settings.test.save_deployment_cache and not cache_path.exists():
                     # save to cache
                     save_cache(cache_path, cache, args, kwargs)
+    retval = wrapper_generator if inspect.isasyncgenfunction(func) else wrapper
 
-    if inspect.isasyncgenfunction(func):
-        return wrapper_generator
-    else:
-        return wrapper
+    retval.__annotations__ = func.__annotations__
+    return retval
