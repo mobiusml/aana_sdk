@@ -12,8 +12,8 @@ DeploymentResult: TypeAlias = Any
 
 
 def typehints_to_component_types(
-    typehints: dict[str],
-) -> tuple[dict[str], dict[str]]:
+    typehints: dict[str, type],
+) -> tuple[dict[str, type], dict[str, type]]:
     """Converts a type hint dictionary into something that can be consumed by Haystack.
 
     Arguments:
@@ -22,6 +22,7 @@ def typehints_to_component_types(
     Returns:
         tuple: Something that can be passed to `haystack.component.set_input_types()`
     """
+    print(typehints)
     output_types = typehints_to_output_types(typehints.pop("return"))
     input_types = typehints_to_input_types(typehints)
     return input_types, output_types
@@ -78,9 +79,7 @@ class AanaDeploymentComponent:
     _inference_method: Callable
     _warm: bool
 
-    def __init__(
-        self, deployment: Deployment, config: BaseModel, method_name="generate_batch"
-    ):
+    def __init__(self, deployment: Deployment, method_name="generate_batch"):
         """Constructor.
 
         Arguments:
@@ -89,19 +88,20 @@ class AanaDeploymentComponent:
             method_name (str): the name of the method on the deployment to call inside the component's `run()` method. Defaults to `generate_batch`
         """
         self._deployment = deployment
-        self.config = config
-        self._run_method = getattr(deployment, method_name)
-        if not self._run_method:
-            raise ValueError(method_name)
+        self.config = deployment.user_config
         self._warm = False
+        self._run_method = None
 
         # Determine input and output types for `run()`
-        hints = get_type_hints(self._run_method)
+        method_handle = self._get_method(method_name)
+        if not method_handle:
+            raise ValueError(method_name)
+        hints = get_type_hints(method_handle)
         input_types, output_types = typehints_to_component_types(hints)
         # The functions `set_input_types()` and `set_output_types()`
-        # are magic methods that take keyword arguments
-        component.set_input_types(**input_types)
-        component.set_output_types(**output_types)
+        # take an positionial instance argument and keyword arguments
+        component.set_input_types(self, **input_types)
+        component.set_output_types(self, **output_types)
 
     def warm_up(self):
         """Warms up the deployment to a ready state.
@@ -110,6 +110,8 @@ class AanaDeploymentComponent:
         """
         if not self._warm:
             self._warm = True
+            # FIXME
+            self._run_method = lambda x: None
             self._deployment.apply_config(self._config)
 
     def run(self, *args, **kwargs) -> DeploymentResult:
@@ -136,3 +138,10 @@ class AanaDeploymentComponent:
     def _call(self, *args, **kwargs) -> DeploymentResult:
         """Calls the deployment's run method. Not public, use the `run()` method."""
         return self._run_method(*args, **kwargs).remote()
+
+    def _get_method(self, method_name: str) -> Callable | None:
+        """Gets a handle to the method specified by the constructor."""
+        # This is the type/constructor of the deployment
+        underlying_deployment_t = self._deployment.func_or_class
+        class_method_handle = getattr(underlying_deployment_t, method_name, None)
+        return class_method_handle  # type: ignore
