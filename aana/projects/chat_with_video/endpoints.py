@@ -89,14 +89,14 @@ class IndexVideoEndpoint(Endpoint):
 
     async def run(
         self,
-        video_input: VideoInput,
+        video: VideoInput,
         video_params: VideoParams,
         whisper_params: WhisperParams,
         vad_params: VadParams,
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
-        video: Video = await run_remote(download_video)(video_input=video_input)
-        audio: Audio = extract_audio(video=video)
+        video_obj: Video = await run_remote(download_video)(video_input=video)
+        audio: Audio = extract_audio(video=video_obj)
 
         vad_output = await self.vad_handle.asr_preprocess_vad(
             audio=audio, params=vad_params
@@ -126,7 +126,7 @@ class IndexVideoEndpoint(Endpoint):
         frame_ids = []
         video_duration = 0.0
         async for frames_dict in run_remote(generate_frames_decord)(
-            video=video, params=video_params
+            video=video_obj, params=video_params
         ):
             timestamps.extend(frames_dict["timestamps"])
             frame_ids.extend(frames_dict["frame_ids"])
@@ -142,11 +142,11 @@ class IndexVideoEndpoint(Endpoint):
                 "timestamps": frames_dict["timestamps"],
             }
 
-        save_video(video=video, duration=video_duration)
+        save_video(video=video_obj, duration=video_duration)
 
         save_video_transcription_output = save_video_transcription(
             model_name=asr_model_name,
-            media_id=video.media_id,
+            media_id=video_obj.media_id,
             transcription=transcription,
             segments=segments,
             transcription_info=transcription_info,
@@ -154,7 +154,7 @@ class IndexVideoEndpoint(Endpoint):
 
         save_video_captions_output = save_video_captions(
             model_name=captioning_model_name,
-            media_id=video.media_id,
+            media_id=video_obj.media_id,
             captions=captions,
             timestamps=timestamps,
             frame_ids=frame_ids,
