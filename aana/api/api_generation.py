@@ -1,7 +1,8 @@
+import inspect
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from inspect import isasyncgenfunction
-from typing import Any
+from typing import Annotated, Any, get_origin
 
 from fastapi import File, Form, UploadFile
 from fastapi.responses import StreamingResponse
@@ -12,6 +13,16 @@ from aana.api.app import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.exceptions.general import MultipleFileUploadNotAllowed
 from aana.models.pydantic.exception_response import ExceptionResponseModel
+
+
+def get_default_values(func):
+    """Get the default values for the function arguments."""
+    signature = inspect.signature(func)
+    return {
+        k: v.default
+        for k, v in signature.parameters.items()
+        if v.default is not inspect.Parameter.empty
+    }
 
 
 @dataclass
@@ -85,10 +96,11 @@ class Endpoint:
         """
         return self.__class__.__name__ + suffix
 
-    def type_to_field(self, arg_type: Any) -> tuple[Any, Any]:
-        """Convert an argument type to a Pydantic field.
+    def arg_to_field(self, arg_name: str, arg_type: Any) -> tuple[Any, Any]:
+        """Convert an argument to a Pydantic field.
 
         Args:
+            arg_name (str): Name of the argument.
             arg_type (Any): Type of the argument.
 
         Returns:
@@ -97,6 +109,13 @@ class Endpoint:
         # if data model is None or Any, set it to Any
         if arg_type is None or arg_type == Any:
             return (Any, Field(None))
+
+        if get_origin(arg_type) is Annotated:
+            default = get_default_values(self.run).get(arg_name)
+            if default is not None:
+                return (arg_type, default)
+            else:
+                return (arg_type, ...)
 
         # try to instantiate the data model
         # to see if any of the fields are required
@@ -119,7 +138,7 @@ class Endpoint:
         for arg_name, arg_type in self.run.__annotations__.items():
             if arg_name == "return":
                 continue
-            fields[arg_name] = self.type_to_field(arg_type)
+            fields[arg_name] = self.arg_to_field(arg_name, arg_type)
         return fields
 
     def get_request_model(self) -> type[BaseModel]:
@@ -144,7 +163,7 @@ class Endpoint:
             return_type = self.run.__annotations__["return"]
         fields = {}
         for arg_name, arg_type in return_type.__annotations__.items():
-            fields[arg_name] = self.type_to_field(arg_type)
+            fields[arg_name] = self.arg_to_field(arg_name, arg_type)
         return fields
 
     def get_response_model(self) -> type[BaseModel]:
@@ -240,7 +259,10 @@ class Endpoint:
                     generator_wrapper(), media_type="application/json"
                 )
             else:
-                output = await self.run(**data_dict)
+                try:
+                    output = await self.run(**data_dict)
+                except Exception as e:
+                    return custom_exception_handler(None, e)
                 return AanaJSONResponse(content=output)
 
         if file_upload_field:
