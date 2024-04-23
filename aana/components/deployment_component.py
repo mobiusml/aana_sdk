@@ -2,6 +2,7 @@ import asyncio
 from collections.abc import Callable
 from typing import Any, TypeAlias, get_type_hints
 
+import ray
 from haystack import component
 from pydantic import BaseModel
 from ray.serve.deployment import Deployment
@@ -90,12 +91,14 @@ class AanaDeploymentComponent:
         self._deployment = deployment
         self.config = deployment.user_config
         self._warm = False
+        self._method_name = method_name
+        self._serve_handle = None
         self._run_method = None
 
         # Determine input and output types for `run()`
-        method_handle = self._get_method(method_name)
+        method_handle = self._get_method()
         if not method_handle:
-            raise ValueError(method_name)
+            raise ValueError(self._method_name)
         hints = get_type_hints(method_handle)
         input_types, output_types = typehints_to_component_types(hints)
         # The functions `set_input_types()` and `set_output_types()`
@@ -110,9 +113,17 @@ class AanaDeploymentComponent:
         """
         if not self._warm:
             self._warm = True
-            # FIXME
-            self._run_method = lambda x: None
-            self._deployment.apply_config(self._config)
+
+            # Start ray if it isn't already
+            # @movchan74 Do we do this here or elsewhere?
+            ray.init(ignore_reinit_error=True)
+            # Run the deployment
+            self._serve_handle = ray.serve.run(self._deployment.bind())
+            self._run_method = getattr(self._serve_handle, self._method_name, None)
+            if not self._run_method:
+                # Should not happen but just in case
+                raise ValueError(self._method_name)
+            # self._serve_handle.apply_config(self._config)
 
     def run(self, *args, **kwargs) -> DeploymentResult:
         """Run the component. This is the primary interface for Haystack Components.
@@ -137,11 +148,11 @@ class AanaDeploymentComponent:
 
     def _call(self, *args, **kwargs) -> DeploymentResult:
         """Calls the deployment's run method. Not public, use the `run()` method."""
-        return self._run_method(*args, **kwargs).remote()
+        return self._run_method(*args, **kwargs).remote()  # type: ignore
 
-    def _get_method(self, method_name: str) -> Callable | None:
+    def _get_method(self) -> Callable | None:
         """Gets a handle to the method specified by the constructor."""
         # This is the type/constructor of the deployment
         underlying_deployment_t = self._deployment.func_or_class
-        class_method_handle = getattr(underlying_deployment_t, method_name, None)
+        class_method_handle = getattr(underlying_deployment_t, self._method_name, None)
         return class_method_handle  # type: ignore
