@@ -23,7 +23,6 @@ def typehints_to_component_types(
     Returns:
         tuple: Something that can be passed to `haystack.component.set_input_types()`
     """
-    print(typehints)
     output_types = typehints_to_output_types(typehints.pop("return"))
     input_types = typehints_to_input_types(typehints)
     return input_types, output_types
