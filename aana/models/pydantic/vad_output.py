@@ -1,6 +1,7 @@
+from typing import Annotated
+
 from pydantic import BaseModel, ConfigDict, Field
 
-from aana.models.pydantic.base import BaseListModel
 from aana.models.pydantic.time_interval import TimeInterval
 
 
@@ -36,15 +37,6 @@ class VadSegment(BaseModel):
     )
 
 
-class VadSegments(BaseListModel):
-    """Pydantic schema for the list of ASR segments."""
-
-    root: list[VadSegment] = Field(
-        description="List of VAD segments", default_factory=list
-    )
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "description": "List of VAD segments",
-        }
-    )
+VadSegments = Annotated[
+    list[VadSegment], Field(description="List of VAD segments", default_factory=list)
+]
