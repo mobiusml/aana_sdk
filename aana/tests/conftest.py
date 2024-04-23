@@ -5,7 +5,6 @@
 # app_setup (module scope, starts Ray and Ray Serve app for a specific target, args: deployments, endpoints)
 #     -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
 
-
 # ruff: noqa: S101
 import importlib
 import os
@@ -134,3 +133,10 @@ def call_endpoint(app_setup, request):  # noqa: D417
         )
 
     return _call_endpoint
+
+
+@pytest.fixture(scope="module")
+def one_request_worker():
+    """Fixture to update settings to only run one request worker."""
+    aana_settings.num_workers = 1
+    yield

@@ -5,7 +5,6 @@ from typing import Any, cast
 import torch
 from faster_whisper import BatchedInferencePipeline, WhisperModel
 from faster_whisper.tokenizer import Tokenizer
-from faster_whisper.transcribe import TranscriptionOptions
 from pydantic import BaseModel, Field
 from ray import serve
 from typing_extensions import TypedDict
@@ -20,8 +19,8 @@ from aana.models.pydantic.asr_output import (
 )
 from aana.models.pydantic.vad_output import VadSegment
 from aana.models.pydantic.whisper_params import (
+    BatchedWhisperParams,
     WhisperParams,
-    default_batched_asr_options,
 )
 from aana.utils.test import test_cache
 
@@ -92,9 +91,6 @@ class WhisperConfig(BaseModel):
     compute_type: WhisperComputeType = Field(
         default=WhisperComputeType.FLOAT16, description="The compute type."
     )
-    default_batched_asr_options: TranscriptionOptions = TranscriptionOptions(
-        **default_batched_asr_options
-    )
 
 
 class WhisperOutput(TypedDict):
@@ -144,7 +140,6 @@ class WhisperDeployment(BaseDeployment):
         self.model = WhisperModel(
             self.model_size, device=self.device, compute_type=self.compute_type
         )
-        self.default_batched_asr_options = config_obj.default_batched_asr_options
 
     @test_cache
     async def transcribe(
@@ -169,6 +164,15 @@ class WhisperDeployment(BaseDeployment):
             params = WhisperParams()
 
         audio_array = audio.get_numpy()
+        if not audio_array.any():
+            # For silent audios/no audio tracks, return empty output with language as silence
+            return WhisperOutput(
+                segments=[],
+                transcription_info=AsrTranscriptionInfo(
+                    language="silence", language_confidence=1.0
+                ),
+                transcription=AsrTranscription(text=""),
+            )
 
         try:
             segments, info = self.model.transcribe(audio_array, **params.model_dump())
@@ -273,7 +277,7 @@ class WhisperDeployment(BaseDeployment):
         audio: Audio,
         segments: list[VadSegment],
         batch_size: int = 16,
-        params: WhisperParams | None = None,
+        params: BatchedWhisperParams | None = None,
     ) -> AsyncGenerator[WhisperOutput, None]:
         """Transcribe a single audio by segmenting it into chunks (4x faster) in streaming mode.
 
@@ -293,7 +297,7 @@ class WhisperDeployment(BaseDeployment):
             InferenceException: If the inference fails.
         """
         if not params:
-            params = WhisperParams()
+            params = BatchedWhisperParams()
 
         if params.language is not None:
             tokenizer = Tokenizer(
@@ -308,7 +312,8 @@ class WhisperDeployment(BaseDeployment):
 
         self.batched_model = BatchedInferencePipeline(
             model=self.model,
-            options=self.default_batched_asr_options,
+            use_vad_model=False,
+            options=None,
             tokenizer=tokenizer,
             language=params.language,
         )
@@ -327,20 +332,18 @@ class WhisperDeployment(BaseDeployment):
             )
         else:
             try:
-                result = self.batched_model.transcribe_stream(
+                result = self.batched_model.transcribe(
                     audio_array,
                     vad_segments=vad_input,
                     batch_size=batch_size,
+                    **params.model_dump(),
                 )
             except Exception as e:
                 raise InferenceException(self.model_name) from e
 
             for count, (segment, info) in enumerate(result):
                 if count == 0:
-                    asr_transcription_info = AsrTranscriptionInfo(
-                        language=info["language"],
-                        language_confidence=info["language_probability"],
-                    )
+                    asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
                 asr_segments = [AsrSegment.from_whisper(segment)]
                 asr_transcription = AsrTranscription(text=segment.text)
 

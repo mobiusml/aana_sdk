@@ -28,10 +28,30 @@ def compare_vad_outputs(expected_output, predictions):
     Raises:
         AssertionError: if vad_outputs differ too much
     """
-    # Number of 30 sec segments wont change too much
-    assert abs(len(expected_output["segments"]) - len(predictions["segments"])) < 2
-    # However, inside each segment, the start and end-time can be different
-    # Issue:finegrained comparison:https://github.com/mobiusml/aana_sdk/issues/78
+    # Number of 30 sec segments should not change.
+    assert len(expected_output["segments"]) == len(predictions["segments"])
+
+    if len(expected_output["segments"]) != 0:  # non-empty files
+        # all start and end times should be similar and number of segments should be same.
+        for expected, predicted in zip(
+            expected_output["segments"], predictions["segments"], strict=False
+        ):
+            assert (
+                abs(
+                    expected["time_interval"]["start"]
+                    - predicted["time_interval"]["start"]
+                )
+                < 2.0
+            )  # all segment starts within 2 sec
+            assert (
+                abs(
+                    expected["time_interval"]["end"] - predicted["time_interval"]["end"]
+                )
+                < 2.0
+            )  # all segment ends within 2 sec
+
+            # check same number of small voiced segments within each vad segment
+            assert len(expected["segments"]) == len(predicted["segments"])
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("VadDeployment"))
@@ -49,15 +69,12 @@ def setup_vad_deployment(app_setup, request):
     return name, deployment, app_setup(deployments, endpoints)
 
 
-# Issue: test silent audio (add expected files): https://github.com/mobiusml/aana_sdk/issues/77
-
-
 @pytest.mark.skipif(
     not is_gpu_available() and not is_using_deployment_cache(),
     reason="GPU is not available",
 )
 @pytest.mark.asyncio
-@pytest.mark.parametrize("audio_file", ["physicsworks.wav"])
+@pytest.mark.parametrize("audio_file", ["physicsworks.wav", "squirrel.wav"])
 async def test_vad_deployment(setup_vad_deployment, audio_file):
     """Test vad deployment."""
     handle = serve.get_app_handle("vad_deployment")
@@ -72,7 +89,7 @@ async def test_vad_deployment(setup_vad_deployment, audio_file):
     with Path(expected_output_path) as path, path.open() as f:
         expected_output = json.load(f)
 
-    # asr_preprocess_vad method
+    # asr_preprocess_vad method to test
     path = resources.path("aana.tests.files.audios", audio_file)
     assert path.exists(), f"Audio not found: {path}"
 
