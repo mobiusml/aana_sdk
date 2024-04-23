@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aana"
-version = "0.1.0"
+version = "0.2.0"
 description = "Multimodal SDK"
 authors = ["Mobius Labs GmbH"]
 license = "License agreement"
@@ -19,6 +19,7 @@ deepdiff = "^6.7.0"
 diffusers = "^0.23.1"
 fastapi = "^0.104.0"
 faster-whisper = { git = "https://github.com/mobiusml/faster-whisper.git", tag = "v0.10.0_mobiusml" }
+haystack-ai = "^2.0.1"
 hf-transfer = "^0.1.6"
 onnxruntime = "1.16.1"
 opencv-python = "^4.8.1.78"
@@ -28,9 +29,11 @@ pydantic = ">=2.0"
 pydantic-settings = "^2.1.0"
 python-multipart = "^0.0.6"
 pytest-timeout = "^2.2.0"
+qdrant-haystack = "^3.2.1"
 ray = {extras = ["serve"], version = ">=2.9"}
 rapidfuzz = "^3.4.0"
 scipy = "^1.11.3"
+sentence-transformers = "^2.6.1"
 sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
 transformers = ">=4.37.0"
 torch = { url = "https://download.pytorch.org/whl/cu121/torch-2.1.2%2Bcu121-cp310-cp310-linux_x86_64.whl" }
@@ -38,10 +41,6 @@ torchaudio = {url = "https://download.pytorch.org/whl/cu121/torchaudio-2.1.2%2Bc
 torchvision = { url = "https://download.pytorch.org/whl/cu121/torchvision-0.16.2%2Bcu121-cp310-cp310-linux_x86_64.whl" }
 vllm = "0.3.2"
 yt-dlp = "^2023.10.13"
-sentence-transformers = "^2.6.1"
-haystack-ai = "^2.0.1"
-qdrant-haystack = "^3.2.1"
-
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
