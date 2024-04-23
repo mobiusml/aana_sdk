@@ -250,3 +250,51 @@ class EndpointNotFoundException(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.target, self.endpoint))
+
+
+class TooManyRequestsException(BaseException):
+    """Exception raised when calling a rate-limited resource too often.
+
+    Attributes:
+        rate_limit (int): The limit amount.
+        rate_duration (float): The duration for the limit in seconds.
+    """
+
+    def __init__(self, rate_limit: int, rate_duration: float):
+        """Constructor.
+
+        Args:
+            rate_limit (int): The limit amount.
+            rate_duration (float): The duration for the limit in seconds.
+        """
+        super().__init__(rate_limit=rate_limit, rate_duration=rate_duration)
+        self.rate_limit = rate_limit
+        self.rate_duration = rate_duration
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.rate_limit, self.rate_duration))
+
+
+class HandlerAlreadyRegisteredException(BaseException):
+    """Exception raised when registering a handler that is already registered."""
+
+    def __init__(self):
+        """Constructor."""
+        super().__init__()
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, ())
+
+
+class HandlerNotRegisteredException(BaseException):
+    """Exception removing a handler that has not been registered."""
+
+    def __init__(self):
+        """Constructor."""
+        super().__init__()
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, ())

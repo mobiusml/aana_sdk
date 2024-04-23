@@ -78,10 +78,7 @@
         "completion": "\n"
     },
     {
-        "completion": "1"
-    },
-    {
-        "completion": "."
+        "completion": "*"
     },
     {
         "completion": " The"
@@ -123,76 +120,46 @@
         "completion": " it"
     },
     {
-        "completion": " by"
-    },
-    {
-        "completion": " lif"
-    },
-    {
-        "completion": "ting"
+        "completion": " through"
     },
     {
         "completion": " a"
     },
     {
-        "completion": " heavy"
+        "completion": " series"
     },
     {
-        "completion": " object"
+        "completion": " of"
+    },
+    {
+        "completion": " experiments"
+    },
+    {
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " p"
+    },
+    {
+        "completion": "end"
+    },
+    {
+        "completion": "ul"
+    },
+    {
+        "completion": "um"
     },
     {
         "completion": " and"
     },
     {
-        "completion": " swing"
+        "completion": " a"
     },
     {
-        "completion": "ing"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " around"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " showing"
-    },
-    {
-        "completion": " how"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " energy"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " converted"
-    },
-    {
-        "completion": " from"
-    },
-    {
-        "completion": " potential"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " kin"
-    },
-    {
-        "completion": "etic"
-    },
-    {
-        "completion": " energy"
+        "completion": " ball"
     },
     {
         "completion": "."
@@ -252,10 +219,7 @@
         "completion": "\n"
     },
     {
-        "completion": "2"
-    },
-    {
-        "completion": "."
+        "completion": "*"
     },
     {
         "completion": " The"
@@ -384,10 +348,7 @@
         "completion": "\n"
     },
     {
-        "completion": "3"
-    },
-    {
-        "completion": "."
+        "completion": "*"
     },
     {
         "completion": " The"
@@ -396,19 +357,22 @@
         "completion": " speaker"
     },
     {
-        "completion": " demonstr"
+        "completion": " shows"
     },
     {
-        "completion": "ates"
+        "completion": " an"
     },
     {
-        "completion": " the"
-    },
-    {
-        "completion": " concept"
+        "completion": " example"
     },
     {
         "completion": " of"
+    },
+    {
+        "completion": " how"
+    },
+    {
+        "completion": " the"
     },
     {
         "completion": " conservation"
@@ -423,52 +387,25 @@
         "completion": " energy"
     },
     {
-        "completion": " by"
+        "completion": " can"
     },
     {
-        "completion": " re"
+        "completion": " be"
     },
     {
-        "completion": "le"
+        "completion": " applied"
     },
     {
-        "completion": "asing"
+        "completion": " in"
     },
     {
-        "completion": " a"
+        "completion": " every"
     },
     {
-        "completion": " ball"
+        "completion": "day"
     },
     {
-        "completion": " from"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " height"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " showing"
-    },
-    {
-        "completion": " how"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " breaks"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " wall"
+        "completion": " life"
     },
     {
         "completion": "."
@@ -489,7 +426,7 @@
         "completion": " "
     },
     {
-        "completion": "6"
+        "completion": "5"
     },
     {
         "completion": "0"
@@ -510,7 +447,7 @@
         "completion": " "
     },
     {
-        "completion": "7"
+        "completion": "6"
     },
     {
         "completion": "0"
@@ -531,10 +468,7 @@
         "completion": "\n"
     },
     {
-        "completion": "4"
-    },
-    {
-        "completion": "."
+        "completion": "*"
     },
     {
         "completion": " The"
@@ -561,52 +495,22 @@
         "completion": " of"
     },
     {
-        "completion": " the"
-    },
-    {
-        "completion": " conservation"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " mechanical"
-    },
-    {
-        "completion": " energy"
+        "completion": " trust"
     },
     {
         "completion": " and"
     },
     {
-        "completion": " how"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " can"
-    },
-    {
-        "completion": " be"
-    },
-    {
-        "completion": " applied"
+        "completion": " safety"
     },
     {
         "completion": " in"
     },
     {
-        "completion": " real"
+        "completion": " scientific"
     },
     {
-        "completion": "-"
-    },
-    {
-        "completion": "life"
-    },
-    {
-        "completion": " situations"
+        "completion": " experiments"
     },
     {
         "completion": "."
@@ -627,7 +531,7 @@
         "completion": " "
     },
     {
-        "completion": "8"
+        "completion": "9"
     },
     {
         "completion": "0"
@@ -648,7 +552,10 @@
         "completion": " "
     },
     {
-        "completion": "9"
+        "completion": "1"
+    },
+    {
+        "completion": "0"
     },
     {
         "completion": "0"
@@ -669,10 +576,7 @@
         "completion": "\n"
     },
     {
-        "completion": "5"
-    },
-    {
-        "completion": "."
+        "completion": "*"
     },
     {
         "completion": " The"
@@ -696,40 +600,37 @@
         "completion": " of"
     },
     {
-        "completion": " gravit"
+        "completion": " conservation"
     },
     {
-        "completion": "ational"
+        "completion": " of"
     },
     {
-        "completion": " potential"
+        "completion": " mechanical"
     },
     {
         "completion": " energy"
     },
     {
-        "completion": " by"
-    },
-    {
-        "completion": " fixing"
+        "completion": " through"
     },
     {
         "completion": " a"
     },
     {
-        "completion": " wall"
+        "completion": " simple"
     },
     {
-        "completion": "-"
+        "completion": " experiment"
     },
     {
-        "completion": "mount"
+        "completion": " with"
     },
     {
-        "completion": "ed"
+        "completion": " a"
     },
     {
-        "completion": " television"
+        "completion": " ball"
     },
     {
         "completion": "."
@@ -753,7 +654,7 @@
         "completion": "1"
     },
     {
-        "completion": "0"
+        "completion": "1"
     },
     {
         "completion": "0"
@@ -769,93 +670,6 @@
     },
     {
         "completion": " -"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ")"
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "6"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " discuss"
-    },
-    {
-        "completion": "es"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " importance"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " safety"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " experiments"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " demonstr"
-    },
-    {
-        "completion": "ations"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "Start"
-    },
-    {
-        "completion": " time"
-    },
-    {
-        "completion": ":"
     },
     {
         "completion": " "
@@ -879,7 +693,85 @@
         "completion": "0"
     },
     {
-        "completion": " -"
+        "completion": ")"
+    },
+    {
+        "completion": "\n"
+    },
+    {
+        "completion": "*"
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " discuss"
+    },
+    {
+        "completion": "es"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " limitations"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " importance"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " proper"
+    },
+    {
+        "completion": " safety"
+    },
+    {
+        "completion": " measures"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " ("
+    },
+    {
+        "completion": "Start"
+    },
+    {
+        "completion": " time"
+    },
+    {
+        "completion": ":"
     },
     {
         "completion": " "
@@ -903,88 +795,7 @@
         "completion": "0"
     },
     {
-        "completion": ")"
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "7"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " tal"
-    },
-    {
-        "completion": "ks"
-    },
-    {
-        "completion": " about"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " conservation"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " mechanical"
-    },
-    {
-        "completion": " energy"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " relation"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " experiment"
-    },
-    {
-        "completion": " he"
-    },
-    {
-        "completion": " is"
-    },
-    {
-        "completion": " conduct"
-    },
-    {
-        "completion": "ing"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "Start"
-    },
-    {
-        "completion": " time"
-    },
-    {
-        "completion": ":"
+        "completion": " -"
     },
     {
         "completion": " "
@@ -1008,202 +819,13 @@
         "completion": "0"
     },
     {
-        "completion": " -"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "5"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
         "completion": ")"
     },
     {
         "completion": "\n"
     },
     {
-        "completion": "8"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " demonstr"
-    },
-    {
-        "completion": "ates"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " concept"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " zero"
-    },
-    {
-        "completion": " speed"
-    },
-    {
-        "completion": " by"
-    },
-    {
-        "completion": " re"
-    },
-    {
-        "completion": "le"
-    },
-    {
-        "completion": "asing"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " ball"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " showing"
-    },
-    {
-        "completion": " how"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " touch"
-    },
-    {
-        "completion": "es"
-    },
-    {
-        "completion": " his"
-    },
-    {
-        "completion": " ch"
-    },
-    {
-        "completion": "in"
-    },
-    {
-        "completion": " but"
-    },
-    {
-        "completion": " does"
-    },
-    {
-        "completion": " not"
-    },
-    {
-        "completion": " cr"
-    },
-    {
-        "completion": "ush"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "Start"
-    },
-    {
-        "completion": " time"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "5"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " -"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "6"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ")"
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "9"
-    },
-    {
-        "completion": "."
+        "completion": "*"
     },
     {
         "completion": " The"
@@ -1263,6 +885,18 @@
         "completion": " physics"
     },
     {
+        "completion": " in"
+    },
+    {
+        "completion": " every"
+    },
+    {
+        "completion": "day"
+    },
+    {
+        "completion": " life"
+    },
+    {
         "completion": "."
     },
     {
@@ -1329,40 +963,13 @@
         "completion": "\n"
     },
     {
-        "completion": "1"
+        "completion": "Over"
     },
     {
-        "completion": "0"
+        "completion": "all"
     },
     {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " thanks"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " audience"
-    },
-    {
-        "completion": " for"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " attention"
-    },
-    {
-        "completion": " and"
+        "completion": ","
     },
     {
         "completion": " the"
@@ -1371,70 +978,100 @@
         "completion": " video"
     },
     {
-        "completion": " ends"
+        "completion": " provides"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " clear"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " conc"
+    },
+    {
+        "completion": "ise"
+    },
+    {
+        "completion": " explanation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " conservation"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " mechanical"
+    },
+    {
+        "completion": " energy"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " its"
+    },
+    {
+        "completion": " practical"
+    },
+    {
+        "completion": " applications"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " while"
+    },
+    {
+        "completion": " also"
+    },
+    {
+        "completion": " highlight"
+    },
+    {
+        "completion": "ing"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " importance"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " safety"
+    },
+    {
+        "completion": " and"
+    },
+    {
+        "completion": " trust"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " scientific"
+    },
+    {
+        "completion": " experiments"
     },
     {
         "completion": "."
-    },
-    {
-        "completion": " ("
-    },
-    {
-        "completion": "Start"
-    },
-    {
-        "completion": " time"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "9"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " -"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "2"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ":"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": ")"
     },
     {
         "completion": ""
