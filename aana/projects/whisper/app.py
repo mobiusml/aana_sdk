@@ -1,3 +1,5 @@
+import argparse
+
 from aana.configs.deployments import vad_deployment, whisper_medium_deployment
 from aana.projects.whisper.endpoints import (
     DeleteMediaEndpoint,
@@ -47,7 +49,13 @@ endpoints = [
 
 
 if __name__ == "__main__":
-    aana_app = AanaSDK(port=8000)
+    """Runs the application."""
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("--port", type=int, default=8000)
+    arg_parser.add_argument("--host", type=str, default="127.0.0.1")
+    args = arg_parser.parse_args()
+
+    aana_app = AanaSDK(port=args.port, host=args.host, show_logs=True)
 
     for deployment in deployments:
         aana_app.register_deployment(
