@@ -7,6 +7,7 @@ from haystack import component
 from pydantic import BaseModel
 from ray.serve.deployment import Deployment
 
+from aana.utils.coroutines import run_sync
 from aana.utils.typing import as_dict_of_types, is_typed_dict
 
 DeploymentResult: TypeAlias = Any
@@ -110,6 +111,7 @@ class AanaDeploymentComponent:
 
         Usually this is to load the model and initialize any preallocated data or parameters.
         """
+        # TODO possble race condition on self._warm
         if not self._warm:
             self._warm = True
 
@@ -134,11 +136,8 @@ class AanaDeploymentComponent:
         Returns:
             DeploymentResult: The return value of the deployment's run function
         """
-        retval = self._call(*args, **kwargs)
-        # If the run function returns a coroutine, run it in an event loop
-        if asyncio.iscoroutine(retval):
-            return asyncio.run(retval)
-        return retval
+        # Function may (must?) be a coroutine. Resolve it if so.
+        return run_sync(self._call(*args, **kwargs))
 
     # Is this supported?
     async def arun(self, *args, **kwargs) -> asyncio.Task[DeploymentResult]:
