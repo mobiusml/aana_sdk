@@ -19,6 +19,7 @@ class AanaSDK:
     def __init__(
         self,
         port: int = 8000,
+        host: str = "127.0.0.1",
         address: str = "auto",
         show_logs: bool = False,
         num_cpus: int | None = None,
@@ -28,6 +29,7 @@ class AanaSDK:
 
         Args:
             port (int, optional): The port to run the Aana server on. Defaults to 8000.
+            host (str, optional): The host to run the Aana server on. Defaults to "127.0.0.1".
             address (str, optional): The address of the Ray cluster. Defaults to "auto".
             show_logs (bool, optional): If True, the logs will be shown, otherwise
                 they will be hidden but can be accessed in the Ray dashboard. Defaults to False.
@@ -36,7 +38,8 @@ class AanaSDK:
             num_gpus (int, optional): Number of GPUs the user wishes to assign to each
                 raylet. By default, this is set based on detected GPUs.
         """
-        self.port: int = port
+        self.port = port
+        self.host = host
         self.endpoints: dict[str, Endpoint] = {}
 
         run_alembic_migrations(aana_settings)
@@ -59,7 +62,7 @@ class AanaSDK:
 
         # TODO: check if the port is already in use if serve is not running yet or
         # check if the port is the same as an existing serve instance if serve is running
-        serve.start(http_options=HTTPOptions(port=self.port))
+        serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
 
     def register_deployment(
         self,

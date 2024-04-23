@@ -2,8 +2,7 @@
 # The fixtures are used to setup Ray and Ray Serve, and to call the endpoints.
 # The fixtures depend on each other, to setup the environment for the tests.
 # Here is a dependency graph of the fixtures:
-# ray_setup (session scope, starts Ray cluster)
-#   -> app_setup (module scope, starts Ray Serve app for a specific target, args: target)
+# app_setup (module scope, starts Ray and Ray Serve app for a specific target, args: deployments, endpoints)
 #     -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
 
 
@@ -33,11 +32,7 @@ from aana.utils.general import jsonify
 
 @pytest.fixture(scope="module")
 def app_setup():
-    """Setup Ray Serve app for a specific target.
-
-    Args:
-        target: The target deployment.
-    """
+    """Setup Ray Serve app for given deployments and endpoints."""
     # create temporary database
     tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
     db_config = DbSettings(
