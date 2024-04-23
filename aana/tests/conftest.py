@@ -14,7 +14,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-import ray
 
 from aana.configs.db import (
     DbSettings,
@@ -30,14 +29,6 @@ from aana.tests.utils import (
     is_using_deployment_cache,
 )
 from aana.utils.general import jsonify
-
-
-@pytest.fixture(scope="session")
-def ray_setup():
-    """Setup Ray cluster."""
-    ray.init(num_cpus=10)  # pretend we have 10 cpus
-    yield
-    ray.shutdown()
 
 
 @pytest.fixture(scope="module")
@@ -62,7 +53,9 @@ def app_setup():
     # clear database before running the test
     clear_database(aana_settings)
 
-    app = AanaSDK(port=8000, show_logs=True)
+    app = AanaSDK(
+        port=8000, show_logs=True, num_cpus=10
+    )  # pretend we have 10 cpus for testing
 
     def start_app(deployments, endpoints):
         for deployment in deployments:
