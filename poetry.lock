@@ -1197,8 +1197,8 @@ dev = ["black (==23.*)", "flake8 (==6.*)", "isort (==5.*)", "pytest (==7.*)"]
 [package.source]
 type = "git"
 url = "https://github.com/mobiusml/faster-whisper.git"
-reference = "v0.10.0_mobiusml"
-resolved_reference = "b516bc808a3ef46cb09f281fbf27dd4feda04980"
+reference = "v1.0.1_mobiusml_v1.1"
+resolved_reference = "0d6c62e2504574731d2eee89ae4ed911f3c76a79"
 
 [[package]]
 name = "fastrlock"
@@ -7222,4 +7222,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "9a0c0c50ccfd58fda40e84c8c611c7420057d0c4b34ed5648c6ea424ca759726"
+content-hash = "20ba75034827085da4601ba87902556792634fb58298c1b83e3a11e5edaf608a"

@@ -105,12 +105,16 @@ class VadDeployment(BaseDeployment):
         }
         self.sample_rate = config_obj.sample_rate
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        # for consistency across multiple runs
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(42)
+
         # model hash for vad_model
         model_hash = str(config_obj.model).split("/")[-2]
         self.filepath = download_model(config_obj.model, model_hash)
 
         self.vad_model = Model.from_pretrained(self.filepath, use_auth_token=None)
-
         # vad_pipeline
         self.vad_pipeline = VoiceActivitySegmentation(
             segmentation=self.vad_model, device=torch.device(self.device)

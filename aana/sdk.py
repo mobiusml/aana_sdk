@@ -8,6 +8,7 @@ from ray.serve.config import HTTPOptions
 from ray.serve.deployment import Deployment
 
 from aana.api.api_generation import Endpoint
+from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
 from aana.configs.db import run_alembic_migrations
 from aana.configs.settings import settings as aana_settings
@@ -93,7 +94,12 @@ class AanaSDK:
         serve.delete(name)
 
     def register_endpoint(
-        self, name: str, path: str, summary: str, endpoint_cls: type[Endpoint]
+        self,
+        name: str,
+        path: str,
+        summary: str,
+        endpoint_cls: type[Endpoint],
+        event_handlers: list[EventHandler] | None = None,
     ):
         """Register an endpoint.
 
@@ -102,11 +108,13 @@ class AanaSDK:
             path (str): The path of the endpoint.
             summary (str): The summary of the endpoint.
             endpoint_cls (Type[Endpoint]): The class of the endpoint.
+            event_handlers (list[EventHandler], optional): The event handlers to register for the endpoint.
         """
         endpoint = endpoint_cls(
             name=name,
             path=path,
             summary=summary,
+            event_handlers=event_handlers,
         )
         self.endpoints[name] = endpoint
 

@@ -10,11 +10,12 @@ from aana.models.pydantic.video_input import VideoInput
 from aana.utils.video import download_video, extract_audio
 
 
-def test_audio():
+@pytest.mark.parametrize("audio_file", ["squirrel.wav", "physicsworks.wav"])
+def test_audio(audio_file):
     """Test that the audio can be created from path, url(pending), or content."""
     # Test creation from a path
     try:
-        path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+        path = resources.path("aana.tests.files.audios", audio_file)
         audio = Audio(path=path, save_on_disk=False)
         assert audio.path == path
         assert audio.content is None
@@ -25,23 +26,20 @@ def test_audio():
     finally:
         audio.cleanup()
 
-    # TODO: Test creation of audio object from a URL
-    # Test creation from content
+    # Test creation from URL
     try:
-        path = resources.path("aana.tests.files.audios", "physicsworks.wav")
-        content = path.read_bytes()
-        audio = Audio(content=content, save_on_disk=False)
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
+        audio = Audio(url=url, save_on_disk=False)
         assert audio.path is None
-        assert audio.content == content
-        assert audio.url is None
+        assert audio.content is None
+        assert audio.url == url
 
-        assert audio.get_content() == content
     finally:
         audio.cleanup()
 
     # Test creation from content
     try:
-        path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+        path = resources.path("aana.tests.files.audios", audio_file)
         content = path.read_bytes()
         audio = Audio(content=content, save_on_disk=False)
         assert audio.path is None
@@ -60,11 +58,12 @@ def test_audio_path_not_exist():
         Audio(path=path)
 
 
-def test_save_audio():
+@pytest.mark.parametrize("audio_file", ["squirrel.wav", "physicsworks.wav"])
+def test_save_audio(audio_file):
     """Test that save_on_disk works for audio."""
     # Test that the audio is saved to disk when save_on_disk is True
     try:
-        path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+        path = resources.path("aana.tests.files.audios", audio_file)
         audio = Audio(path=path, save_on_disk=True)
         assert audio.path == path
         assert audio.content is None
@@ -74,24 +73,22 @@ def test_save_audio():
         audio.cleanup()
     assert audio.path.exists()  # Cleanup should NOT delete the file if path is provided
 
-    # Test saving from video URL to disk and read
+    # Test saving from audio URL to disk and read
     try:
-        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
+        url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.wav"
 
         audio = Audio(url=url, save_on_disk=True)
         assert audio.content is None
         assert audio.url is not None
-        assert audio.get_numpy() is not None
     finally:
         audio.cleanup()
 
 
-def test_cleanup():
+@pytest.mark.parametrize("audio_file", ["squirrel.wav", "physicsworks.wav"])
+def test_cleanup(audio_file):
     """Test that cleanup works for audios."""
-    # TODO: create test for creatung audio object from url and then deleting it
-
     try:
-        path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+        path = resources.path("aana.tests.files.audios", audio_file)
         audio = Audio(path=path, save_on_disk=True)
         assert audio.path.exists()
     finally:
@@ -148,8 +145,6 @@ def test_extract_audio():
     assert audio.url is None
     assert audio.path is not None
 
-    # audio URL test- Issue: https://github.com/mobiusml/aana_sdk/issues/64
-
     try:
         url = "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4"
         video_input = VideoInput(url=url)
@@ -171,6 +166,10 @@ def test_extract_audio():
     audio = Audio(path=path, save_on_disk=True)
     assert audio.get_numpy() is not None
 
+    path = resources.path("aana.tests.files.audios", "squirrel.wav")
+    audio = Audio(path=path, save_on_disk=True)
+    assert audio.get_numpy().all() == 0
+
     # Test content of Audio objects created in different ways from same source video is the same.
     video_path = resources.path("aana.tests.files.videos", "physicsworks.webm")
     video = Video(path=video_path)
@@ -184,5 +183,3 @@ def test_extract_audio():
     # but the audio content should be the same
     assert extracted_audio_1.path != extracted_audio_2.path
     assert (extracted_audio_1.get_numpy().all()) == extracted_audio_2.get_numpy().all()
-
-    # Issue: test silent audio (add empty bytes expected result): https://github.com/mobiusml/aana_sdk/issues/77

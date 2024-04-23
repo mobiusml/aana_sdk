@@ -268,8 +268,8 @@ def check_output(
         )
         # Below block stores expected endpoint results as json files (when path does not exist yet).
         # if not expected_output_path.exists():
-        #     with expected_output_path.open("w") as f:
-        #         json.dump(output, f, indent=4, sort_keys=True)
+        #    with expected_output_path.open("w") as f:
+        #        json.dump(output, f, indent=4, sort_keys=True)
 
         if not expected_output_path.exists():
             raise FileNotFoundError(expected_output_path)

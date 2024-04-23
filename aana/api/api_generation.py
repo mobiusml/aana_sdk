@@ -4,14 +4,18 @@ from dataclasses import dataclass
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
-from fastapi import File, Form, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import Field, ValidationError, create_model
 from pydantic.main import BaseModel
 
 from aana.api.app import custom_exception_handler
+from aana.api.event_handlers.event_handler import EventHandler
+from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
-from aana.exceptions.general import MultipleFileUploadNotAllowed
+from aana.exceptions.general import (
+    MultipleFileUploadNotAllowed,
+)
 from aana.models.pydantic.exception_response import ExceptionResponseModel
 
 
@@ -46,12 +50,14 @@ class Endpoint:
         name (str): Name of the endpoint.
         path (str): Path of the endpoint.
         summary (str): Description of the endpoint that will be shown in the API documentation.
+        event_handlers (list[EventHandler], optional): The list of event handlers to register for the endpoint.
     """
 
     name: str
     path: str
     summary: str
     initialized: bool = False
+    event_handlers: list[EventHandler] | None = None
 
     async def initialize(self):
         """Initialize the endpoint."""
@@ -61,17 +67,29 @@ class Endpoint:
         """Run the endpoint."""
         raise NotImplementedError
 
-    def register(self, app, custom_schemas):
+    def register(
+        self, app: FastAPI, custom_schemas: dict[str, dict], event_manager: EventManager
+    ):
         """Register the endpoint in the FastAPI application.
 
         Args:
             app (FastAPI): FastAPI application.
-            custom_schemas (dict): Dictionary containing custom schemas.
+            custom_schemas (dict[str, dict]): Dictionary containing custom schemas.
+            event_manager (EventManager): Event manager for the application.
         """
         RequestModel = self.get_request_model()
         ResponseModel = self.get_response_model()
 
-        route_func = self.create_endpoint_func(RequestModel)
+        file_upload_field = self.get_file_upload_field()
+        if self.event_handlers:
+            for handler in self.event_handlers:
+                event_manager.register_handler_for_events(handler, [self.path])
+
+        route_func = self.create_endpoint_func(
+            RequestModel=RequestModel,
+            file_upload_field=file_upload_field,
+            event_manager=event_manager,
+        )
 
         app.post(
             self.path,
@@ -222,12 +240,18 @@ class Endpoint:
         self,
         RequestModel: type[BaseModel],
         file_upload_field: FileUploadField | None = None,
+        event_manager: EventManager | None = None,
     ) -> Callable:
         """Create a function for routing an endpoint."""
+        # Copy path to a bound variable so we don't retain an external reference
+        bound_path = self.path
 
         async def route_func_body(body: str, files: list[UploadFile] | None = None):
             if not self.initialized:
                 await self.initialize()
+
+            if event_manager:
+                event_manager.handle(bound_path)
 
             # parse form data as a pydantic model and validate it
             data = RequestModel.model_validate_json(body)
