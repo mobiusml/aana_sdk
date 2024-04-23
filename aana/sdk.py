@@ -17,7 +17,12 @@ class AanaSDK:
     """Aana SDK to deploy and manage Aana deployments and endpoints."""
 
     def __init__(
-        self, port: int = 8000, address: str = "auto", show_logs: bool = False
+        self,
+        port: int = 8000,
+        address: str = "auto",
+        show_logs: bool = False,
+        num_cpus: int | None = None,
+        num_gpus: int | None = None,
     ):
         """Aana SDK to deploy and manage Aana deployments and endpoints.
 
@@ -26,6 +31,10 @@ class AanaSDK:
             address (str, optional): The address of the Ray cluster. Defaults to "auto".
             show_logs (bool, optional): If True, the logs will be shown, otherwise
                 they will be hidden but can be accessed in the Ray dashboard. Defaults to False.
+            num_cpus (int, optional): Number of CPUs the user wishes to assign to each
+                raylet. By default, this is set based on virtual cores.
+            num_gpus (int, optional): Number of GPUs the user wishes to assign to each
+                raylet. By default, this is set based on detected GPUs.
         """
         self.port: int = port
         self.endpoints: dict[str, Endpoint] = {}
@@ -34,14 +43,29 @@ class AanaSDK:
 
         try:
             # Try to connect to an existing Ray cluster
-            ray.init(address=address, ignore_reinit_error=True, log_to_driver=show_logs)
+            ray.init(
+                address=address,
+                ignore_reinit_error=True,
+                log_to_driver=show_logs,
+            )
         except ConnectionError:
             # If connection fails, start a new Ray cluster and serve instance
-            ray.init(ignore_reinit_error=True, log_to_driver=show_logs)
-            serve.start(http_options=HTTPOptions(port=self.port))
+            ray.init(
+                ignore_reinit_error=True,
+                log_to_driver=show_logs,
+                num_cpus=num_cpus,
+                num_gpus=num_gpus,
+            )
+
+        # TODO: check if the port is already in use if serve is not running yet or
+        # check if the port is the same as an existing serve instance if serve is running
+        serve.start(http_options=HTTPOptions(port=self.port))
 
     def register_deployment(
-        self, name: str, instance: Deployment, blocking: bool = False
+        self,
+        name: str,
+        instance: Deployment,
+        blocking: bool = False,
     ):
         """Register a deployment.
 

@@ -130,6 +130,8 @@ def call_endpoint(app_setup, request):  # noqa: D417
             if e["path"] == endpoint_path:
                 endpoint = e
                 break
+        if endpoint is None:
+            raise ValueError(f"Endpoint with path {endpoint_path} not found")  # noqa: TRY003
         is_streaming = endpoint["endpoint_cls"].is_streaming_response()
 
         return call_and_check_endpoint(
