@@ -61,9 +61,11 @@ class AanaSDK:
                 num_gpus=num_gpus,
             )
 
-        # TODO: check if the port is already in use if serve is not running yet or
-        # check if the port is the same as an existing serve instance if serve is running
-        serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
+        serve_status = serve.status()
+        if serve_status.proxies == {}:  # If serve is not running yet
+            # TODO: check if the port is already in use if serve is not running yet or
+            # check if the port is the same as an existing serve instance if serve is running
+            serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
 
     def register_deployment(
         self,
