@@ -7185,13 +7185,13 @@ multidict = ">=4.0"
 
 [[package]]
 name = "yt-dlp"
-version = "2023.12.30"
-description = "A youtube-dl fork with additional features and patches"
+version = "2024.4.9"
+description = "A feature-rich command-line audio/video downloader"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "yt-dlp-2023.12.30.tar.gz", hash = "sha256:a11862e57721b0a0f0883dfeb5a4d79ba213a2d4c45e1880e9fd70f8e6570c38"},
-    {file = "yt_dlp-2023.12.30-py2.py3-none-any.whl", hash = "sha256:c00d9a71d64472ad441bcaa1ec0c3797d6e60c9f934f270096a96fe51657e7b3"},
+    {file = "yt_dlp-2024.4.9-py3-none-any.whl", hash = "sha256:d6ff6798bd114cc48763564fcb2f296464ec1604f731e69b07a8814c89b170a2"},
+    {file = "yt_dlp-2024.4.9.tar.gz", hash = "sha256:7ee90572b4d313b582b99c89e4eccf779b57ff54edc331873c6b3fba77faa8b0"},
 ]
 
 [package.dependencies]
@@ -7203,6 +7203,14 @@ pycryptodomex = "*"
 requests = ">=2.31.0,<3"
 urllib3 = ">=1.26.17,<3"
 websockets = ">=12.0"
+
+[package.extras]
+build = ["build", "hatchling", "pip", "wheel"]
+curl-cffi = ["curl-cffi (==0.5.10)"]
+dev = ["flake8", "isort", "pytest"]
+py2exe = ["py2exe (>=0.12)"]
+pyinstaller = ["pyinstaller (==5.13.2)", "pyinstaller (>=6.3)"]
+secretstorage = ["cffi", "secretstorage"]
 
 [[package]]
 name = "zipp"
@@ -7222,4 +7230,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "20ba75034827085da4601ba87902556792634fb58298c1b83e3a11e5edaf608a"
+content-hash = "b333365dce94f5ab277c82c159d1206804b577e5e896eebbfc5eca424af50a25"
