@@ -79,3 +79,17 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
             error=error, message=message, data=data, stacktrace=stacktrace
         ).model_dump(),
     )
+
+
+@app.exception_handler(Exception)
+async def aana_exception_handler(request: Request, exc: Exception):
+    """This handler is used to handle exceptions raised by the Aana application.
+
+    Args:
+        request (Request): The request object
+        exc (Exception): The exception raised
+
+    Returns:
+        JSONResponse: JSON response with the error details
+    """
+    return custom_exception_handler(request, exc)
