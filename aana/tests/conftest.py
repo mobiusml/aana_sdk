@@ -71,6 +71,7 @@ def app_setup():
                 path=endpoint["path"],
                 summary=endpoint["summary"],
                 endpoint_cls=endpoint["endpoint_cls"],
+                event_handlers=endpoint.get("event_handlers", []),
             )
 
         app.deploy(blocking=False)
