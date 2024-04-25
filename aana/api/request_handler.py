@@ -9,7 +9,7 @@ from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 
 
-@serve.deployment(route_prefix="/", num_replicas=1, ray_actor_options={"num_cpus": 0.1})
+@serve.deployment(ray_actor_options={"num_cpus": 0.1})
 @serve.ingress(app)
 class RequestHandler:
     """This class is used to handle requests to the Aana application."""

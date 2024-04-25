@@ -23,10 +23,3 @@ def test_media_id_creation():
 
     with pytest.raises(ValidationError):
         TestModel(media_id="").media_id  # noqa: B018
-
-
-def test_media_id_random():
-    """Test that a random media id can be created."""
-    media_id = str(uuid.uuid4())
-    assert media_id is not None
-    assert media_id != ""
