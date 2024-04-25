@@ -53,7 +53,10 @@ class BaseDeployment:
             if name.startswith("_"):
                 continue
             # Skip non-asynchronous methods
-            if not inspect.iscoroutinefunction(method):
+            if not (
+                inspect.iscoroutinefunction(method)
+                or inspect.isasyncgenfunction(method)
+            ):
                 continue
 
             methods_info[name] = {}
