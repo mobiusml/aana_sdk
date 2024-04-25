@@ -49,6 +49,13 @@ class BaseDeployment:
         methods = inspect.getmembers(cls, predicate=inspect.isfunction)
         methods_info = {}
         for name, method in methods:
+            # Skip private methods
+            if name.startswith("_"):
+                continue
+            # Skip non-asynchronous methods
+            if not inspect.iscoroutinefunction(method):
+                continue
+
             methods_info[name] = {}
             if method.__annotations__:
                 methods_info[name]["annotations"] = method.__annotations__

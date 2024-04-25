@@ -181,7 +181,7 @@ class VideoChatEndpoint(Endpoint):
             media_id=media_id, model_name=asr_model_name
         )
 
-        load_video_captions_output = load_video_captions(
+        loaded_video_captions_output = load_video_captions(
             media_id=media_id, model_name=captioning_model_name
         )
 
@@ -189,8 +189,8 @@ class VideoChatEndpoint(Endpoint):
 
         timeline_output = generate_combined_timeline(
             transcription_segments=load_video_transcription_output["segments"],
-            captions=load_video_captions_output["captions"],
-            caption_timestamps=load_video_captions_output["timestamps"],
+            captions=loaded_video_captions_output["captions"],
+            caption_timestamps=loaded_video_captions_output["timestamps"],
         )
 
         dialog = generate_dialog(

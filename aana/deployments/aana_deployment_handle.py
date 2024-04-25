@@ -16,14 +16,22 @@ class AanaDeploymentHandle:
         deployment_name (str): The name of the deployment.
     """
 
-    def __init__(self, deployment_name):
-        """A handle to interact with a deployed Aana deployment."""
+    def __init__(self, deployment_name: str):
+        """A handle to interact with a deployed Aana deployment.
+
+        Args:
+            deployment_name (str): The name of the deployment.
+        """
         self.handle = serve.get_app_handle(deployment_name)
         self.deployment_name = deployment_name
         self.methods = None
 
-    def create_async_method(self, name):
-        """Create an method to interact with the deployment."""
+    def create_async_method(self, name: str):
+        """Create an method to interact with the deployment.
+
+        Args:
+            name (str): The name of the method.
+        """
         is_async_generator = False
         method_info = self.methods[name]
         annotations = method_info.get("annotations", {})
@@ -61,7 +69,7 @@ class AanaDeploymentHandle:
             setattr(self, name, self.create_async_method(name))
 
     @classmethod
-    async def create(cls, deployment_name):
+    async def create(cls, deployment_name: str):
         """Create a deployment handle.
 
         Args:

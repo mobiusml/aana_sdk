@@ -124,7 +124,7 @@ def test_get_file_upload_field():
 
 
 def test_get_file_upload_field_multiple_file_uploads():
-    """Test the get_file_upload_field function wit  h multiple file uploads."""
+    """Test the get_file_upload_field function with multiple file uploads."""
     endpoint = TestMultipleFileUploadEndpoint(
         name="test_endpoint",
         summary="Test endpoint",

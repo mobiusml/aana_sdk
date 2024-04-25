@@ -38,7 +38,7 @@ class BaseException(Exception):  # noqa: A001
         data = self.extra.copy()
         return data
 
-    def add_extra(self, key: str, value: Any) -> None:
+    def add_extra(self, data: dict[str, Any]) -> None:
         """Add extra data to the exception.
 
         This data will be returned to the user as part of the response.
@@ -50,15 +50,14 @@ class BaseException(Exception):  # noqa: A001
             try:
                 ...
             except BaseException as e:
-                e.add_extra('extra_key', 'extra_value')
+                e.add_extra({'extra_key': 'extra_value'})
                 raise e
             ```
 
         Args:
-            key (str): key of the extra data
-            value (Any): value of the extra data
+            data (dict[str, Any]): dictionary containing the extra data
         """
-        self.extra[key] = value
+        self.extra.update(data)
 
 
 class InferenceException(BaseException):
