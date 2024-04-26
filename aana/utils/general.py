@@ -1,4 +1,5 @@
 import hashlib
+import importlib
 import inspect
 import urllib.request
 from collections.abc import Callable
@@ -222,3 +223,41 @@ def run_remote(func: Callable) -> Callable:
         return generator_wrapper
     else:
         return ray.remote(func).remote
+
+
+def import_from(module: str, name, reload=False):
+    """Import Module by name."""
+    module: Any = __import__(module, fromlist=[str(name)])
+
+    if reload:
+        module_path = module.__file__
+
+        # Get the modification timestamp of the module file
+        module_last_modified = Path(module_path).stat().st_mtime
+
+        # Check if the module has been imported before
+        if hasattr(module, "__last_modified"):
+            # Compare the timestamps
+            if module_last_modified > module.__last_modified:
+                importlib.reload(module)
+        else:
+            importlib.reload(module)
+
+        # Update the last modified timestamp
+        module.__last_modified = module_last_modified
+
+    # return getattr(module, name)
+    # getattr doesn't give proper exception, just AttributeError
+    # so we use this instead
+    return module.__dict__[name]
+
+
+def import_from_path(path, reload=False):
+    """Import a module from path separated by dots.
+
+    :param path: path to the function or class
+    :param reload: if True, reload the module
+    :return: imported module
+    """
+    module, name = ".".join(path.split(".")[:-1]), path.split(".")[-1]
+    return import_from(module, name, reload=reload)
