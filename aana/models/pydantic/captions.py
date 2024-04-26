@@ -1,31 +1,7 @@
-from pydantic import ConfigDict
+from typing import Annotated
 
-from aana.models.pydantic.base import BaseListModel, BaseStringModel
+from pydantic import Field
 
+Caption = Annotated[str, Field(description="A caption.")]
 
-class Caption(BaseStringModel):
-    """A model for a caption."""
-
-    model_config = ConfigDict(json_schema_extra={"description": "A caption."})
-
-
-class CaptionsList(BaseListModel):
-    """A model for a list of captions."""
-
-    root: list[Caption]
-    model_config = ConfigDict(json_schema_extra={"description": "A list of captions."})
-
-
-class VideoCaptionsList(BaseListModel):
-    """A model for a list of captions for a list of videos."""
-
-    root: list[CaptionsList]
-    model_config = ConfigDict(
-        json_schema_extra={
-            "description": (
-                "A list of a list of captions. "
-                "For a list of videos and a list of captions for each video "
-                "and for each video we have a list of captions"
-            )
-        }
-    )
+CaptionsList = Annotated[list[Caption], Field(description="A list of captions.")]

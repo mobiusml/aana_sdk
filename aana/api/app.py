@@ -1,11 +1,11 @@
 import traceback
 
 from fastapi import FastAPI, Request
-from mobius_pipeline.exceptions import BaseException
 from pydantic import ValidationError
 from ray.exceptions import RayTaskError
 
 from aana.api.responses import AanaJSONResponse
+from aana.exceptions.general import BaseException
 from aana.models.pydantic.exception_response import ExceptionResponseModel
 
 app = FastAPI()
@@ -36,7 +36,7 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
     """This handler is used to handle custom exceptions raised in the application.
 
     BaseException is the base exception for all the exceptions
-    from the Mobius Pipeline and Aana application.
+    from the Aana application.
     Sometimes custom exception are wrapped into RayTaskError so we need to handle that as well.
 
     Args:
@@ -82,8 +82,8 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
 
 
 @app.exception_handler(Exception)
-async def pipeline_exception_handler(request: Request, exc: Exception):
-    """This handler is used to handle exceptions raised by the Mobius Pipeline and Aana application.
+async def aana_exception_handler(request: Request, exc: Exception):
+    """This handler is used to handle exceptions raised by the Aana application.
 
     Args:
         request (Request): The request object

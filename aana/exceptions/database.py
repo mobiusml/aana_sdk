@@ -1,5 +1,4 @@
-from mobius_pipeline.exceptions import BaseException
-
+from aana.exceptions.general import BaseException
 from aana.models.pydantic.media_id import MediaId
 
 
