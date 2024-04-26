@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from deepdiff import DeepDiff
+from ray import serve
 
 from aana.models.core.audio import Audio
 from aana.models.pydantic.vad_output import VadSegment
@@ -45,10 +46,18 @@ def compare_transcriptions(expected_transcription, transcription):
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("WhisperDeployment"))
-def setup_whisper_deployment(setup_deployment, request):
+def setup_whisper_deployment(app_setup, request):
     """Setup whisper deployment."""
     name, deployment = request.param
-    return name, deployment, *setup_deployment(deployment, bind=True)
+    deployments = [
+        {
+            "name": "whisper_deployment",
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
+
+    return name, deployment, app_setup(deployments, endpoints)
 
 
 @pytest.mark.skipif(
@@ -59,7 +68,9 @@ def setup_whisper_deployment(setup_deployment, request):
 @pytest.mark.parametrize("audio_file", ["squirrel.wav", "physicsworks.wav"])
 async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     """Test whisper deployment."""
-    name, deployment, handle, port, route_prefix = setup_whisper_deployment
+    name, deployment, app = setup_whisper_deployment
+
+    handle = serve.get_app_handle("whisper_deployment")
 
     model_size = deployment.user_config["model_size"]
     audio_file_name = Path(audio_file).stem

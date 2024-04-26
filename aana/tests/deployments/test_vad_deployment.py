@@ -4,6 +4,7 @@ from importlib import resources
 from pathlib import Path
 
 import pytest
+from ray import serve
 
 from aana.models.core.audio import Audio
 from aana.models.pydantic.vad_params import VadParams
@@ -54,10 +55,18 @@ def compare_vad_outputs(expected_output, predictions):
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("VadDeployment"))
-def setup_vad_deployment(setup_deployment, request):
+def setup_vad_deployment(app_setup, request):
     """Setup vad deployment."""
     name, deployment = request.param
-    return name, deployment, *setup_deployment(deployment, bind=True)
+    deployments = [
+        {
+            "name": "vad_deployment",
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
+
+    return name, deployment, app_setup(deployments, endpoints)
 
 
 @pytest.mark.skipif(
@@ -68,7 +77,8 @@ def setup_vad_deployment(setup_deployment, request):
 @pytest.mark.parametrize("audio_file", ["physicsworks.wav", "squirrel.wav"])
 async def test_vad_deployment(setup_vad_deployment, audio_file):
     """Test vad deployment."""
-    name, deployment, handle, port, route_prefix = setup_vad_deployment
+    handle = serve.get_app_handle("vad_deployment")
+
     audio_file_name = Path(audio_file).stem
     expected_output_path = resources.path(
         "aana.tests.files.expected.vad", f"{audio_file_name}_vad.json"

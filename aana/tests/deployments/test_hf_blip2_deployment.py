@@ -2,6 +2,7 @@
 from importlib import resources
 
 import pytest
+from ray import serve
 
 from aana.models.core.image import Image
 from aana.tests.utils import (
@@ -13,10 +14,18 @@ from aana.tests.utils import (
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("HFBlip2Deployment"))
-def setup_hf_blip2_deployment(setup_deployment, request):
+def setup_hf_blip2_deployment(app_setup, request):
     """Setup HF BLIP2 deployment."""
     name, deployment = request.param
-    return name, deployment, *setup_deployment(deployment, bind=True)
+    deployments = [
+        {
+            "name": "blip2_deployment",
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
+
+    return name, deployment, app_setup(deployments, endpoints)
 
 
 @pytest.mark.skipif(
@@ -32,7 +41,7 @@ async def test_hf_blip2_deployments(
     setup_hf_blip2_deployment, image_name, expected_text
 ):
     """Test HuggingFace BLIP2 deployments."""
-    name, deployment, handle, port, route_prefix = setup_hf_blip2_deployment
+    handle = serve.get_app_handle("blip2_deployment")
 
     path = resources.path("aana.tests.files.images", image_name)
     image = Image(path=path, save_on_disk=False, media_id=image_name)

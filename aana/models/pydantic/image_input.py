@@ -1,4 +1,5 @@
 import io
+import uuid
 from pathlib import Path
 
 import numpy as np
@@ -53,7 +54,7 @@ class ImageInput(BaseModel):
         ),
     )
     media_id: MediaId = Field(
-        default_factory=lambda: MediaId.random(),
+        default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
 
