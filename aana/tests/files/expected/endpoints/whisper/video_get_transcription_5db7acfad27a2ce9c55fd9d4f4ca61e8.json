@@ -1,23 +1,4 @@
 {
-    "execution_time": {
-        "batched_whisper_params": 0,
-        "delete_media": 0,
-        "download_video": 0,
-        "extract_audio": 0,
-        "generate_frames_for_video": 0,
-        "load_video_transcription": 0.006531476974487305,
-        "media_id": 0,
-        "save_video": 0,
-        "save_video_transcription": 0,
-        "save_video_transcription_batched": 0,
-        "vad_params": 0,
-        "vad_transcribe_in_chunks_audio": 0,
-        "video": 0,
-        "video_params": 0,
-        "whisper_medium_transcribe_in_chunks_video": 0,
-        "whisper_medium_transcribe_video": 0,
-        "whisper_params": 0
-    },
     "info": {
         "language": "en",
         "language_confidence": 0.98291015625

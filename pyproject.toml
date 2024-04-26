@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aana"
-version = "0.1.0"
+version = "0.2.0"
 description = "Multimodal SDK"
 authors = ["Mobius Labs GmbH"]
 license = "License agreement"
@@ -10,10 +10,9 @@ readme = "README.md"
 # Apart from python (1st) and other internal deps (2nd), please
 # keep this list alphabetized!
 python = "~3.10"
-mobius-pipeline = { path = "./mobius-pipeline", develop = true }
 accelerate = "^0.26.1"
 alembic = "^1.12.1"
-av = "11"
+av = "==11.*"
 bitsandbytes = "^0.42.0"
 decord = "^0.6.0"
 deepdiff = "^6.7.0"
@@ -29,17 +28,18 @@ pydantic = ">=2.0"
 pydantic-settings = "^2.1.0"
 python-multipart = "^0.0.6"
 pytest-timeout = "^2.2.0"
+qdrant-haystack = "^3.2.1"
 ray = {extras = ["serve"], version = ">=2.9"}
 rapidfuzz = "^3.4.0"
 scipy = "^1.11.3"
+sentence-transformers = "^2.6.1"
 sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
 transformers = ">=4.37.0"
 torch = { url = "https://download.pytorch.org/whl/cu121/torch-2.1.2%2Bcu121-cp310-cp310-linux_x86_64.whl" }
 torchaudio = {url = "https://download.pytorch.org/whl/cu121/torchaudio-2.1.2%2Bcu121-cp310-cp310-linux_x86_64.whl"}
 torchvision = { url = "https://download.pytorch.org/whl/cu121/torchvision-0.16.2%2Bcu121-cp310-cp310-linux_x86_64.whl" }
 vllm = "0.3.2"
-yt-dlp = "^2023.10.13"
-
+yt-dlp = ">=2024.4.9"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
@@ -48,6 +48,7 @@ mypy = "^1.6.1"
 ruff = "^0.1.5"
 portpicker = "^1.6.0"
 psycopg2-binary = "^2.9.9"
+pytest-asyncio = "^0.23.6"
 pytest-dotenv = "^0.5.2"
 pytest-env = "^1.1.3"
 pytest-mock = "^3.12.0"

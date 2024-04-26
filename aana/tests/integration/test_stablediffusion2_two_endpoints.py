@@ -9,8 +9,8 @@ from aana.tests.utils import is_gpu_available, is_using_deployment_cache
 
 TARGET = "stablediffusion2"
 
-IMAGE_GENERATE_ENDPOINT = "/generate_image"
-NON_RATE_LIMITED_ENDPOINT = "/generate_image2"
+IMAGE_GENERATE_ENDPOINT = "/generate_image_rate_limited"
+NON_RATE_LIMITED_ENDPOINT = "/generate_image"
 
 
 @pytest.mark.skipif(

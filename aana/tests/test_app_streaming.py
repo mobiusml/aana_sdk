@@ -1,15 +1,18 @@
 # ruff: noqa: S101, S113
 import json
 from collections.abc import AsyncGenerator
+from typing import TypedDict
 
 import requests
 from ray import serve
 
-from aana.api.api_generation import Endpoint, EndpointOutput
+from aana.api.api_generation import Endpoint
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.deployments.base_deployment import BaseDeployment
 
 
 @serve.deployment
-class Lowercase:
+class Lowercase(BaseDeployment):
     """Ray Serve deployment that returns the lowercase version of a text."""
 
     async def lower_stream(self, text: str) -> AsyncGenerator[dict, None]:
@@ -27,52 +30,57 @@ class Lowercase:
             yield {"text": t.lower()}
 
 
-nodes = [
+class LowercaseEndpointOutput(TypedDict):
+    """The output of the lowercase endpoint."""
+
+    text: str
+
+
+class LowercaseEndpoint(Endpoint):
+    """Lowercase endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.lowercase_handle = await AanaDeploymentHandle.create(
+            "lowercase_deployment"
+        )
+
+    async def run(self, text: str) -> AsyncGenerator[LowercaseEndpointOutput, None]:
+        """Lowercase the text.
+
+        Args:
+            text (TextList): The list of text to lowercase
+
+        Returns:
+            LowercaseEndpointOutput: The lowercase texts
+        """
+        async for chunk in self.lowercase_handle.lower_stream(text=text):
+            yield {"text": chunk["text"]}
+
+
+deployments = [
     {
-        "name": "text",
-        "type": "input",
-        "inputs": [],
-        "outputs": [{"name": "text", "key": "text", "path": "text"}],
-    },
-    {
-        "name": "lowercase",
-        "type": "ray_deployment",
-        "deployment_name": "Lowercase",
-        "data_type": "generator",
-        "generator_path": "text",
-        "method": "lower_stream",
-        "inputs": [{"name": "text", "key": "text", "path": "text"}],
-        "outputs": [
-            {
-                "name": "lowercase_text",
-                "key": "text",
-                "path": "lowercase_text",
-            }
-        ],
+        "name": "lowercase_deployment",
+        "instance": Lowercase,
     },
 ]
-
-context = {
-    "deployments": {
-        "Lowercase": Lowercase.bind(),
-    }
-}
-
 
 endpoints = [
-    Endpoint(
-        name="lowercase",
-        path="/lowercase",
-        summary="Lowercase text",
-        outputs=[EndpointOutput(name="text", output="lowercase_text", streaming=True)],
-        streaming=True,
-    )
+    {
+        "name": "lowercase",
+        "path": "/lowercase",
+        "summary": "Lowercase text",
+        "endpoint_cls": LowercaseEndpoint,
+    }
 ]
 
 
-def test_app_streaming(ray_serve_setup):
+def test_app_streaming(app_setup):
     """Test the Ray Serve app with streaming enabled."""
-    handle, port, route_prefix = ray_serve_setup(endpoints, nodes, context)
+    aana_app = app_setup(deployments=deployments, endpoints=endpoints)
+
+    port = aana_app.port
+    route_prefix = ""
 
     # Check that the server is ready
     response = requests.get(f"http://localhost:{port}{route_prefix}/api/ready")

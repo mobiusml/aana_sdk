@@ -1,17 +1,19 @@
 import hashlib
+import inspect
 import urllib.request
+from collections.abc import Callable
 from contextlib import ExitStack
 from pathlib import Path
 from typing import Any, TypeVar
 
+import numpy as np
+import ray
 import requests
 from pydantic import BaseModel
 from tqdm import tqdm
 
-from aana.api.api_generation import Endpoint
-from aana.configs.endpoints import endpoints as all_endpoints
 from aana.configs.settings import settings
-from aana.exceptions.general import DownloadException, EndpointNotFoundException
+from aana.exceptions.general import DownloadException
 from aana.utils.json import jsonify
 
 OptionType = TypeVar("OptionType", bound=BaseModel)
@@ -162,27 +164,6 @@ def pydantic_to_dict(data: Any) -> Any:
         return data  # return as is for non-Pydantic types
 
 
-def get_endpoint(target: str, endpoint: str) -> Endpoint:
-    """Get endpoint from endpoints config.
-
-    #TODO: make EndpointList a class and make this a method.: add issue link
-
-    Args:
-        target (str): the name of the target deployment
-        endpoint (str): the endpoint path
-
-    Returns:
-        Endpoint: the endpoint
-
-    Raises:
-        EndpointNotFoundException: If the endpoint is not found
-    """
-    for e in all_endpoints[target]:
-        if e.path == endpoint:
-            return e
-    raise EndpointNotFoundException(target=target, endpoint=endpoint)
-
-
 def get_object_hash(obj: Any) -> str:
     """Get the MD5 hash of an object.
 
@@ -205,3 +186,39 @@ def get_gpu_memory(gpu: int = 0) -> int:
     import torch
 
     return torch.cuda.get_device_properties(gpu).total_memory
+
+
+def merge_list(l: list):
+    """Merge a list of lists or numpy arrays into a single list or numpy array."""
+    item_type = None
+    for item in l:
+        if item is not None:
+            item_type = type(item)
+            break
+    if item_type is None:
+        return None
+
+    if item_type == np.ndarray:
+        return np.concatenate(l)
+    else:
+        return sum(l, item_type())
+
+
+def run_remote(func: Callable) -> Callable:
+    """Wrap a function to run it remotely on Ray.
+
+    Args:
+        func (Callable): the function to wrap
+
+    Returns:
+        Callable: the wrapped function
+    """
+
+    async def generator_wrapper(*args, **kwargs):
+        async for item in ray.remote(func).remote(*args, **kwargs):
+            yield await item
+
+    if inspect.isgeneratorfunction(func):
+        return generator_wrapper
+    else:
+        return ray.remote(func).remote
