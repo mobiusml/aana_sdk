@@ -130,7 +130,7 @@ class AanaSDK:
             del self.endpoints[name]
 
     def deploy(self, blocking: bool = False):
-        """Deploy the registered deployments and endpoints.
+        """Deploy the application with the registered endpoints.
 
         Args:
             blocking (bool, optional): If True, the function will block until interrupted. Defaults to False.
