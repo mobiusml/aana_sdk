@@ -2,7 +2,6 @@ import asyncio
 from collections.abc import Callable
 from typing import Any, TypeAlias, get_type_hints
 
-import ray
 from haystack import component
 
 from aana.utils.coroutines import run_sync

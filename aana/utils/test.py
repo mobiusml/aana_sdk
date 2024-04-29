@@ -1,5 +1,6 @@
 import inspect
 import pickle
+from functools import wraps
 from importlib import resources
 from pathlib import Path
 
@@ -95,6 +96,7 @@ def test_cache(func):  # noqa: C901
         )
         return Path(path)
 
+    @wraps(func)
     async def wrapper(*args, **kwargs):
         """Wrapper for the deployment function."""
         cache_path = get_cache_path(args, kwargs)
@@ -123,6 +125,7 @@ def test_cache(func):  # noqa: C901
                     save_cache(cache_path, result, args, kwargs)
             return result
 
+    @wraps(func)
     async def wrapper_generator(*args, **kwargs):
         """Wrapper for the deployment generator function."""
         cache_path = get_cache_path(args, kwargs)

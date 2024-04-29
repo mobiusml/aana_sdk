@@ -1,4 +1,5 @@
 import hashlib
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -25,7 +26,7 @@ class Media:
     path: Path | None = None
     url: str | None = None
     content: bytes | None = None
-    media_id: MediaId = field(default_factory=lambda: MediaId.random())
+    media_id: MediaId = field(default_factory=lambda: str(uuid.uuid4()))
     save_on_disk: bool = True
     is_saved: bool = False
     media_dir: Path | None = None

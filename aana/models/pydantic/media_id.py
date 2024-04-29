@@ -1,36 +1,19 @@
-import uuid
+from typing import Annotated, Any
 
-from pydantic import ConfigDict, model_validator
-from typing_extensions import Self
-
-from aana.models.pydantic.base import BaseStringModel
+from pydantic import Field, ValidationInfo, ValidatorFunctionWrapHandler
+from pydantic.functional_validators import WrapValidator
 
 
-class MediaId(BaseStringModel):
-    """A model for a media id."""
+def verify_media_id_must_not_be_empty(
+    v: Any, handler: ValidatorFunctionWrapHandler, info: ValidationInfo
+) -> str:
+    """Validates that the media_id is not an empty string."""
+    assert v != "", "media_id cannot be an empty string"  # noqa: S101
+    return v
 
-    # method to generate a random media id with uuid
-    @classmethod
-    def random(cls) -> "MediaId":
-        """Generate a random media id."""
-        return cls(str(uuid.uuid4()))
 
-    # check if the media id is not empty string
-    @model_validator(mode="after")
-    def verify_media_id_must_not_be_empty(self) -> Self:
-        """Validates that the media_id is not an empty string.
-
-        Args:
-            values (dict): The values of the fields.
-
-        Returns:
-            dict: The values of the fields.
-
-        Raises:
-            ValueError: if the media_id is an empty string.
-        """
-        if self.root == "":
-            raise ValueError("media_id cannot be an empty string")  # noqa: TRY003
-        return self
-
-    model_config = ConfigDict(json_schema_extra={"description": "Media ID"})
+MediaId = Annotated[
+    str,
+    Field(description="The media ID."),
+    WrapValidator(verify_media_id_must_not_be_empty),
+]

@@ -1,6 +1,7 @@
 # ruff: noqa: S101
 
 import pytest
+from ray import serve
 
 from aana.models.pydantic.prompt import Prompt
 from aana.tests.utils import (
@@ -13,10 +14,18 @@ from aana.tests.utils import (
 @pytest.fixture(
     scope="function", params=get_deployments_by_type("StableDiffusion2Deployment")
 )
-def setup_deployment(setup_deployment, request):
+def setup_deployment(app_setup, request):
     """Setup Stable Diffusion 2 deployment."""
     name, deployment = request.param
-    return name, deployment, *setup_deployment(deployment, bind=True)
+    deployments = [
+        {
+            "name": "sd2_deployment",
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
+
+    return name, deployment, app_setup(deployments, endpoints)
 
 
 @pytest.mark.skipif(
@@ -30,7 +39,7 @@ def setup_deployment(setup_deployment, request):
 )
 async def test_stablediffusion2_deployment(setup_deployment, prompt):
     """Test HuggingFace BLIP2 deployments."""
-    name, deployment, handle, port, route_prefix = setup_deployment
+    handle = serve.get_app_handle("sd2_deployment")
 
     output = await handle.generate.remote(prompt=Prompt(prompt))
 

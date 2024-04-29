@@ -9,7 +9,7 @@ class ChatMessage(BaseModel):
     """A chat message.
 
     Attributes:
-        text (str): the text of the message
+        content (str): the text of the message
         role (Role): the role of the message
     """
 

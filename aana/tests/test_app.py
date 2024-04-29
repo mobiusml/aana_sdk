@@ -1,14 +1,18 @@
 # ruff: noqa: S101, S113
 import json
+from typing import Annotated, TypedDict
 
 import requests
+from pydantic import Field
 from ray import serve
 
-from aana.api.api_generation import Endpoint, EndpointOutput
+from aana.api.api_generation import Endpoint
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.deployments.base_deployment import BaseDeployment
 
 
 @serve.deployment
-class Lowercase:
+class Lowercase(BaseDeployment):
     """Ray deployment that returns the lowercase version of a text."""
 
     async def lower(self, text: str) -> dict:
@@ -23,49 +27,60 @@ class Lowercase:
         return {"text": [t.lower() for t in text]}
 
 
-nodes = [
-    {
-        "name": "text",
-        "type": "input",
-        "inputs": [],
-        "outputs": [{"name": "text", "key": "text", "path": "texts.[*].text"}],
-    },
-    {
-        "name": "lowercase",
-        "type": "ray_deployment",
-        "deployment_name": "Lowercase",
-        "method": "lower",
-        "inputs": [{"name": "text", "key": "text", "path": "texts.[*].text"}],
-        "outputs": [
-            {
-                "name": "lowercase_text",
-                "key": "text",
-                "path": "texts.[*].lowercase_text",
-            }
-        ],
-    },
-]
+TextList = Annotated[list[str], Field(description="List of text to lowercase.")]
 
-context = {
-    "deployments": {
-        "Lowercase": Lowercase.bind(),
+
+class LowercaseEndpointOutput(TypedDict):
+    """The output of the lowercase endpoint."""
+
+    text: list[str]
+
+
+class LowercaseEndpoint(Endpoint):
+    """Lowercase endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.lowercase_handle = await AanaDeploymentHandle.create(
+            "lowercase_deployment"
+        )
+
+    async def run(self, text: TextList) -> LowercaseEndpointOutput:
+        """Lowercase the text.
+
+        Args:
+            text (TextList): The list of text to lowercase
+
+        Returns:
+            LowercaseEndpointOutput: The lowercase texts
+        """
+        lowercase_output = await self.lowercase_handle.lower(text=text)
+        return {"text": lowercase_output["text"]}
+
+
+deployments = [
+    {
+        "name": "lowercase_deployment",
+        "instance": Lowercase,
     }
-}
-
+]
 
 endpoints = [
-    Endpoint(
-        name="lowercase",
-        path="/lowercase",
-        summary="Lowercase text",
-        outputs=[EndpointOutput(name="text", output="lowercase_text")],
-    )
+    {
+        "name": "lowercase",
+        "path": "/lowercase",
+        "summary": "Lowercase text",
+        "endpoint_cls": LowercaseEndpoint,
+    }
 ]
 
 
-def test_app(ray_serve_setup):
+def test_app(app_setup):
     """Test the Ray Serve app."""
-    handle, port, route_prefix = ray_serve_setup(endpoints, nodes, context)
+    aana_app = app_setup(deployments, endpoints)
+
+    port = aana_app.port
+    route_prefix = ""
 
     # Check that the server is ready
     response = requests.get(f"http://localhost:{port}{route_prefix}/api/ready")
@@ -80,4 +95,5 @@ def test_app(ray_serve_setup):
     )
     assert response.status_code == 200
     lowercase_text = response.json().get("text")
+    print(lowercase_text)
     assert lowercase_text == ["hello world!", "this is a test."]

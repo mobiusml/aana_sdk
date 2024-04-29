@@ -1,3 +1,4 @@
+import uuid
 from pathlib import Path
 
 from pydantic import (
@@ -43,7 +44,7 @@ class VideoInput(BaseModel):
         ),
     )
     media_id: MediaId = Field(
-        default_factory=lambda: MediaId.random(),
+        default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
 

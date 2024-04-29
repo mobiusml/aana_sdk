@@ -24,7 +24,6 @@ from aana.utils.coroutines import run_sync
 )
 def test_haystack_wrapper(setup_deployment, deployment_name, method_name):
     """Tests haystack wrapper for deployments."""
-
     run_sync(AanaDeploymentHandle.create(deployment_name))
     _component = AanaDeploymentComponent(deployments[deployment_name], method_name)
     # TODO: run functionality

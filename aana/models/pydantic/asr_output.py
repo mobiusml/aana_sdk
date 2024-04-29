@@ -1,3 +1,5 @@
+from typing import Annotated
+
 import numpy as np
 from faster_whisper.transcribe import (
     Segment as WhisperSegment,
@@ -10,7 +12,6 @@ from faster_whisper.transcribe import (
 )
 from pydantic import BaseModel, ConfigDict, Field
 
-from aana.models.pydantic.base import BaseListModel
 from aana.models.pydantic.time_interval import TimeInterval
 
 
@@ -175,47 +176,16 @@ class AsrTranscription(BaseModel):
     )
 
 
-class AsrSegments(BaseListModel):
-    """Pydantic schema for the list of ASR segments."""
+AsrSegments = Annotated[
+    list[AsrSegment], Field(..., description="List of ASR segments")
+]
 
-    root: list[AsrSegment] = Field(
-        description="List of ASR segments", default_factory=list
-    )
-    model_config = ConfigDict(
-        json_schema_extra={
-            "description": "List of ASR segments",
-        }
-    )
-
-
-class AsrSegmentsList(BaseListModel):
-    """Pydantic schema for the list of lists of ASR segments."""
-
-    root: list[AsrSegments]
-    model_config = ConfigDict(
-        json_schema_extra={
-            "description": "List of lists of ASR segments",
-        }
-    )
-
-
-class AsrTranscriptionInfoList(BaseListModel):
-    """Pydantic schema for the list of ASR transcription info."""
-
-    root: list[AsrTranscriptionInfo]
-    model_config = ConfigDict(
-        json_schema_extra={
-            "description": "List of ASR transcription info",
-        }
-    )
-
-
-class AsrTranscriptionList(BaseListModel):
-    """Pydantic schema for the list of ASR transcription."""
-
-    root: list[AsrTranscription]
-    model_config = ConfigDict(
-        json_schema_extra={
-            "description": "List of ASR transcription",
-        }
-    )
+AsrSegmentsList = Annotated[
+    list[AsrSegments], Field(..., description="List of lists of ASR segments")
+]
+AsrTranscriptionInfoList = Annotated[
+    list[AsrTranscriptionInfo], Field(..., description="List of ASR transcription info")
+]
+AsrTranscriptionList = Annotated[
+    list[AsrTranscription], Field(..., description="List of ASR transcription")
+]

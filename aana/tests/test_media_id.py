@@ -1,27 +1,24 @@
 # ruff: noqa: S101
+
 import pytest
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from aana.models.pydantic.media_id import MediaId
 
 
 def test_media_id_creation():
     """Test that a media id can be created."""
-    media_id = MediaId(root="foo")
+
+    class TestModel(BaseModel):
+        media_id: MediaId
+
+    media_id = TestModel(media_id="foo").media_id
     assert media_id == "foo"
 
-    media_id = MediaId("foo")
-    assert media_id == "foo"
-
+    # Validation only happens when the model is created
+    # because MediaId is just an annotated string
     with pytest.raises(ValueError):
-        media_id = MediaId()
+        TestModel().media_id  # noqa: B018
 
     with pytest.raises(ValidationError):
-        media_id = MediaId("")
-
-
-def test_media_id_random():
-    """Test that a random media id can be created."""
-    media_id = MediaId.random()
-    assert media_id is not None
-    assert media_id != ""
+        TestModel(media_id="").media_id  # noqa: B018

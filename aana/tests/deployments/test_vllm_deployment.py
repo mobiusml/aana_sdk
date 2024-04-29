@@ -1,5 +1,6 @@
 # ruff: noqa: S101
 import pytest
+from ray import serve
 
 from aana.exceptions.general import PromptTooLongException
 from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
@@ -14,7 +15,7 @@ from aana.tests.utils import (
 
 def expected_output(name):
     """Gets expected output for a given vLLM version."""
-    if name == "vllm_deployment_llama2_7b_chat":
+    if name == "vllm_llama2_7b_chat_deployment":
         return (
             "  Elon Musk is a South African-born entrepreneur, inventor, "
             "and business magnate who is best known for his innovative companies in"
@@ -24,10 +25,18 @@ def expected_output(name):
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("VLLMDeployment"))
-def setup_vllm_deployment(setup_deployment, request):
+def setup_vllm_deployment(app_setup, request):
     """Setup vLLM deployment."""
     name, deployment = request.param
-    return name, deployment, *setup_deployment(deployment, bind=True)
+    deployments = [
+        {
+            "name": "vllm_deployment",
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
+
+    return name, deployment, app_setup(deployments, endpoints)
 
 
 @pytest.mark.skipif(
@@ -37,7 +46,9 @@ def setup_vllm_deployment(setup_deployment, request):
 @pytest.mark.asyncio
 async def test_vllm_deployments(setup_vllm_deployment):
     """Test VLLM deployments."""
-    name, deployment, handle, port, route_prefix = setup_vllm_deployment
+    name, deployment, app = setup_vllm_deployment
+
+    handle = serve.get_app_handle("vllm_deployment")
 
     expected_text = expected_output(name)
 

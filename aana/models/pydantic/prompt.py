@@ -1,9 +1,5 @@
-from pydantic import ConfigDict
+from typing import Annotated
 
-from aana.models.pydantic.base import BaseStringModel
+from pydantic import Field
 
-
-class Prompt(BaseStringModel):
-    """A model for a user prompt to LLM."""
-
-    model_config = ConfigDict(json_schema_extra={"description": "A prompt to LLM."})
+Prompt = Annotated[str, Field(description="The prompt for the LLM.")]
