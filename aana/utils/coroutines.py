@@ -1,4 +1,4 @@
-from asyncio import coroutine, is_coroutine, run
+from asyncio import coroutine, iscoroutine, run
 
 from typing_extensions import Any
 
@@ -12,6 +12,6 @@ def run_sync(x: coroutine | Any) -> Any:
     Returns:
         Any: x, if x is not awaitable, otherwise the final result of x
     """
-    if is_coroutine(x):
+    if iscoroutine(x):
         return run(x)
     return x
