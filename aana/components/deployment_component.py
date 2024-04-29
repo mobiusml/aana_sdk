@@ -4,11 +4,11 @@ from typing import Any, TypeAlias, get_type_hints
 
 from haystack import component
 
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.utils.coroutines import run_sync
 from aana.utils.typing import as_dict_of_types, is_typed_dict
 
 DeploymentResult: TypeAlias = Any
-AanaDeploymentHandle: TypeAlias = Any
 
 
 def typehints_to_component_types(
@@ -69,9 +69,16 @@ def typehints_to_input_types(typehints: dict[str]) -> dict[str]:
 
 @component
 class AanaDeploymentComponent:
-    """Wrapper for Aana deployments to run as HayStack Components."""
+    """Wrapper for Aana deployments to run as HayStack Components.
 
-    # TODO: add usage example to docstring
+    Example:
+        ```python
+        deployment_handle = AanaDeploymentHandler("my_deployment")
+        haystack_component = AanaDeploymentComponent(deployment_handle, "my_method")
+        haystack_component.warm_up()  # This is currently a no-op, but subject to change.
+        component_result = haystack_component.run(my_input_prompt="This is an input prompt")
+        ```
+    """
 
     _deployment: AanaDeploymentHandle
     _inference_method: Callable
@@ -83,20 +90,20 @@ class AanaDeploymentComponent:
         """Constructor.
 
         Arguments:
-            deployment_handle (AanaDeploymentHandle): the Ray deployment to be wrapped
+            deployment_handle (AanaDeploymentHandle): the Aana Ray deployment to be wrapped (must be a class Deployment)
             method_name (str): the name of the method on the deployment to call inside the component's `run()` method. Defaults to `generate_batch`
         """
         self._deployment = deployment_handle
-        self._run_method = None
 
         # Determine input and output types for `run()`
+        # Will raise if the function is not defined (e.g. if you pass a function deployment)
         self.run_method = self._get_method(method_name)
         if not self.run_method:
             raise ValueError(method_name)
         hints = get_type_hints(self.run_method)
         input_types, output_types = typehints_to_component_types(hints)
         # The functions `set_input_types()` and `set_output_types()`
-        # take an positionial instance argument and keyword arguments
+        # take an positional instance argument and keyword arguments
         component.set_input_types(self, **input_types)
         component.set_output_types(self, **output_types)
 

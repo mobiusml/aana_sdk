@@ -10,7 +10,7 @@ def is_typed_dict(argument: type) -> bool:
     Returns:
         bool: True if the argument type is a TypedDict anf False if it is not.
     """
-    return argument and getattr(argument, "__orig_bases__", None) == typing.TypedDict
+    return bool(argument and getattr(argument, "__orig_bases__", None) == typing.TypedDict)
 
 
 def as_dict_of_types(argument: type[typing._TypedDictMeta]) -> dict[str, type]:
