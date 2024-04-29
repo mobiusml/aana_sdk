@@ -1,5 +1,4 @@
 # ruff: noqa: S101
-import uuid
 
 import pytest
 from pydantic import BaseModel, ValidationError
