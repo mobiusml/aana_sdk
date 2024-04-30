@@ -1,9 +1,10 @@
-from asyncio import coroutine, iscoroutine, run
+from asyncio import iscoroutine, run
+from types import CoroutineType
 
 from typing_extensions import Any
 
 
-def run_sync(x: coroutine | Any) -> Any:
+def run_sync(x: CoroutineType | Any) -> Any:
     """Resolves a function return value if it is a coroutine.
 
     Arguments:
