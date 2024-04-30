@@ -2,7 +2,6 @@ import inspect
 from typing import Any
 
 from aana.configs.settings import settings
-from aana.utils.test import check_test_cache_enabled
 
 
 class BaseDeployment:
@@ -26,7 +25,7 @@ class BaseDeployment:
         if (
             settings.test.test_mode
             and settings.test.use_deployment_cache
-            and check_test_cache_enabled(self)
+            and self.check_test_cache_enabled()
         ):
             # If we are in testing mode and we want to use the cache,
             # we don't need to load the model
@@ -70,3 +69,10 @@ class BaseDeployment:
             if method.__doc__:
                 methods_info[name]["doc"] = method.__doc__
         return methods_info
+
+    def check_test_cache_enabled(self):
+        """Check if the deployment has any methods decorated with test_cache."""
+        for method in self.__class__.__dict__.values():
+            if callable(method) and getattr(method, "test_cache_enabled", False):
+                return True
+        return False
