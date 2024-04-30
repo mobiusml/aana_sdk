@@ -1,7 +1,7 @@
 import pytest
 
 from aana.components.deployment_component import AanaDeploymentComponent
-from aana.configs.deployments import deployments
+from aana.configs.deployments import available_deployments as deployments
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.tests.deployments.test_hf_blip2_deployment import setup_hf_blip2_deployment
 from aana.tests.deployments.test_stablediffusion2_deployment import (
