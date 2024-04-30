@@ -80,7 +80,7 @@ class AanaDeploymentComponent:
         ```
     """
 
-    _deployment: AanaDeploymentHandle
+    _deployment_handle: AanaDeploymentHandle
     _inference_method: Callable
     _warm: bool
 
@@ -93,7 +93,7 @@ class AanaDeploymentComponent:
             deployment_handle (AanaDeploymentHandle): the Aana Ray deployment to be wrapped (must be a class Deployment)
             method_name (str): the name of the method on the deployment to call inside the component's `run()` method. Defaults to `generate_batch`
         """
-        self._deployment = deployment_handle
+        self._deployment_handle = deployment_handle
 
         # Determine input and output types for `run()`
         # Will raise if the function is not defined (e.g. if you pass a function deployment)
@@ -112,7 +112,7 @@ class AanaDeploymentComponent:
 
         As we run off an existing deployment handle, this is currently a no-op.
         """
-        pass
+        self._warm = True
 
     def run(self, *args, **kwargs) -> DeploymentResult:
         """Run the component. This is the primary interface for Haystack Components.
