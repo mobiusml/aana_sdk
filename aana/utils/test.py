@@ -169,11 +169,3 @@ def test_cache(func):  # noqa: C901
         return wrapper_generator
     else:
         return wrapper
-
-
-def check_test_cache_enabled(deployment: "BaseDeployment"):
-    """Check if the deployment has any methods decorated with test_cache."""
-    for method in deployment.__class__.__dict__.values():
-        if callable(method) and getattr(method, "test_cache_enabled", False):
-            return True
-    return False

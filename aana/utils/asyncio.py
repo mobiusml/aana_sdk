@@ -3,22 +3,10 @@ import threading
 from typing import Any
 
 
-class RunThread(threading.Thread):
-    """Run a coroutine in a thread."""
-
-    def __init__(self, coro):
-        """Initialize the thread."""
-        self.coro = coro
-        self.result = None
-        super().__init__()
-
-    def run(self):
-        """Run the coroutine."""
-        self.result = asyncio.run(self.coro)
-
-
 def run_async(coro: asyncio.coroutine) -> Any:
-    """Run an async function in a thread.
+    """Run a coroutine in a thread if the current thread is running an event loop.
+
+    Otherwise, run the coroutine in the current asyncio loop.
 
     Usefull when you want to run an async function in a non-async context.
 
@@ -30,6 +18,20 @@ def run_async(coro: asyncio.coroutine) -> Any:
     Returns:
         Any: The result of the coroutine.
     """
+
+    class RunThread(threading.Thread):
+        """Run a coroutine in a thread."""
+
+        def __init__(self, coro):
+            """Initialize the thread."""
+            self.coro = coro
+            self.result = None
+            super().__init__()
+
+        def run(self):
+            """Run the coroutine."""
+            self.result = asyncio.run(self.coro)
+
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
