@@ -67,6 +67,30 @@ class AanaSDK:
             # check if the port is the same as an existing serve instance if serve is running
             serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
 
+    def show_status(self, app_name: str):
+        """Show the status of the application.
+
+        Args:
+            app_name (str): The name of the application.
+        """
+
+        def print_header(title):
+            print(f"\n{'=' * 55}\n{title}\n{'=' * 55}")
+
+        def print_status(deployment, status):
+            print(f"{deployment:<30} Status: {status}")
+
+        status = serve.status()
+        app_status = status.applications[app_name]
+
+        print_header(f"Application {app_name}")
+        print_status(app_name, app_status.status.value)
+
+        for deployment_name, deployment_status in app_status.deployments.items():
+            print_header(f"Deployment {deployment_name}")
+            print_status("Status", deployment_status.status.value)
+            print(f"\n{deployment_status.message}\n")
+
     def register_deployment(
         self,
         name: str,
@@ -80,12 +104,15 @@ class AanaSDK:
             instance (Deployment): The instance of the deployment to be registered.
             blocking (bool, optional): If True, the function will block until deployment is complete. Defaults to False.
         """
-        serve.run(
-            instance.bind(),
-            name=name,
-            route_prefix=f"/{name}",
-            blocking=blocking,
-        )
+        try:
+            serve.run(
+                instance.bind(),
+                name=name,
+                route_prefix=f"/{name}",
+                blocking=blocking,
+            )
+        except RuntimeError:
+            self.show_status(name)
 
     def unregister_deployment(self, name: str):
         """Unregister a deployment.
@@ -151,14 +178,14 @@ class AanaSDK:
             print("Got KeyboardInterrupt, shutting down...")
             serve.shutdown()
             sys.exit()
+        except RuntimeError:
+            self.show_status("RequestHandler")
         except Exception:
             traceback.print_exc()
             print(
                 "Received unexpected error, see console logs for more details. Shutting "
                 "down..."
             )
-            serve.shutdown()
-            sys.exit()
 
     def shutdown(self):
         """Shutdown the Aana server."""
