@@ -1,11 +1,12 @@
 import sys
 import time
 import traceback
+from pathlib import Path
 
 import ray
 from ray import serve
 from ray.serve.config import HTTPOptions
-from ray.serve.deployment import Deployment
+from ray.serve.deployment import Application, Deployment
 
 from aana.api.api_generation import Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
@@ -17,7 +18,19 @@ from aana.configs.settings import settings as aana_settings
 class AanaSDK:
     """Aana SDK to deploy and manage Aana deployments and endpoints."""
 
-    def __init__(
+    def __init__(self, name: str = "app"):
+        """Aana SDK to deploy and manage Aana deployments and endpoints.
+
+        Args:
+            name (str, optional): The name of the application. Defaults to "app".
+        """
+        self.name = name
+        self.endpoints: dict[str, Endpoint] = {}
+        self.deployments: dict[str, Deployment] = {}
+
+        run_alembic_migrations(aana_settings)
+
+    def connect(
         self,
         port: int = 8000,
         host: str = "127.0.0.1",
@@ -26,7 +39,7 @@ class AanaSDK:
         num_cpus: int | None = None,
         num_gpus: int | None = None,
     ):
-        """Aana SDK to deploy and manage Aana deployments and endpoints.
+        """Connect to a Ray cluster or start a new Ray cluster and Ray Serve.
 
         Args:
             port (int, optional): The port to run the Aana server on. Defaults to 8000.
@@ -41,9 +54,6 @@ class AanaSDK:
         """
         self.port = port
         self.host = host
-        self.endpoints: dict[str, Endpoint] = {}
-
-        run_alembic_migrations(aana_settings)
 
         try:
             # Try to connect to an existing Ray cluster
@@ -96,6 +106,7 @@ class AanaSDK:
         name: str,
         instance: Deployment,
         blocking: bool = False,
+        deploy: bool = False,
     ):
         """Register a deployment.
 
@@ -103,16 +114,38 @@ class AanaSDK:
             name (str): The name of the deployment.
             instance (Deployment): The instance of the deployment to be registered.
             blocking (bool, optional): If True, the function will block until deployment is complete. Defaults to False.
+            deploy (bool, optional): If True, the deployment will be deployed immediately,
+                    otherwise it will be registered and can be deployed later when deploy() is called. Defaults to False.
         """
-        try:
-            serve.run(
-                instance.bind(),
-                name=name,
-                route_prefix=f"/{name}",
-                blocking=blocking,
-            )
-        except RuntimeError:
-            self.show_status(name)
+        if deploy:
+            try:
+                serve.run(
+                    instance.bind(),
+                    name=name,
+                    route_prefix=f"/{name}",
+                    blocking=blocking,
+                )
+            except RuntimeError:
+                self.show_status(name)
+        else:
+            self.deployments[name] = instance
+
+    def get_deployment_app(self, name: str) -> Application:
+        """Get the application instance for the deployment.
+
+        Args:
+            name (str): The name of the deployment.
+
+        Returns:
+            Application: The application instance for the deployment.
+
+        Raises:
+            KeyError: If the deployment is not found.
+        """
+        if name in self.deployments:
+            return self.deployments[name].options(route_prefix=f"/{name}").bind()
+        else:
+            raise KeyError(f"Deployment {name} not found.")  # noqa: TRY003
 
     def unregister_deployment(self, name: str):
         """Unregister a deployment.
@@ -120,7 +153,19 @@ class AanaSDK:
         Args:
             name (str): The name of the deployment to be unregistered.
         """
+        if name in self.deployments:
+            del self.deployments[name]
         serve.delete(name)
+
+    def get_main_app(self) -> Application:
+        """Get the main application instance.
+
+        Returns:
+            Application: The main application instance.
+        """
+        return RequestHandler.options(num_replicas=aana_settings.num_workers).bind(
+            endpoints=self.endpoints.values()
+        )
 
     def register_endpoint(
         self,
@@ -157,17 +202,26 @@ class AanaSDK:
             del self.endpoints[name]
 
     def deploy(self, blocking: bool = False):
-        """Deploy the application with the registered endpoints.
+        """Deploy the application with the registered endpoints and deployments.
 
         Args:
             blocking (bool, optional): If True, the function will block until interrupted. Defaults to False.
         """
+        for deployment_name in self.deployments:
+            try:
+                serve.run(
+                    self.get_deployment_app(deployment_name),
+                    name=deployment_name,
+                    route_prefix=f"/{deployment_name}",
+                    blocking=False,
+                )
+            except RuntimeError:  # noqa: PERF203
+                self.show_status(deployment_name)
+
         try:
             serve.run(
-                RequestHandler.options(num_replicas=aana_settings.num_workers).bind(
-                    endpoints=self.endpoints.values()
-                ),
-                name="RequestHandler",
+                self.get_main_app(),
+                name=self.name,
                 route_prefix="/",
                 blocking=False,  # blocking manually after to display the message "Deployed successfully."
             )
@@ -191,3 +245,92 @@ class AanaSDK:
         """Shutdown the Aana server."""
         serve.shutdown()
         ray.shutdown()
+
+    def build(self, import_path: str, host: str, port: int, output_dir: Path | str):
+        """Build the application configuration file.
+
+        Args:
+            import_path (str): The import path of the application.
+            host (str): The host to run the application on.
+            port (int): The port to run the application on.
+            output_dir (Path | str): The output directory to write the config file to.
+        """
+        import yaml
+        from ray._private.utils import import_attr
+        from ray.serve._private.deployment_graph_build import build as pipeline_build
+        from ray.serve._private.deployment_graph_build import (
+            get_and_validate_ingress_deployment,
+        )
+        from ray.serve.deployment import Application, deployment_to_schema
+        from ray.serve.schema import (
+            LoggingConfig,
+            ServeApplicationSchema,
+            ServeDeploySchema,
+        )
+        from ray.serve.scripts import ServeDeploySchemaDumper
+
+        output_dir = Path(output_dir)
+
+        def build_app_config(import_path: str, name: str):
+            app: Application = import_attr(import_path)
+            if not isinstance(app, Application):
+                raise TypeError(  # noqa: TRY003
+                    f"Expected '{import_path}' to be an Application but got {type(app)}."
+                )
+
+            deployments = pipeline_build(app, name)
+            ingress = get_and_validate_ingress_deployment(deployments)
+            schema = ServeApplicationSchema(
+                name=name,
+                route_prefix=ingress.route_prefix,
+                import_path=import_path,
+                runtime_env={},
+                deployments=[
+                    deployment_to_schema(d, include_route_prefix=False)
+                    for d in deployments
+                ],
+            )
+
+            return schema.dict(exclude_unset=True)
+
+        config_str = ""
+
+        app_configs = []
+        for deployment_name in self.deployments:
+            app_name = deployment_name
+            app_configs.append(
+                build_app_config(f"{import_path}:{app_name}", name=app_name)
+            )
+
+        main_app_name = self.name
+        app_configs.append(
+            build_app_config(f"{import_path}:{main_app_name}", name=main_app_name)
+        )
+
+        deploy_config = {
+            "proxy_location": "EveryNode",
+            "http_options": {
+                "host": host,
+                "port": port,
+            },
+            "logging_config": LoggingConfig().dict(),
+            "applications": app_configs,
+        }
+
+        # Parse + validate the set of application configs
+        ServeDeploySchema.parse_obj(deploy_config)
+
+        config_str += yaml.dump(
+            deploy_config,
+            Dumper=ServeDeploySchemaDumper,
+            default_flow_style=False,
+            sort_keys=False,
+        )
+
+        # Ensure file ends with only one newline
+        config_str = config_str.rstrip("\n") + "\n"
+
+        output_path = output_dir / "config.yaml"
+        with output_path.open("w") as f:
+            f.write(config_str)
+        print(f"Config file written to {output_path}")
