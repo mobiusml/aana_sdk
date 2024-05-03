@@ -6,6 +6,7 @@ from aana.components.deployment_component import AanaDeploymentComponent
 def test_haystack_component():
     """Tests the haystack component."""
     deployment_handle = MagicMock()
+    deployment_handle.foo.__annotations__ = {}
     component = AanaDeploymentComponent(deployment_handle, "foo")
     component.warm_up()
     component.run()

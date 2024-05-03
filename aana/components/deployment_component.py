@@ -1,5 +1,6 @@
 import asyncio
 from collections.abc import Callable
+from types import NoneType
 from typing import Any, TypeAlias, get_type_hints
 
 from haystack import component
@@ -22,7 +23,7 @@ def typehints_to_component_types(
     Returns:
         tuple: Something that can be passed to `haystack.component.set_input_types()`
     """
-    output_types = typehints_to_output_types(typehints.pop("return"))
+    output_types = typehints_to_output_types(typehints.pop("return", NoneType))
     input_types = typehints_to_input_types(typehints)
     return input_types, output_types
 
@@ -134,7 +135,7 @@ class AanaDeploymentComponent:
 
     def _call(self, *args, **kwargs) -> DeploymentResult:
         """Calls the deployment's run method. Not public, use the `run()` method."""
-        return self._run_method(*args, **kwargs).remote()  # type: ignore
+        return self.run_method(*args, **kwargs)  # type: ignore
 
     def _get_method(self, method_name: str) -> Callable | None:
         """Gets a handle to the method specified by the constructor."""
