@@ -29,7 +29,7 @@ pydantic-settings = "^2.1.0"
 python-multipart = "^0.0.6"
 pytest-timeout = "^2.2.0"
 qdrant-haystack = "^3.2.1"
-ray = {extras = ["serve"], version = ">=2.9"}
+ray = {extras = ["serve"], version = ">=2.20"}
 rapidfuzz = "^3.4.0"
 scipy = "^1.11.3"
 sentence-transformers = "^2.6.1"
