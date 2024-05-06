@@ -275,7 +275,6 @@ class AanaSDK:
 
         # Use location of the app module as the output directory
         output_dir = Path(importlib.util.find_spec(app_module).origin).parent
-        print(output_dir)
 
         # Import AanaSDK app from the given import path
         aana_app = import_from_path(import_path)

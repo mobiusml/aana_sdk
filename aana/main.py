@@ -1,78 +1,78 @@
-import argparse
 import sys
+
+import click
 
 from aana.sdk import AanaSDK
 from aana.utils.general import import_from_path
 
 
-def run():
-    """Main function to run the application."""
-    arg_parser = argparse.ArgumentParser()
-    subparsers = arg_parser.add_subparsers(
-        dest="command", help="commands (deploy or build)", required=True
-    )
+@click.group()
+def cli():
+    """Aana CLI.
 
-    arg_parser.add_argument(
-        "app_path",
-        type=str,
-        help="Path to the application (module:app)",
-    )
+    It provides commands to deploy and build AanaSDK applications.
+    """
+    pass
 
-    # Deploy command
-    deploy_parser = subparsers.add_parser("deploy", help="Deploy the application")
-    deploy_parser.add_argument(
-        "--port", type=int, default=8000, help="Port to run the application"
-    )
-    deploy_parser.add_argument(
-        "--host", type=str, default="127.0.0.1", help="Host address"
-    )
 
-    # Build command
-    build_parser = subparsers.add_parser("build", help="Build the application")
-    build_parser.add_argument(
-        "--host",
-        type=str,
-        default="0.0.0.0",  # noqa: S104
-        help="Host address",
-    )
-    build_parser.add_argument(
-        "--port", type=int, default=8000, help="Port to run the application"
-    )
-    build_parser.add_argument(
-        "--app_config_name",
-        type=str,
-        help="App config name. Default is app_config so app config will be saved under app_config.py",
-        default="app_config",
-    )
-    build_parser.add_argument(
-        "--config_name",
-        type=str,
-        help="Config name. Default is config so config will be saved under config.yaml",
-        default="config",
-    )
+def load_app(app_path: str):
+    """Load the AanaSDK app from the given path.
 
-    args = arg_parser.parse_args()
-
+    Args:
+        app_path (str): Path to the application (module:app).
+    """
     sys.path.insert(0, ".")  # to be able import the app from the current directory
-
     try:
-        aana_app = import_from_path(args.app_path)
-    except:
-        print(f"Error: Could not import {args.app_path}")
-        return
+        aana_app = import_from_path(app_path)
+    except Exception as e:
+        raise ImportError(f"Could not import {app_path}") from e  # noqa: TRY003
 
     if not isinstance(aana_app, AanaSDK):
-        print(f"Error: {args.app_path} is not an AanaSDK instance")
-        return
+        raise TypeError(f"{app_path} is not an AanaSDK instance")  # noqa: TRY003
 
-    if args.command == "deploy":
-        aana_app.connect(port=args.port, host=args.host, show_logs=True)
-        aana_app.deploy(blocking=True)
-    elif args.command == "build":
-        aana_app.build(
-            import_path=args.app_path,
-            host=args.host,
-            port=args.port,
-            app_config_name=args.app_config_name,
-            config_name=args.config_name,
-        )
+    return aana_app
+
+
+@cli.command()
+@click.argument("app_path", type=str)
+@click.option("--host", default="127.0.0.1", type=str, help="Host address")
+@click.option("--port", default=8000, type=int, help="Port to run the application")
+def deploy(app_path: str, host: str, port: int):
+    """Deploy the application.
+
+    APP_PATH: Path to the application (module:app).
+    """
+    aana_app = load_app(app_path)
+    aana_app.connect(port=port, host=host, show_logs=True)
+    aana_app.deploy(blocking=True)
+
+
+@cli.command()
+@click.argument("app_path", type=str)
+@click.option("--host", default="0.0.0.0", type=str, help="Host address")  # noqa: S104
+@click.option("--port", default=8000, type=int, help="Port to run the application")
+@click.option(
+    "--app_config_name",
+    default="app_config",
+    type=str,
+    help="App config name. Default is app_config so app config will be saved under app_config.py",
+)
+@click.option(
+    "--config_name",
+    default="config",
+    type=str,
+    help="Config name. Default is config so config will be saved under config.yaml",
+)
+def build(app_path: str, host: str, port: int, app_config_name: str, config_name: str):
+    """Build the application.
+
+    APP_PATH: Path to the application (module:app).
+    """
+    aana_app = load_app(app_path)
+    aana_app.build(
+        import_path=app_path,
+        host=host,
+        port=port,
+        app_config_name=app_config_name,
+        config_name=config_name,
+    )
