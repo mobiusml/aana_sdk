@@ -1,9 +1,8 @@
 import argparse
-from pathlib import Path
-
-from mobius_pipeline.utils.general import import_from_path
+import sys
 
 from aana.sdk import AanaSDK
+from aana.utils.general import import_from_path
 
 
 def run():
@@ -31,9 +30,6 @@ def run():
     # Build command
     build_parser = subparsers.add_parser("build", help="Build the application")
     build_parser.add_argument(
-        "--import_path", type=str, help="Import path", required=True
-    )
-    build_parser.add_argument(
         "--host",
         type=str,
         default="0.0.0.0",  # noqa: S104
@@ -43,10 +39,21 @@ def run():
         "--port", type=int, default=8000, help="Port to run the application"
     )
     build_parser.add_argument(
-        "--output_dir", type=str, help="Output directory", default=Path(__file__).parent
+        "--app_config_name",
+        type=str,
+        help="App config name. Default is app_config so app config will be saved under app_config.py",
+        default="app_config",
+    )
+    build_parser.add_argument(
+        "--config_name",
+        type=str,
+        help="Config name. Default is config so config will be saved under config.yaml",
+        default="config",
     )
 
     args = arg_parser.parse_args()
+
+    sys.path.insert(0, ".")  # to be able import the app from the current directory
 
     try:
         aana_app = import_from_path(args.app_path)
@@ -63,8 +70,9 @@ def run():
         aana_app.deploy(blocking=True)
     elif args.command == "build":
         aana_app.build(
-            import_path=args.import_path,
+            import_path=args.app_path,
             host=args.host,
             port=args.port,
-            output_dir=args.output_dir,
+            app_config_name=args.app_config_name,
+            config_name=args.config_name,
         )

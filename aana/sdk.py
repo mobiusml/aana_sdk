@@ -1,9 +1,11 @@
+import importlib
 import sys
 import time
 import traceback
 from pathlib import Path
 
 import ray
+import yaml
 from ray import serve
 from ray.serve.config import HTTPOptions
 from ray.serve.deployment import Application, Deployment
@@ -13,6 +15,7 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
 from aana.configs.db import run_alembic_migrations
 from aana.configs.settings import settings as aana_settings
+from aana.utils.general import import_from_path
 
 
 class AanaSDK:
@@ -246,91 +249,105 @@ class AanaSDK:
         serve.shutdown()
         ray.shutdown()
 
-    def build(self, import_path: str, host: str, port: int, output_dir: Path | str):
+    def build(
+        self,
+        import_path: str,
+        host: str = "0.0.0.0",  # noqa: S104
+        port: int = 8000,
+        app_config_name: str = "app_config",
+        config_name: str = "config",
+    ):
         """Build the application configuration file.
+
+        Two files will be created: app_config (.py) and config (.yaml).s
 
         Args:
             import_path (str): The import path of the application.
-            host (str): The host to run the application on.
-            port (int): The port to run the application on.
-            output_dir (Path | str): The output directory to write the config file to.
+            host (str): The host to run the application on. Defaults to "0.0.0.0".
+            port (int): The port to run the application on. Defaults to 8000.
+            app_config_name (str): The name of the application config file. Defaults to "app_config".
+            config_name (str): The name of the config file. Defaults to "config".
         """
-        import yaml
-        from ray._private.utils import import_attr
-        from ray.serve._private.deployment_graph_build import build as pipeline_build
-        from ray.serve._private.deployment_graph_build import (
-            get_and_validate_ingress_deployment,
-        )
-        from ray.serve.deployment import Application, deployment_to_schema
-        from ray.serve.schema import (
-            LoggingConfig,
-            ServeApplicationSchema,
-            ServeDeploySchema,
-        )
-        from ray.serve.scripts import ServeDeploySchemaDumper
+        # Split the import path into module and variable.
+        # For example, aana.projects.whisper.app:aana_app will be split into
+        # module "aana.projects.whisper.app" and variable "aana_app".
+        app_module, app_var = import_path.split(":")
 
-        output_dir = Path(output_dir)
+        # Use location of the app module as the output directory
+        output_dir = Path(importlib.util.find_spec(app_module).origin).parent
+        print(output_dir)
 
-        def build_app_config(import_path: str, name: str):
-            app: Application = import_attr(import_path)
-            if not isinstance(app, Application):
-                raise TypeError(  # noqa: TRY003
-                    f"Expected '{import_path}' to be an Application but got {type(app)}."
-                )
-
-            deployments = pipeline_build(app, name)
-            ingress = get_and_validate_ingress_deployment(deployments)
-            schema = ServeApplicationSchema(
-                name=name,
-                route_prefix=ingress.route_prefix,
-                import_path=import_path,
-                runtime_env={},
-                deployments=[
-                    deployment_to_schema(d, include_route_prefix=False)
-                    for d in deployments
-                ],
+        # Import AanaSDK app from the given import path
+        aana_app = import_from_path(import_path)
+        if not isinstance(aana_app, AanaSDK):
+            raise TypeError(  # noqa: TRY003
+                f"Error: {import_path} is not an AanaSDK instance, got {type(aana_app)}"
             )
 
-            return schema.dict(exclude_unset=True)
+        # Generate the app config file
+        # Example:
+        #    from aana.projects.whisper.app import aana_app
+        #    asr_deployment = aana_app.get_deployment_app("asr_deployment")
+        #    vad_deployment = aana_app.get_deployment_app("vad_deployment")
+        #    whisper_app = aana_app.get_main_app()
+        app_config = ""
+        app_config += f"from {app_module} import {app_var}\n\n"
+        for deployment_name in aana_app.deployments:
+            app_config += f"{deployment_name} = {app_var}.get_deployment_app('{deployment_name}')\n"
+        app_config += f"{aana_app.name} = {app_var}.get_main_app()\n"
 
-        config_str = ""
+        # Output path for the app config file
+        app_config_path = output_dir / f"{app_config_name}.py"
+        # Import path for the app config file, for example aana.projects.whisper.app_config
+        app_config_import_path = f"{app_module.rsplit('.', 1)[0]}.{app_config_name}"
 
-        app_configs = []
-        for deployment_name in self.deployments:
-            app_name = deployment_name
-            app_configs.append(
-                build_app_config(f"{import_path}:{app_name}", name=app_name)
+        # Write the app config file
+        with app_config_path.open("w") as f:
+            f.write(app_config)
+
+        # Build "serve build" command to generate config.yaml
+        # For example,
+        # serve build aana.projects.whisper.app_config:vad_deployment
+        #             aana.projects.whisper.app_config:asr_deployment
+        #             aana.projects.whisper.app_config:whisper_app
+        #             -o /workspaces/aana_sdk/aana/projects/whisper/config.yaml
+        config_path = output_dir / f"{config_name}.yaml"
+        serve_options = []
+        for deployment_name in aana_app.deployments:
+            serve_options.append(f"{app_config_import_path}:{deployment_name}")  # noqa: PERF401
+        serve_options += [
+            f"{app_config_import_path}:{aana_app.name}",
+            "--output-path",
+            str(config_path),
+            "--app-dir",
+            output_dir,
+        ]
+
+        # Execute "serve build" with click CliRuuner
+        from click.testing import CliRunner
+        from ray.serve.scripts import ServeDeploySchemaDumper, build
+
+        result = CliRunner().invoke(build, serve_options)
+        if result.exception:
+            raise result.exception
+
+        # Update the config file with the host and port and rename apps
+        with config_path.open() as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)  # noqa: S506
+
+        config["http_options"] = {"host": host, "port": port}
+
+        for app in config["applications"]:
+            app["name"] = app["import_path"].split(":")[-1]
+
+        with config_path.open("w") as f:
+            yaml.dump(
+                config,
+                f,
+                Dumper=ServeDeploySchemaDumper,
+                default_flow_style=False,
+                sort_keys=False,
             )
 
-        main_app_name = self.name
-        app_configs.append(
-            build_app_config(f"{import_path}:{main_app_name}", name=main_app_name)
-        )
-
-        deploy_config = {
-            "proxy_location": "EveryNode",
-            "http_options": {
-                "host": host,
-                "port": port,
-            },
-            "logging_config": LoggingConfig().dict(),
-            "applications": app_configs,
-        }
-
-        # Parse + validate the set of application configs
-        ServeDeploySchema.parse_obj(deploy_config)
-
-        config_str += yaml.dump(
-            deploy_config,
-            Dumper=ServeDeploySchemaDumper,
-            default_flow_style=False,
-            sort_keys=False,
-        )
-
-        # Ensure file ends with only one newline
-        config_str = config_str.rstrip("\n") + "\n"
-
-        output_path = output_dir / "config.yaml"
-        with output_path.open("w") as f:
-            f.write(config_str)
-        print(f"Config file written to {output_path}")
+        print(f"App config successfully saved to {app_config_path}")
+        print(f"Config successfully saved to {config_path}")
