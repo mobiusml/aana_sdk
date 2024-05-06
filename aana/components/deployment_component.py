@@ -1,14 +1,12 @@
 from collections.abc import Callable
 from types import NoneType
-from typing import Any, TypeAlias, get_type_hints
+from typing import get_type_hints
 
 from haystack import component
 
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.utils.coroutines import run_sync
 from aana.utils.typing import as_dict_of_types, is_typed_dict
-
-DeploymentResult: TypeAlias = Any
 
 
 def typehints_to_component_types(
@@ -20,7 +18,7 @@ def typehints_to_component_types(
         typehints (dict): a dict returned by `typing.get_type_hints()`
 
     Returns:
-        tuple: Something that can be passed to `haystack.component.set_input_types()`
+        tuple[dict[str,type], dict[str,type]]: Suitable for passing to the haystack component interface.
     """
     output_types = typehints_to_output_types(typehints.pop("return", NoneType))
     input_types = typehints_to_input_types(typehints)
@@ -57,7 +55,7 @@ def typehints_to_input_types(typehints: dict[str]) -> dict[str]:
         typehints (dict[str, type]): Type hints from `typing.get_type_hints()` *minus the "return" key*
 
     Returns:
-                dict[str, type]: Something that can be consumed by `haystack.set_input_types()`
+        dict[str, type]: Something that can be consumed by `haystack.set_input_types()`
     """
     # If typehint is None, or an emtpy dict, return an empty dict
     if not typehints:
@@ -81,7 +79,7 @@ class AanaDeploymentComponent:
     """
 
     _deployment_handle: AanaDeploymentHandle
-    _inference_method: Callable
+    _run_method: Callable
     _warm: bool
 
     def __init__(
@@ -114,7 +112,7 @@ class AanaDeploymentComponent:
         """
         self._warm = True
 
-    def run(self, *args, **kwargs) -> DeploymentResult:
+    def run(self, *args, **kwargs):
         """Run the component. This is the primary interface for Haystack Components.
 
         Arguments:
@@ -122,12 +120,12 @@ class AanaDeploymentComponent:
             **kwargs: the keyword arguments to pass to the deployment run function
 
         Returns:
-            DeploymentResult: The return value of the deployment's run function
+            The return value of the deployment's run function
         """
         # Function may (must?) be a coroutine. Resolve it if so.
         return run_sync(self._call(*args, **kwargs))
 
-    def _call(self, *args, **kwargs) -> DeploymentResult:
+    def _call(self, *args, **kwargs):
         """Calls the deployment's run method. Not public, use the `run()` method."""
         return self.run_method(*args, **kwargs)  # type: ignore
 
