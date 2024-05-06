@@ -48,7 +48,7 @@ def typehints_to_output_types(typehint: type) -> dict[str, type]:
     return typehint
 
 
-def typehints_to_input_types(typehints: dict[str]) -> dict[str]:
+def typehints_to_input_types(typehints: dict[str, type]) -> dict[str, type]:
     """Converts a typehint dictionary into something that can be used by Haystack.
 
     Arguments:
