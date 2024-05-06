@@ -1,4 +1,3 @@
-import asyncio
 from collections.abc import Callable
 from types import NoneType
 from typing import Any, TypeAlias, get_type_hints
@@ -127,11 +126,6 @@ class AanaDeploymentComponent:
         """
         # Function may (must?) be a coroutine. Resolve it if so.
         return run_sync(self._call(*args, **kwargs))
-
-    # Is this supported?
-    async def arun(self, *args, **kwargs) -> asyncio.Task[DeploymentResult]:
-        """Run the component as async. This is the async version of the primary interface for Haystack Components."""
-        return self._call(*args, **kwargs)
 
     def _call(self, *args, **kwargs) -> DeploymentResult:
         """Calls the deployment's run method. Not public, use the `run()` method."""

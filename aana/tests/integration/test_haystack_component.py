@@ -25,7 +25,6 @@ def test_haystack_wrapper(setup_stablediffusion2_deployment):  # noqa: F811
     assert result_key in result, result
 
 
-
 def test_haystack_wrapper_fails(setup_stablediffusion2_deployment):  # noqa: F811
     """Tests that haystack wrapper raises if method_name is missing."""
     deployment_name = "sd2_deployment"
