@@ -52,13 +52,13 @@ def deploy(app_path: str, host: str, port: int):
 @click.option("--host", default="0.0.0.0", type=str, help="Host address")  # noqa: S104
 @click.option("--port", default=8000, type=int, help="Port to run the application")
 @click.option(
-    "--app_config_name",
+    "--app-config-name",
     default="app_config",
     type=str,
     help="App config name. Default is app_config so app config will be saved under app_config.py",
 )
 @click.option(
-    "--config_name",
+    "--config-name",
     default="config",
     type=str,
     help="Config name. Default is config so config will be saved under config.yaml",
