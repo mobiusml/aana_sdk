@@ -7,7 +7,7 @@ import pytest
 import yaml
 from click.testing import CliRunner
 
-from aana.main import cli
+from aana.cli import cli
 
 test_app_path = "aana.projects.lowercase.app:aana_app"
 port = 5000
