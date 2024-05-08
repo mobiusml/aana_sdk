@@ -1,4 +1,5 @@
 # ruff: noqa: S101, A003
+from collections.abc import AsyncGenerator
 from typing import Annotated, TypedDict
 
 import pytest
@@ -67,6 +68,22 @@ class TestMultipleFileUploadEndpoint(Endpoint):
         return {"output": "file uploaded"}
 
 
+class TestEndpointMissingReturn(Endpoint):
+    """Test endpoint for get_response_model with missing return type."""
+
+    async def run(self, input_data: InputModel):
+        """Run the endpoint."""
+        return {"output": input_data.input}
+
+
+class TestEndpointMissingReturnStreaming(Endpoint):
+    """Test endpoint for get_response_model with missing return type in streaming endpoint."""
+
+    async def run(self, input_data: InputModel) -> AsyncGenerator:
+        """Run the endpoint."""
+        yield {"output": input_data.input}
+
+
 def test_get_request_model():
     """Test the get_request_model function."""
     endpoint = TestEndpoint(
@@ -133,3 +150,27 @@ def test_get_file_upload_field_multiple_file_uploads():
 
     with pytest.raises(MultipleFileUploadNotAllowed):
         endpoint.get_file_upload_field()
+
+
+def test_get_response_model_missing_return():
+    """Test the get_response_model function with missing return type."""
+    endpoint = TestEndpointMissingReturn(
+        name="test_endpoint",
+        summary="Test endpoint",
+        path="/test_endpoint",
+    )
+
+    with pytest.raises(ValueError):
+        endpoint.get_response_model()
+
+
+def test_get_response_model_missing_return_streaming():
+    """Test the get_response_model function with missing return type in streaming endpoint."""
+    endpoint = TestEndpointMissingReturnStreaming(
+        name="test_endpoint",
+        summary="Test endpoint",
+        path="/test_endpoint",
+    )
+
+    with pytest.raises(ValueError):
+        endpoint.get_response_model()

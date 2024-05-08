@@ -25,7 +25,7 @@ sh install.sh
 4. Run the SDK.
 
 ```bash
-HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run python aana/projects/chat_with_video/app.py --port 8000 --host 0.0.0.0
+HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana.projects.chat_with_video.app:aana_app --port 8000 --host 0.0.0.0
 ```
 
 The target parameter specifies the set of endpoints to deploy.
@@ -45,6 +45,24 @@ For HuggingFace Transformers, you need to specify HF_AUTH environment variable w
 6. Send a request to the server.
 
 You can find examples in the [demo notebook](notebooks/demo.ipynb).
+
+## Build Serve Config Files
+
+The Serve config is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve config files for the Aana applications.
+
+To build the Serve config files, run the following command:
+
+```bash
+poetry run aana build aana.projects.chat_with_video.app:aana_app
+```
+
+The command will generate the Serve config file and app config file and save them in the `aana.projects.chat_with_video.app` directory.
+
+Use --help to see the available options.
+
+```bash
+poetry run aana build --help
+```
 
 ## Run with Docker
 

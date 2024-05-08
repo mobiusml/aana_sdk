@@ -1,5 +1,3 @@
-import argparse
-
 from aana.configs.deployments import (
     hf_blip2_opt_2_7b_deployment,
     vad_deployment,
@@ -60,27 +58,18 @@ endpoints = [
     },
 ]
 
-if __name__ == "__main__":
-    """Runs the application."""
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--port", type=int, default=8000)
-    arg_parser.add_argument("--host", type=str, default="127.0.0.1")
-    args = arg_parser.parse_args()
+aana_app = AanaSDK(name="chat_with_video_app")
 
-    aana_app = AanaSDK(port=args.port, host=args.host, show_logs=True)
+for deployment in deployments:
+    aana_app.register_deployment(
+        name=deployment["name"],
+        instance=deployment["instance"],
+    )
 
-    for deployment in deployments:
-        aana_app.register_deployment(
-            name=deployment["name"],
-            instance=deployment["instance"],
-        )
-
-    for endpoint in endpoints:
-        aana_app.register_endpoint(
-            name=endpoint["name"],
-            path=endpoint["path"],
-            summary=endpoint["summary"],
-            endpoint_cls=endpoint["endpoint_cls"],
-        )
-
-    aana_app.deploy(blocking=True)
+for endpoint in endpoints:
+    aana_app.register_endpoint(
+        name=endpoint["name"],
+        path=endpoint["path"],
+        summary=endpoint["summary"],
+        endpoint_cls=endpoint["endpoint_cls"],
+    )
