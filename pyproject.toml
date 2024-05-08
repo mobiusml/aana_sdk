@@ -71,7 +71,7 @@ filterwarnings = [
 ]
 
 [tool.poetry.scripts]
-aana = "aana.main:cli"
+aana = "aana.cli:cli"
 
 [tool.ruff]
 # Lint with `ruff check aana`, `ruff check --fix aana` 
