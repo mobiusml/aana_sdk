@@ -259,5 +259,8 @@ def import_from_path(path, reload=False):
     :param reload: if True, reload the module
     :return: imported module
     """
-    module, name = ".".join(path.split(".")[:-1]), path.split(".")[-1]
+    if ":" in path:
+        module, name = path.split(":")
+    else:
+        module, name = ".".join(path.split(".")[:-1]), path.split(".")[-1]
     return import_from(module, name, reload=reload)

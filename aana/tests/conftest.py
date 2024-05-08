@@ -47,7 +47,8 @@ def app_setup():
     # clear database before running the test
     clear_database(aana_settings)
 
-    app = AanaSDK(
+    app = AanaSDK()
+    app.connect(
         port=8000, show_logs=True, num_cpus=10
     )  # pretend we have 10 cpus for testing
 

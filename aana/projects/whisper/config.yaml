@@ -1,0 +1,78 @@
+proxy_location: EveryNode
+
+http_options:
+
+  host: 0.0.0.0
+
+  port: 8000
+
+logging_config:
+
+  encoding: TEXT
+
+  log_level: INFO
+
+  logs_dir: null
+
+  enable_access_log: true
+
+applications:
+
+- name: asr_deployment
+
+  route_prefix: /asr_deployment
+
+  import_path: aana.projects.whisper.app_config:asr_deployment
+
+  runtime_env: {}
+
+  deployments:
+
+  - name: WhisperDeployment
+    num_replicas: 1
+    max_ongoing_requests: 1000
+    user_config:
+      model_size: medium
+      compute_type: float16
+    ray_actor_options:
+      num_cpus: 1.0
+      num_gpus: 0.25
+
+- name: vad_deployment
+
+  route_prefix: /vad_deployment
+
+  import_path: aana.projects.whisper.app_config:vad_deployment
+
+  runtime_env: {}
+
+  deployments:
+
+  - name: VadDeployment
+    num_replicas: 1
+    max_ongoing_requests: 1000
+    user_config:
+      model: https://whisperx.s3.eu-west-2.amazonaws.com/model_weights/segmentation/0b5b3216d60a2d32fc086b47ea8c67589aaeb26b7e07fcbe620d6d0b83e209ea/pytorch_model.bin
+      onset: 0.5
+      offset: 0.363
+      min_duration_on: 0.1
+      min_duration_off: 0.1
+      sample_rate: 16000
+    ray_actor_options:
+      num_cpus: 1.0
+      num_gpus: 0.05
+
+- name: whisper_app
+
+  route_prefix: /
+
+  import_path: aana.projects.whisper.app_config:whisper_app
+
+  runtime_env: {}
+
+  deployments:
+
+  - name: RequestHandler
+    num_replicas: 2
+    ray_actor_options:
+      num_cpus: 0.1
