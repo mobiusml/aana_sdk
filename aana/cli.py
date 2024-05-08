@@ -35,33 +35,50 @@ def load_app(app_path: str):
 
 @cli.command()
 @click.argument("app_path", type=str)
-@click.option("--host", default="127.0.0.1", type=str, help="Host address")
-@click.option("--port", default=8000, type=int, help="Port to run the application")
-def deploy(app_path: str, host: str, port: int):
+@click.option(
+    "--host", default="127.0.0.1", type=str, help="Host address (default: 127.0.0.1)"
+)
+@click.option(
+    "--port", default=8000, type=int, help="Port to run the application (default: 8000)"
+)
+@click.option(
+    "--show-logs", is_flag=True, default=True, help="Show logs (default: True)"
+)
+@click.option(
+    "--ray-address",
+    default="auto",
+    type=str,
+    help="Address of the Ray cluster (default: auto)",
+)
+def deploy(app_path: str, host: str, port: int, show_logs: bool, ray_address: str):
     """Deploy the application.
 
     APP_PATH: Path to the application (module:app).
     """
     aana_app = load_app(app_path)
-    aana_app.connect(port=port, host=host, show_logs=True)
+    aana_app.connect(port=port, host=host, show_logs=show_logs, address=ray_address)
     aana_app.deploy(blocking=True)
 
 
 @cli.command()
 @click.argument("app_path", type=str)
-@click.option("--host", default="0.0.0.0", type=str, help="Host address")  # noqa: S104
-@click.option("--port", default=8000, type=int, help="Port to run the application")
+@click.option(
+    "--host", default="0.0.0.0", type=str, help="Host address (default: 0.0.0.0)"
+)  # noqa: S104
+@click.option(
+    "--port", default=8000, type=int, help="Port to run the application (default: 8000)"
+)
 @click.option(
     "--app-config-name",
     default="app_config",
     type=str,
-    help="App config name. Default is app_config so app config will be saved under app_config.py",
+    help="App config name (default: app_config)",
 )
 @click.option(
     "--config-name",
     default="config",
     type=str,
-    help="Config name. Default is config so config will be saved under config.yaml",
+    help="Config name (default: config)",
 )
 def build(app_path: str, host: str, port: int, app_config_name: str, config_name: str):
     """Build the application.
