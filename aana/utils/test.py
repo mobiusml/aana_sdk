@@ -158,7 +158,10 @@ def test_cache(func):  # noqa: C901
                     # save to cache
                     save_cache(cache_path, cache, args, kwargs)
 
-    retval = wrapper_generator if inspect.isasyncgenfunction(func) else wrapper
+    wrapper_generator.test_cache_enabled = True
+    wrapper.test_cache_enabled = True
 
-    retval.__annotations__ = func.__annotations__
-    return retval
+    if inspect.isasyncgenfunction(func):
+        return wrapper_generator
+    else:
+        return wrapper

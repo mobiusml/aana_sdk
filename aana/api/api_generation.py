@@ -175,10 +175,13 @@ class Endpoint:
         Returns:
             dict[str, tuple[Any, Any]]: Dictionary of fields for the response Pydantic model.
         """
-        if self.is_streaming_response():
-            return_type = self.run.__annotations__["return"].__args__[0]
-        else:
-            return_type = self.run.__annotations__["return"]
+        try:
+            if self.is_streaming_response():
+                return_type = self.run.__annotations__["return"].__args__[0]
+            else:
+                return_type = self.run.__annotations__["return"]
+        except (AttributeError, KeyError) as e:
+            raise ValueError("Endpoint function must have a return annotation.") from e  # noqa: TRY003
         fields = {}
         for arg_name, arg_type in return_type.__annotations__.items():
             fields[arg_name] = self.arg_to_field(arg_name, arg_type)
