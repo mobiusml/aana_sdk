@@ -43,7 +43,9 @@ class VLLMConfig(BaseModel):
     dtype: str | None = Field(default="auto")
     quantization: str | None = Field(default=None)
     gpu_memory_reserved: float
-    default_sampling_params: SamplingParams
+    default_sampling_params: SamplingParams = SamplingParams(
+        temperature=0, max_tokens=256
+    )
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
     enforce_eager: bool | None = Field(default=False)
@@ -132,19 +134,23 @@ class VLLMDeployment(BaseDeployment):
 
     @test_cache
     async def generate_stream(
-        self, prompt: str, sampling_params: SamplingParams
+        self, prompt: str, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate completion for the given prompt and stream the results.
 
         Args:
             prompt (str): the prompt
-            sampling_params (SamplingParams): the sampling parameters
+            sampling_params (SamplingParams | None): the sampling parameters
 
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         prompt = str(prompt)
+
+        if sampling_params is None:
+            sampling_params = SamplingParams()
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
+
         request_id = None
 
         # tokenize the prompt
@@ -186,12 +192,14 @@ class VLLMDeployment(BaseDeployment):
             raise InferenceException(model_name=self.model) from e
 
     @test_cache
-    async def generate(self, prompt: str, sampling_params: SamplingParams) -> LLMOutput:
+    async def generate(
+        self, prompt: str, sampling_params: SamplingParams | None = None
+    ) -> LLMOutput:
         """Generate completion for the given prompt.
 
         Args:
             prompt (str): the prompt
-            sampling_params (SamplingParams): the sampling parameters
+            sampling_params (SamplingParams | None): the sampling parameters
 
         Returns:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
@@ -203,13 +211,13 @@ class VLLMDeployment(BaseDeployment):
 
     @test_cache
     async def generate_batch(
-        self, prompts: list[str], sampling_params: SamplingParams
+        self, prompts: list[str], sampling_params: SamplingParams | None = None
     ) -> LLMBatchOutput:
         """Generate completion for the batch of prompts.
 
         Args:
             prompts (List[str]): the prompts
-            sampling_params (SamplingParams): the sampling parameters
+            sampling_params (SamplingParams | None): the sampling parameters
 
         Returns:
             LLMBatchOutput: the dictionary with the key "texts"
@@ -224,13 +232,13 @@ class VLLMDeployment(BaseDeployment):
 
     @test_cache
     async def chat(
-        self, dialog: ChatDialog, sampling_params: SamplingParams
+        self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
     ) -> ChatOutput:
         """Chat with the model.
 
         Args:
             dialog (ChatDialog): the dialog
-            sampling_params (SamplingParams): the sampling parameters
+            sampling_params (SamplingParams | None): the sampling parameters
 
         Returns:
             ChatOutput: the dictionary with the key "message"
@@ -244,13 +252,13 @@ class VLLMDeployment(BaseDeployment):
 
     @test_cache
     async def chat_stream(
-        self, dialog: ChatDialog, sampling_params: SamplingParams
+        self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:
         """Chat with the model and stream the responses.
 
         Args:
             dialog (ChatDialog): the dialog
-            sampling_params (SamplingParams): the sampling parameters
+            sampling_params (SamplingParams | None): the sampling parameters
 
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value

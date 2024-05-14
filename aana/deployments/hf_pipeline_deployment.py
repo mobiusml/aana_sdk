@@ -1,11 +1,21 @@
-from typing import Any
+import pickle
+from copy import copy, deepcopy
+from typing import Annotated, Any
 
 import torch
-from pydantic import BaseModel
+from pydantic import BaseModel, BeforeValidator, PlainSerializer
 from ray import serve
 from transformers import pipeline
 
 from aana.deployments.base_deployment import BaseDeployment
+
+CustomConfig = Annotated[
+    dict,
+    PlainSerializer(lambda x: pickle.dumps(x).decode("latin1"), return_type=str),
+    BeforeValidator(
+        lambda x: x if isinstance(x, dict) else pickle.loads(x.encode("latin1"))  # noqa: S301
+    ),
+]
 
 
 class HfPipelineConfig(BaseModel):
@@ -14,12 +24,16 @@ class HfPipelineConfig(BaseModel):
     Attributes:
         model_id (str): the model ID on Hugging Face
         task (str): the task name (optional, by default the task is inferred from the model ID)
-        framework (str): the framework (optional, default: "pt"), one of "pt", "tf"
+        model_kwargs (dict): the model keyword arguments
+        pipeline_kwargs (dict): the pipeline keyword arguments
+        generation_kwargs (dict): the generation keyword arguments
     """
 
     model_id: str
     task: str | None = None
-    framework: str = "pt"
+    model_kwargs: CustomConfig = {}
+    pipeline_kwargs: CustomConfig = {}
+    generation_kwargs: CustomConfig = {}
 
 
 @serve.deployment
@@ -31,19 +45,36 @@ class HfPipelineDeployment(BaseDeployment):
 
         The method is called when the deployment is created or updated.
 
-        It loads the model and processor from HuggingFace.
+        It loads the pipeline from HuggingFace.
 
-        The configuration should conform to the HFBlip2Config schema.
+        The configuration should conform to the HfPipelineConfig schema.
         """
         config_obj = HfPipelineConfig(**config)
+        self.model_kwargs = config_obj.model_kwargs
+        self.pipeline_kwargs = config_obj.pipeline_kwargs
+        self.generation_kwargs = config_obj.generation_kwargs
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.pipeline = pipeline(
-            task=config_obj.task,
-            model=config_obj.model_id,
-            framework=config_obj.framework,
-            device=device,
-        )
+        try:
+            # Try to load pipeline with device_map=auto to use accelerate
+            self.pipeline = pipeline(
+                task=config_obj.task,
+                model=config_obj.model_id,
+                framework=config_obj.framework,
+                device_map="auto",
+                model_kwargs=copy(self.model_kwargs),
+                **self.pipeline_kwargs,
+            )
+        except ValueError:
+            # If model doesn't support device_map=auto, use torch to figure out where to load the model
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            self.pipeline = pipeline(
+                task=config_obj.task,
+                model=config_obj.model_id,
+                framework=config_obj.framework,
+                device=device,
+                model_kwargs=copy(self.model_kwargs),
+                **self.pipeline_kwargs,
+            )
 
     async def call(self, *args, **kwargs):
         """Call the pipeline.
@@ -55,4 +86,7 @@ class HfPipelineDeployment(BaseDeployment):
         Returns:
             the output of the pipeline
         """
-        return self.pipeline(*args, **kwargs)
+        # Update default generation kwargs with the provided ones
+        _generation_kwargs = deepcopy(self.generation_kwargs)
+        _generation_kwargs.update(kwargs)
+        return self.pipeline(*args, **_generation_kwargs)
