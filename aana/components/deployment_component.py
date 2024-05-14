@@ -1,3 +1,4 @@
+from asyncio import coroutine
 from collections.abc import Callable
 from types import NoneType
 from typing import get_type_hints
@@ -5,8 +6,8 @@ from typing import get_type_hints
 from haystack import component
 
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.utils.coroutines import run_sync
-from aana.utils.typing import as_dict_of_types, is_typed_dict
+from aana.utils.asyncio import run_async
+from aana.utils.typing import is_typed_dict
 
 
 def typehints_to_component_types(
@@ -39,7 +40,7 @@ def typehints_to_output_types(typehint: type) -> dict[str, type]:
         return {}
     # If annotation is a TypedDict, turn it into a regular dict
     if is_typed_dict(typehint):
-        return as_dict_of_types(typehint)
+        return get_type_hints(typehint)
     # If it's a single value, wrap into a dict
     # (Not sure if this is correct, Haystack docs are unclear) -EdR
     if not isinstance(typehint, dict):
@@ -71,7 +72,7 @@ class AanaDeploymentComponent:
 
     Example:
         ```python
-        deployment_handle = AanaDeploymentHandler("my_deployment")
+        deployment_handle = await AanaDeploymentHandle.create("my_deployment")
         haystack_component = AanaDeploymentComponent(deployment_handle, "my_method")
         haystack_component.warm_up()  # This is currently a no-op, but subject to change.
         component_result = haystack_component.run(my_input_prompt="This is an input prompt")
@@ -123,9 +124,9 @@ class AanaDeploymentComponent:
             The return value of the deployment's run function
         """
         # Function may (must?) be a coroutine. Resolve it if so.
-        return run_sync(self._call(*args, **kwargs))
+        return run_async(self._call(*args, **kwargs))
 
-    def _call(self, *args, **kwargs):
+    def _call(self, *args, **kwargs) -> coroutine:
         """Calls the deployment's run method. Not public, use the `run()` method."""
         return self.run_method(*args, **kwargs)  # type: ignore
 
