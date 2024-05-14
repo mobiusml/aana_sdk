@@ -26,6 +26,7 @@ def test_haystack_wrapper(setup_stablediffusion2_deployment):  # noqa: F811
     result = component.run(prompt="foo")
     assert result_key in result, result
 
+
 @pytest.mark.skipif(
     not is_gpu_available() and not is_using_deployment_cache(),
     reason="GPU is not available",
@@ -38,7 +39,9 @@ def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F811
     deployment_handle = run_sync(AanaDeploymentHandle.create(deployment_name))
     aana_component = AanaDeploymentComponent(deployment_handle, method_name)
     aana_component.warm_up()
-    text_cleaner = haystack.components.preprocessors.TextCleaner(convert_to_lowercase=False, remove_punctuation=True, remove_numbers=True)
+    text_cleaner = haystack.components.preprocessors.TextCleaner(
+        convert_to_lowercase=False, remove_punctuation=True, remove_numbers=True
+    )
     text_cleaner.warm_up()
 
     pipeline = haystack.Pipeline()
@@ -47,7 +50,7 @@ def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F811
     pipeline.connect("text_cleaner.texts[0]", "stablediffusion2.prompt")
     result = pipeline.run({"text_cleaner": {"texts": ["A? dog!"]}})
     print(result)
-    assert 'image' in result
+    assert "image" in result
 
 
 def test_haystack_wrapper_fails(setup_stablediffusion2_deployment):  # noqa: F811
