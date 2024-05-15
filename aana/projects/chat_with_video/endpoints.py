@@ -4,22 +4,26 @@ from typing import TYPE_CHECKING, Annotated, TypedDict
 from pydantic import Field
 
 from aana.api.api_generation import Endpoint
-from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.models.pydantic.asr_output import (
+from aana.api.models.asr_output import (
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
-from aana.models.pydantic.media_id import MediaId
-from aana.models.pydantic.question import Question
-from aana.models.pydantic.sampling_params import SamplingParams
-from aana.models.pydantic.vad_params import VadParams
-from aana.models.pydantic.video_input import VideoInput
-from aana.models.pydantic.video_metadata import VideoMetadata
-from aana.models.pydantic.video_params import VideoParams
-from aana.models.pydantic.whisper_params import WhisperParams
+from aana.api.models.media_id import MediaId
+from aana.api.models.question import Question
+from aana.api.models.sampling_params import SamplingParams
+from aana.api.models.vad_params import VadParams
+from aana.api.models.video_input import VideoInput
+from aana.api.models.video_metadata import VideoMetadata
+from aana.api.models.video_params import VideoParams
+from aana.api.models.whisper_params import WhisperParams
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.extern.decord import generate_frames_decord
+from aana.extern.yt_dlp import download_video
+from aana.processors.remote import run_remote
+from aana.processors.video import extract_audio, generate_combined_timeline
 from aana.projects.chat_with_video.const import asr_model_name, captioning_model_name
-from aana.utils.db import (
+from aana.storage.services.video import (
     delete_media,
     load_video_captions,
     load_video_metadata,
@@ -28,13 +32,8 @@ from aana.utils.db import (
     save_video_captions,
     save_video_transcription,
 )
-from aana.utils.general import run_remote
-from aana.utils.video import (
-    download_video,
-    extract_audio,
-    generate_combined_timeline,
+from aana.utils.chat import (
     generate_dialog,
-    generate_frames_decord,
 )
 
 if TYPE_CHECKING:

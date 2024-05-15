@@ -9,20 +9,19 @@ from pydantic import BaseModel, Field
 from ray import serve
 from typing_extensions import TypedDict
 
-from aana.deployments.base_deployment import BaseDeployment
-from aana.exceptions.general import InferenceException
-from aana.models.core.audio import Audio
-from aana.models.pydantic.asr_output import (
+from aana.api.models.asr_output import (
     AsrSegment,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
-from aana.models.pydantic.vad_output import VadSegment
-from aana.models.pydantic.whisper_params import (
+from aana.api.models.vad_output import VadSegment
+from aana.api.models.whisper_params import (
     BatchedWhisperParams,
     WhisperParams,
 )
-from aana.utils.test import test_cache
+from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.exceptions.runtime import InferenceException
+from aana.models.core.audio import Audio
 
 
 class WhisperComputeType(str, Enum):

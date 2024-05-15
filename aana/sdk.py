@@ -13,9 +13,9 @@ from ray.serve.deployment import Application, Deployment
 from aana.api.api_generation import Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
-from aana.configs.db import run_alembic_migrations
 from aana.configs.settings import settings as aana_settings
-from aana.utils.general import import_from_path
+from aana.storage.op import run_alembic_migrations
+from aana.utils.core import import_from_path
 
 
 class AanaSDK:

@@ -7,11 +7,8 @@ import rapidfuzz
 import requests
 from deepdiff.operator import BaseOperator
 
-from aana.configs.db import (
-    drop_all_tables,
-    run_alembic_migrations,
-)
 from aana.configs.settings import Settings
+from aana.storage.op import drop_all_tables, run_alembic_migrations
 from aana.tests.const import ALLOWED_LEVENSTEIN_ERROR_RATE
 from aana.utils.json import jsonify
 
@@ -177,7 +174,7 @@ def compare_streaming_output(expected_output: list[dict], output: list[dict]):
         # compare the keys
         assert expected.keys() == actual.keys()
         # compare the values (might need to update to a more intelligent comparison
-        # of each value in the dict later, for now just compare the json strings with leveinshtein distance)
+        # of each value in the dict later, for now just compare the json strings with levenshtein distance)
         expected_json = json.dumps(expected, sort_keys=True)
         actual_json = json.dumps(actual, sort_keys=True)
         compare_texts(expected_json, actual_json)
@@ -209,7 +206,7 @@ def compare_output(expected_output: dict, output: dict):
     # compare the keys
     assert expected_output.keys() == output.keys()
     # compare the values (might need to update to a more intelligent comparison
-    # of each value in the dict later, for now just compare the json strings with leveinshtein distance)
+    # of each value in the dict later, for now just compare the json strings with levenshtein distance)
     expected_json = json.dumps(expected_output, sort_keys=True)
     actual_json = json.dumps(output, sort_keys=True)
     compare_texts(expected_json, actual_json)

@@ -7,13 +7,13 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.orm import Session
 
-from aana.configs.db import run_alembic_migrations
 from aana.configs.settings import settings
-from aana.exceptions.database import NotFoundException
+from aana.exceptions.db import NotFoundException
 from aana.models.core.video import Video
-from aana.repository.datastore.media_repo import MediaRepository
-from aana.repository.datastore.video_repo import VideoRepository
-from aana.utils.db import delete_media, save_video
+from aana.storage.op import run_alembic_migrations
+from aana.storage.repository.media import MediaRepository
+from aana.storage.repository.video import VideoRepository
+from aana.storage.services.video import delete_media, save_video
 
 
 def test_save_video():
@@ -32,9 +32,9 @@ def test_save_video():
         run_alembic_migrations(settings)
 
         # We also have to patch the "engine" variable in aana.utils.db
-        # because it gets set before the test is run due to import depedencies.
+        # because it gets set before the test is run due to import dependencies.
         # TODO: We should stop using the engine as an importable name
-        with patch("aana.utils.db.engine", settings.db_config.get_engine()):
+        with patch("aana.storage.services.video.engine", settings.db_config.get_engine()):
             media_id = "foobar"
             duration = 550.25
             path = resources.path("aana.tests.files.videos", "squirrel.mp4")

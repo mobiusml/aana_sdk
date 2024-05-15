@@ -3,8 +3,8 @@ import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from aana.models.pydantic.media_id import MediaId
-from aana.utils.general import download_file
+from aana.api.models.media_id import MediaId
+from aana.utils.download import download_file
 
 
 @dataclass

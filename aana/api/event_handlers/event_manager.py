@@ -2,13 +2,13 @@ from collections import defaultdict
 from collections.abc import MutableMapping
 
 from aana.api.event_handlers.event_handler import EventHandler
-from aana.exceptions.general import (
+from aana.exceptions.runtime import (
     HandlerNotRegisteredException,
 )
 
 
 class EventManager:
-    """Class for event manager. Not guaranteed to be threadsafe."""
+    """Class for event manager. Not guaranteed to be thread safe."""
 
     _handlers: MutableMapping[str, EventHandler]
 
@@ -47,7 +47,7 @@ class EventManager:
             handler (EventHandler): the handler to remove
             event_name (str): the name of the event from which the handler should be removed
         Raises:
-            HandlerNotRegisteredException: if the handler isn't reqistered. (embed in try-except to suppress)
+            HandlerNotRegisteredException: if the handler isn't registered. (embed in try-except to suppress)
         """
         try:
             self._handlers[event_name].remove(handler)
@@ -61,7 +61,7 @@ class EventManager:
             handler (EventHandler): the exact instance of the handler to remove.
 
         Raises:
-            HandlerNotRegisteredException: if the handler isn't reqistered. (embed in try-except to suppress)
+            HandlerNotRegisteredException: if the handler isn't registered. (embed in try-except to suppress)
         """
         has_removed = False
         for handler_list in self._handlers.values():

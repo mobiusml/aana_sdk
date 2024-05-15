@@ -6,15 +6,14 @@ from pyannote.audio import Model
 from pydantic import BaseModel, Field
 from ray import serve
 
-from aana.deployments.base_deployment import BaseDeployment
-from aana.exceptions.general import InferenceException
+from aana.api.models.time_interval import TimeInterval
+from aana.api.models.vad_output import VadSegment
+from aana.api.models.vad_params import VadParams
+from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.exceptions.runtime import InferenceException
 from aana.models.core.audio import Audio
-from aana.models.pydantic.time_interval import TimeInterval
-from aana.models.pydantic.vad_output import VadSegment
-from aana.models.pydantic.vad_params import VadParams
-from aana.utils.audio import BinarizeVadScores, VoiceActivitySegmentation
-from aana.utils.general import download_model
-from aana.utils.test import test_cache
+from aana.processors.audio import BinarizeVadScores, VoiceActivitySegmentation
+from aana.utils.download import download_model
 
 
 @dataclass

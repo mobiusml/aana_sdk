@@ -13,20 +13,17 @@ from pathlib import Path
 
 import pytest
 
-from aana.configs.db import (
-    DbSettings,
-    DbType,
-    SQLiteConfig,
-)
+from aana.configs.db import DbSettings, SQLiteConfig
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
+from aana.storage.types import DbType
 from aana.tests.utils import (
     call_and_check_endpoint,
     clear_database,
     is_gpu_available,
     is_using_deployment_cache,
 )
-from aana.utils.general import jsonify
+from aana.utils.json import jsonify
 
 
 @pytest.fixture(scope="module")
