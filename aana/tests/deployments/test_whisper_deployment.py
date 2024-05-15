@@ -8,16 +8,16 @@ import pytest
 from deepdiff import DeepDiff
 from ray import serve
 
+from aana.api.models.base import pydantic_to_dict
+from aana.api.models.vad_output import VadSegment
+from aana.api.models.whisper_params import BatchedWhisperParams, WhisperParams
 from aana.models.core.audio import Audio
-from aana.models.pydantic.vad_output import VadSegment
-from aana.models.pydantic.whisper_params import BatchedWhisperParams, WhisperParams
 from aana.tests.utils import (
     LevenshteinOperator,
     get_deployments_by_type,
     is_gpu_available,
     is_using_deployment_cache,
 )
-from aana.utils.general import pydantic_to_dict
 
 EPSILON = 0.01
 

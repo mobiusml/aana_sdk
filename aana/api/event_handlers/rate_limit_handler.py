@@ -3,7 +3,7 @@ from time import monotonic
 from typing_extensions import override
 
 from aana.api.event_handlers.event_handler import EventHandler
-from aana.exceptions.general import TooManyRequestsException
+from aana.exceptions.runtime import TooManyRequestsException
 
 
 class RateLimitHandler(EventHandler):

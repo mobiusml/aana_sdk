@@ -5,7 +5,7 @@ import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/
 from decord import DECORDError
 
 from aana.configs.settings import settings
-from aana.exceptions.general import VideoReadingException
+from aana.exceptions.io import VideoReadingException
 from aana.models.core.media import Media
 
 

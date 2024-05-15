@@ -1,3 +1,4 @@
+from aana.api.models.sampling_params import SamplingParams
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
 from aana.deployments.stablediffusion2_deployment import (
     StableDiffusion2Config,
@@ -12,7 +13,6 @@ from aana.deployments.whisper_deployment import (
     WhisperModelSize,
 )
 from aana.models.core.dtype import Dtype
-from aana.models.pydantic.sampling_params import SamplingParams
 
 available_deployments = {}
 
