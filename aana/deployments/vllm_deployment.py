@@ -8,6 +8,9 @@ from typing_extensions import TypedDict
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 
+from aana.api.models.base import merged_options
+from aana.extern.torch import get_gpu_memory
+
 with contextlib.suppress(ImportError):
     from vllm.model_executor.utils import (
         set_random_seed,  # Ignore if we don't have GPU and only run on CPU with test cache
@@ -15,13 +18,11 @@ with contextlib.suppress(ImportError):
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
 
-from aana.deployments.base_deployment import BaseDeployment
-from aana.exceptions.general import InferenceException, PromptTooLongException
-from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
-from aana.models.pydantic.sampling_params import SamplingParams
-from aana.utils.chat_template import apply_chat_template
-from aana.utils.general import get_gpu_memory, merged_options
-from aana.utils.test import test_cache
+from aana.api.models.chat_message import ChatDialog, ChatMessage
+from aana.api.models.sampling_params import SamplingParams
+from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.exceptions.runtime import InferenceException, PromptTooLongException
+from aana.models.vllm.chat_template import apply_chat_template
 
 
 class VLLMConfig(BaseModel):

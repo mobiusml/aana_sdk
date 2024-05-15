@@ -7,13 +7,12 @@ from ray import serve
 from transformers import Blip2ForConditionalGeneration, Blip2Processor
 from typing_extensions import TypedDict
 
-from aana.deployments.base_deployment import BaseDeployment
-from aana.exceptions.general import InferenceException
+from aana.api.models.captions import Caption, CaptionsList
+from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.exceptions.runtime import InferenceException
 from aana.models.core.dtype import Dtype
 from aana.models.core.image import Image
-from aana.models.pydantic.captions import Caption, CaptionsList
-from aana.utils.batch_processor import BatchProcessor
-from aana.utils.test import test_cache
+from aana.processors.batch import BatchProcessor
 
 
 class HFBlip2Config(BaseModel):

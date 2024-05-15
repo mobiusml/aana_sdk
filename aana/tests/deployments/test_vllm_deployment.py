@@ -2,9 +2,9 @@
 import pytest
 from ray import serve
 
-from aana.exceptions.general import PromptTooLongException
-from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
-from aana.models.pydantic.sampling_params import SamplingParams
+from aana.api.models.chat_message import ChatDialog, ChatMessage
+from aana.api.models.sampling_params import SamplingParams
+from aana.exceptions.runtime import PromptTooLongException
 from aana.tests.utils import (
     compare_texts,
     get_deployments_by_type,

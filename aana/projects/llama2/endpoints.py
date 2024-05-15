@@ -4,10 +4,10 @@ from typing import Annotated, TypedDict
 from pydantic import Field
 
 from aana.api.api_generation import Endpoint
+from aana.api.models.chat_message import ChatDialog
+from aana.api.models.prompt import Prompt
+from aana.api.models.sampling_params import SamplingParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.models.pydantic.chat_message import ChatDialog
-from aana.models.pydantic.prompt import Prompt
-from aana.models.pydantic.sampling_params import SamplingParams
 
 
 class LlmGenerateEndpointOutput(TypedDict):
