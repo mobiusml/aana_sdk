@@ -94,3 +94,26 @@ def test_chat_messages_wrong_role():
         apply_chat_template(
             tokenizer, dialog, "llama2"
         )  # Apply custom chat template "llama2"
+
+
+def test_from_list():
+    """Test that the ChatDialog.from_list method works as expected."""
+    messages = [
+        {
+            "role": "user",
+            "content": "Can you provide ways to eat combinations of bananas and dragonfruits?",
+        },
+        {
+            "role": "assistant",
+            "content": (
+                "Sure! Here are some ways to eat bananas and dragonfruits together: "
+                "1. Banana and dragonfruit smoothie: Blend bananas and dragonfruits together with some milk and honey. "
+                "2. Banana and dragonfruit salad: Mix sliced bananas and dragonfruits together with some lemon juice and honey."
+            ),
+        },
+        {"role": "user", "content": "What about solving an 2x + 3 = 7 equation?"},
+    ]
+    dialog = ChatDialog.from_list(messages)
+    for message, expected in zip(dialog.messages, messages, strict=False):
+        assert message.role == expected["role"]
+        assert message.content == expected["content"]
