@@ -4,9 +4,13 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 from ray import serve
-from typing_extensions import TypedDict
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
+
+from aana.deployments.base_text_generation_deployment import (
+    BaseTextGenerationDeployment,
+    LLMOutput,
+)
 
 with contextlib.suppress(ImportError):
     from vllm.model_executor.utils import (
@@ -15,11 +19,8 @@ with contextlib.suppress(ImportError):
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
 
-from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.general import InferenceException, PromptTooLongException
-from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
 from aana.models.pydantic.sampling_params import SamplingParams
-from aana.utils.chat_template import apply_chat_template
 from aana.utils.general import get_gpu_memory, merged_options
 from aana.utils.test import test_cache
 
@@ -51,38 +52,8 @@ class VLLMConfig(BaseModel):
     enforce_eager: bool | None = Field(default=False)
 
 
-class LLMOutput(TypedDict):
-    """The output of the LLM model.
-
-    Attributes:
-        text (str): the generated text
-    """
-
-    text: str
-
-
-class LLMBatchOutput(TypedDict):
-    """The output of the LLM model for a batch of inputs.
-
-    Attributes:
-        texts (List[str]): the list of generated texts
-    """
-
-    texts: list[str]
-
-
-class ChatOutput(TypedDict):
-    """The output of the chat model.
-
-    Attributes:
-        dialog (ChatDialog): the dialog with the responses from the model
-    """
-
-    message: ChatMessage
-
-
 @serve.deployment
-class VLLMDeployment(BaseDeployment):
+class VLLMDeployment(BaseTextGenerationDeployment):
     """Deployment to serve large language models using vLLM."""
 
     async def apply_config(self, config: dict[str, Any]):
@@ -190,79 +161,3 @@ class VLLMDeployment(BaseDeployment):
             raise
         except Exception as e:
             raise InferenceException(model_name=self.model) from e
-
-    @test_cache
-    async def generate(
-        self, prompt: str, sampling_params: SamplingParams | None = None
-    ) -> LLMOutput:
-        """Generate completion for the given prompt.
-
-        Args:
-            prompt (str): the prompt
-            sampling_params (SamplingParams | None): the sampling parameters
-
-        Returns:
-            LLMOutput: the dictionary with the key "text" and the generated text as the value
-        """
-        generated_text = ""
-        async for chunk in self.generate_stream(prompt, sampling_params):
-            generated_text += chunk["text"]
-        return LLMOutput(text=generated_text)
-
-    @test_cache
-    async def generate_batch(
-        self, prompts: list[str], sampling_params: SamplingParams | None = None
-    ) -> LLMBatchOutput:
-        """Generate completion for the batch of prompts.
-
-        Args:
-            prompts (List[str]): the prompts
-            sampling_params (SamplingParams | None): the sampling parameters
-
-        Returns:
-            LLMBatchOutput: the dictionary with the key "texts"
-                            and the list of generated texts as the value
-        """
-        texts = []
-        for prompt in prompts:
-            text = await self.generate(prompt, sampling_params)
-            texts.append(text["text"])
-
-        return LLMBatchOutput(texts=texts)
-
-    @test_cache
-    async def chat(
-        self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
-    ) -> ChatOutput:
-        """Chat with the model.
-
-        Args:
-            dialog (ChatDialog): the dialog
-            sampling_params (SamplingParams | None): the sampling parameters
-
-        Returns:
-            ChatOutput: the dictionary with the key "message"
-                        and the response message with a role "assistant"
-                        and the generated text as the content
-        """
-        prompt = apply_chat_template(self.tokenizer, dialog, self.chat_template_name)
-        response = await self.generate(prompt, sampling_params)
-        response_message = ChatMessage(content=response["text"], role="assistant")
-        return ChatOutput(message=response_message)
-
-    @test_cache
-    async def chat_stream(
-        self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
-    ) -> AsyncGenerator[LLMOutput, None]:
-        """Chat with the model and stream the responses.
-
-        Args:
-            dialog (ChatDialog): the dialog
-            sampling_params (SamplingParams | None): the sampling parameters
-
-        Yields:
-            LLMOutput: the dictionary with the key "text" and the generated text as the value
-        """
-        prompt = apply_chat_template(self.tokenizer, dialog, self.chat_template_name)
-        async for chunk in self.generate_stream(prompt, sampling_params):
-            yield chunk
