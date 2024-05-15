@@ -8,6 +8,8 @@ from ray import serve
 from transformers import pipeline
 
 from aana.deployments.base_deployment import BaseDeployment
+from aana.models.core.image import Image
+from aana.utils.test import test_cache
 
 CustomConfig = Annotated[
     dict,
@@ -59,7 +61,6 @@ class HfPipelineDeployment(BaseDeployment):
             self.pipeline = pipeline(
                 task=config_obj.task,
                 model=config_obj.model_id,
-                framework=config_obj.framework,
                 device_map="auto",
                 model_kwargs=copy(self.model_kwargs),
                 **self.pipeline_kwargs,
@@ -70,12 +71,12 @@ class HfPipelineDeployment(BaseDeployment):
             self.pipeline = pipeline(
                 task=config_obj.task,
                 model=config_obj.model_id,
-                framework=config_obj.framework,
                 device=device,
                 model_kwargs=copy(self.model_kwargs),
                 **self.pipeline_kwargs,
             )
 
+    @test_cache
     async def call(self, *args, **kwargs):
         """Call the pipeline.
 
@@ -86,6 +87,21 @@ class HfPipelineDeployment(BaseDeployment):
         Returns:
             the output of the pipeline
         """
+
+        def convert_images(obj):
+            """Convert Aana Image objects to PIL images."""
+            if isinstance(obj, Image):
+                return obj.get_pil_image()
+            elif isinstance(obj, list):
+                return [convert_images(item) for item in obj]
+            return obj
+
+        # Apply the conversion to args
+        args = [convert_images(arg) for arg in args]
+
+        # Apply the conversion to kwargs
+        kwargs = {k: convert_images(v) for k, v in kwargs.items()}
+
         # Update default generation kwargs with the provided ones
         _generation_kwargs = deepcopy(self.generation_kwargs)
         _generation_kwargs.update(kwargs)
