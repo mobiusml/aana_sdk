@@ -1,6 +1,9 @@
 name: Publish Python Package
 
 on:
+  push:
+    branches:
+      - '**'  # Runs on push to any branch
   workflow_dispatch:  # Allows for manual triggering
 
 jobs:
