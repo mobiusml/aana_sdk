@@ -18,7 +18,7 @@ from aana.api.models.video_metadata import VideoMetadata
 from aana.api.models.video_params import VideoParams
 from aana.api.models.whisper_params import WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.extern.decord import generate_frames_decord
+from aana.extern.decord import generate_frames
 from aana.extern.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
@@ -124,7 +124,7 @@ class IndexVideoEndpoint(Endpoint):
         timestamps = []
         frame_ids = []
         video_duration = 0.0
-        async for frames_dict in run_remote(generate_frames_decord)(
+        async for frames_dict in run_remote(generate_frames)(
             video=video_obj, params=video_params
         ):
             timestamps.extend(frames_dict["timestamps"])

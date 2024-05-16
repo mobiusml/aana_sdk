@@ -5,7 +5,7 @@ import pytest
 
 from aana.api.models.video_params import VideoParams
 from aana.exceptions.io import VideoReadingException
-from aana.extern.decord import extract_frames_decord, generate_frames_decord
+from aana.extern.decord import extract_frames, generate_frames
 from aana.models.core.image import Image
 from aana.models.core.video import Video
 
@@ -26,7 +26,7 @@ def test_extract_frames_success(
     video_path = resources.path("aana.tests.files.videos", video_name)
     video = Video(path=video_path)
     params = VideoParams(extract_fps=extract_fps, fast_mode_enabled=fast_mode_enabled)
-    result = extract_frames_decord(video=video, params=params)
+    result = extract_frames(video=video, params=params)
     assert "frames" in result
     assert "timestamps" in result
     assert "duration" in result
@@ -53,15 +53,15 @@ def test_extract_frames_success(
 def test_generate_frames_success(
     video_name, extract_fps, fast_mode_enabled, expected_duration, expected_num_frames
 ):
-    """Test generate_frames_decord.
+    """Test generate_frames.
 
-    generate_frames_decord is a generator function that yields a dictionary
+    generate_frames is a generator function that yields a dictionary
     containing the frames, timestamps and duration of the video.
     """
     video_path = resources.path("aana.tests.files.videos", video_name)
     video = Video(path=video_path)
     params = VideoParams(extract_fps=extract_fps, fast_mode_enabled=fast_mode_enabled)
-    gen_frame = generate_frames_decord(video=video, params=params, batch_size=1)
+    gen_frame = generate_frames(video=video, params=params, batch_size=1)
     total_frames = 0
     for result in gen_frame:
         assert "frames" in result
@@ -84,9 +84,9 @@ def test_generate_frames_success(
 def test_extract_frames_failure():
     """Test that frames cannot be extracted from a non-existent video."""
     # image file instead of video file will create Video object
-    # but will fail in extract_frames_decord
+    # but will fail in extract_frames
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
     with pytest.raises(VideoReadingException):
         invalid_video = Video(path=path)
         params = VideoParams(extract_fps=1.0, fast_mode_enabled=False)
-        extract_frames_decord(video=invalid_video, params=params)
+        extract_frames(video=invalid_video, params=params)

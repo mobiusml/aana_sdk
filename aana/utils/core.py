@@ -25,22 +25,6 @@ def get_object_hash(obj: Any) -> str:
     ).hexdigest()
 
 
-def merge_list(l: list):
-    """Merge a list of lists or numpy arrays into a single list or numpy array."""
-    item_type = None
-    for item in l:
-        if item is not None:
-            item_type = type(item)
-            break
-    if item_type is None:
-        return None
-
-    if item_type == np.ndarray:
-        return np.concatenate(l)
-    else:
-        return sum(l, item_type())
-
-
 
 def import_from(module: str, name, reload=False):
     """Import Module by name."""

@@ -79,6 +79,7 @@ def test_cache(func):  # noqa: C901
 
         def get_args(path):
             cache = pickle.loads(path.open("rb").read())  # noqa: S301
+            print(cache)
             return cache["args"]
 
         args_str = jsonify({"args": args[1:], "kwargs": kwargs})
