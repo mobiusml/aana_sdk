@@ -32,7 +32,8 @@ def test_haystack_wrapper(setup_stablediffusion2_deployment):  # noqa: F811
     not is_gpu_available() and not is_using_deployment_cache(),
     reason="GPU is not available",
 )
-def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F811
+@pytest.mark.asyncio
+async def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F811
     """Tests haystack wrapper in a pipeline."""
 
     # Haystack components generally take lists of things
@@ -54,7 +55,7 @@ def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F811
     deployment_name = "sd2_deployment"
     method_name = "generate"
     # result_key = "image"
-    deployment_handle = run_async(AanaDeploymentHandle.create(deployment_name))
+    deployment_handle = await AanaDeploymentHandle.create(deployment_name)
     aana_component = AanaDeploymentComponent(deployment_handle, method_name)
     aana_component.warm_up()
     text_cleaner = haystack.components.preprocessors.TextCleaner(

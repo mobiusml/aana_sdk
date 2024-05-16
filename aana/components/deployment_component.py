@@ -1,6 +1,5 @@
-from asyncio import coroutine
 from collections.abc import Callable
-from types import NoneType
+from types import CoroutineType, NoneType
 from typing import get_type_hints
 
 from haystack import component
@@ -62,7 +61,6 @@ def typehints_to_input_types(typehints: dict[str, type]) -> dict[str, type]:
     if not typehints:
         return {}
     # Otherwise just return the input
-    # return {key: value for key, value in typehints.items()}
     return typehints
 
 
@@ -96,7 +94,7 @@ class AanaDeploymentComponent:
         # Will raise if the function is not defined (e.g. if you pass a function deployment)
         self.run_method = self._get_method(method_name)
         if not self.run_method:
-            raise ValueError(method_name)
+            raise AttributeError(name=method_name, obj=self._deployment_handle)
         hints = get_type_hints(self.run_method)
         input_types, output_types = typehints_to_component_types(hints)
         # The functions `set_input_types()` and `set_output_types()`
@@ -124,7 +122,7 @@ class AanaDeploymentComponent:
         # Function may (must?) be a coroutine. Resolve it if so.
         return run_async(self._call(*args, **kwargs))
 
-    def _call(self, *args, **kwargs) -> coroutine:
+    def _call(self, *args, **kwargs) -> CoroutineType:
         """Calls the deployment's run method. Not public, use the `run()` method."""
         return self.run_method(*args, **kwargs)  # type: ignore
 
