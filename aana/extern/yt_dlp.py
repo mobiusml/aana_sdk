@@ -1,7 +1,6 @@
 import hashlib
 from pathlib import Path
 
-import torch  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 import yt_dlp
 from yt_dlp.utils import DownloadError
 

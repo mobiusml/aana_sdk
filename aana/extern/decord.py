@@ -3,7 +3,6 @@ from pathlib import Path
 
 import decord
 import numpy as np
-import torch  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 from decord import DECORDError
 
 from aana.api.models.video_params import VideoParams
@@ -13,7 +12,7 @@ from aana.models.core.video import Video
 from aana.models.types import FramesDict
 
 
-def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
+def extract_frames(video: Video, params: VideoParams) -> FramesDict:
     """Extract frames from a video using decord.
 
     Args:
@@ -68,7 +67,7 @@ def extract_frames_decord(video: Video, params: VideoParams) -> FramesDict:
     )
 
 
-def generate_frames_decord(
+def generate_frames(
     video: Video, params: VideoParams, batch_size: int = 8
 ) -> Generator[FramesDict, None, None]:
     """Generate frames from a video using decord.

@@ -1,7 +1,6 @@
 import hashlib  # noqa: I001
 from dataclasses import dataclass
 from pathlib import Path
-import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 import numpy as np
 from aana.configs.settings import settings
 from aana.exceptions.io import AudioReadingException
