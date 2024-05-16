@@ -83,14 +83,12 @@ class AanaDeploymentComponent:
     _run_method: Callable
     _warm: bool
 
-    def __init__(
-        self, deployment_handle: AanaDeploymentHandle, method_name="generate_batch"
-    ):
+    def __init__(self, deployment_handle: AanaDeploymentHandle, method_name: str):
         """Constructor.
 
         Arguments:
             deployment_handle (AanaDeploymentHandle): the Aana Ray deployment to be wrapped (must be a class Deployment)
-            method_name (str): the name of the method on the deployment to call inside the component's `run()` method. Defaults to `generate_batch`
+            method_name (str): the name of the method on the deployment to call inside the component's `run()` method.
         """
         self._deployment_handle = deployment_handle
 
