@@ -6,14 +6,15 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10"]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
 
     - name: Bootstrap poetry
       run: |
@@ -28,9 +29,3 @@ jobs:
     - name: Build the package
       run: poetry build
 
-    # - name: Publish to PyPI
-    #   env:
-    #     PYPI_USERNAME: "mobius_labs"
-    #     PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-    #   run: |
-    #     poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD
