@@ -41,12 +41,12 @@ def typehints_to_output_types(typehint: type) -> dict[str, type]:
     # If annotation is a TypedDict, turn it into a regular dict
     if is_typed_dict(typehint):
         return get_type_hints(typehint)
-    # If it's a single value, wrap into a dict
-    # (Not sure if this is correct, Haystack docs are unclear) -EdR
-    if not isinstance(typehint, dict):
-        return {"return": typehint}
-    # Otherwise just return the dictionary
-    return typehint
+    # If it's a class with annotations, return the __annotations__ dict
+    annotations = getattr(typehint, "__annotations__", None)
+    if annotations:
+        return annotations
+    # Otherwise wrap it into a dictionary
+    return {"return": typehint}
 
 
 def typehints_to_input_types(typehints: dict[str, type]) -> dict[str, type]:
