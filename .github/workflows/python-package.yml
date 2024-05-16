@@ -12,53 +12,24 @@ on:
 jobs:
   build:
 
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12"]
-
-    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Poetry
+    - name: Bootstrap poetry
       run: |
         curl -sSL https://install.python-poetry.org | python - -y
-      if: runner.os != 'Windows' # Poetry installation command for non-Windows
-
-    - name: Install Poetry (Windows)
-      run: |
-        (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
-      if: runner.os == 'Windows' # Poetry installation command for Windows
-
-    - name: Update PATH (Unix)
+    - name: Update PATH
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-      if: runner.os != 'Windows'
-
-    - name: Update PATH (Windows)
-      run: echo "%APPDATA%\Python\Scripts" >> $env:GITHUB_PATH
-      if: runner.os == 'Windows'
-
-    - name: Install dependencies (Unix)
+    - name: Install dependencies
       run: |
         poetry install
-        if [ $(uname) = "Linux" ]; then sudo apt-get update && sudo apt-get install -y ffmpeg; fi
-        if [ $(uname) = "Darwin" ]; then brew install ffmpeg; fi
-      if: runner.os != 'Windows'
-
-    - name: Install dependencies (Windows)
-      run: |
-        poetry install
-        choco install ffmpeg
-      if: runner.os == 'Windows'
-
+        sudo apt-get update
+        sudo apt-get install ffmpeg
     - name: Test with pytest
       run: poetry run pytest -vv
