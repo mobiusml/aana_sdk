@@ -1,0 +1,36 @@
+name: Publish Python Package
+
+on:
+  workflow_dispatch:  # Allows for manual triggering
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Bootstrap poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python - -y
+
+    - name: Update PATH
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: poetry install --no-dev
+
+    - name: Build the package
+      run: poetry build
+
+    # - name: Publish to PyPI
+    #   env:
+    #     PYPI_USERNAME: "mobius_labs"
+    #     PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+    #   run: |
+    #     poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD
