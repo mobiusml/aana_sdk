@@ -84,5 +84,5 @@ def test_haystack_wrapper_fails(setup_stablediffusion2_deployment):  # noqa: F81
     deployment_name = "sd2_deployment"
     missing_method_name = "does_not_exist"
     deployment_handle = run_async(AanaDeploymentHandle.create(deployment_name))
-    with pytest.raises(ValueError):
+    with pytest.raises(AttributeError):
         _component = AanaDeploymentComponent(deployment_handle, missing_method_name)
