@@ -1,3 +1,4 @@
+# ruff: noqa: S104
 import sys
 
 import click
@@ -64,7 +65,7 @@ def deploy(app_path: str, host: str, port: int, show_logs: bool, ray_address: st
 @click.argument("app_path", type=str)
 @click.option(
     "--host", default="0.0.0.0", type=str, help="Host address (default: 0.0.0.0)"
-)  # noqa: S104
+)
 @click.option(
     "--port", default=8000, type=int, help="Port to run the application (default: 8000)"
 )
