@@ -60,7 +60,7 @@ async def async_streamer_adapter(streamer):
             break
         except Empty:
             # wait for the next item
-            await asyncio.sleep(0.001)
+            await asyncio.sleep(0)
 
 
 @serve.deployment

@@ -114,6 +114,7 @@ def test_from_list():
         {"role": "user", "content": "What about solving an 2x + 3 = 7 equation?"},
     ]
     dialog = ChatDialog.from_list(messages)
+    assert len(dialog.messages) == len(messages)
     for message, expected in zip(dialog.messages, messages, strict=False):
         assert message.role == expected["role"]
         assert message.content == expected["content"]
