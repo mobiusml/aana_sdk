@@ -42,6 +42,15 @@ class HfPipelineConfig(BaseModel):
 class HfPipelineDeployment(BaseDeployment):
     """Deployment to serve Hugging Face pipelines."""
 
+    def load_pipeline(self):
+        """Load the pipeline from Hugging Face."""
+        self.pipeline = pipeline(
+            task=self.task,
+            model=self.model_id,
+            model_kwargs=copy(self.model_kwargs),
+            **self.pipeline_kwargs,
+        )
+
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
 
@@ -52,32 +61,30 @@ class HfPipelineDeployment(BaseDeployment):
         The configuration should conform to the HfPipelineConfig schema.
         """
         config_obj = HfPipelineConfig(**config)
+        self.model_id = config_obj.model_id
+        self.task = config_obj.task
         self.model_kwargs = config_obj.model_kwargs
         self.pipeline_kwargs = config_obj.pipeline_kwargs
         self.generation_kwargs = config_obj.generation_kwargs
 
-        try:
-            # Try to load pipeline with device_map=auto to use accelerate
-            self.pipeline = pipeline(
-                task=config_obj.task,
-                model=config_obj.model_id,
-                device_map="auto",
-                model_kwargs=copy(self.model_kwargs),
-                **self.pipeline_kwargs,
-            )
-        except ValueError as e:
-            if "does not support `device_map='auto'`" in str(e):
-                # If model doesn't support device_map=auto, use torch to figure out where to load the model
-                device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-                self.pipeline = pipeline(
-                    task=config_obj.task,
-                    model=config_obj.model_id,
-                    device=device,
-                    model_kwargs=copy(self.model_kwargs),
-                    **self.pipeline_kwargs,
-                )
-            else:
-                raise e
+        if "device" in self.pipeline_kwargs or "device_map" in self.pipeline_kwargs:
+            self.load_pipeline()  # Load pipeline with the provided device or device_map
+        else:
+            try:
+                # If no device or device_map is provided, try to load pipeline with device_map=auto to use accelerate
+                self.pipeline_kwargs["device_map"] = "auto"
+                self.load_pipeline()
+            except ValueError as e:
+                if "does not support `device_map='auto'`" in str(e):
+                    # If model doesn't support device_map=auto, use torch to figure out where to load the model
+                    device = torch.device(
+                        "cuda" if torch.cuda.is_available() else "cpu"
+                    )
+                    del self.pipeline_kwargs["device_map"]
+                    self.pipeline_kwargs["device"] = device
+                    self.load_pipeline()
+                else:
+                    raise e
 
     @test_cache
     async def call(self, *args, **kwargs):

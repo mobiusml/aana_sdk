@@ -60,7 +60,7 @@ async def async_streamer_adapter(streamer):
             break
         except Empty:
             # wait for the next item
-            await asyncio.sleep(0)
+            await asyncio.sleep(0.01)
 
 
 @serve.deployment
@@ -81,8 +81,9 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
         self.model_kwargs = config_obj.model_kwargs
         self.default_sampling_params = config_obj.default_sampling_params
 
+        self.model_kwargs["device_map"] = self.model_kwargs.get("device_map", "auto")
         self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_id, device_map="auto", **self.model_kwargs
+            self.model_id, **self.model_kwargs
         )
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
         self.chat_template_name = config_obj.chat_template
