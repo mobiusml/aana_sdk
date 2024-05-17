@@ -65,16 +65,19 @@ class HfPipelineDeployment(BaseDeployment):
                 model_kwargs=copy(self.model_kwargs),
                 **self.pipeline_kwargs,
             )
-        except ValueError:
-            # If model doesn't support device_map=auto, use torch to figure out where to load the model
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            self.pipeline = pipeline(
-                task=config_obj.task,
-                model=config_obj.model_id,
-                device=device,
-                model_kwargs=copy(self.model_kwargs),
-                **self.pipeline_kwargs,
-            )
+        except ValueError as e:
+            if "does not support `device_map='auto'`" in str(e):
+                # If model doesn't support device_map=auto, use torch to figure out where to load the model
+                device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                self.pipeline = pipeline(
+                    task=config_obj.task,
+                    model=config_obj.model_id,
+                    device=device,
+                    model_kwargs=copy(self.model_kwargs),
+                    **self.pipeline_kwargs,
+                )
+            else:
+                raise e
 
     @test_cache
     async def call(self, *args, **kwargs):
