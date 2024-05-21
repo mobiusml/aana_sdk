@@ -2,11 +2,12 @@
 name = "aana"
 version = "0.2.0"
 description = "Multimodal SDK"
-authors = ["Mobius Labs GmbH <hello@mobiuslabs.com>"]
+authors = ["Mobius Labs GmbH <dev@mobiuslabs.com>"]
 homepage = "https://github.com/mobiusml/aana_sdk"
 repository = "https://github.com/mobiusml/aana_sdk"
-license = "License agreement"
+license = "Apache-2.0"
 readme = "README.md"
+keywords = ["multimodal", "ray", "serving", "video", "images", "audio", "llm", "vlm", "asr"]
 classifiers=[
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
