@@ -4,7 +4,7 @@ from uuid import uuid4
 import PIL.Image
 
 from aana.configs.settings import settings
-from aana.models.core.file import PathResult
+from aana.core.models.file import PathResult
 
 
 def save_image(image: PIL.Image.Image, full_path: Path | None = None) -> PathResult:

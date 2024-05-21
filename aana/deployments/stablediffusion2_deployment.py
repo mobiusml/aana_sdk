@@ -6,9 +6,9 @@ from diffusers import EulerDiscreteScheduler, StableDiffusionPipeline
 from pydantic import BaseModel, Field
 from ray import serve
 
-from aana.api.models.prompt import Prompt
+from aana.core.models.chat import Prompt
+from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment, test_cache
-from aana.models.core.dtype import Dtype
 
 
 class StableDiffusion2Output(TypedDict):

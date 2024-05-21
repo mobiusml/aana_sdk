@@ -1,11 +1,16 @@
+from enum import Enum
 from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine
 
-from aana.storage.types import DbType
 
+class DbType(str, Enum):
+    """Engine types for relational database."""
+
+    POSTGRESQL = "postgresql"
+    SQLITE = "sqlite"
 
 def create_postgresql_engine(config):
     """Create PostgreSQL engine based on the provided configuration.

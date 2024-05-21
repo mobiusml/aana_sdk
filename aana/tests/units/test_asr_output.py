@@ -7,14 +7,14 @@ from faster_whisper.transcribe import (
     Word as WhisperWord,
 )
 
-from aana.api.models.asr_output import (
+from aana.core.models.asr import (
     AsrSegment,
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
     AsrWord,
 )
-from aana.api.models.time_interval import TimeInterval
+from aana.core.models.time import TimeInterval
 
 
 def test_asr_segment_from_whisper():

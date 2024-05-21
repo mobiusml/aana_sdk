@@ -6,13 +6,12 @@ from pyannote.audio import Model
 from pydantic import BaseModel, Field
 from ray import serve
 
-from aana.api.models.time_interval import TimeInterval
-from aana.api.models.vad_output import VadSegment
-from aana.api.models.vad_params import VadParams
+from aana.core.models.audio import Audio
+from aana.core.models.time import TimeInterval
+from aana.core.models.vad import VadParams, VadSegment
 from aana.deployments.base_deployment import BaseDeployment, test_cache
 from aana.exceptions.runtime import InferenceException
-from aana.models.core.audio import Audio
-from aana.processors.audio import BinarizeVadScores, VoiceActivitySegmentation
+from aana.processors.vad import BinarizeVadScores, VoiceActivitySegmentation
 from aana.utils.download import download_model
 
 
@@ -47,7 +46,7 @@ class VadConfig(BaseModel):
     Attributes:
         model (str): Model file url.
         onset (float): Threshold for voice activity, default 0.5.
-        offset (float): Thereshold for silence, default 0.363.
+        offset (float): Threshold for silence, default 0.363.
         min_duration_on (float): Minimum voiced duration, default 0.1.
         min_duration_off (float): Minimum silence duration, default 0.1.
         sample_rate (int): The sample rate of the audio, default 16000.

@@ -7,9 +7,8 @@ from pydantic import BaseModel, BeforeValidator, PlainSerializer
 from ray import serve
 from transformers import pipeline
 
-from aana.deployments.base_deployment import BaseDeployment
-from aana.models.core.image import Image
-from aana.utils.test import test_cache
+from aana.core.models.image import Image
+from aana.deployments.base_deployment import BaseDeployment, test_cache
 
 CustomConfig = Annotated[
     dict,
@@ -84,7 +83,7 @@ class HfPipelineDeployment(BaseDeployment):
                     self.pipeline_kwargs["device"] = device
                     self.load_pipeline()
                 else:
-                    raise e
+                    raise
 
     @test_cache
     async def call(self, *args, **kwargs):

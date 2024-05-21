@@ -4,7 +4,7 @@ import numpy as np
 from pydantic import Field
 
 from aana.api.api_generation import Endpoint
-from aana.api.models.prompt import Prompt
+from aana.core.models.chat import Prompt
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 
 

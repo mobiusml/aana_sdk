@@ -1,12 +1,10 @@
 from collections import defaultdict
 from math import floor
 
-from aana.api.models.asr_output import (
-    AsrSegments,
-)
+from aana.core.models.asr import AsrSegments
+from aana.core.models.audio import Audio
+from aana.core.models.video import Video
 from aana.extern.av import load_audio
-from aana.models.core.audio import Audio
-from aana.models.core.video import Video
 
 
 def extract_audio(video: Video) -> Audio:

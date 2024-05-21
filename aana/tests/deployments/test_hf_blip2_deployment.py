@@ -4,7 +4,7 @@ from importlib import resources
 import pytest
 from ray import serve
 
-from aana.models.core.image import Image
+from aana.core.models.image import Image
 from aana.tests.utils import (
     compare_texts,
     get_deployments_by_type,

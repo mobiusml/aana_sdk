@@ -3,7 +3,7 @@
 import pytest
 from pydantic import BaseModel
 
-from aana.api.models.base import merged_options
+from aana.core.models.base import merged_options
 
 
 class MyOptions(BaseModel):

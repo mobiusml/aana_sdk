@@ -1,6 +1,6 @@
 # ruff: noqa: S101
 
-from aana.api.models.question import Question
+from aana.core.models.chat import Question
 
 
 def test_question_creation():

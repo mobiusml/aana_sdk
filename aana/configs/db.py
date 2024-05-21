@@ -4,8 +4,7 @@ from pydantic_settings import BaseSettings
 from sqlalchemy.engine import Engine
 from typing_extensions import TypedDict
 
-from aana.storage.op import create_database_engine
-from aana.storage.types import DbType
+from aana.storage.op import DbType, create_database_engine
 
 
 class SQLiteConfig(TypedDict):

@@ -8,8 +8,8 @@ from aana.storage.models.base import BaseEntity, TimeStampEntity
 from aana.storage.types import MediaIdSqlType
 
 if typing.TYPE_CHECKING:
-    from aana.api.models.captions import Caption
-    from aana.api.models.media_id import MediaId
+    from aana.core.models.captions import Caption
+    from aana.core.models.media import MediaId
 
 
 class CaptionEntity(BaseEntity, TimeStampEntity):

@@ -1,16 +1,9 @@
-from enum import Enum
 from typing import TypeAlias
 
 from sqlalchemy import String, TypeDecorator
 
-from aana.api.models.media_id import MediaId
+from aana.core.models.media import MediaId
 
-
-class DbType(str, Enum):
-    """Engine types for relational database."""
-
-    POSTGRESQL = "postgresql"
-    SQLITE = "sqlite"
 
 class MediaIdType(TypeDecorator):
     """Custom type for handling MediaId objects with SQLAlchemy."""

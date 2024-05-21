@@ -4,7 +4,7 @@ from typing import Generic, TypeVar
 
 from sqlalchemy.orm import Session
 
-from aana.api.models.media_id import MediaId
+from aana.core.models.media import MediaId
 from aana.exceptions.db import NotFoundException
 from aana.storage.models.base import BaseEntity
 

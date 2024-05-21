@@ -5,11 +5,10 @@ import decord
 import numpy as np
 from decord import DECORDError
 
-from aana.api.models.video_params import VideoParams
+from aana.core.models.image import Image
+from aana.core.models.types import FramesDict
+from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
-from aana.models.core.image import Image
-from aana.models.core.video import Video
-from aana.models.types import FramesDict
 
 
 def extract_frames(video: Video, params: VideoParams) -> FramesDict:

@@ -15,12 +15,12 @@ from transformers import (
     TextIteratorStreamer,
 )
 
+from aana.core.pydantic.sampling_params import SamplingParams
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
 )
 from aana.exceptions.general import InferenceException, PromptTooLongException
-from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.general import merged_options
 from aana.utils.test import test_cache
 
