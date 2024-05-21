@@ -67,3 +67,15 @@ class ChatDialog(BaseModel):
             ],
         }
     )
+
+    @classmethod
+    def from_list(cls, messages: list[dict[str, str]]) -> "ChatDialog":
+        """Create a ChatDialog from a list of dictionaries.
+
+        Args:
+            messages (list[dict[str, str]]): the list of messages
+
+        Returns:
+            ChatDialog: the chat dialog
+        """
+        return ChatDialog(messages=[ChatMessage(**message) for message in messages])
