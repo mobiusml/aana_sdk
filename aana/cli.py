@@ -63,8 +63,11 @@ def deploy(app_path: str, host: str, port: int, show_logs: bool, ray_address: st
 @cli.command()
 @click.argument("app_path", type=str)
 @click.option(
-    "--host", default="0.0.0.0", type=str, help="Host address (default: 0.0.0.0)"
-) # noqa: S104
+    "--host",
+    default="0.0.0.0",  # noqa: S104
+    type=str,
+    help="Host address (default: 0.0.0.0)",
+)
 @click.option(
     "--port", default=8000, type=int, help="Port to run the application (default: 8000)"
 )
