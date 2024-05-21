@@ -59,4 +59,3 @@ def download_video(video_input: VideoInput | Video) -> Video:
             raise DownloadException(url=video_input.url, msg=error_message) from e
     else:
         return video_input.convert_input_to_object()
-

@@ -62,4 +62,3 @@ class AbstractAudioLibrary:
             sample_rate (int): The sample rate of the audio.
         """
         raise NotImplementedError
-

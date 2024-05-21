@@ -133,6 +133,7 @@ def generate_frames(
             duration=duration,
         )
 
+
 def is_audio(path: Path) -> bool:
     """Checks if it's a valid audio."""
     try:

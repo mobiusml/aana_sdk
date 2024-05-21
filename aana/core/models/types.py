@@ -52,4 +52,3 @@ class FramesDict(TypedDict):
     timestamps: list[float]
     duration: float
     frame_ids: list[int]
-

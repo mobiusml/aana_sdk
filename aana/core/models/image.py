@@ -243,6 +243,7 @@ class Image(Media):
             f"media_id={self.media_id})"
         )
 
+
 class ImageInput(BaseModel):
     """An image input.
 
