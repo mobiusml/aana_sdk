@@ -51,4 +51,3 @@ class AbstractImageLibrary:
             bytes: The image as bytes.
         """
         raise NotImplementedError
-

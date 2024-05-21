@@ -34,7 +34,9 @@ def test_save_video():
         # We also have to patch the "engine" variable in aana.utils.db
         # because it gets set before the test is run due to import dependencies.
         # TODO: We should stop using the engine as an importable name
-        with patch("aana.storage.services.video.engine", settings.db_config.get_engine()):
+        with patch(
+            "aana.storage.services.video.engine", settings.db_config.get_engine()
+        ):
             media_id = "foobar"
             duration = 550.25
             path = resources.path("aana.tests.files.videos", "squirrel.mp4")

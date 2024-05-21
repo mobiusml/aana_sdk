@@ -82,4 +82,3 @@ def generate_combined_timeline(
     return {
         "timeline": timeline,
     }
-

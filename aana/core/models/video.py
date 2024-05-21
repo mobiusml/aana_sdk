@@ -139,6 +139,7 @@ class VideoMetadata(BaseModel):
         }
     )
 
+
 class VideoParams(BaseModel):
     """A pydantic model for video parameters.
 
@@ -165,6 +166,7 @@ class VideoParams(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={"description": "Video parameters."}, validate_assignment=True
     )
+
 
 class VideoInput(BaseModel):
     """A video input.

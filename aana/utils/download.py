@@ -89,5 +89,3 @@ def download_file(url: str) -> bytes:
     except Exception as e:
         raise DownloadException(url) from e
     return response.content
-
-
