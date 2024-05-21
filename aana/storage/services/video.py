@@ -5,16 +5,15 @@ from urllib.parse import urlparse
 
 from sqlalchemy.orm import Session
 
-from aana.api.models.asr_output import (
+from aana.core.models.asr import (
     AsrSegment,
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
-from aana.api.models.captions import CaptionsList
-from aana.api.models.media_id import MediaId
-from aana.api.models.video_metadata import VideoMetadata
-from aana.models.core.video import Video
+from aana.core.models.captions import CaptionsList
+from aana.core.models.media import MediaId
+from aana.core.models.video import Video, VideoMetadata
 from aana.storage.engine import engine
 from aana.storage.models import (
     CaptionEntity,

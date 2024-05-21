@@ -1,7 +1,7 @@
 # ruff: noqa: S101
 import pytest
 
-from aana.api.models.whisper_params import WhisperParams
+from aana.core.models.whisper import WhisperParams
 
 
 def test_whisper_params_default():

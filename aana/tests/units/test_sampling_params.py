@@ -1,7 +1,7 @@
 # ruff: noqa: S101
 import pytest
 
-from aana.api.models.sampling_params import SamplingParams
+from aana.core.models.sampling import SamplingParams
 
 
 def test_valid_sampling_params():

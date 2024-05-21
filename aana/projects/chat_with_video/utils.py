@@ -1,8 +1,7 @@
 import json
 
-from aana.api.models.chat_message import ChatDialog, ChatMessage
-from aana.api.models.question import Question
-from aana.api.models.video_metadata import VideoMetadata
+from aana.core.models.chat import ChatDialog, ChatMessage, Question
+from aana.core.models.video import VideoMetadata
 
 
 def generate_dialog(

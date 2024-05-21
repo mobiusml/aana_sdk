@@ -16,7 +16,7 @@ import pytest
 from aana.configs.db import DbSettings, SQLiteConfig
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
-from aana.storage.types import DbType
+from aana.storage.op import DbType
 from aana.tests.utils import (
     call_and_check_endpoint,
     clear_database,

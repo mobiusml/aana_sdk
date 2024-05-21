@@ -3,7 +3,7 @@ from importlib import resources
 
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-from aana.api.models.chat_message import ChatDialog
+from aana.core.models.chat import ChatDialog
 
 
 @lru_cache(maxsize=128)
@@ -20,7 +20,7 @@ def load_chat_template(chat_template_name: str) -> str:
         ValueError: If the chat template does not exist.
     """
     with resources.path(
-        "aana.models.vllm.templates", f"{chat_template_name}.jinja"
+        "aana.core.chat.templates", f"{chat_template_name}.jinja"
     ) as path:
         if not path.exists():
             raise ValueError(f"Chat template {chat_template_name} does not exist.")  # noqa: TRY003

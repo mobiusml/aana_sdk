@@ -12,8 +12,8 @@ from pydantic.main import BaseModel
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
-from aana.api.models.exception_response import ExceptionResponseModel
 from aana.api.responses import AanaJSONResponse
+from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
 )

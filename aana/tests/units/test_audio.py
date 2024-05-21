@@ -4,10 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from aana.api.models.video_input import VideoInput
+from aana.core.models.audio import Audio
+from aana.core.models.video import Video, VideoInput
 from aana.extern.yt_dlp import download_video
-from aana.models.core.audio import Audio
-from aana.models.core.video import Video
 from aana.processors.video import extract_audio
 
 

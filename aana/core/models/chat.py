@@ -1,9 +1,12 @@
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 Role = Literal["system", "user", "assistant"]
 
+Prompt = Annotated[str, Field(description="The prompt for the LLM.")]
+
+Question = Annotated[str, Field(description="The question.")]
 
 class ChatMessage(BaseModel):
     """A chat message.

@@ -4,15 +4,15 @@ from importlib import resources
 import pytest
 from sqlalchemy.orm import Session
 
-from aana.api.models.asr_output import (
+from aana.core.models.asr import (
     AsrSegment,
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
-from aana.api.models.captions import Caption, CaptionsList
-from aana.api.models.time_interval import TimeInterval
-from aana.models.core.video import Video
+from aana.core.models.captions import Caption, CaptionsList
+from aana.core.models.time import TimeInterval
+from aana.core.models.video import Video
 from aana.storage.services.video import (
     save_transcripts_batch,
     save_video,

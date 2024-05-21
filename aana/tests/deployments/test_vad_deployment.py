@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 from ray import serve
 
-from aana.api.models.base import pydantic_to_dict
-from aana.api.models.vad_params import VadParams
-from aana.models.core.audio import Audio
+from aana.core.models.audio import Audio
+from aana.core.models.base import pydantic_to_dict
+from aana.core.models.vad import VadParams
 from aana.tests.utils import (
     get_deployments_by_type,
     is_gpu_available,

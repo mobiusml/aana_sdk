@@ -2,8 +2,8 @@
 import pytest
 from ray import serve
 
-from aana.api.models.chat_message import ChatDialog, ChatMessage
-from aana.api.models.sampling_params import SamplingParams
+from aana.core.models.chat import ChatDialog, ChatMessage
+from aana.core.models.sampling import SamplingParams
 from aana.exceptions.runtime import PromptTooLongException
 from aana.tests.utils import (
     compare_texts,

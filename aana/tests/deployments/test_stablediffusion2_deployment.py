@@ -3,7 +3,7 @@
 import pytest
 from ray import serve
 
-from aana.api.models.prompt import Prompt
+from aana.core.models.prompt import Prompt
 from aana.tests.utils import (
     get_deployments_by_type,
     is_gpu_available,

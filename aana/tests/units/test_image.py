@@ -6,7 +6,7 @@ import numpy as np
 import PIL.Image
 import pytest
 
-from aana.models.core.image import Image
+from aana.core.models.image import Image
 
 
 def load_numpy_from_image_bytes(content: bytes) -> np.ndarray:
@@ -22,15 +22,15 @@ def mock_download_file(mocker):
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
     content = path.read_bytes()
 
-    # Mock for aana.models.core.media.download_file
+    # Mock for aana.core.models.media.download_file
     mock_media_download = mocker.patch(
-        "aana.models.core.media.download_file", autospec=True
+        "aana.core.models.media.download_file", autospec=True
     )
     mock_media_download.return_value = content
 
-    # Mock for aana.models.core.image.download_file
+    # Mock for aana.core.models.image.download_file
     mock_image_download = mocker.patch(
-        "aana.models.core.image.download_file", autospec=True
+        "aana.core.models.image.download_file", autospec=True
     )
     mock_image_download.return_value = content
 

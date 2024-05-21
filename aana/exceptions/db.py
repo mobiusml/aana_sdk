@@ -1,4 +1,4 @@
-from aana.api.models.media_id import MediaId
+from aana.core.models.media import MediaId
 from aana.exceptions.core import BaseException
 
 

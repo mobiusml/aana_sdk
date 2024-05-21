@@ -8,12 +8,12 @@ from aana.storage.models.base import BaseEntity, TimeStampEntity
 from aana.storage.types import MediaIdSqlType
 
 if TYPE_CHECKING:
-    from aana.api.models.asr_output import (
+    from aana.core.models.asr import (
         AsrSegments,
         AsrTranscription,
         AsrTranscriptionInfo,
     )
-    from aana.api.models.media_id import MediaId
+    from aana.core.models.media import MediaId
 
 
 class TranscriptEntity(BaseEntity, TimeStampEntity):

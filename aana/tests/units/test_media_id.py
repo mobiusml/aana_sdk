@@ -3,7 +3,7 @@
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from aana.api.models.media_id import MediaId
+from aana.core.models.media import MediaId
 
 
 def test_media_id_creation():

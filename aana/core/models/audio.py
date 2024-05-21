@@ -6,8 +6,8 @@ from aana.configs.settings import settings
 from aana.exceptions.io import AudioReadingException
 from aana.extern.av import pyAVWrapper
 from aana.extern.decord import is_audio
-from aana.models.core.media import Media
-from aana.models.libs.audio import AbstractAudioLibrary
+from aana.core.models.media import Media
+from aana.core.libs.audio import AbstractAudioLibrary
 from aana.utils.download import download_file
 
 

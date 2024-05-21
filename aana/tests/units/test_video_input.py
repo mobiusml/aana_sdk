@@ -5,13 +5,13 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from aana.api.models.video_input import VideoInput, VideoInputList
+from aana.core.models.video import VideoInput, VideoInputList
 
 
 @pytest.fixture
 def mock_download_file(mocker):
     """Mock download_file."""
-    mock = mocker.patch("aana.models.core.media.download_file", autospec=True)
+    mock = mocker.patch("aana.core.models.media.download_file", autospec=True)
     path = resources.path("aana.tests.files.videos", "squirrel.mp4")
     content = path.read_bytes()
     mock.return_value = content

@@ -8,7 +8,7 @@ from pathlib import Path
 import av
 import numpy as np
 
-from aana.models.libs.audio import AbstractAudioLibrary
+from aana.core.libs.audio import AbstractAudioLibrary
 
 
 def load_audio(file: Path | None, sample_rate: int = 16000) -> bytes:
