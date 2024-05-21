@@ -168,6 +168,7 @@ def test_cache(func):  # noqa: C901
     else:
         return wrapper
 
+
 class BaseDeployment:
     """Base class for all deployments.
 

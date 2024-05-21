@@ -8,6 +8,7 @@ Prompt = Annotated[str, Field(description="The prompt for the LLM.")]
 
 Question = Annotated[str, Field(description="The question.")]
 
+
 class ChatMessage(BaseModel):
     """A chat message.
 

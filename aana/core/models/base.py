@@ -37,6 +37,7 @@ class BaseListModel(RootModel[list]):
         """Add two models."""
         return self.__class__(root=self.root + other.root)
 
+
 OptionType = TypeVar("OptionType", bound=BaseModel)
 
 

@@ -261,4 +261,3 @@ class pyAVWrapper(AbstractAudioLibrary):
             wav_file.setsampwidth(2)  # 16-bit audio
             wav_file.setframerate(sample_rate)  # Sample rate
             wav_file.writeframes(audio)
-

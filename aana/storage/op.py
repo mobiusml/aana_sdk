@@ -12,6 +12,7 @@ class DbType(str, Enum):
     POSTGRESQL = "postgresql"
     SQLITE = "sqlite"
 
+
 def create_postgresql_engine(config):
     """Create PostgreSQL engine based on the provided configuration.
 
