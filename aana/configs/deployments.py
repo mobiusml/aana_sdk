@@ -1,4 +1,14 @@
+from transformers import BitsAndBytesConfig
+
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
+from aana.deployments.hf_pipeline_deployment import (
+    HfPipelineConfig,
+    HfPipelineDeployment,
+)
+from aana.deployments.hf_text_generation_deployment import (
+    HfTextGenerationConfig,
+    HfTextGenerationDeployment,
+)
 from aana.deployments.stablediffusion2_deployment import (
     StableDiffusion2Config,
     StableDiffusion2Deployment,
@@ -83,3 +93,38 @@ vad_deployment = VadDeployment.options(
     ).model_dump(mode="json"),
 )
 available_deployments["vad_deployment"] = vad_deployment
+
+hf_blip2_opt_2_7b_pipeline_deployment = HfPipelineDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 1},
+    user_config=HfPipelineConfig(
+        model_id="Salesforce/blip2-opt-2.7b",
+        model_kwargs={
+            "quantization_config": BitsAndBytesConfig(
+                load_in_8bit=False, load_in_4bit=True
+            ),
+        },
+    ).model_dump(mode="json"),
+)
+available_deployments[
+    "hf_blip2_opt_2_7b_pipeline_deployment"
+] = hf_blip2_opt_2_7b_pipeline_deployment
+
+
+hf_phi3_mini_4k_instruct_text_gen_deployment = HfTextGenerationDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=HfTextGenerationConfig(
+        model_id="microsoft/Phi-3-mini-4k-instruct",
+        model_kwargs={
+            "trust_remote_code": True,
+            "quantization_config": BitsAndBytesConfig(
+                load_in_8bit=False, load_in_4bit=True
+            ),
+        },
+    ).model_dump(mode="json"),
+)
+
+available_deployments[
+    "hf_phi3_mini_4k_instruct_text_gen_deployment"
+] = hf_phi3_mini_4k_instruct_text_gen_deployment
