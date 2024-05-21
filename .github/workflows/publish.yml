@@ -32,3 +32,10 @@ jobs:
     - name: Build the package
       run: poetry build
 
+    - name: Publish to PyPI
+      env:
+        PYPI_USERNAME: "mobius_labs"
+        PYPI_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      run: |
+        poetry config repositories.testpypi https://test.pypi.org/legacy/
+        poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD -r testpypi
