@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
+import PIL.Image
 
 from aana.configs.settings import settings
 from aana.exceptions.io import ImageReadingException
@@ -118,6 +119,14 @@ class Image(Media):
             )
         assert self.numpy is not None  # noqa: S101
         return self.numpy
+
+    def get_pil_image(self) -> PIL.Image:
+        """Get the image as a PIL image.
+
+        Returns:
+            PIL.Image: The image as a PIL image.
+        """
+        return PIL.Image.fromarray(self.get_numpy())
 
     def load_numpy_from_path(self):
         """Load the image as a numpy array from a path.
