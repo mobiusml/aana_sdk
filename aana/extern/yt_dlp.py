@@ -4,12 +4,11 @@ from pathlib import Path
 import yt_dlp
 from yt_dlp.utils import DownloadError
 
-from aana.api.models.video_input import VideoInput
 from aana.configs.settings import settings
+from aana.core.models.video import Video, VideoInput
 from aana.exceptions.io import (
     DownloadException,
 )
-from aana.models.core.video import Video
 
 
 def download_video(video_input: VideoInput | Video) -> Video:

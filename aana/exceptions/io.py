@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING
 from aana.exceptions.core import BaseException
 
 if TYPE_CHECKING:
-    from aana.models.core.audio import Audio
-    from aana.models.core.image import Image
-    from aana.models.core.video import Video
+    from aana.core.models.audio import Audio
+    from aana.core.models.image import Image
+    from aana.core.models.video import Video
 
 
 class ImageReadingException(BaseException):

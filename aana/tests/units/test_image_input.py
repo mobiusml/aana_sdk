@@ -7,13 +7,13 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 
-from aana.api.models.image_input import ImageInput, ImageInputList
+from aana.core.models.image import ImageInput, ImageInputList
 
 
 @pytest.fixture
 def mock_download_file(mocker):
     """Mock download_file."""
-    mock = mocker.patch("aana.models.core.image.download_file", autospec=True)
+    mock = mocker.patch("aana.core.models.image.download_file", autospec=True)
     path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
     content = path.read_bytes()
     mock.return_value = content

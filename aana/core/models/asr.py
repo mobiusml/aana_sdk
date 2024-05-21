@@ -12,7 +12,7 @@ from faster_whisper.transcribe import (
 )
 from pydantic import BaseModel, ConfigDict, Field
 
-from aana.api.models.time_interval import TimeInterval
+from aana.core.models.time import TimeInterval
 
 
 class AsrWord(BaseModel):

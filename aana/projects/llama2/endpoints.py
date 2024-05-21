@@ -4,9 +4,8 @@ from typing import Annotated, TypedDict
 from pydantic import Field
 
 from aana.api.api_generation import Endpoint
-from aana.api.models.chat_message import ChatDialog
-from aana.api.models.prompt import Prompt
-from aana.api.models.sampling_params import SamplingParams
+from aana.core.models.chat import ChatDialog, Prompt
+from aana.core.models.sampling import SamplingParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 
 

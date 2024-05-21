@@ -4,8 +4,8 @@ from fastapi import Request
 from pydantic import ValidationError
 from ray.exceptions import RayTaskError
 
-from aana.api.models.exception_response import ExceptionResponseModel
 from aana.api.responses import AanaJSONResponse
+from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.core import BaseException
 
 

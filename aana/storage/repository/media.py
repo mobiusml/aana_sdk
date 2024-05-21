@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from aana.api.models.media_id import MediaId
+from aana.core.models.media import MediaId
 from aana.exceptions.db import MediaIdAlreadyExistsException, NotFoundException
 from aana.storage.models.media import MediaEntity
 from aana.storage.repository.base import BaseRepository

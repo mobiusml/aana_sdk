@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from aana.models.libs.image import AbstractImageLibrary
+from aana.core.libs.image import AbstractImageLibrary
 
 
 class OpenCVWrapper(AbstractImageLibrary):

@@ -6,9 +6,9 @@ from typing_extensions import TypedDict
 with contextlib.suppress(ImportError):
     pass
 
+from aana.core.pydantic.chat_message import ChatDialog, ChatMessage
+from aana.core.pydantic.sampling_params import SamplingParams
 from aana.deployments.base_deployment import BaseDeployment
-from aana.models.pydantic.chat_message import ChatDialog, ChatMessage
-from aana.models.pydantic.sampling_params import SamplingParams
 from aana.utils.chat_template import apply_chat_template
 from aana.utils.test import test_cache
 

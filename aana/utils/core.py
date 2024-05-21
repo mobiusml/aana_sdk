@@ -3,8 +3,6 @@ import importlib
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-
 from aana.utils.json import jsonify
 
 

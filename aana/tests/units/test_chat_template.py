@@ -3,8 +3,8 @@ import pytest
 from jinja2 import TemplateError
 from transformers import AutoTokenizer
 
-from aana.api.models.chat_message import ChatDialog, ChatMessage
-from aana.models.vllm.chat_template import apply_chat_template
+from aana.core.models.chat import ChatDialog, ChatMessage
+from aana.core.vllm.chat_template import apply_chat_template
 
 dialog = ChatDialog(
     messages=[

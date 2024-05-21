@@ -4,25 +4,26 @@ from typing import TYPE_CHECKING, Annotated, TypedDict
 from pydantic import Field
 
 from aana.api.api_generation import Endpoint
-from aana.api.models.asr_output import (
+from aana.core.models.asr import (
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
-from aana.api.models.media_id import MediaId
-from aana.api.models.question import Question
-from aana.api.models.sampling_params import SamplingParams
-from aana.api.models.vad_params import VadParams
-from aana.api.models.video_input import VideoInput
-from aana.api.models.video_metadata import VideoMetadata
-from aana.api.models.video_params import VideoParams
-from aana.api.models.whisper_params import WhisperParams
+from aana.core.models.chat import Question
+from aana.core.models.media import MediaId
+from aana.core.models.sampling import SamplingParams
+from aana.core.models.vad import VadParams
+from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
+from aana.core.models.whisper import WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.extern.decord import generate_frames
 from aana.extern.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
 from aana.projects.chat_with_video.const import asr_model_name, captioning_model_name
+from aana.projects.chat_with_video.utils import (
+    generate_dialog,
+)
 from aana.storage.services.video import (
     delete_media,
     load_video_captions,
@@ -32,13 +33,10 @@ from aana.storage.services.video import (
     save_video_captions,
     save_video_transcription,
 )
-from aana.utils.chat import (
-    generate_dialog,
-)
 
 if TYPE_CHECKING:
-    from aana.models.core.audio import Audio
-    from aana.models.core.video import Video
+    from aana.core.models.audio import Audio
+    from aana.core.models.video import Video
 
 
 class IndexVideoOutput(TypedDict):

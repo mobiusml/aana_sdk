@@ -3,11 +3,10 @@ from importlib import resources
 
 import pytest
 
-from aana.api.models.video_params import VideoParams
+from aana.core.models.image import Image
+from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
 from aana.extern.decord import extract_frames, generate_frames
-from aana.models.core.image import Image
-from aana.models.core.video import Video
 
 
 @pytest.mark.parametrize(

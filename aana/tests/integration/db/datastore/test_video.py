@@ -8,8 +8,8 @@ import pytest
 from sqlalchemy.orm import Session
 
 from aana.configs.settings import settings
+from aana.core.models.video import Video
 from aana.exceptions.db import NotFoundException
-from aana.models.core.video import Video
 from aana.storage.op import run_alembic_migrations
 from aana.storage.repository.media import MediaRepository
 from aana.storage.repository.video import VideoRepository

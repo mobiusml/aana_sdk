@@ -1,6 +1,7 @@
-from aana.api.models.sampling_params import SamplingParams
 from transformers import BitsAndBytesConfig
 
+from aana.core.models.sampling import SamplingParams
+from aana.core.models.types import Dtype
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
 from aana.deployments.hf_pipeline_deployment import (
     HfPipelineConfig,
@@ -22,7 +23,6 @@ from aana.deployments.whisper_deployment import (
     WhisperDeployment,
     WhisperModelSize,
 )
-from aana.models.core.dtype import Dtype
 
 available_deployments = {}
 
