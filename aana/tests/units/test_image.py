@@ -3,6 +3,7 @@ from importlib import resources
 from pathlib import Path
 
 import numpy as np
+import PIL.Image
 import pytest
 
 from aana.models.core.image import Image
@@ -181,3 +182,15 @@ def test_at_least_one_input():
 
     with pytest.raises(ValueError):
         Image(save_on_disk=True)
+
+
+def test_get_pil_image():
+    """Test that get_pil_image method."""
+    try:
+        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+        image = Image(path=path, save_on_disk=False)
+        pil_image = image.get_pil_image()
+        assert isinstance(pil_image, PIL.Image.Image)
+        assert pil_image.size == (909, 720)
+    finally:
+        image.cleanup()
