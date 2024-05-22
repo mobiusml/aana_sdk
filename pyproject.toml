@@ -24,6 +24,8 @@ classifiers=[
 python = ">=3.10"
 accelerate = "^0.26.1"
 alembic = "^1.12.1"
+autoawq = "^0.2.5"
+autoawq-kernels = "^0.0.6"
 av = "==11.*"
 bitsandbytes = "^0.42.0"
 decord = "^0.6.0"
