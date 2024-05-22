@@ -3,16 +3,12 @@ import pickle
 from functools import wraps
 from importlib import resources
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import rapidfuzz
 
 from aana.configs.settings import settings
 from aana.utils.general import get_object_hash
 from aana.utils.json import jsonify
-
-if TYPE_CHECKING:
-    from aana.deployments.base_deployment import BaseDeployment
 
 
 def test_cache(func):  # noqa: C901
