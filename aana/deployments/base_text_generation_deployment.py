@@ -6,11 +6,10 @@ from typing_extensions import TypedDict
 with contextlib.suppress(ImportError):
     pass
 
-from aana.core.pydantic.chat_message import ChatDialog, ChatMessage
-from aana.core.pydantic.sampling_params import SamplingParams
-from aana.deployments.base_deployment import BaseDeployment
-from aana.utils.chat_template import apply_chat_template
-from aana.utils.test import test_cache
+from aana.core.chat.chat_template import apply_chat_template
+from aana.core.models.chat import ChatDialog, ChatMessage
+from aana.core.models.sampling import SamplingParams
+from aana.deployments.base_deployment import BaseDeployment, test_cache
 
 
 class LLMOutput(TypedDict):
