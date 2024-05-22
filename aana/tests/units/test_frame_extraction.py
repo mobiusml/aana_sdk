@@ -6,7 +6,7 @@ import pytest
 from aana.core.models.image import Image
 from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
-from aana.extern.decord import extract_frames, generate_frames
+from aana.integrations.external.decord import extract_frames, generate_frames
 
 
 @pytest.mark.parametrize(

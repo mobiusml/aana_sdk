@@ -4,7 +4,7 @@ from math import floor
 from aana.core.models.asr import AsrSegments
 from aana.core.models.audio import Audio
 from aana.core.models.video import Video
-from aana.extern.av import load_audio
+from aana.integrations.external.av import load_audio
 
 
 def extract_audio(video: Video) -> Audio:

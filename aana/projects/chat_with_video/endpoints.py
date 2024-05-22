@@ -16,8 +16,8 @@ from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
 from aana.core.models.whisper import WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.extern.decord import generate_frames
-from aana.extern.yt_dlp import download_video
+from aana.integrations.external.decord import generate_frames
+from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
 from aana.projects.chat_with_video.const import asr_model_name, captioning_model_name

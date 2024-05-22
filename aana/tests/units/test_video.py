@@ -8,7 +8,7 @@ import pytest
 from aana.configs.settings import settings
 from aana.core.models.video import Video, VideoInput
 from aana.exceptions.io import DownloadException, VideoReadingException
-from aana.extern.yt_dlp import download_video
+from aana.integrations.external.yt_dlp import download_video
 
 
 def test_video():

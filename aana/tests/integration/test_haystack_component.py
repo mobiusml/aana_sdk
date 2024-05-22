@@ -4,8 +4,8 @@ import haystack.components.preprocessors
 import PIL
 import pytest
 
-from aana.components.deployment_component import AanaDeploymentComponent
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.integrations.haystack.deployment_component import AanaDeploymentComponent
 from aana.tests.deployments.test_stablediffusion2_deployment import (
     setup_deployment as setup_stablediffusion2_deployment,  # noqa: F401
 )
