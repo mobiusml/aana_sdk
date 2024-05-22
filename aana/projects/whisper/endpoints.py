@@ -14,7 +14,7 @@ from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput
 from aana.core.models.whisper import WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.extern.yt_dlp import download_video
+from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio
 from aana.projects.whisper.const import asr_model_name

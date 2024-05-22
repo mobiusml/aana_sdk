@@ -22,7 +22,7 @@ from aana.core.libs.image import AbstractImageLibrary
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import Media, MediaId
 from aana.exceptions.io import ImageReadingException
-from aana.extern.opencv import OpenCVWrapper
+from aana.integrations.external.opencv import OpenCVWrapper
 from aana.utils.download import download_file
 
 

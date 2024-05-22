@@ -2,11 +2,10 @@ from collections.abc import Callable
 from types import CoroutineType, NoneType
 from typing import get_type_hints
 
-from haystack import component
-
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.utils.asyncio import run_async
 from aana.utils.typing import is_typed_dict
+from haystack import component
 
 
 def typehints_to_component_types(
@@ -57,7 +56,7 @@ def typehints_to_input_types(typehints: dict[str, type]) -> dict[str, type]:
     Returns:
         dict[str, type]: Something that can be consumed by `haystack.set_input_types()`
     """
-    # If typehint is None, or an emtpy dict, return an empty dict
+    # If typehint is None, or an empty dict, return an empty dict
     if not typehints:
         return {}
     # Otherwise just return the input

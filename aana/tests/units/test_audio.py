@@ -6,7 +6,7 @@ import pytest
 
 from aana.core.models.audio import Audio
 from aana.core.models.video import Video, VideoInput
-from aana.extern.yt_dlp import download_video
+from aana.integrations.external.yt_dlp import download_video
 from aana.processors.video import extract_audio
 
 
