@@ -1,10 +1,16 @@
 name: Publish Python Package
 
 on:
-  push:
-    branches:
-      - '**'  # Runs on push to any branch
-  workflow_dispatch:  # Allows for manual triggering
+  workflow_dispatch:
+    inputs:
+      publish_target:
+        description: 'Select the target PyPI repository'
+        required: true
+        default: 'testpypi'
+        type: choice
+        options:
+          - pypi
+          - testpypi
 
 jobs:
   publish:
@@ -33,6 +39,15 @@ jobs:
       run: poetry build
 
     - name: Publish to PyPI
+      if: ${{ github.event.inputs.publish_target == 'pypi' }}
+      env:
+        PYPI_USERNAME: "__token__"
+        PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD
+
+    - name: Publish to Test PyPI
+      if: ${{ github.event.inputs.publish_target == 'testpypi' }}
       env:
         PYPI_USERNAME: "__token__"
         PYPI_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
