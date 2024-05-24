@@ -14,7 +14,7 @@ from aana.core.models.media import MediaId
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
-from aana.core.models.whisper import WhisperParams
+from aana.core.models.whisper import BatchedWhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.integrations.external.decord import generate_frames
 from aana.integrations.external.yt_dlp import download_video
@@ -88,7 +88,7 @@ class IndexVideoEndpoint(Endpoint):
         self,
         video: VideoInput,
         video_params: VideoParams,
-        whisper_params: WhisperParams,
+        whisper_params: BatchedWhisperParams,
         vad_params: VadParams,
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
