@@ -12,7 +12,7 @@ from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
 )
-from aana.integrations.external.torch import get_gpu_memory
+from aana.utils.gpu import get_gpu_memory
 
 with contextlib.suppress(ImportError):
     from vllm.model_executor.utils import (

@@ -1,9 +1,6 @@
 from enum import Enum
 
 import torch
-from typing_extensions import TypedDict
-
-from aana.core.models.image import Image
 
 
 class Dtype(str, Enum):
@@ -44,11 +41,3 @@ class Dtype(str, Enum):
             case _:
                 raise ValueError(f"Unknown dtype: {self}")  # noqa: TRY003
 
-
-class FramesDict(TypedDict):
-    """Represents a set of frames with ids, timestamps and total duration."""
-
-    frames: list[Image]
-    timestamps: list[float]
-    duration: float
-    frame_ids: list[int]
