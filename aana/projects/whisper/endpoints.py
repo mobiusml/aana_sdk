@@ -12,7 +12,7 @@ from aana.core.models.asr import (
 from aana.core.models.media import MediaId
 from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput
-from aana.core.models.whisper import WhisperParams, BatchedWhisperParams
+from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
