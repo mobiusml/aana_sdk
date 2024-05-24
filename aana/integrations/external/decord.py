@@ -4,11 +4,20 @@ from pathlib import Path
 import decord
 import numpy as np
 from decord import DECORDError
+from typing_extensions import TypedDict
 
 from aana.core.models.image import Image
-from aana.core.models.types import FramesDict
 from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
+
+
+class FramesDict(TypedDict):
+    """Represents a set of frames with ids, timestamps and total duration."""
+
+    frames: list[Image]
+    timestamps: list[float]
+    duration: float
+    frame_ids: list[int]
 
 
 def extract_frames(video: Video, params: VideoParams) -> FramesDict:

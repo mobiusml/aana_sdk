@@ -18,7 +18,7 @@ from pydantic_core import InitErrorDetails
 from typing_extensions import Self
 
 from aana.configs.settings import settings
-from aana.core.libs.image import AbstractImageLibrary
+from aana.core.libraries.image import AbstractImageLibrary
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import Media, MediaId
 from aana.exceptions.io import ImageReadingException
