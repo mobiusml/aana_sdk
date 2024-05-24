@@ -1,10 +1,265 @@
 [
     {
-        "data": {
-            "model_name": "whisper_medium"
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
         },
-        "error": "InferenceException",
-        "message": "InferenceException(model_name=whisper_medium)",
-        "stacktrace": "\u001b[36mray::ServeReplica:asr_deployment:WhisperDeployment.handle_request_with_rejection()\u001b[39m (pid=176954, ip=172.17.0.10, actor_id=a221becbd490930663b1e48a01000000, repr=<ray.serve._private.replica.ServeReplica:asr_deployment:WhisperDeployment object at 0x7f80e0285ea0>)\n    async for result in self._call_user_generator(\n  File \"/root/.cache/pypoetry/virtualenvs/aana-XDlPP_xZ-py3.10/lib/python3.10/site-packages/ray/serve/_private/replica.py\", line 460, in _call_user_generator\n    raise e from None\n  File \"/root/.cache/pypoetry/virtualenvs/aana-XDlPP_xZ-py3.10/lib/python3.10/site-packages/ray/serve/_private/replica.py\", line 1150, in call_user_method\n    raise e from None\nray.exceptions.RayTaskError: \u001b[36mray::ServeReplica:asr_deployment:WhisperDeployment.handle_request_with_rejection()\u001b[39m (pid=176954, ip=172.17.0.10)\n  File \"/root/.cache/pypoetry/virtualenvs/aana-XDlPP_xZ-py3.10/lib/python3.10/site-packages/ray/serve/_private/utils.py\", line 168, in wrap_to_ray_error\n    raise exception\n  File \"/root/.cache/pypoetry/virtualenvs/aana-XDlPP_xZ-py3.10/lib/python3.10/site-packages/ray/serve/_private/replica.py\", line 1131, in call_user_method\n    result = await self._handle_user_method_result(\n  File \"/root/.cache/pypoetry/virtualenvs/aana-XDlPP_xZ-py3.10/lib/python3.10/site-packages/ray/serve/_private/replica.py\", line 1038, in _handle_user_method_result\n    async for r in result:\n  File \"/root/aana_sdk/aana/deployments/base_deployment.py\", line 144, in wrapper_generator\n    raise cache[\"exception\"]\naana.exceptions.runtime.InferenceException: InferenceException(model_name=whisper_medium)"
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall,",
+                "time_interval": {
+                    "end": 27.788,
+                    "start": 0.0
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this,",
+                "time_interval": {
+                    "end": 54.204,
+                    "start": 28.117
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit, and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy.",
+                "time_interval": {
+                    "end": 83.18,
+                    "start": 54.362
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit, and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height,",
+                "time_interval": {
+                    "end": 113.76,
+                    "start": 83.851
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here. I trust",
+                "time_interval": {
+                    "end": 140.945,
+                    "start": 114.175
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here. I trust"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " the conservation of mechanical energy for 100%. I may not trust myself. I'm going to release this object and I hope I will be able to do it at zero speed so that when it comes back it may touch my chin but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed",
+                "time_interval": {
+                    "end": 170.04,
+                    "start": 141.274
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " the conservation of mechanical energy for 100%. I may not trust myself. I'm going to release this object and I hope I will be able to do it at zero speed so that when it comes back it may touch my chin but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " then this will be my last lecture. I will close my eyes. I don't want to see this. So please be very quiet. I almost didn't sleep all night. Three, two, one, zero.",
+                "time_interval": {
+                    "end": 187.89,
+                    "start": 170.199
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " then this will be my last lecture. I will close my eyes. I don't want to see this. So please be very quiet. I almost didn't sleep all night. Three, two, one, zero."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.982421875
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Physics works, and I'm still alive.",
+                "time_interval": {
+                    "end": 202.924,
+                    "start": 200.728
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Physics works, and I'm still alive."
+        }
+    },
+    {
+        "captions": [
+            "a man is standing in front of a blackboard with a long stick in his hand and a piece of metal on the other end of it. he is holding a piece of metal in his hand and using it to make a circle",
+            "a man is standing on a stage in front of a classroom full of people watching him play a game on a wii controller.com/video/golf-tutorial-part-1",
+            "a man holding a ball in front of a chalkboard with a white board behind him and a blackboard in the background with a white board on it and a blackboard in the background",
+            "a man standing in front of a blackboard with a whiteboard on it and a whiteboard on the wall behind him with a whiteboard on it and a whiteboard on the wall behind him",
+            "a man standing in front of a chalkboard with a ball in his hand and a ball in the other hand in front of him in a classroom setting with a chalkboard",
+            "a black metal shelf mounted to the wall next to a door and a black door handle on the wall next to it. the door handle is open and the door is open",
+            "a white ball is being thrown by a man in a classroom with a chalkboard on the wall behind him. the man is wearing a black shirt and black pants",
+            "a black wall mounted camera is on a wall next to a black door with a black door knob on it. the camera is on a wall next to a black door with a black door knob on it"
+        ],
+        "timestamps": [
+            0.0,
+            11.133000373840332,
+            20.732999801635742,
+            36.733001708984375,
+            52.733001708984375,
+            67.53299713134766,
+            69.80000305175781,
+            72.26699829101562
+        ]
+    },
+    {
+        "captions": [
+            "a man standing in front of a blackboard with a calculator in his hand and a whiteboard behind him with a number on it and a number on it next to it",
+            "a man is putting a piece of metal on a wall with a ladder on it. a man is standing next to him. a man is holding a ladder and a man is holding a piece of metal",
+            "a man is fixing a wall mounted television on a wall with a light on it. the man is holding a screwdriver in his hand. the man is standing in front of a wall mounted television",
+            "a man standing in front of a blackboard with a man pointing at something on it. the man is pointing at something on the blackboard. the man is pointing at something on the blackboard",
+            "a group of students sitting in a lecture hall with their laptops on the table and one person sitting in the front row with his hands on his knees and his head down",
+            "a man is holding a ball in his hand while standing on a stage with a camera and a microphone in the background. the man is wearing a blue shirt and khaki pants",
+            "a man holding a white ball in his hands while standing in front of a wall with a hook on it and a string attached to it. the man is holding the ball in his hands",
+            "a man holding a white ball in his hand while sitting on a bench with a rope around his neck and a rope hanging from the ceiling above him. the man is holding a white ball in his hand"
+        ],
+        "timestamps": [
+            73.86699676513672,
+            89.86699676513672,
+            105.86699676513672,
+            121.86699676513672,
+            131.5330047607422,
+            133.66700744628906,
+            142.06700134277344,
+            158.06700134277344
+        ]
+    },
+    {
+        "captions": [
+            "a man holding a white ball in front of a wall with a man sitting on a chair next to him holding a white ball in his hand and a man standing next to him holding a white ball in his hand",
+            "a group of people sitting in a lecture hall with their hands on their knees and one person looking at the camera with a smile on their face and another person looking at the camera with a smile on their face",
+            "a man holding a white ball in his hand while standing in front of a wall with a lamp on the wall behind him. the man is holding a white ball in his hand",
+            "a lecture hall with a blackboard and people sitting in front of it watching a lecture on a projector screen. one person is standing in front of the blackboard",
+            "a man in a blue shirt leaning against a wall with his hands on his hips and his head tilted back. he is smiling and looking at the camera. he is wearing glasses and a blue shirt",
+            "a man in a blue shirt leaning against a wall with his arms up in the air and his hands on his hips. he is smiling and looking at the camera",
+            "a group of people sitting in a lecture hall with one person smiling and another person laughing at something on the screen behind them, and a third person sitting in the front row",
+            "a man in a blue shirt is talking to a crowd of people on stage at a conference event. he is wearing glasses and has a tie on his shirt."
+        ],
+        "timestamps": [
+            174.06700134277344,
+            183.66700744628906,
+            185.4669952392578,
+            187.66700744628906,
+            191.33299255371094,
+            194.1999969482422,
+            200.4669952392578,
+            201.4669952392578
+        ]
+    },
+    {
+        "caption_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24
+        ],
+        "transcription_id": 1
     }
 ]
