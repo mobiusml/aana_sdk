@@ -40,4 +40,3 @@ class Dtype(str, Enum):
                 return torch.int8
             case _:
                 raise ValueError(f"Unknown dtype: {self}")  # noqa: TRY003
-
