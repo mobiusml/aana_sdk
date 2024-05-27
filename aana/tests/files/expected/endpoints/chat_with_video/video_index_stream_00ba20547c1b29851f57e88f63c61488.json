@@ -1,71 +1,5 @@
 [
     {
-        "captions": [
-            "a man is standing in front of a blackboard with a long stick",
-            "a man is standing on a stage in front of a classroom",
-            "a man holding a ball in front of a chalkboard",
-            "a man standing in front of a blackboard with a whiteboard",
-            "a man standing in front of a chalkboard with a ball",
-            "a black metal shelf mounted to the wall",
-            "a white ball is being thrown by a man",
-            "a black wall mounted camera is on a wall"
-        ],
-        "timestamps": [
-            0.0,
-            11.133000373840332,
-            20.732999801635742,
-            36.733001708984375,
-            52.733001708984375,
-            67.53299713134766,
-            69.80000305175781,
-            72.26699829101562
-        ]
-    },
-    {
-        "captions": [
-            "a man standing in front of a blackboard with a calculator",
-            "a man is putting a piece of metal on a wall",
-            "a man is fixing a wall mounted television",
-            "a man standing in front of a blackboard with a man pointing",
-            "a group of students sitting in a lecture hall",
-            "a man is holding a ball in his hand",
-            "a man holding a white ball in his hands",
-            "a man holding a white ball in his hand"
-        ],
-        "timestamps": [
-            73.86699676513672,
-            89.86699676513672,
-            105.86699676513672,
-            121.86699676513672,
-            131.5330047607422,
-            133.66700744628906,
-            142.06700134277344,
-            158.06700134277344
-        ]
-    },
-    {
-        "captions": [
-            "a man holding a white ball in front of a wall",
-            "a group of people sitting in a lecture hall",
-            "a man holding a white ball in his hand",
-            "a lecture hall with a blackboard and people sitting in front of it",
-            "a man in a blue shirt leaning against a wall",
-            "a man in a blue shirt leaning against a wall",
-            "a group of people sitting in a lecture hall",
-            "a man in a blue shirt is talking to a crowd"
-        ],
-        "timestamps": [
-            174.06700134277344,
-            183.66700744628906,
-            185.4669952392578,
-            187.66700744628906,
-            191.33299255371094,
-            194.1999969482422,
-            200.4669952392578,
-            201.4669952392578
-        ]
-    },
-    {
         "info": {
             "language": "en",
             "language_confidence": 0.982421875
@@ -232,6 +166,72 @@
         "transcription": {
             "text": " Physics works, and I'm still alive."
         }
+    },
+    {
+        "captions": [
+            "a man is standing in front of a blackboard with a long stick in his hand and a piece of metal on the other end of it. he is holding a piece of metal in his hand and using it to make a circle",
+            "a man is standing on a stage in front of a classroom full of people watching him play a game on a wii controller.com/video/golf-tutorial-part-1",
+            "a man holding a ball in front of a chalkboard with a white board behind him and a blackboard in the background with a white board on it and a blackboard in the background",
+            "a man standing in front of a blackboard with a whiteboard on it and a whiteboard on the wall behind him with a whiteboard on it and a whiteboard on the wall behind him",
+            "a man standing in front of a chalkboard with a ball in his hand and a ball in the other hand in front of him in a classroom setting with a chalkboard",
+            "a black metal shelf mounted to the wall next to a door and a black door handle on the wall next to it. the door handle is open and the door is open",
+            "a white ball is being thrown by a man in a classroom with a chalkboard on the wall behind him. the man is wearing a black shirt and black pants",
+            "a black wall mounted camera is on a wall next to a black door with a black door knob on it. the camera is on a wall next to a black door with a black door knob on it"
+        ],
+        "timestamps": [
+            0.0,
+            11.133000373840332,
+            20.732999801635742,
+            36.733001708984375,
+            52.733001708984375,
+            67.53299713134766,
+            69.80000305175781,
+            72.26699829101562
+        ]
+    },
+    {
+        "captions": [
+            "a man standing in front of a blackboard with a calculator in his hand and a whiteboard behind him with a number on it and a number on it next to it",
+            "a man is putting a piece of metal on a wall with a ladder on it. a man is standing next to him. a man is holding a ladder and a man is holding a piece of metal",
+            "a man is fixing a wall mounted television on a wall with a light on it. the man is holding a screwdriver in his hand. the man is standing in front of a wall mounted television",
+            "a man standing in front of a blackboard with a man pointing at something on it. the man is pointing at something on the blackboard. the man is pointing at something on the blackboard",
+            "a group of students sitting in a lecture hall with their laptops on the table and one person sitting in the front row with his hands on his knees and his head down",
+            "a man is holding a ball in his hand while standing on a stage with a camera and a microphone in the background. the man is wearing a blue shirt and khaki pants",
+            "a man holding a white ball in his hands while standing in front of a wall with a hook on it and a string attached to it. the man is holding the ball in his hands",
+            "a man holding a white ball in his hand while sitting on a bench with a rope around his neck and a rope hanging from the ceiling above him. the man is holding a white ball in his hand"
+        ],
+        "timestamps": [
+            73.86699676513672,
+            89.86699676513672,
+            105.86699676513672,
+            121.86699676513672,
+            131.5330047607422,
+            133.66700744628906,
+            142.06700134277344,
+            158.06700134277344
+        ]
+    },
+    {
+        "captions": [
+            "a man holding a white ball in front of a wall with a man sitting on a chair next to him holding a white ball in his hand and a man standing next to him holding a white ball in his hand",
+            "a group of people sitting in a lecture hall with their hands on their knees and one person looking at the camera with a smile on their face and another person looking at the camera with a smile on their face",
+            "a man holding a white ball in his hand while standing in front of a wall with a lamp on the wall behind him. the man is holding a white ball in his hand",
+            "a lecture hall with a blackboard and people sitting in front of it watching a lecture on a projector screen. one person is standing in front of the blackboard",
+            "a man in a blue shirt leaning against a wall with his hands on his hips and his head tilted back. he is smiling and looking at the camera. he is wearing glasses and a blue shirt",
+            "a man in a blue shirt leaning against a wall with his arms up in the air and his hands on his hips. he is smiling and looking at the camera",
+            "a group of people sitting in a lecture hall with one person smiling and another person laughing at something on the screen behind them, and a third person sitting in the front row",
+            "a man in a blue shirt is talking to a crowd of people on stage at a conference event. he is wearing glasses and has a tie on his shirt."
+        ],
+        "timestamps": [
+            174.06700134277344,
+            183.66700744628906,
+            185.4669952392578,
+            187.66700744628906,
+            191.33299255371094,
+            194.1999969482422,
+            200.4669952392578,
+            201.4669952392578
+        ]
     },
     {
         "caption_ids": [

@@ -4,22 +4,27 @@ from typing import TYPE_CHECKING, Annotated, TypedDict
 from pydantic import Field
 
 from aana.api.api_generation import Endpoint
-from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.models.pydantic.asr_output import (
+from aana.core.models.asr import (
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
-from aana.models.pydantic.media_id import MediaId
-from aana.models.pydantic.question import Question
-from aana.models.pydantic.sampling_params import SamplingParams
-from aana.models.pydantic.vad_params import VadParams
-from aana.models.pydantic.video_input import VideoInput
-from aana.models.pydantic.video_metadata import VideoMetadata
-from aana.models.pydantic.video_params import VideoParams
-from aana.models.pydantic.whisper_params import WhisperParams
+from aana.core.models.chat import Question
+from aana.core.models.media import MediaId
+from aana.core.models.sampling import SamplingParams
+from aana.core.models.vad import VadParams
+from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
+from aana.core.models.whisper import BatchedWhisperParams
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.integrations.external.decord import generate_frames
+from aana.integrations.external.yt_dlp import download_video
+from aana.processors.remote import run_remote
+from aana.processors.video import extract_audio, generate_combined_timeline
 from aana.projects.chat_with_video.const import asr_model_name, captioning_model_name
-from aana.utils.db import (
+from aana.projects.chat_with_video.utils import (
+    generate_dialog,
+)
+from aana.storage.services.video import (
     delete_media,
     load_video_captions,
     load_video_metadata,
@@ -28,18 +33,10 @@ from aana.utils.db import (
     save_video_captions,
     save_video_transcription,
 )
-from aana.utils.general import run_remote
-from aana.utils.video import (
-    download_video,
-    extract_audio,
-    generate_combined_timeline,
-    generate_dialog,
-    generate_frames_decord,
-)
 
 if TYPE_CHECKING:
-    from aana.models.core.audio import Audio
-    from aana.models.core.video import Video
+    from aana.core.models.audio import Audio
+    from aana.core.models.video import Video
 
 
 class IndexVideoOutput(TypedDict):
@@ -91,7 +88,7 @@ class IndexVideoEndpoint(Endpoint):
         self,
         video: VideoInput,
         video_params: VideoParams,
-        whisper_params: WhisperParams,
+        whisper_params: BatchedWhisperParams,
         vad_params: VadParams,
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
@@ -125,7 +122,7 @@ class IndexVideoEndpoint(Endpoint):
         timestamps = []
         frame_ids = []
         video_duration = 0.0
-        async for frames_dict in run_remote(generate_frames_decord)(
+        async for frames_dict in run_remote(generate_frames)(
             video=video_obj, params=video_params
         ):
             timestamps.extend(frames_dict["timestamps"])
