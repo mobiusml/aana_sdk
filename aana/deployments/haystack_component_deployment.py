@@ -7,7 +7,7 @@ from ray import serve
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.base_deployment import BaseDeployment
 from aana.utils.asyncio import run_async
-from aana.utils.general import import_from_path
+from aana.utils.core import import_from_path
 
 
 @component

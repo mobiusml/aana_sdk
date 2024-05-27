@@ -6,10 +6,9 @@ from ray import serve
 from sentence_transformers import SentenceTransformer
 from typing_extensions import TypedDict
 
-from aana.deployments.base_deployment import BaseDeployment
-from aana.exceptions.general import InferenceException
-from aana.utils.batch_processor import BatchProcessor
-from aana.utils.test import test_cache
+from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.exceptions.runtime import InferenceException
+from aana.processors.batch import BatchProcessor
 
 
 class SentenceTransformerConfig(BaseModel):
