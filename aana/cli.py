@@ -3,7 +3,7 @@ import sys
 import click
 
 from aana.sdk import AanaSDK
-from aana.utils.general import import_from_path
+from aana.utils.core import import_from_path
 
 
 @click.group()

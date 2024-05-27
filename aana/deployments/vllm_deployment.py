@@ -7,10 +7,12 @@ from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 
+from aana.core.models.base import merged_options
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
 )
+from aana.utils.gpu import get_gpu_memory
 
 with contextlib.suppress(ImportError):
     from vllm.model_executor.utils import (
@@ -19,10 +21,9 @@ with contextlib.suppress(ImportError):
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
 
-from aana.exceptions.general import InferenceException, PromptTooLongException
-from aana.models.pydantic.sampling_params import SamplingParams
-from aana.utils.general import get_gpu_memory, merged_options
-from aana.utils.test import test_cache
+from aana.core.models.sampling import SamplingParams
+from aana.deployments.base_deployment import test_cache
+from aana.exceptions.runtime import InferenceException, PromptTooLongException
 
 
 class VLLMConfig(BaseModel):

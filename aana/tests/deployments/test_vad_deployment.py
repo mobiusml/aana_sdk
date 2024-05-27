@@ -6,14 +6,14 @@ from pathlib import Path
 import pytest
 from ray import serve
 
-from aana.models.core.audio import Audio
-from aana.models.pydantic.vad_params import VadParams
+from aana.core.models.audio import Audio
+from aana.core.models.base import pydantic_to_dict
+from aana.core.models.vad import VadParams
 from aana.tests.utils import (
     get_deployments_by_type,
     is_gpu_available,
     is_using_deployment_cache,
 )
-from aana.utils.general import pydantic_to_dict
 
 
 def compare_vad_outputs(expected_output, predictions):
