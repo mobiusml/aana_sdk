@@ -15,14 +15,14 @@ from transformers import (
     TextIteratorStreamer,
 )
 
+from aana.core.models.base import merged_options
+from aana.core.models.sampling import SamplingParams
+from aana.deployments.base_deployment import test_cache
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
 )
-from aana.exceptions.general import InferenceException, PromptTooLongException
-from aana.models.pydantic.sampling_params import SamplingParams
-from aana.utils.general import merged_options
-from aana.utils.test import test_cache
+from aana.exceptions.runtime import InferenceException, PromptTooLongException
 
 CustomConfig = Annotated[
     dict,

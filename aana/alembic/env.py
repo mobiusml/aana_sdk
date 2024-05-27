@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from aana.configs.settings import settings
-from aana.models.db.base import BaseEntity
+from aana.storage.models.base import BaseEntity
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

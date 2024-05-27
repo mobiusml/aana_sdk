@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class EventHandler(ABC):
-    """Base class for event handlers. Not guaranteed to be threadsafe."""
+    """Base class for event handlers. Not guaranteed to be thread safe."""
 
     @abstractmethod
     def handle(self, event_name: str, *args, **kwargs):

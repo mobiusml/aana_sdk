@@ -8,7 +8,7 @@ def run_async(coro: asyncio.coroutine) -> Any:
 
     Otherwise, run the coroutine in the current asyncio loop.
 
-    Usefull when you want to run an async function in a non-async context.
+    Useful when you want to run an async function in a non-async context.
 
     From: https://stackoverflow.com/a/75094151
 
