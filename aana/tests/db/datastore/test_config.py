@@ -1,11 +1,7 @@
 # ruff: noqa: S101
 import pytest
 
-from aana.configs.db import (
-    DbSettings,
-    PostgreSQLConfig,
-    SQLiteConfig,
-)
+from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
 
 
 @pytest.fixture

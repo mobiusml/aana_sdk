@@ -98,7 +98,7 @@ from ray import serve
 from aana.deployments.base_deployment import BaseDeployment
 from aana.models.core.dtype import Dtype
 from aana.models.core.image import Image
-from aana.models.pydantic.prompt import Prompt
+from aana.api.models.prompt import Prompt
 
 if TYPE_CHECKING:
     import PIL.Image
@@ -179,7 +179,7 @@ Step 3 is actually only necessary because the SDK doesn't return binary files ye
 
 Here are nodes we need for `[aana/configs/pipeline.py](../aana/configs/pipeline.py)`:
 ```python
-from aana.models.pydantic.prompt import Prompt
+from aana.api.models.prompt import Prompt
 
 nodes = [
     {
@@ -215,7 +215,7 @@ nodes = [
     {
         "name": "save_image_stablediffusion2",
         "type": "function",
-        "function": "aana.utils.image.save_image",  # Could also be a function in a library
+        "function": "aana.extern.pil.save_image",  # Could also be a function in a library
         "dict_output": True,
         "inputs": [
             {
@@ -546,7 +546,7 @@ Here's an example of these for a video processing pipeline ([aana/config/pipelin
     {
         "name": "frame_extraction",
         "type": "ray_task",
-        "function": "aana.utils.video.extract_frames_decord",
+        "function": "aana.utils.video.extract_frames",
         "batched": True,
         "inputs": [
             {
@@ -715,7 +715,7 @@ To make a repository work with the pipeline, it's easiest to wrap the repository
 from sqlalchemy.orm import Session
 # Import entities from aana.models.db, not the file where they are defined!
 from aana.models.db import CaptionsEntity 
-from aana.models.pydantic.captions import VideoCaptionsList
+from aana.api.models.captions import VideoCaptionsList
 # An engine is needed for opening a Session
 from aana.repository.datastore.engine import engine
 from aana.repository.datastore.caption_repo import CaptionRepository

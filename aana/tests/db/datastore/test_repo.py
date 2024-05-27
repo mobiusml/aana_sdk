@@ -2,11 +2,16 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from aana.models.db import CaptionEntity, MediaEntity, TranscriptEntity, VideoEntity
-from aana.repository.datastore.caption_repo import CaptionRepository
-from aana.repository.datastore.media_repo import MediaRepository
-from aana.repository.datastore.transcript_repo import TranscriptRepository
-from aana.repository.datastore.video_repo import VideoRepository
+from aana.storage.models import (
+    CaptionEntity,
+    MediaEntity,
+    TranscriptEntity,
+    VideoEntity,
+)
+from aana.storage.repository.caption import CaptionRepository
+from aana.storage.repository.media import MediaRepository
+from aana.storage.repository.transcript import TranscriptRepository
+from aana.storage.repository.video import VideoRepository
 
 
 @pytest.fixture

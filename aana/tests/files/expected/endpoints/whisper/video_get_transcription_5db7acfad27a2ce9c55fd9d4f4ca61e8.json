@@ -5,8 +5,8 @@
     },
     "segments": [
         {
-            "confidence": 0.9158259730943162,
-            "no_speech_confidence": 0.007221221923828125,
+            "confidence": 0.9158961166806766,
+            "no_speech_confidence": 0.0074462890625,
             "text": " Now I want to return to the conservation of mechanical energy.",
             "time_interval": {
                 "end": 6.0,
@@ -15,8 +15,8 @@
             "words": []
         },
         {
-            "confidence": 0.9158259730943162,
-            "no_speech_confidence": 0.007221221923828125,
+            "confidence": 0.9158961166806766,
+            "no_speech_confidence": 0.0074462890625,
             "text": " I have here a pendulum.",
             "time_interval": {
                 "end": 12.0,
@@ -25,8 +25,8 @@
             "words": []
         },
         {
-            "confidence": 0.9158259730943162,
-            "no_speech_confidence": 0.007221221923828125,
+            "confidence": 0.9158961166806766,
+            "no_speech_confidence": 0.0074462890625,
             "text": " I have an object that weighs 15 kilograms",
             "time_interval": {
                 "end": 18.0,
@@ -35,8 +35,8 @@
             "words": []
         },
         {
-            "confidence": 0.9158259730943162,
-            "no_speech_confidence": 0.007221221923828125,
+            "confidence": 0.9158961166806766,
+            "no_speech_confidence": 0.0074462890625,
             "text": " and I can lift it up one meter, which I have done now.",
             "time_interval": {
                 "end": 24.0,
@@ -45,7 +45,7 @@
             "words": []
         },
         {
-            "confidence": 0.8944121932626876,
+            "confidence": 0.8943539667524607,
             "no_speech_confidence": 0.478759765625,
             "text": " If I let it fall, then that will be converted to kinetic energy.",
             "time_interval": {
@@ -55,7 +55,7 @@
             "words": []
         },
         {
-            "confidence": 0.8944121932626876,
+            "confidence": 0.8943539667524607,
             "no_speech_confidence": 0.478759765625,
             "text": " If I would let it swing from one meter height",
             "time_interval": {
@@ -65,7 +65,7 @@
             "words": []
         },
         {
-            "confidence": 0.8944121932626876,
+            "confidence": 0.8943539667524607,
             "no_speech_confidence": 0.478759765625,
             "text": " and you would be there and it would hit you, you'd be dead.",
             "time_interval": {
@@ -75,7 +75,7 @@
             "words": []
         },
         {
-            "confidence": 0.8944121932626876,
+            "confidence": 0.8943539667524607,
             "no_speech_confidence": 0.478759765625,
             "text": " 150 joules is enough to kill you.",
             "time_interval": {
@@ -85,8 +85,8 @@
             "words": []
         },
         {
-            "confidence": 0.8926982952688367,
-            "no_speech_confidence": 0.6650390625,
+            "confidence": 0.8930336579914734,
+            "no_speech_confidence": 0.66162109375,
             "text": " You lift up a very heavy object, even heavier than this,",
             "time_interval": {
                 "end": 55.5,
@@ -95,8 +95,8 @@
             "words": []
         },
         {
-            "confidence": 0.8926982952688367,
-            "no_speech_confidence": 0.6650390625,
+            "confidence": 0.8930336579914734,
+            "no_speech_confidence": 0.66162109375,
             "text": " and then you let it go, you swing it,",
             "time_interval": {
                 "end": 61.5,
@@ -105,8 +105,8 @@
             "words": []
         },
         {
-            "confidence": 0.8926982952688367,
-            "no_speech_confidence": 0.6650390625,
+            "confidence": 0.8930336579914734,
+            "no_speech_confidence": 0.66162109375,
             "text": " thereby converting gravitational potential energy into kinetic energy",
             "time_interval": {
                 "end": 67.5,
@@ -115,8 +115,8 @@
             "words": []
         },
         {
-            "confidence": 0.8926982952688367,
-            "no_speech_confidence": 0.6650390625,
+            "confidence": 0.8930336579914734,
+            "no_speech_confidence": 0.66162109375,
             "text": " and that way you can demolish a building.",
             "time_interval": {
                 "end": 73.5,
@@ -125,9 +125,9 @@
             "words": []
         },
         {
-            "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.1556396484375,
-            "text": " So you are using, then, the conversion of gravitational potential energy",
+            "confidence": 0.8858151931972937,
+            "no_speech_confidence": 0.151611328125,
+            "text": " So you are using then the conversion of gravitational potential energy",
             "time_interval": {
                 "end": 80.5,
                 "start": 74.5
@@ -135,8 +135,8 @@
             "words": []
         },
         {
-            "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.1556396484375,
+            "confidence": 0.8858151931972937,
+            "no_speech_confidence": 0.151611328125,
             "text": " to kinetic energy.",
             "time_interval": {
                 "end": 86.5,
@@ -145,8 +145,8 @@
             "words": []
         },
         {
-            "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.1556396484375,
+            "confidence": 0.8858151931972937,
+            "no_speech_confidence": 0.151611328125,
             "text": " Now, I am such a strong believer of the conservation of mechanical energy",
             "time_interval": {
                 "end": 92.5,
@@ -155,8 +155,8 @@
             "words": []
         },
         {
-            "confidence": 0.8854939330831316,
-            "no_speech_confidence": 0.1556396484375,
+            "confidence": 0.8858151931972937,
+            "no_speech_confidence": 0.151611328125,
             "text": " that I am willing to put my life on the line.",
             "time_interval": {
                 "end": 100.39,
@@ -165,8 +165,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872207479522947,
-            "no_speech_confidence": 0.27392578125,
+            "confidence": 0.8884345747542244,
+            "no_speech_confidence": 0.255615234375,
             "text": " If I release that bob from a certain height,",
             "time_interval": {
                 "end": 106.39,
@@ -175,8 +175,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872207479522947,
-            "no_speech_confidence": 0.27392578125,
+            "confidence": 0.8884345747542244,
+            "no_speech_confidence": 0.255615234375,
             "text": " then that bob can never come back to a point where the height is any larger.",
             "time_interval": {
                 "end": 112.39,
@@ -185,8 +185,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872207479522947,
-            "no_speech_confidence": 0.27392578125,
+            "confidence": 0.8884345747542244,
+            "no_speech_confidence": 0.255615234375,
             "text": " If I release it from this height and it swings,",
             "time_interval": {
                 "end": 118.39,
@@ -195,8 +195,8 @@
             "words": []
         },
         {
-            "confidence": 0.8872207479522947,
-            "no_speech_confidence": 0.27392578125,
+            "confidence": 0.8884345747542244,
+            "no_speech_confidence": 0.255615234375,
             "text": " then when it reaches here, it could not be higher.",
             "time_interval": {
                 "end": 124.39,
@@ -205,8 +205,8 @@
             "words": []
         },
         {
-            "confidence": 0.8106935256393258,
-            "no_speech_confidence": 0.44287109375,
+            "confidence": 0.8118119824421145,
+            "no_speech_confidence": 0.435302734375,
             "text": " It should not be able to reach any higher",
             "time_interval": {
                 "end": 130.39,
@@ -215,8 +215,8 @@
             "words": []
         },
         {
-            "confidence": 0.8106935256393258,
-            "no_speech_confidence": 0.44287109375,
+            "confidence": 0.8118119824421145,
+            "no_speech_confidence": 0.435302734375,
             "text": " provided that I do not give this object an initial speed when I stand here.",
             "time_interval": {
                 "end": 136.39,
@@ -225,8 +225,8 @@
             "words": []
         },
         {
-            "confidence": 0.8106935256393258,
-            "no_speech_confidence": 0.44287109375,
+            "confidence": 0.8118119824421145,
+            "no_speech_confidence": 0.435302734375,
             "text": " I trust the conservation of mechanical energy for 100%.",
             "time_interval": {
                 "end": 143.77,
@@ -235,8 +235,8 @@
             "words": []
         },
         {
-            "confidence": 0.8106935256393258,
-            "no_speech_confidence": 0.44287109375,
+            "confidence": 0.8118119824421145,
+            "no_speech_confidence": 0.435302734375,
             "text": " I may not trust myself.",
             "time_interval": {
                 "end": 151.66,
@@ -245,8 +245,8 @@
             "words": []
         },
         {
-            "confidence": 0.9171486192048013,
-            "no_speech_confidence": 0.1318359375,
+            "confidence": 0.9162063129544171,
+            "no_speech_confidence": 0.13525390625,
             "text": " And I hope I will be able to do it at zero speed",
             "time_interval": {
                 "end": 157.66,
@@ -255,8 +255,8 @@
             "words": []
         },
         {
-            "confidence": 0.9171486192048013,
-            "no_speech_confidence": 0.1318359375,
+            "confidence": 0.9162063129544171,
+            "no_speech_confidence": 0.13525390625,
             "text": " so that when it comes back, it may touch my chin,",
             "time_interval": {
                 "end": 165.16,
@@ -265,8 +265,8 @@
             "words": []
         },
         {
-            "confidence": 0.9171486192048013,
-            "no_speech_confidence": 0.1318359375,
+            "confidence": 0.9162063129544171,
+            "no_speech_confidence": 0.13525390625,
             "text": " but it may not crush my chin.",
             "time_interval": {
                 "end": 171.16,
@@ -275,8 +275,8 @@
             "words": []
         },
         {
-            "confidence": 0.9171486192048013,
-            "no_speech_confidence": 0.1318359375,
+            "confidence": 0.9162063129544171,
+            "no_speech_confidence": 0.13525390625,
             "text": " I want you to be extremely quiet because this is no joke.",
             "time_interval": {
                 "end": 178.86,
@@ -285,8 +285,8 @@
             "words": []
         },
         {
-            "confidence": 0.8273700625370954,
-            "no_speech_confidence": 0.53173828125,
+            "confidence": 0.8275358177015325,
+            "no_speech_confidence": 0.521484375,
             "text": " I want you to be very quiet. I almost didn't sleep all night.",
             "time_interval": {
                 "end": 186.62,
@@ -295,8 +295,8 @@
             "words": []
         },
         {
-            "confidence": 0.8273700625370954,
-            "no_speech_confidence": 0.53173828125,
+            "confidence": 0.8275358177015325,
+            "no_speech_confidence": 0.521484375,
             "text": " Three, two, one, zero.",
             "time_interval": {
                 "end": 200.81,
@@ -305,8 +305,8 @@
             "words": []
         },
         {
-            "confidence": 0.8273700625370954,
-            "no_speech_confidence": 0.53173828125,
+            "confidence": 0.8275358177015325,
+            "no_speech_confidence": 0.521484375,
             "text": " Physics works and I am still alive.",
             "time_interval": {
                 "end": 206.81,
@@ -316,6 +316,6 @@
         }
     ],
     "transcription": {
-        "text": " Now I want to return to the conservation of mechanical energy.\n I have here a pendulum.\n I have an object that weighs 15 kilograms\n and I can lift it up one meter, which I have done now.\n If I let it fall, then that will be converted to kinetic energy.\n If I would let it swing from one meter height\n and you would be there and it would hit you, you'd be dead.\n 150 joules is enough to kill you.\n You lift up a very heavy object, even heavier than this,\n and then you let it go, you swing it,\n thereby converting gravitational potential energy into kinetic energy\n and that way you can demolish a building.\n So you are using, then, the conversion of gravitational potential energy\n to kinetic energy.\n Now, I am such a strong believer of the conservation of mechanical energy\n that I am willing to put my life on the line.\n If I release that bob from a certain height,\n then that bob can never come back to a point where the height is any larger.\n If I release it from this height and it swings,\n then when it reaches here, it could not be higher.\n It should not be able to reach any higher\n provided that I do not give this object an initial speed when I stand here.\n I trust the conservation of mechanical energy for 100%.\n I may not trust myself.\n And I hope I will be able to do it at zero speed\n so that when it comes back, it may touch my chin,\n but it may not crush my chin.\n I want you to be extremely quiet because this is no joke.\n I want you to be very quiet. I almost didn't sleep all night.\n Three, two, one, zero.\n Physics works and I am still alive."
+        "text": " Now I want to return to the conservation of mechanical energy.\n I have here a pendulum.\n I have an object that weighs 15 kilograms\n and I can lift it up one meter, which I have done now.\n If I let it fall, then that will be converted to kinetic energy.\n If I would let it swing from one meter height\n and you would be there and it would hit you, you'd be dead.\n 150 joules is enough to kill you.\n You lift up a very heavy object, even heavier than this,\n and then you let it go, you swing it,\n thereby converting gravitational potential energy into kinetic energy\n and that way you can demolish a building.\n So you are using then the conversion of gravitational potential energy\n to kinetic energy.\n Now, I am such a strong believer of the conservation of mechanical energy\n that I am willing to put my life on the line.\n If I release that bob from a certain height,\n then that bob can never come back to a point where the height is any larger.\n If I release it from this height and it swings,\n then when it reaches here, it could not be higher.\n It should not be able to reach any higher\n provided that I do not give this object an initial speed when I stand here.\n I trust the conservation of mechanical energy for 100%.\n I may not trust myself.\n And I hope I will be able to do it at zero speed\n so that when it comes back, it may touch my chin,\n but it may not crush my chin.\n I want you to be extremely quiet because this is no joke.\n I want you to be very quiet. I almost didn't sleep all night.\n Three, two, one, zero.\n Physics works and I am still alive."
     }
 }
