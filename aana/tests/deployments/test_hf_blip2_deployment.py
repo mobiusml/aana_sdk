@@ -4,7 +4,7 @@ from importlib import resources
 import pytest
 from ray import serve
 
-from aana.models.core.image import Image
+from aana.core.models.image import Image
 from aana.tests.utils import (
     compare_texts,
     get_deployments_by_type,
@@ -35,7 +35,12 @@ def setup_hf_blip2_deployment(app_setup, request):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "image_name, expected_text",
-    [("Starry_Night.jpeg", "the starry night by vincent van gogh")],
+    [
+        (
+            "Starry_Night.jpeg",
+            "the starry night by vincent van gogh, 1884-1890, oil on canvas, 48 x 48 in, gilded frame, signed and dated",
+        )
+    ],
 )
 async def test_hf_blip2_deployments(
     setup_hf_blip2_deployment, image_name, expected_text

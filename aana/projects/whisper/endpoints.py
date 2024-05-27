@@ -4,29 +4,30 @@ from typing import TYPE_CHECKING, Annotated, TypedDict
 from pydantic import Field
 
 from aana.api.api_generation import Endpoint
-from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.models.pydantic.asr_output import (
+from aana.core.models.asr import (
     AsrSegments,
     AsrTranscription,
     AsrTranscriptionInfo,
 )
-from aana.models.pydantic.media_id import MediaId
-from aana.models.pydantic.vad_params import VadParams
-from aana.models.pydantic.video_input import VideoInput
-from aana.models.pydantic.whisper_params import WhisperParams
+from aana.core.models.media import MediaId
+from aana.core.models.vad import VadParams
+from aana.core.models.video import VideoInput
+from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.integrations.external.yt_dlp import download_video
+from aana.processors.remote import run_remote
+from aana.processors.video import extract_audio
 from aana.projects.whisper.const import asr_model_name
-from aana.utils.db import (
+from aana.storage.services.video import (
     delete_media,
     load_video_transcription,
     save_video,
     save_video_transcription,
 )
-from aana.utils.general import run_remote
-from aana.utils.video import download_video, extract_audio
 
 if TYPE_CHECKING:
-    from aana.models.core.audio import Audio
-    from aana.models.core.video import Video
+    from aana.core.models.audio import Audio
+    from aana.core.models.video import Video
 
 
 class TranscribeVideoOutput(TypedDict):
@@ -109,7 +110,7 @@ class TranscribeVideoInChunksEndpoint(Endpoint):
     async def run(
         self,
         video: VideoInput,
-        whisper_params: WhisperParams,
+        whisper_params: BatchedWhisperParams,
         vad_params: VadParams,
     ) -> AsyncGenerator[TranscribeVideoOutput, None]:
         """Transcribe video in chunks."""

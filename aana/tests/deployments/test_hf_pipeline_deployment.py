@@ -4,7 +4,7 @@ from importlib import resources
 import pytest
 from ray import serve
 
-from aana.models.core.image import Image
+from aana.core.models.image import Image
 from aana.tests.utils import (
     get_deployments_by_type,
     is_gpu_available,
