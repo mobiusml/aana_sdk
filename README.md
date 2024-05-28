@@ -2,9 +2,22 @@
 
 # Aana
 
-Aana is a multi-model SDK for deploying and serving machine learning models.
+Aana SDK is a powerful serving layer designed for constructing web applications utilizing advanced multimodal models and RAG (Retrieval-Augmented Generation) systems. It facilitates the deployment of large-scale machine learning models, including those for vision, audio, and language, enabling the development of multimodal content applications such as search engines, recommendation systems, and data insights platforms.
 
-## Installation
+## Features
+
+- *Multimodal Input Handling:* Aana SDK seamlessly handles various types of multimodal inputs, including videos, audio, and text, providing versatility in application development.
+- *Streaming Support:* With streaming support for both input and output, Aana SDK ensures smooth data processing for real-time applications.
+- *Scalability:* Leveraging the capabilities of Ray serve, Aana SDK allows the deployment of multimodal models and applications across GPU clusters, ensuring scalability and efficient resource utilization.
+- *Rapid Development:* Aana SDK enables developers to swiftly create robust multimodal applications in a Pythonic manner, utilizing its underlying components for fast configurations and RAG setups.
+
+## Usage
+
+### Installing via PyPI
+
+TBD
+
+### Installing from Github
 
 1. Clone this repository.
 
@@ -14,6 +27,8 @@ Aana is a multi-model SDK for deploying and serving machine learning models.
 apt update && apt install -y libgl1
 ```
 
+You should also install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal se of your system's resources, for example a GPU  or even some SIMD operations. Therefore we recommend installing choosing your PyTorch package carefully and installing it manually.
+
 3. Install the package with poetry.
 
 It will install the package and all dependencies in a virtual environment.
@@ -22,29 +37,58 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-4. Run the SDK.
+### Creating Application 
+You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components:
 
-```bash
-HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana.projects.chat_with_video.app:aana_app --port 8000 --host 0.0.0.0
+```python
+from aana.sdk import AanaSDK
+from aana.configs.deployments import (
+    hf_aana_multimodal_deployment,
+)
+from aana.projects.chat_with_video.endpoints import (
+    IndexVideoEndpoint,
+    VideoChatEndpoint,
+)
+
+endpoints = [
+    {
+        "name": "index_video_stream",
+        "path": "/video/index_stream",
+        "summary": "Index a video and return the captions and transcriptions as a stream",
+        "endpoint_cls": IndexVideoEndpoint,
+    },
+    {
+        "name": "video_chat_stream",
+        "path": "/video/chat_stream",
+        "summary": "Chat with video using LLaMa2 7B Chat (streaming)",
+        "endpoint_cls": VideoChatEndpoint,
+    },
+]
+
+if __name__ == "__main__":
+    """Runs the application."""
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("--port", type=int, default=8000)
+    arg_parser.add_argument("--host", type=str, default="127.0.0.1")
+    args = arg_parser.parse_args()
+
+    aana_app = AanaSDK(port=args.port, host=args.host, show_logs=True)
+
+    aana_app.register_deployment(
+        name="aana_deployment",
+        instance=hf_aana_multimodal_deployment,
+    )
+
+    for endpoint in endpoints:
+        aana_app.register_endpoint(
+            name=endpoint["name"],
+            path=endpoint["path"],
+            summary=endpoint["summary"],
+            endpoint_cls=endpoint["endpoint_cls"],
+        )
+
+    aana_app.deploy(blocking=True)
 ```
-
-The target parameter specifies the set of endpoints to deploy.
-
-The first run might take a while because the models will be downloaded from the Internet and cached. 
-
-Once you see `Deployed Serve app successfully.` in the logs, the server is ready to accept requests.
-
-You can change the port and CUDA_VISIBLE_DEVICES environment variable to your needs.
-
-The server will be available at http://localhost:8000.
-
-The documentation will be available at http://localhost:8000/docs and http://localhost:8000/redoc.
-
-For HuggingFace Transformers, you need to specify HF_AUTH environment variable with your HuggingFace API token.
-
-6. Send a request to the server.
-
-You can find examples in the [demo notebook](notebooks/demo.ipynb).
 
 ## Build Serve Config Files
 
@@ -96,7 +140,7 @@ You can change the port and gpus parameters to your needs.
 
 The server will be available at http://localhost:8000.
 
-The documentation will be available at http://localhost:8000/docs and http://localhost:8000/redoc.
+The app documentation will be available at http://localhost:8000/docs and http://localhost:8000/redoc.
 
 5. Send a request to the server.
 
@@ -107,13 +151,9 @@ You can find examples in the [demo notebook](notebooks/demo.ipynb).
 If you are using Visual Studio Code, you can run this repository in a 
 [dev container](https://code.visualstudio.com/docs/devcontainers/containers). This lets you install and 
 run everything you need for the repo in an isolated environment via docker on a host system. 
-Running it somewhere other than a Mobius dev server may cause issues due to the mounts of `/nas` and
-`/nas2` inside the container, but you can specify the environment variables for VS Code `PATH_NAS` and
-`PATH_NAS2` which will override the default locations used for these mount points (otherise they default 
-to look for `/nas` and `/nas2`). You can read more about environment variables for dev containers 
-[here](https://containers.dev/implementors/json_reference/).
 
 ## Code Standards
+
 This project uses Ruff for linting and formatting. If you want to 
 manually run Ruff on the codebase, using poetry it's
 
@@ -132,16 +172,6 @@ poetry run ruff format aana
 ```
 
 (If you are running code in a non-poetry environment, just leave off `poetry run`.)
-If you want to enable this as a local pre-commit hook, additionally
-run the following:
-
-```sh
-git config core.hooksPath .githooks
-```
-
-Depending on your workflow, you may need to ensure that the `ruff` 
-command is available in your default shell. You can also simply run
-`.githooks/pre-commit` manually if you prefer.
 
 For users of VS Code, the included `settings.json` should ensure
 that Ruff problems appear while you edit, and formatting is applied
@@ -158,50 +188,12 @@ poetry run pytest
 
 If you are using VS Code, you can run the tests using the Test Explorer that is installed with the [Python extension](https://code.visualstudio.com/docs/python/testing).
 
-There are a few environment variables that can be set to control the behavior of the tests:
-- `USE_DEPLOYMENT_CACHE`: If set to `true`, the tests will use the deployment cache to avoid downloading the models and running the deployments. This is useful for running integration tests faster and in the environment where GPU is not available.
-- `SAVE_DEPLOYMENT_CACHE`: If set to `true`, the tests will save the deployment cache after running the deployments. This is useful for updating the deployment cache if new deployments or tests are added.
-
-### How to use the deployment cache environment variables
-
-Here are some examples of how to use the deployment cache environment variables.
-
-#### Do you want to run the tests normally using GPU?
-    
-```bash
-USE_DEPLOYMENT_CACHE=false
-SAVE_DEPLOYMENT_CACHE=false
-```
-
-This is the default behavior. The tests will run normally using GPU and the deployment cache will be completely ignored.
-
-#### Do you want to run the tests faster without GPU?
-
-```bash
-USE_DEPLOYMENT_CACHE=true
-SAVE_DEPLOYMENT_CACHE=false
-```
-
-This will run the tests using the deployment cache to avoid downloading the models and running the deployments. The deployment cache will not be updated after running the deployments. Only use it if you are sure that the deployment cache is up to date.
-
-#### Do you want to update the deployment cache?
-
-```bash
-USE_DEPLOYMENT_CACHE=false
-SAVE_DEPLOYMENT_CACHE=true
-```
-
-This will run the tests normally using GPU and save the deployment cache after running the deployments. Use it if you have added new deployments or tests and want to update the deployment cache.
+Testing ML models poses a couple of problems: loading and running models may be very time consuming, and you may wish to run tests on systems that lack hardware support necessary for the models, for example a subnotebook without a GPU or a CI/CD server. To solve this issue, we created a **deployment test cache**. See [the documentation](docs/deployment_test_cache.md).
 
 
 ## Databases
-The project uses two databases: a vector database as well as a tradtional SQL database,
-referred to internally as vectorstore and datastore, respectively.
+The project includes some useful tools for storing structured metadata in a SQL database.
 
-### Vectorstore
-TBD
-
-### Datastore
 The datastore uses SQLAlchemy as an ORM layer and Alembic for migrations. The migrations are run 
 automatically at startup. If changes are made to the SQLAlchemy models, it is necessary to also 
 create an alembic migration that can be run to upgrade the database. 
@@ -217,12 +209,10 @@ if you add a new model class, it should be imported by `__init__.py` in addition
 
 Higher level code for interacting with the ORM is available in `aana.repository.data`.
 
-## Settings
+## License
+Aana SDK is licensed under the [Apache License 2.0](./LICENSE.md). Commercial licensing options are also available.
 
-Here are the environment variables that can be used to configure the Aaana SDK:
-- TMP_DATA_DIR: The directory to store temporary data. Default: `/tmp/aana`.
-- NUM_WORKERS: The number of request workers. Default: `2`.
-- DB_CONFIG: The database configuration in the format `{"datastore_type": "sqlite", "datastore_config": {"path": "/path/to/sqlite.db"}}`. Currently only SQLite and PostgreSQL are supported. Default: `{"datastore_type": "sqlite", "datastore_config": {"path": "/var/lib/aana_data"}}`.
-- USE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will use the deployment cache to avoid downloading the models and running the deployments. Default: `false`.
-- SAVE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will save the deployment cache after running the deployments. Default: `false`.
-- HF_HUB_ENABLE_HF_TRANSFER: If set to `1`, the HuggingFace Transformers will use the HF Transfer library to download the models from HuggingFace Hub to speed up the process. Recommended to always set to it `1`. Default: `0`.
+## Contributing
+We welcome contributions from the community to enhance Aana SDK's functionality and usability. Feel free to open issues for bug reports, feature requests, or submit pull requests to contribute code improvements.
+
+We have adopted the [Contributor Convenant](https://www.contributor-covenant.org/) as our code of conduct.
