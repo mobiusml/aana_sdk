@@ -3,6 +3,8 @@ from collections.abc import AsyncGenerator
 
 from typing_extensions import TypedDict
 
+from aana.core.models.types import TooLongBehavior
+
 with contextlib.suppress(ImportError):
     pass
 
@@ -62,31 +64,39 @@ class BaseTextGenerationDeployment(BaseDeployment):
 
     @test_cache
     async def generate(
-        self, prompt: str, sampling_params: SamplingParams | None = None
+        self,
+        prompt: str,
+        sampling_params: SamplingParams | None = None,
+        too_long: TooLongBehavior = TooLongBehavior.RAISE,
     ) -> LLMOutput:
         """Generate completion for the given prompt.
 
         Args:
             prompt (str): the prompt
             sampling_params (SamplingParams | None): the sampling parameters
+            too_long (TooLongBehavior): how to handle if the input prompt is too long; default is raise an error
 
         Returns:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         generated_text = ""
-        async for chunk in self.generate_stream(prompt, sampling_params):
+        async for chunk in self.generate_stream(prompt, sampling_params, too_long):
             generated_text += chunk["text"]
         return LLMOutput(text=generated_text)
 
     @test_cache
     async def generate_batch(
-        self, prompts: list[str], sampling_params: SamplingParams | None = None
+        self,
+        prompts: list[str],
+        sampling_params: SamplingParams | None = None,
+        too_long: TooLongBehavior = TooLongBehavior.RAISE,
     ) -> LLMBatchOutput:
         """Generate completion for the batch of prompts.
 
         Args:
             prompts (List[str]): the prompts
             sampling_params (SamplingParams | None): the sampling parameters
+            too_long (TooLongBehavior): how to handle if the input prompt is too long; default is to raise an error
 
         Returns:
             LLMBatchOutput: the dictionary with the key "texts"
@@ -94,20 +104,24 @@ class BaseTextGenerationDeployment(BaseDeployment):
         """
         texts = []
         for prompt in prompts:
-            text = await self.generate(prompt, sampling_params)
+            text = await self.generate(prompt, sampling_params, too_long)
             texts.append(text["text"])
 
         return LLMBatchOutput(texts=texts)
 
     @test_cache
     async def chat(
-        self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
+        self,
+        dialog: ChatDialog,
+        sampling_params: SamplingParams | None = None,
+        too_long: TooLongBehavior = TooLongBehavior.RAISE,
     ) -> ChatOutput:
         """Chat with the model.
 
         Args:
             dialog (ChatDialog): the dialog
             sampling_params (SamplingParams | None): the sampling parameters
+            too_long (TooLongBehavior): how to handle if the input prompt is too long; default is to raise an error
 
         Returns:
             ChatOutput: the dictionary with the key "message"
@@ -115,23 +129,27 @@ class BaseTextGenerationDeployment(BaseDeployment):
                         and the generated text as the content
         """
         prompt = apply_chat_template(self.tokenizer, dialog, self.chat_template_name)
-        response = await self.generate(prompt, sampling_params)
+        response = await self.generate(prompt, sampling_params, too_long)
         response_message = ChatMessage(content=response["text"], role="assistant")
         return ChatOutput(message=response_message)
 
     @test_cache
     async def chat_stream(
-        self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
+        self,
+        dialog: ChatDialog,
+        sampling_params: SamplingParams | None = None,
+        too_long: TooLongBehavior = TooLongBehavior.RAISE,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Chat with the model and stream the responses.
 
         Args:
             dialog (ChatDialog): the dialog
             sampling_params (SamplingParams | None): the sampling parameters
+            too_long (TooLongBehavior): how to handle if the input prompt is too long; default is to raise an error
 
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         prompt = apply_chat_template(self.tokenizer, dialog, self.chat_template_name)
-        async for chunk in self.generate_stream(prompt, sampling_params):
+        async for chunk in self.generate_stream(prompt, sampling_params, too_long):
             yield chunk

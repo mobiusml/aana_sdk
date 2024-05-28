@@ -40,3 +40,17 @@ class Dtype(str, Enum):
                 return torch.int8
             case _:
                 raise ValueError(f"Unknown dtype: {self}")  # noqa: TRY003
+
+
+class TooLongBehavior(str, Enum):
+    """Enum for what to do when an input is too long.
+
+    Values:
+        RAISE: raise an Exception, for example PromptTooLongException
+        TRUNCATE: truncate the input to the maximum length
+        ABRIDGE: remove a section from the middle of the input
+    """
+
+    RAISE = "raise"
+    TRUNCATE = "truncate"
+    ABRIDGE = "abridge"
