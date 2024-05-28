@@ -4,6 +4,7 @@ from ray import serve
 
 from aana.core.models.chat import ChatDialog, ChatMessage
 from aana.core.models.sampling import SamplingParams
+from aana.core.models.types import TooLongBehavior
 from aana.exceptions.runtime import PromptTooLongException
 from aana.tests.utils import (
     compare_texts,
@@ -134,9 +135,24 @@ async def test_text_generation_deployments(setup_text_generation_deployment):
 
     compare_texts(expected_text, text)
 
-    # test generate method with too long prompt
+    # test generate method with too long prompt and explicit raise on too long
     with pytest.raises(PromptTooLongException):
         output = await handle.generate.remote(
-            prompt=prompt * 1000,
+            prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
+            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+            too_long=TooLongBehavior.RAISE,
+        )
+
+    # test generate method with too long prompt and default raise on too long
+    with pytest.raises(PromptTooLongException):
+        output = await handle.generate.remote(
+            prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
             sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
         )
+
+    # test generate method with too long prompt and truncate on too long
+    output = await handle.generate.remote(
+        prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
+        sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+        too_long=TooLongBehavior.RAISE,
+    )
