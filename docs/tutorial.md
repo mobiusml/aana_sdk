@@ -88,7 +88,7 @@ We'll start by creating a directory `./stablediffusion2` (don't forget to add an
 from aana.sdk import AanaSDK
 
 from .deployments import stablediffusion2_deployment
-from .endpoints import ImageGenerationEndpoint, IMAGEGEN_DEPLOYMENT_NAME
+from .endpoints import IMAGEGEN_DEPLOYMENT_NAME, ImageGenerationEndpoint
 
 aana_app = AanaSDK(name="stablediffusion2")
 
@@ -98,7 +98,7 @@ aana_app.register_deployment(
 )
 
 aana_app.register_endpoint(
-    name="generate_image,
+    name="generate_image",
     path="/generate_image",
     summary="Generates an image from a text prompt",
     endpoint_cls=ImageGenerationEndpoint,
@@ -120,12 +120,19 @@ from typing import Any, TypedDict
 import PIL
 import torch
 from diffusers import EulerDiscreteScheduler, StableDiffusionPipeline
-from pydantic import BaseModel, Field
 from ray import serve
 
+from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment
-from aana.models.core.dtype import Dtype
 
+
+class StableDiffusion2Output(TypedDict):
+    """Output class for StableDiffusion2Deployment."""
+
+    image: PIL.Image.Image
+
+
+@serve.deployment
 class StableDiffusion2Deployment(BaseDeployment):
     """Stable Diffusion 2 deployment."""
 
@@ -136,7 +143,6 @@ class StableDiffusion2Deployment(BaseDeployment):
 
         Normally we'd have a Config object, a TypedDict, to represent configurable parameters. In this case, hardcoded values are used and we load the model and scheduler from HuggingFace. You could also use the HuggingFace pipeline deployment class in `aana.deployments.hf_pipeline_deployment.py`.
         """
-
         # Load the model and processor from HuggingFace
         model_id = "stabilityai/stable-diffusion-2"
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -163,11 +169,6 @@ class StableDiffusion2Deployment(BaseDeployment):
         """
         image = self.model(prompt).images[0]
         return {"image": image}
-
-class StableDiffusion2Output(TypedDict):
-    """Output class for StableDiffusion2Deployment."""
-
-    image: PIL.Image.Image
 
 ```
 
@@ -196,7 +197,7 @@ from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 IMAGEGEN_DEPLOYMENT_NAME = "image_generation_deployment"
 
 class ImageGenerationEndpointOutput(TypedDict):
-    """Output model for the image generation endpoint"""
+    """Output model for the image generation endpoint."""
 
     image: Annotated[
         list, Field(description="The generated image as a array of pixel values.")
@@ -209,12 +210,13 @@ class ImageGenerationEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint.
         
-        Here we load a handle to the remote Ray deployment for image generation. The handle allows us to seamlessly make (`async`) calls to functions on the Deployment class istance, even if it's running in another process, or on another machine altogether."""
+        Here we load a handle to the remote Ray deployment for image generation. The handle allows us to seamlessly make (`async`) calls to functions on the Deployment class istance, even if it's running in another process, or on another machine altogether.
+        """
         self.image_generation_handle = await AanaDeploymentHandle.create(
             IMAGEGEN_DEPLOYMENT_NAME
         )
 
-    async def run(self, prompt: Prompt) -> ImageGenerationEndpointOutput:
+    async def run(self, prompt: str) -> ImageGenerationEndpointOutput:
         """Run the image generation endpoint.
         
         This calls our remote endpoint and formats the results.
@@ -236,13 +238,14 @@ HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana deploy .app:a
 
 Lots of log messages from Ray and the SDK itself will scroll through. By default this will open an interface on port 8000. At the end, you should see
 
-`Deployed Serve app successfully.`  
+`Deployed Successfully.`  
 
 In another tab/window, we can make a request to the endpoint using cURL:
 
 ```bash
-curl -X POST 0.0.0.0:8000/generate_image -F body='{"prompt": "dogs playing poker but neo-cubist"}'
+$ curl -X POST 0.0.0.0:8000/generate_image -F body='{"prompt": "dogs playing poker but neo-cubist"}'
 
+{"image": [[[45,25,102],[49,26,102], ...[29,62,141]]]}
 ```
 
 Well, that's just an array of pixels expressed as bytes. Not very useful unless we want to do something else on top. But we can add another deployment for the BLIP2 image captioning model, and turn the image back into text! This time we'll just use the BLIP2 deployment already defined in `aana.deployments.` Let's go back to `./endpoints.py` and add the following:
@@ -291,15 +294,19 @@ Now we register the BLIP2 deployment and the new endpoint in `./app.py`:
 ```python
 from aana.configs.deployments import hf_blip2_opt_2_7b_deployment
 
-from .endpoints import IMAGE_CAPTION_DEPLOYMENT_NAME, ImageGenerationCaptionEndpoint
+from endpoints import IMAGE_CAPTION_DEPLOYMENT_NAME, ImageGenerationCaptionEndpoint
 
-aana_app.register_deployment(name=IMAGE_CAPTION_DEPLOYMENT_NAME, hf_blip2_opt_2_7b_deployment)
+aana_app.register_deployment(
+    name=IMAGE_CAPTION_DEPLOYMENT_NAME, deployment=hf_blip2_opt_2_7b_deployment
+)
 
 aana_app.register_endpoint(
-    name="generate_and_caption_image,
+    name="generate_and_caption_image",
     path="/generate_and_caption_image",
     summary="Generates an image from a text prompt and a caption from the image",
     endpoint_cls=ImageGenerationCaptionEndpoint,
+)
+
 
 ```
 
