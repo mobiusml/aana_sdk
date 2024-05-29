@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     model_dir: Path = tmp_data_dir / "models"
     num_workers: int = 2
 
-    hf_auth: str = ''
+    hf_auth: str = ""
 
     db_config: DbSettings = DbSettings()
 
