@@ -297,7 +297,7 @@ from aana.configs.deployments import hf_blip2_opt_2_7b_deployment
 from endpoints import IMAGE_CAPTION_DEPLOYMENT_NAME, ImageGenerationCaptionEndpoint
 
 aana_app.register_deployment(
-    name=IMAGE_CAPTION_DEPLOYMENT_NAME, deployment=hf_blip2_opt_2_7b_deployment
+    name=IMAGE_CAPTION_DEPLOYMENT_NAME, instance=hf_blip2_opt_2_7b_deployment
 )
 
 aana_app.register_endpoint(
