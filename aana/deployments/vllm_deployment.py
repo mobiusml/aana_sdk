@@ -2,11 +2,13 @@ import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
 
+from huggingface_hub import login
 from pydantic import BaseModel, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 
+from aana.configs import settings
 from aana.core.models.base import merged_options
 from aana.core.models.types import TooLongBehavior
 from aana.deployments.base_text_generation_deployment import (
@@ -97,6 +99,9 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
         )
+
+        hf_auth = settings.hf_auth
+        login(token=hf_auth)
 
         # TODO: check if the model is already loaded.
         # If it is and none of the model parameters changed, we don't need to reload the model.
