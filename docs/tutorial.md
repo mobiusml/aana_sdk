@@ -318,74 +318,12 @@ HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana deploy .app:a
 Then make a request:
 
 ```bash
-curl -X POST 0.0.0.0:8000/generate_image -F body='{"prompt": "dogs playing poker but neo-cubist"}'
+$ curl -X POST 0.0.0.0:8000/generate_image -F body='{"prompt": "dogs playing poker but neo-cubist"}'
 
+{"caption":"a painting of dogs and cards on a red background with a yellow background."}
 ```
 
 That's at least a human readable result. 
 
 ## A note about testing
-We have unit tests for freestanding functions and tasks. Additionally, we have tests for deployments and integration tests. Since testing deep learning models poses some problems - both in terms of reproducibility and in terms of CI/CD tests on common source control infrastructure - so we developed the deployment test cache.
-
-You can run the existing tests with `poetry run pytest aana`.
-
-### Deployment test cache
-The deployment test cache is a feature of integration tests that allows you to simulate running the model endpoints without having to go to the effort of downloading the model, loading it, and running on a GPU. This is useful to save time as well as to be able to run the integration tests without needing a GPU (for example if you are on your laptop without internet access).
-
-To mark a function as cacheable so its output can be stored in the deployment cache, annotate it with @test_cache imported from `[aana.utils.test](../aana/utils/test.py)`. Here's our StableDiffusion 2 deployment from above with the generate method annotated:
-
-```python
-class StableDiffusion2Deployment(BaseDeployment):
-    """Stable Diffusion 2 deployment."""
-
-    async def apply_config(self, _config: dict[str, Any]):
-        """Apply configuration.
-
-        The method is called when the deployment is created or updated.
-
-        Normally we'd have a Config object, a TypedDict, to represent configurable parameters. In this case, hardcoded values are used and we load the model and scheduler from HuggingFace. You could also use the HuggingFace pipeline deployment class in `aana.deployments.hf_pipeline_deployment.py`.
-        """
-
-        # Load the model and processor from HuggingFace
-        model_id = "stabilityai/stable-diffusion-2"
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model = StableDiffusionPipeline.from_pretrained(
-            model_id,
-            torch_dtype=Dtype.FLOAT16.to_torch(),
-            scheduler=EulerDiscreteScheduler.from_pretrained(
-                model_id, subfolder="scheduler"
-            ),
-            device_map="auto",
-        )
-
-        # Move the model to the GPU.
-        self.model.to(device)
-
-    @test_cache
-    async def generate_single(self, prompt: str) -> StableDiffusion2Output:
-        """Runs the model on a given prompt and returns the first output.
-
-        Arguments:
-            prompt (str): the prompt to the model.
-
-        Returns:
-            StableDiffusion2Output: a dictionary with one key containing the result
-        """
-        image = self.model(prompt).images[0]
-        return {"image": image}
-
-```
-
-It just needs to be added to your inference methods. In this case, we have only one, `generate_single()`. 
-
-
-To enable the deployment test cache for existing tests, set the environment variable `USE_DEPLOYMENT_CACHE=true` when running `pytest`.
-
-If you add new tests and new deployments, you must first run `pytest` with the environment variables `USE_DEPLOYMENT_CACHE=false` and `SAVE_DEPLOYMENT_CACHE=true`.
-
-
-This will generate and save some JSON files with the SDK code base which represent the
-deployment cache; be sure to commit them when you commit the rest of your changes. 
-
-Once those files are generated you can set `USE_DEPLOYMENT_CACHE=true` and it will skip loading
-models and running inference on methods or functions where `@test_cache` is set.
+We have unit tests for freestanding functions and tasks. Additionally, we have tests for deployments and integration tests. Since testing deep learning models poses some problems - both in terms of reproducibility and in terms of CI/CD tests on common source control infrastructure - so we developed the deployment test cache. See [here](./deployment_test_cache.md).
