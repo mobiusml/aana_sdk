@@ -17,6 +17,7 @@ from transformers import (
 
 from aana.core.models.base import merged_options
 from aana.core.models.sampling import SamplingParams
+from aana.core.models.types import TooLongBehavior
 from aana.deployments.base_deployment import test_cache
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
@@ -90,16 +91,20 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
 
     @test_cache
     async def generate_stream(
-        self, prompt: str, sampling_params: SamplingParams | None = None
+        self, prompt: str, sampling_params: SamplingParams | None = None, too_long: TooLongBehavior = TooLongBehavior.RAISE,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate text stream.
 
         Args:
             prompt (str): the prompt
             sampling_params (SamplingParams | None): the sampling parameters
+            too_long (TooLongBehavior): how to handle if the input prompt is too long; default is raise an error
 
         Yields:
             LLMOutput: the generated text
+        
+        Raises:
+            PromptTooLongException: The prompt is too long and too_long wasn't set to something else
         """
         # Set the seed to make the results reproducible
         transformers.set_seed(42)
@@ -114,11 +119,26 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
             prompt, return_tensors="pt", add_special_tokens=False
         )
 
-        if prompt_input["input_ids"].shape[-1] > self.tokenizer.model_max_length:
-            raise PromptTooLongException(
-                prompt_len=prompt_input["input_ids"].shape[-1],
-                max_len=self.tokenizer.model_max_length,
-            )
+        # Check if prompt is too long. If so, raise, truncate, or cut out
+        # the middle depending on the value of too_long (default is to raise)
+        prompt_length = prompt_input["input_ids"].shape[-1]
+        max_prompt_length = self.tokenizer.model_max_length
+        if prompt_length > max_prompt_length:
+            match too_long:
+                case TooLongBehavior.TRUNCATE:
+                    prompt_input["input_ids"] = prompt_input["input_ids"][:max_prompt_length]
+                case TooLongBehavior.ABRIDGE:
+                    # If max_prompt_length is odd, this favors the ending part by one token
+                    # I don't think there's a non-convoluted way to do it otherwise, though.
+                    half = max_prompt_length // 2
+                    prompt_input["input_ids"] = (
+                        prompt_input["input_ids"][:half] + prompt_input["input_ids"][-half:]
+                    )
+                case TooLongBehavior.RAISE:
+                    raise PromptTooLongException(
+                        prompt_len=prompt_length,
+                        max_len=max_prompt_length,
+                    )
 
         try:
             with torch.no_grad():

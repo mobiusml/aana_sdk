@@ -57,7 +57,6 @@ meta_llama3_8b_instruct = VLLMDeployment.options(
         default_sampling_params=SamplingParams(
             temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
         ),
-        chat_template="llama2",
     ).model_dump(mode="json"),
 )
 
