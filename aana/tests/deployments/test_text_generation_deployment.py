@@ -21,6 +21,11 @@ def get_expected_output(name):
             "  Elon Musk is a South African-born entrepreneur, inventor, "
             "and business magnate who is best known for his innovative companies in"
         )
+    elif name == "meta_llama3_8b_instruct_deployment":
+        return (
+            " Elon Musk is a South African-born entrepreneur, inventor, "
+            "and business magnate who is best known for his innovative companies in"
+        )
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
             "Elon Musk is a prominent entrepreneur and business magnate known for "
@@ -36,6 +41,8 @@ def get_prompt(name):
         return "[INST] Who is Elon Musk? [/INST]"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return "<|user|>\ Who is Elon Musk? <|end|>\n<|assistant|>"
+    elif name == "meta_llama3_8b_instruct_deployment":
+        return "[INST] Who is Elon Musk? [/INST]"
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
 

@@ -45,7 +45,7 @@ vllm_llama2_7b_chat_deployment = VLLMDeployment.options(
 
 available_deployments["vllm_llama2_7b_chat_deployment"] = vllm_llama2_7b_chat_deployment
 
-meta_llama3_8b_instruct = VLLMDeployment.options(
+meta_llama3_8b_instruct_deployment = VLLMDeployment.options(
     num_replicas=1,
     max_ongoing_requests=1000,
     ray_actor_options={"num_gpus": 0.45},
@@ -60,7 +60,7 @@ meta_llama3_8b_instruct = VLLMDeployment.options(
     ).model_dump(mode="json"),
 )
 
-available_deployments["meta_llama3_8b_instruct"] = meta_llama3_8b_instruct
+available_deployments["meta_llama3_8b_instruct_deployment"] = meta_llama3_8b_instruct_deployment
 
 hf_blip2_opt_2_7b_deployment = HFBlip2Deployment.options(
     num_replicas=1,
