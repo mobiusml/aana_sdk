@@ -49,7 +49,10 @@ class BaseTextGenerationDeployment(BaseDeployment):
 
     @test_cache
     async def generate_stream(
-        self, prompt: str, sampling_params: SamplingParams | None = None, too_long: TooLongBehavior = TooLongBehavior.RAISE,
+        self,
+        prompt: str,
+        sampling_params: SamplingParams | None = None,
+        too_long: TooLongBehavior = TooLongBehavior.RAISE,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate completion for the given prompt and stream the results.
 
@@ -105,7 +108,7 @@ class BaseTextGenerationDeployment(BaseDeployment):
         Returns:
             LLMBatchOutput: the dictionary with the key "texts"
                             and the list of generated texts as the value
-        
+
         Raises:
             PromptTooLongException: The prompt is too long and too_long wasn't set to something else
         """
