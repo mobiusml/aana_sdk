@@ -8,7 +8,7 @@ from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 
-from aana.configs import settings
+from aana.configs.settings import settings
 from aana.core.models.base import merged_options
 from aana.core.models.types import TooLongBehavior
 from aana.deployments.base_text_generation_deployment import (
