@@ -29,6 +29,25 @@ available_deployments = {}
 vllm_llama2_7b_chat_deployment = VLLMDeployment.options(
     num_replicas=1,
     max_ongoing_requests=1000,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=VLLMConfig(
+        model="TheBloke/Llama-2-7b-Chat-AWQ",
+        dtype="auto",
+        quantization="awq",
+        gpu_memory_reserved=13000,
+        enforce_eager=True,
+        default_sampling_params=SamplingParams(
+            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+        ),
+        chat_template="llama2",
+    ).model_dump(mode="json"),
+)
+
+available_deployments["vllm_llama2_7b_chat_deployment"] = vllm_llama2_7b_chat_deployment
+
+meta_llama3_8b_instruct = VLLMDeployment.options(
+    num_replicas=1,
+    max_ongoing_requests=1000,
     ray_actor_options={"num_gpus": 0.45},
     user_config=VLLMConfig(
         model="meta-llama/Meta-Llama-3-8B-Instruct",
@@ -41,7 +60,8 @@ vllm_llama2_7b_chat_deployment = VLLMDeployment.options(
         chat_template="llama2",
     ).model_dump(mode="json"),
 )
-available_deployments["vllm_llama2_7b_chat_deployment"] = vllm_llama2_7b_chat_deployment
+
+available_deployments["meta_llama3_8b_instruct"] = meta_llama3_8b_instruct
 
 hf_blip2_opt_2_7b_deployment = HFBlip2Deployment.options(
     num_replicas=1,
