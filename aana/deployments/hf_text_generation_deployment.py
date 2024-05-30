@@ -91,7 +91,10 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
 
     @test_cache
     async def generate_stream(
-        self, prompt: str, sampling_params: SamplingParams | None = None, too_long: TooLongBehavior = TooLongBehavior.RAISE,
+        self,
+        prompt: str,
+        sampling_params: SamplingParams | None = None,
+        too_long: TooLongBehavior = TooLongBehavior.RAISE,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate text stream.
 
@@ -102,7 +105,7 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
 
         Yields:
             LLMOutput: the generated text
-        
+
         Raises:
             PromptTooLongException: The prompt is too long and too_long wasn't set to something else
         """
@@ -126,13 +129,16 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
         if prompt_length > max_prompt_length:
             match too_long:
                 case TooLongBehavior.TRUNCATE:
-                    prompt_input["input_ids"] = prompt_input["input_ids"][:max_prompt_length]
+                    prompt_input["input_ids"] = prompt_input["input_ids"][
+                        :max_prompt_length
+                    ]
                 case TooLongBehavior.ABRIDGE:
                     # If max_prompt_length is odd, this favors the ending part by one token
                     # I don't think there's a non-convoluted way to do it otherwise, though.
                     half = max_prompt_length // 2
                     prompt_input["input_ids"] = (
-                        prompt_input["input_ids"][:half] + prompt_input["input_ids"][-half:]
+                        prompt_input["input_ids"][:half]
+                        + prompt_input["input_ids"][-half:]
                     )
                 case TooLongBehavior.RAISE:
                     raise PromptTooLongException(
