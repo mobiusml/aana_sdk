@@ -22,10 +22,10 @@ def get_expected_output(name):
             "and business magnate who is best known for his innovative companies in"
         )
     elif name == "meta_llama3_8b_instruct_deployment":
-        return (
-            " Elon Musk is a South African-born entrepreneur, inventor, "
-            "and business magnate who is best known for his innovative companies in"
-        )
+        return (" Elon Musk is a South African-born entrepreneur, inventor," 
+                "and business magnate. He is the CEO and CTO of SpaceX, "
+                "CEO and product architect of Tesla"
+            )
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
             "Elon Musk is a prominent entrepreneur and business magnate known for "
