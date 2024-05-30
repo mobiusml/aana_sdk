@@ -101,7 +101,8 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         )
 
         hf_auth = settings.hf_auth
-        login(token=hf_auth)
+        if hf_auth:
+            login(token=hf_auth)
 
         # TODO: check if the model is already loaded.
         # If it is and none of the model parameters changed, we don't need to reload the model.
