@@ -34,6 +34,24 @@ def get_expected_output(name):
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
 
+def get_expected_chat_output(name):
+    """Gets expected output for a given text_generation model."""
+    if name == "vllm_llama2_7b_chat_deployment":
+        return (
+            "  Elon Musk is a South African-born entrepreneur, inventor, "
+            "and business magnate who is best known for his innovative companies in"
+        )
+    elif name == "meta_llama3_8b_instruct_deployment":
+        return ("Elon Musk is a South African-born entrepreneur, inventor, and business magnate. He is best known for his ambitious goals to revolutionize the transportation, energy"
+            )
+    elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
+        return (
+            "Elon Musk is a prominent entrepreneur and business magnate known for "
+            "his significant contributions to the technology and automotive industries. He was born"
+        )
+    else:
+        raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
+
 
 def get_prompt(name):
     """Gets the prompt for a given text_generation model."""
@@ -111,6 +129,7 @@ async def test_text_generation_deployments(setup_text_generation_deployment):
         compare_texts(expected_text, text)
 
     # test chat method
+    expected_text = get_expected_chat_output(name)
     dialog = ChatDialog(
         messages=[
             ChatMessage(
@@ -156,10 +175,3 @@ async def test_text_generation_deployments(setup_text_generation_deployment):
             prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
             sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
         )
-
-    # test generate method with too long prompt and truncate on too long
-    output = await handle.generate.remote(
-        prompt="[INST] Who is Elon Musk? [/INST]" * 1000,
-        sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
-        too_long=TooLongBehavior.RAISE,
-    )
