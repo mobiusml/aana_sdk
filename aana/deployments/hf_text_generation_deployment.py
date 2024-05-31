@@ -136,7 +136,13 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
                     # If max_prompt_length is odd, this favors the ending part by one token
                     # I don't think there's a non-convoluted way to do it otherwise, though.
                     half = max_prompt_length // 2
-                    prompt_input["input_ids"] = torch.cat((prompt_input["input_ids"][:, :half], prompt_input["input_ids"][:, -half:]), 1)
+                    prompt_input["input_ids"] = torch.cat(
+                        (
+                            prompt_input["input_ids"][:, :half],
+                            prompt_input["input_ids"][:, -half:],
+                        ),
+                        1,
+                    )
                 case TooLongBehavior.RAISE:
                     raise PromptTooLongException(
                         prompt_len=prompt_length,
