@@ -60,7 +60,9 @@ meta_llama3_8b_instruct_deployment = VLLMDeployment.options(
     ).model_dump(mode="json"),
 )
 
-available_deployments["meta_llama3_8b_instruct_deployment"] = meta_llama3_8b_instruct_deployment
+available_deployments[
+    "meta_llama3_8b_instruct_deployment"
+] = meta_llama3_8b_instruct_deployment
 
 hf_blip2_opt_2_7b_deployment = HFBlip2Deployment.options(
     num_replicas=1,

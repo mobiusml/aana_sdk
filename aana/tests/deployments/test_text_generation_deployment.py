@@ -22,10 +22,11 @@ def get_expected_output(name):
             "and business magnate who is best known for his innovative companies in"
         )
     elif name == "meta_llama3_8b_instruct_deployment":
-        return (" Elon Musk is a South African-born entrepreneur, inventor," 
-                "and business magnate. He is the CEO and CTO of SpaceX, "
-                "CEO and product architect of Tesla"
-            )
+        return (
+            " Elon Musk is a South African-born entrepreneur, inventor,"
+            "and business magnate. He is the CEO and CTO of SpaceX, "
+            "CEO and product architect of Tesla"
+        )
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
             "Elon Musk is a prominent entrepreneur and business magnate known for "
@@ -33,6 +34,7 @@ def get_expected_output(name):
         )
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
+
 
 def get_expected_chat_output(name):
     """Gets expected output for a given text_generation model."""
@@ -42,8 +44,7 @@ def get_expected_chat_output(name):
             "and business magnate who is best known for his innovative companies in"
         )
     elif name == "meta_llama3_8b_instruct_deployment":
-        return ("Elon Musk is a South African-born entrepreneur, inventor, and business magnate. He is best known for his ambitious goals to revolutionize the transportation, energy"
-            )
+        return "Elon Musk is a South African-born entrepreneur, inventor, and business magnate. He is best known for his ambitious goals to revolutionize the transportation, energy"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
             "Elon Musk is a prominent entrepreneur and business magnate known for "
