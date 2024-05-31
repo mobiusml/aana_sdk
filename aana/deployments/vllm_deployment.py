@@ -2,15 +2,12 @@ import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from huggingface_hub import login
 from pydantic import BaseModel, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 
-from aana.configs.settings import settings
 from aana.core.models.base import merged_options
-from aana.core.models.types import TooLongBehavior
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
@@ -42,7 +39,6 @@ class VLLMConfig(BaseModel):
         chat_template (str): the name of the chat template, if not provided, the chat template from the model will be used
                              but some models may not have a chat template (optional, default: None)
         enforce_eager (bool): whether to enforce eager execution (optional, default: False)
-        always_strict (bool): whether to enforce eager execution (optional, default: False)
     """
 
     model: str
@@ -100,10 +96,6 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             max_model_len=config_obj.max_model_len,
         )
 
-        hf_auth = settings.hf_auth
-        if hf_auth:
-            login(token=hf_auth)
-
         # TODO: check if the model is already loaded.
         # If it is and none of the model parameters changed, we don't need to reload the model.
 
@@ -114,23 +106,16 @@ class VLLMDeployment(BaseTextGenerationDeployment):
 
     @test_cache
     async def generate_stream(
-        self,
-        prompt: str,
-        sampling_params: SamplingParams | None = None,
-        too_long: TooLongBehavior = TooLongBehavior.RAISE,
+        self, prompt: str, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate completion for the given prompt and stream the results.
 
         Args:
             prompt (str): the prompt
             sampling_params (SamplingParams | None): the sampling parameters
-            too_long (TooLongBehavior): how to handle if the input prompt is too long (default: RAISE)
 
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
-
-        Raises:
-            PromptTooLongException: The prompt is too long and too_long wasn't set to something else
         """
         prompt = str(prompt)
 
@@ -143,26 +128,11 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         # tokenize the prompt
         prompt_token_ids = self.tokenizer.encode(prompt)
 
-        # Check if prompt is too long. If so, raise, truncate, or cut out
-        # the middle depending on the value of too_long (default is to raise)
-        prompt_length = len(prompt_token_ids)
-        max_prompt_length = self.model_config.max_model_len
-        if prompt_length > max_prompt_length:
-            match too_long:
-                case TooLongBehavior.TRUNCATE:
-                    prompt_token_ids = prompt_token_ids[:max_prompt_length]
-                case TooLongBehavior.ABRIDGE:
-                    # If max_prompt_length is odd, this favors the ending part by one token
-                    # I don't think there's a non-convoluted way to do it otherwise, though.
-                    half = max_prompt_length // 2
-                    prompt_token_ids = (
-                        prompt_token_ids[:half] + prompt_token_ids[-half:]
-                    )
-                case TooLongBehavior.RAISE:
-                    raise PromptTooLongException(
-                        prompt_len=prompt_length,
-                        max_len=max_prompt_length,
-                    )
+        if len(prompt_token_ids) > self.model_config.max_model_len:
+            raise PromptTooLongException(
+                prompt_len=len(prompt_token_ids),
+                max_len=self.model_config.max_model_len,
+            )
 
         try:
             # convert SamplingParams to VLLMSamplingParams
