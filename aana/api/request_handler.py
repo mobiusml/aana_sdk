@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from typing import Any
 
 from fastapi.openapi.utils import get_openapi
@@ -61,3 +62,41 @@ class RequestHandler:
             AanaJSONResponse: The response containing the ready status.
         """
         return AanaJSONResponse(content={"ready": self.ready})
+
+    async def call_endpoint(self, path: str, **kwargs: dict[str, Any]) -> Any:
+        """Call the endpoint from FastAPI with the given name.
+
+        Args:
+            path (str): The path of the endpoint.
+            **kwargs: The arguments to pass to the endpoint.
+
+        Returns:
+            Any: The response from the endpoint.
+        """
+        endpoint = None
+        for e in self.endpoints:
+            if e.path == path:
+                endpoint = e
+                break
+        if endpoint is None:
+            raise ValueError(f"Endpoint {path} not found")
+
+        if not endpoint.initialized:
+            await endpoint.initialize()
+
+        is_async_generator = False
+        annotations = endpoint.run.__annotations__
+        return_type = annotations.get("return", None)
+
+        if hasattr(return_type, "__origin__") and issubclass(
+            return_type.__origin__, AsyncGenerator
+        ):
+            is_async_generator = True
+
+        if is_async_generator:
+            result = []
+            async for item in endpoint.run(**kwargs):
+                result.append(item)
+            return result
+        else:
+            return await endpoint.run(**kwargs)
