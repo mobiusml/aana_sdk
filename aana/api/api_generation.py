@@ -272,6 +272,14 @@ class Endpoint:
                 field_value = getattr(data, field_name)
                 data_dict[field_name] = field_value
 
+            # # save data_dict to /tmp for debugging as pickle
+            # with open("/tmp/data_dict.pkl", "wb") as f:
+            #     import pickle
+
+            #     pickle.dump(data_dict, f)
+
+            # print(data_dict)
+
             if isasyncgenfunction(self.run):
 
                 async def generator_wrapper() -> AsyncGenerator[bytes, None]:
