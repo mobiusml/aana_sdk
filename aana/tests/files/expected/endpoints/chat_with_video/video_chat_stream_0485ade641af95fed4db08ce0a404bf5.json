@@ -1,42 +1,6 @@
 [
     {
-        "completion": " "
-    },
-    {
-        "completion": " Of"
-    },
-    {
-        "completion": " course"
-    },
-    {
-        "completion": "!"
-    },
-    {
-        "completion": " I"
-    },
-    {
-        "completion": "'"
-    },
-    {
-        "completion": "m"
-    },
-    {
-        "completion": " here"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " help"
-    },
-    {
-        "completion": " you"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " Based"
+        "completion": "Based"
     },
     {
         "completion": " on"
@@ -45,13 +9,7 @@
         "completion": " the"
     },
     {
-        "completion": " provided"
-    },
-    {
-        "completion": " tim"
-    },
-    {
-        "completion": "eline"
+        "completion": " analysis"
     },
     {
         "completion": ","
@@ -60,43 +18,16 @@
         "completion": " here"
     },
     {
-        "completion": " are"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " most"
-    },
-    {
-        "completion": " relevant"
-    },
-    {
-        "completion": " and"
+        "completion": " is"
     },
     {
         "completion": " a"
     },
     {
-        "completion": "est"
+        "completion": " summary"
     },
     {
-        "completion": "het"
-    },
-    {
-        "completion": "ically"
-    },
-    {
-        "completion": " ple"
-    },
-    {
-        "completion": "asing"
-    },
-    {
-        "completion": " moments"
-    },
-    {
-        "completion": " in"
+        "completion": " of"
     },
     {
         "completion": " the"
@@ -108,382 +39,7 @@
         "completion": ":"
     },
     {
-        "completion": "\n"
-    },
-    {
-        "completion": "*"
-    },
-    {
-        "completion": " At"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " starts"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " close"
-    },
-    {
-        "completion": "-"
-    },
-    {
-        "completion": "up"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " sitting"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " top"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " mouth"
-    },
-    {
-        "completion": " open"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " e"
-    },
-    {
-        "completion": "ating"
-    },
-    {
-        "completion": " something"
-    },
-    {
-        "completion": " off"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " hand"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "*"
-    },
-    {
-        "completion": " At"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "1"
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " camera"
-    },
-    {
-        "completion": " p"
-    },
-    {
-        "completion": "ans"
-    },
-    {
-        "completion": " out"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " show"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " sitting"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " green"
-    },
-    {
-        "completion": " background"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "*"
-    },
-    {
-        "completion": " At"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "2"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "5"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " different"
-    },
-    {
-        "completion": " angle"
-    },
-    {
-        "completion": " showing"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " sitting"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " top"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " table"
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " green"
-    },
-    {
-        "completion": " background"
-    },
-    {
-        "completion": " behind"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " another"
-    },
-    {
-        "completion": " green"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " background"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "*"
-    },
-    {
-        "completion": " At"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "4"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "0"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
+        "completion": " The"
     },
     {
         "completion": " video"
@@ -495,34 +51,28 @@
         "completion": " a"
     },
     {
-        "completion": " close"
+        "completion": " squirrel"
     },
     {
-        "completion": "-"
+        "completion": " eating"
     },
     {
-        "completion": "up"
+        "completion": " something"
     },
     {
-        "completion": " shot"
+        "completion": " from"
     },
     {
-        "completion": " of"
+        "completion": " its"
     },
     {
-        "completion": " the"
+        "completion": " hand"
     },
     {
-        "completion": " squ"
+        "completion": " while"
     },
     {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " standing"
+        "completion": " sitting"
     },
     {
         "completion": " on"
@@ -531,10 +81,49 @@
         "completion": " a"
     },
     {
-        "completion": " wooden"
+        "completion": " table"
     },
     {
-        "completion": " table"
+        "completion": " with"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " green"
+    },
+    {
+        "completion": " background"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " squirrel"
+    },
+    {
+        "completion": " is"
+    },
+    {
+        "completion": " seen"
+    },
+    {
+        "completion": " in"
+    },
+    {
+        "completion": " different"
+    },
+    {
+        "completion": " poses"
+    },
+    {
+        "completion": ","
+    },
+    {
+        "completion": " including"
     },
     {
         "completion": " with"
@@ -550,9 +139,6 @@
     },
     {
         "completion": " and"
-    },
-    {
-        "completion": " its"
     },
     {
         "completion": " tail"
@@ -570,121 +156,10 @@
         "completion": ","
     },
     {
-        "completion": " looking"
-    },
-    {
-        "completion": " at"
-    },
-    {
-        "completion": " something"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " distance"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "*"
-    },
-    {
-        "completion": " At"
-    },
-    {
-        "completion": " "
-    },
-    {
-        "completion": "6"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "5"
-    },
-    {
-        "completion": " seconds"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " cut"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " shot"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": " sitting"
-    },
-    {
-        "completion": " on"
-    },
-    {
-        "completion": " top"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " table"
+        "completion": " and"
     },
     {
         "completion": " with"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " mouth"
-    },
-    {
-        "completion": " open"
-    },
-    {
-        "completion": " and"
     },
     {
         "completion": " its"
@@ -696,28 +171,43 @@
         "completion": " closed"
     },
     {
-        "completion": ","
+        "completion": "."
     },
     {
-        "completion": " likely"
+        "completion": " The"
+    },
+    {
+        "completion": " video"
+    },
+    {
+        "completion": " appears"
+    },
+    {
+        "completion": " to"
+    },
+    {
+        "completion": " be"
+    },
+    {
+        "completion": " shot"
     },
     {
         "completion": " in"
     },
     {
-        "completion": " the"
+        "completion": " a"
     },
     {
-        "completion": " middle"
+        "completion": " natural"
     },
     {
-        "completion": " of"
+        "completion": " setting"
     },
     {
-        "completion": " the"
+        "completion": ","
     },
     {
-        "completion": " day"
+        "completion": " possibly"
     },
     {
         "completion": " in"
@@ -736,138 +226,6 @@
     },
     {
         "completion": " lake"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": "\n"
-    },
-    {
-        "completion": "Over"
-    },
-    {
-        "completion": "all"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " video"
-    },
-    {
-        "completion": " show"
-    },
-    {
-        "completion": "cases"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " squ"
-    },
-    {
-        "completion": "ir"
-    },
-    {
-        "completion": "rel"
-    },
-    {
-        "completion": "'"
-    },
-    {
-        "completion": "s"
-    },
-    {
-        "completion": " natural"
-    },
-    {
-        "completion": " behavior"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " beauty"
-    },
-    {
-        "completion": " in"
-    },
-    {
-        "completion": " its"
-    },
-    {
-        "completion": " natural"
-    },
-    {
-        "completion": " habitat"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " with"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " mix"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " close"
-    },
-    {
-        "completion": "-"
-    },
-    {
-        "completion": "up"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " wide"
-    },
-    {
-        "completion": " sh"
-    },
-    {
-        "completion": "ots"
-    },
-    {
-        "completion": " that"
-    },
-    {
-        "completion": " provide"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " good"
-    },
-    {
-        "completion": " balance"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " detail"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " context"
     },
     {
         "completion": "."
