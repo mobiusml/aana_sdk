@@ -43,7 +43,7 @@ You can quickly develop multimodal applications using Aana SDK's intuitive APIs 
 ```python
 from aana.sdk import AanaSDK
 from aana.configs.deployments import (
-    hf_aana_multimodal_deployment,
+    hf_blip2_opt_2_7b_deployment,
 )
 from aana.projects.chat_with_video.endpoints import (
     IndexVideoEndpoint,
@@ -67,16 +67,15 @@ endpoints = [
 
 if __name__ == "__main__":
     """Runs the application."""
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--port", type=int, default=8000)
-    arg_parser.add_argument("--host", type=str, default="127.0.0.1")
-    args = arg_parser.parse_args()
-
-    aana_app = AanaSDK(port=args.port, host=args.host, show_logs=True)
+    # Construct an app instance
+    aana_app = AanaSDK(name="demo app")
+    # bind the app to a network address.
+    # setting show_logs=`False`
+    aana_ap.conect(port=9000, host="127.0.0.1", show_logs=False)
 
     aana_app.register_deployment(
         name="aana_deployment",
-        instance=hf_aana_multimodal_deployment,
+        instance=hf_blip2_opt_2_7b_deployment,
     )
 
     for endpoint in endpoints:
@@ -112,19 +111,13 @@ poetry run aana build --help
 
 1. Clone this repository.
 
-2. Update submodules.
-
-```bash
-git submodule update --init --recursive
-```
-
-3. Build the Docker image.
+2. Build the Docker image.
 
 ```bash
 docker build -t aana:0.2.0 .
 ```
 
-4. Run the Docker container.
+3. Run the Docker container.
 
 ```bash
 docker run --rm --init -p 8000:8000 --gpus all -e TARGET="llama2" -e CUDA_VISIBLE_DEVICES=0 -v aana_cache:/root/.aana -v aana_hf_cache:/root/.cache/huggingface --name aana_instance aana:0.2.0
