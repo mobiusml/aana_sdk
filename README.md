@@ -57,12 +57,6 @@ endpoints = [
         "summary": "Index a video and return the captions and transcriptions as a stream",
         "endpoint_cls": IndexVideoEndpoint,
     },
-    {
-        "name": "video_chat_stream",
-        "path": "/video/chat_stream",
-        "summary": "Chat with video using LLaMa2 7B Chat (streaming)",
-        "endpoint_cls": VideoChatEndpoint,
-    },
 ]
 
 if __name__ == "__main__":
@@ -70,7 +64,7 @@ if __name__ == "__main__":
     # Construct an app instance
     aana_app = AanaSDK(name="demo app")
     # bind the app to a network address.
-    # setting show_logs=`False`
+    # setting show_logs=`False` will produce a LOT of logs!
     aana_ap.conect(port=9000, host="127.0.0.1", show_logs=False)
 
     aana_app.register_deployment(
