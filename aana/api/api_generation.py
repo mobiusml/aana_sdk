@@ -17,6 +17,7 @@ from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
 )
+from aana.storage.services.task import create_task
 
 
 def get_default_values(func):
@@ -61,7 +62,7 @@ class Endpoint:
 
     async def initialize(self):
         """Initialize the endpoint."""
-        pass
+        self.initialized = True
 
     async def run(self, *args, **kwargs):
         """Run the endpoint."""
@@ -249,7 +250,9 @@ class Endpoint:
         # Copy path to a bound variable so we don't retain an external reference
         bound_path = self.path
 
-        async def route_func_body(body: str, files: list[UploadFile] | None = None):
+        async def route_func_body(  # noqa: C901
+            body: str, files: list[UploadFile] | None = None, defer=False
+        ):
             if not self.initialized:
                 await self.initialize()
 
@@ -272,13 +275,12 @@ class Endpoint:
                 field_value = getattr(data, field_name)
                 data_dict[field_name] = field_value
 
-            # # save data_dict to /tmp for debugging as pickle
-            # with open("/tmp/data_dict.pkl", "wb") as f:
-            #     import pickle
-
-            #     pickle.dump(data_dict, f)
-
-            # print(data_dict)
+            if defer:
+                task_id = create_task(
+                    endpoint=bound_path,
+                    data=data_dict,
+                )
+                return AanaJSONResponse(content={"task_id": task_id})
 
             if isasyncgenfunction(self.run):
 
@@ -305,8 +307,8 @@ class Endpoint:
         else:
             files = None
 
-        async def route_func(body: str = Form(...), files=files):
-            return await route_func_body(body=body, files=files)
+        async def route_func(body: str = Form(...), files=files, defer=False):
+            return await route_func_body(body=body, files=files, defer=defer)
 
         return route_func
 
