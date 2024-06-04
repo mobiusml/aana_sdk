@@ -83,6 +83,7 @@ class IndexVideoEndpoint(Endpoint):
         self.captioning_handle = await AanaDeploymentHandle.create(
             "captioning_deployment"
         )
+        await super().initialize()
 
     async def run(
         self,
@@ -169,6 +170,7 @@ class VideoChatEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
+        await super().initialize()
 
     async def run(
         self, media_id: MediaId, question: Question, sampling_params: SamplingParams

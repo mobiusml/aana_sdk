@@ -54,7 +54,7 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        entity: T | None = self.session.query(self.model_class).get(str(item_id))
+        entity: T | None = self.session.query(self.model_class).get(item_id)
         if not entity:
             raise NotFoundException(self.table_name, item_id)
         return entity

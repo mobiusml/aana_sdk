@@ -59,6 +59,7 @@ class TranscribeVideoEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+        await super().initialize()
 
     async def run(
         self, video: VideoInput, whisper_params: WhisperParams
@@ -106,6 +107,7 @@ class TranscribeVideoInChunksEndpoint(Endpoint):
         """Initialize the endpoint."""
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         self.vad_handle = await AanaDeploymentHandle.create("vad_deployment")
+        await super().initialize()
 
     async def run(
         self,
