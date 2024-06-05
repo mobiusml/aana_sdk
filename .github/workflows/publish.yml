@@ -1,0 +1,56 @@
+name: Publish Python Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_target:
+        description: 'Select the target PyPI repository'
+        required: true
+        default: 'testpypi'
+        type: choice
+        options:
+          - pypi
+          - testpypi
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Bootstrap poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python - -y
+
+    - name: Update PATH
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: poetry install --no-dev
+
+    - name: Build the package
+      run: poetry build
+
+    - name: Publish to PyPI
+      if: ${{ github.event.inputs.publish_target == 'pypi' }}
+      env:
+        PYPI_USERNAME: "__token__"
+        PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD
+
+    - name: Publish to Test PyPI
+      if: ${{ github.event.inputs.publish_target == 'testpypi' }}
+      env:
+        PYPI_USERNAME: "__token__"
+        PYPI_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      run: |
+        poetry config repositories.testpypi https://test.pypi.org/legacy/
+        poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD -r testpypi
