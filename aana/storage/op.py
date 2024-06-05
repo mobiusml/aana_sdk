@@ -1,13 +1,12 @@
 from enum import Enum
 from pathlib import Path
-from typing import Any
 
 import orjson
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine
 
-from aana.utils.json import json_serializer_default
+from aana.utils.json import orjson_serializer
 
 
 class DbType(str, Enum):
@@ -15,12 +14,6 @@ class DbType(str, Enum):
 
     POSTGRESQL = "postgresql"
     SQLITE = "sqlite"
-
-
-def orjson_serializer(
-    content: Any, option: int | None = orjson.OPT_SERIALIZE_NUMPY
-) -> bytes:
-    return orjson.dumps(content, option=option, default=json_serializer_default)
 
 
 def create_postgresql_engine(config):
