@@ -13,6 +13,14 @@ class TestSettings(BaseSettings):
     save_deployment_cache: bool = False  # save deployment results to cache for testing
 
 
+class TaskQueueSettings(BaseSettings):
+    """A pydantic model for task queue settings."""
+
+    enabled: bool = True
+    num_workers: int = 2
+    execution_timeout: int = 600
+
+
 class Settings(BaseSettings):
     """A pydantic model for SDK settings."""
 
@@ -22,6 +30,8 @@ class Settings(BaseSettings):
     audio_dir: Path = tmp_data_dir / "audios"
     model_dir: Path = tmp_data_dir / "models"
     num_workers: int = 2
+
+    task_queue: TaskQueueSettings = TaskQueueSettings()
 
     db_config: DbSettings = DbSettings()
 
