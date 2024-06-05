@@ -1,4 +1,3 @@
-from collections.abc import AsyncGenerator
 from typing import Any
 
 from fastapi.openapi.utils import get_openapi
@@ -8,6 +7,7 @@ from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_sche
 from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
+from aana.utils.typing import is_async_generator
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -79,24 +79,15 @@ class RequestHandler:
                 endpoint = e
                 break
         if endpoint is None:
-            raise ValueError(f"Endpoint {path} not found")
+            raise ValueError(f"Endpoint {path} not found")  # noqa: TRY003
 
         if not endpoint.initialized:
             await endpoint.initialize()
 
-        is_async_generator = False
         annotations = endpoint.run.__annotations__
         return_type = annotations.get("return", None)
 
-        if hasattr(return_type, "__origin__") and issubclass(
-            return_type.__origin__, AsyncGenerator
-        ):
-            is_async_generator = True
-
-        if is_async_generator:
-            result = []
-            async for item in endpoint.run(**kwargs):
-                result.append(item)
-            return result
+        if is_async_generator(return_type):
+            return [item async for item in endpoint.run(**kwargs)]
         else:
             return await endpoint.run(**kwargs)
