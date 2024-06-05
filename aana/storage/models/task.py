@@ -47,9 +47,6 @@ class TaskEntity(BaseEntity, TimeStampEntity):
         default=0,
         comment="Priority of the task (0 is the lowest)",
     )
-    assigned_to = Column(
-        String, nullable=True, comment="The entity to which the task is assigned"
-    )
     assigned_at = Column(
         DateTime, nullable=True, comment="Timestamp when the task was assigned"
     )

@@ -13,6 +13,7 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
+from aana.configs.settings import settings as aana_settings
 from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
@@ -276,6 +277,9 @@ class Endpoint:
                 data_dict[field_name] = field_value
 
             if defer:
+                if not aana_settings.task_queue.enabled:
+                    raise RuntimeError("Task queue is not enabled.")  # noqa: TRY003
+
                 task_id = create_task(
                     endpoint=bound_path,
                     data=data_dict,
