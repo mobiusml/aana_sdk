@@ -94,7 +94,9 @@ class TaskQueueDeployment(BaseDeployment):
                     await asyncio.sleep(1)
                     continue
 
-                tasks = task_repo.get_unprocessed_tasks()
+                tasks = task_repo.get_unprocessed_tasks(
+                    limit=aana_settings.task_queue.num_workers * 2
+                )
                 if not tasks:
                     await asyncio.sleep(0.1)
                     continue
@@ -103,6 +105,17 @@ class TaskQueueDeployment(BaseDeployment):
                     self.handle = serve.get_app_handle(self.app_name)
 
                 for task in tasks:
+                    # Check if the thread pool has too many tasks.
+                    # If so, stop assigning tasks.
+                    # We do it to prevent the thread pool from being overwhelmed.
+                    # We don't want to schedule all tasks from the task queue (could be millions).
+                    if (
+                        self.thread_pool._work_queue.qsize()
+                        > aana_settings.task_queue.num_workers * 2
+                    ):
+                        # wait a bit to give the thread pool time to process tasks
+                        await asyncio.sleep(0.1)
+                        break
                     task.status = TaskStatus.ASSIGNED
                     task.assigned_at = datetime.now()  # noqa: DTZ005
                     session.commit()
