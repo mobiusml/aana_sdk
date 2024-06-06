@@ -7,6 +7,7 @@ from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_sche
 from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
+from aana.storage.services.task import TaskInfo, get_task_info
 from aana.utils.typing import is_async_generator
 
 
@@ -91,3 +92,19 @@ class RequestHandler:
             return [item async for item in endpoint.run(**kwargs)]
         else:
             return await endpoint.run(**kwargs)
+
+    @app.get(
+        "/tasks/get/{task_id}",
+        summary="Get Task Status",
+        description="Get the task status by task ID.",
+    )
+    async def get_task(self, task_id: str) -> TaskInfo:
+        """Get the task with the given ID.
+
+        Args:
+            task_id (str): The ID of the task.
+
+        Returns:
+            TaskInfo: The status of the task.
+        """
+        return get_task_info(task_id)

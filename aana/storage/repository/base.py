@@ -1,6 +1,7 @@
 # ruff: noqa: A002
 from collections.abc import Iterable
 from typing import Generic, TypeVar
+from uuid import UUID
 
 from sqlalchemy.orm import Session
 
@@ -42,11 +43,11 @@ class BaseRepository(Generic[T]):
         self.session.commit()
         return entities
 
-    def read(self, item_id: int | MediaId) -> T:
+    def read(self, item_id: int | MediaId | UUID) -> T:
         """Reads a single item by id from the database.
 
         Args:
-            item_id (int | MediaId): id of the item to retrieve
+            item_id (int | MediaId | UUID): id of the item to retrieve
 
         Returns:
             The corresponding entity from the database if found.
