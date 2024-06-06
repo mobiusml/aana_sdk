@@ -30,12 +30,15 @@ class TaskRepository(BaseRepository[TaskEntity]):
             task_id = UUID(task_id)
         return super().read(task_id)
 
-    def get_unprocessed_tasks(self) -> list[TaskEntity]:
+    def get_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
         """Fetches all unprocessed tasks.
 
         The task is considered unprocessed if it is in CREATED state or
         in RUNNING or ASSIGNED state and the update timestamp is older
         than the execution timeout (to handle stuck tasks).
+
+        Args:
+            limit (int | None): The maximum number of tasks to fetch. If None, fetch all.
 
         Returns:
             list[TaskEntity]: the unprocessed tasks.
@@ -56,6 +59,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 )
             )
             .order_by(TaskEntity.priority, TaskEntity.create_ts)
+            .limit(limit)
             .all()
         )
         return tasks
