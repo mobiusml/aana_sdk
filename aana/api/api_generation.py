@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import Field, ValidationError, create_model
 from pydantic.main import BaseModel
@@ -311,7 +311,14 @@ class Endpoint:
         else:
             files = None
 
-        async def route_func(body: str = Form(...), files=files, defer=False):
+        async def route_func(
+            body: str = Form(...),
+            files=files,
+            defer: bool = Query(
+                description="Defer execution of the endpoint to the task queue.",
+                default=False,
+            ),
+        ):
             return await route_func_body(body=body, files=files, defer=defer)
 
         return route_func
