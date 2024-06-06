@@ -142,6 +142,7 @@ endpoints = [
 ]
 
 aana_app = AanaSDK(name="transcribe_video_app")
+aana_app.connect(host='127.0.0.1', port=9000, show_logs=True)
 
 for deployment in deployments:
     aana_app.register_deployment(
@@ -156,8 +157,6 @@ for endpoint in endpoints:
         summary=endpoint["summary"],
         endpoint_cls=endpoint["endpoint_cls"],
     )
-
-aana_app.connect(host='127.0.0.1', port=9000, show_logs=True)
 
 aana_app.deploy(blocking=True)
 
