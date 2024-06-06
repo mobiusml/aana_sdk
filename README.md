@@ -6,9 +6,9 @@ Aana SDK is a powerful serving layer designed for constructing web applications 
 
 ## Features
 
-- *Multimodal Input Handling:* Aana SDK seamlessly handles various types of multimodal inputs, including videos, audio, and text, providing versatility in application development.
+- *Multimodal Input Handling:* Aana SDK seamlessly handles various types of multimodal inputs, providing versatility in application development.
 - *Streaming Support:* With streaming support for both input and output, Aana SDK ensures smooth data processing for real-time applications.
-- *Scalability:* Leveraging the capabilities of Ray serve, Aana SDK allows the deployment of multimodal models and applications across GPU clusters, ensuring scalability and efficient resource utilization.
+- *Scalability:* Leveraging the capabilities of Ray serve, Aana SDK allows the deployment of multimodal models and applications across clusters, ensuring scalability and efficient resource utilization.
 - *Rapid Development:* Aana SDK enables developers to swiftly create robust multimodal applications in a Pythonic manner, utilizing its underlying components for fast configurations and RAG setups.
 
 ## Usage
@@ -138,44 +138,6 @@ You can find examples in the [demo notebook](notebooks/demo.ipynb).
 If you are using Visual Studio Code, you can run this repository in a 
 [dev container](https://code.visualstudio.com/docs/devcontainers/containers). This lets you install and 
 run everything you need for the repo in an isolated environment via docker on a host system. 
-
-## Code Standards
-
-This project uses Ruff for linting and formatting. If you want to 
-manually run Ruff on the codebase, using poetry it's
-
-```sh
-poetry run ruff check aana
-```
-
-You can automatically fix some issues with the `--fix`
- and `--unsafe-fixes` options. (Be sure to install the dev 
- dependencies: `poetry install --with=dev`. )
-
-To run the auto-formatter, it's
-
-```sh
-poetry run ruff format aana
-```
-
-(If you are running code in a non-poetry environment, just leave off `poetry run`.)
-
-For users of VS Code, the included `settings.json` should ensure
-that Ruff problems appear while you edit, and formatting is applied
-automatically on save.
-
-
-## Testing
-
-The project uses pytest for testing. To run the tests, use the following command:
-
-```bash
-poetry run pytest
-```
-
-If you are using VS Code, you can run the tests using the Test Explorer that is installed with the [Python extension](https://code.visualstudio.com/docs/python/testing).
-
-Testing ML models poses a couple of problems: loading and running models may be very time consuming, and you may wish to run tests on systems that lack hardware support necessary for the models, for example a subnotebook without a GPU or a CI/CD server. To solve this issue, we created a **deployment test cache**. See [the documentation](docs/deployment_test_cache.md).
 
 
 ## Databases
