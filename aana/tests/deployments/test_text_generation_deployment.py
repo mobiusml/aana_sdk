@@ -20,6 +20,29 @@ def get_expected_output(name):
             "  Elon Musk is a South African-born entrepreneur, inventor, "
             "and business magnate who is best known for his innovative companies in"
         )
+    elif name == "meta_llama3_8b_instruct_deployment":
+        return (" Elon Musk is a South African-born entrepreneur, inventor," 
+                "and business magnate. He is the CEO and CTO of SpaceX, "
+                "CEO and product architect of Tesla"
+            )
+    elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
+        return (
+            "Elon Musk is a prominent entrepreneur and business magnate known for "
+            "his significant contributions to the technology and automotive industries. He was born"
+        )
+    else:
+        raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
+
+def get_expected_chat_output(name):
+    """Gets expected output for a given text_generation model."""
+    if name == "vllm_llama2_7b_chat_deployment":
+        return (
+            "  Elon Musk is a South African-born entrepreneur, inventor, "
+            "and business magnate who is best known for his innovative companies in"
+        )
+    elif name == "meta_llama3_8b_instruct_deployment":
+        return ("Elon Musk is a South African-born entrepreneur, inventor, and business magnate. He is best known for his ambitious goals to revolutionize the transportation, energy"
+            )
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
             "Elon Musk is a prominent entrepreneur and business magnate known for "
@@ -35,6 +58,8 @@ def get_prompt(name):
         return "[INST] Who is Elon Musk? [/INST]"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return "<|user|>\ Who is Elon Musk? <|end|>\n<|assistant|>"
+    elif name == "meta_llama3_8b_instruct_deployment":
+        return "[INST] Who is Elon Musk? [/INST]"
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
 
@@ -103,6 +128,7 @@ async def test_text_generation_deployments(setup_text_generation_deployment):
         compare_texts(expected_text, text)
 
     # test chat method
+    expected_text = get_expected_chat_output(name)
     dialog = ChatDialog(
         messages=[
             ChatMessage(
