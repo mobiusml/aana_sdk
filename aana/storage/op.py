@@ -28,7 +28,7 @@ def create_postgresql_engine(config):
     connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}"
     return create_engine(
         connection_string,
-        json_serializer=orjson_serializer,
+        json_serializer=lambda obj: orjson_serializer(obj).decode(),
         json_deserializer=orjson.loads,
     )
 
@@ -45,7 +45,7 @@ def create_sqlite_engine(config):
     connection_string = f"sqlite:///{config['path']}"
     return create_engine(
         connection_string,
-        json_serializer=orjson_serializer,
+        json_serializer=lambda obj: orjson_serializer(obj).decode(),
         json_deserializer=orjson.loads,
     )
 

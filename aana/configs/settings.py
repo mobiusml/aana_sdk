@@ -17,7 +17,7 @@ class TaskQueueSettings(BaseSettings):
     """A pydantic model for task queue settings."""
 
     enabled: bool = True
-    num_workers: int = 2
+    num_workers: int = 4
     execution_timeout: int = 600
 
 
