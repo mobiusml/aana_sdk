@@ -41,46 +41,80 @@ sh install.sh
 You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components:
 
 ```python
+from typing_extensions import TypedDict
+
+from aana.api.api_generation import Endpoint
 from aana.sdk import AanaSDK
-from aana.configs.deployments import (
-    hf_blip2_opt_2_7b_deployment,
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+
+from aana.deployments.hf_pipeline_deployment import HfPipelineConfig, HfPipelineDeployment
+
+
+deployment = HfPipelineDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 1},
+    user_config=HfPipelineConfig(
+        model_id="google-t5/t5-small",
+        task="summarization",
+    ).model_dump(mode="json"),
 )
-from aana.projects.chat_with_video.endpoints import (
-    IndexVideoEndpoint,
-    VideoChatEndpoint,
+
+deployment_name = "aana_deployment"
+
+class SummarizationOutput(TypedDict):
+    """Simple class for summarization output.
+
+    You can also use a Pydantic object here.
+    """
+    summary: str
+
+class SummarizeTextEndpoint(Endpoint):
+    """Class for an endoint for the app's API. In this case, text summary."""
+    async def initialize(self):
+        """Initializes the endpoint's deployment handles and any other state.'"""
+        self.deployment_handle = await AanaDeploymentHandle.create(deployment_name)
+
+    async def run(self, text: str) -> SummarizationOutput:
+        """Method run for each endpoint call.
+
+        Documentation for the endpoint (see below) is generated automatically based on
+        this method's type annotations, so annotations for parameters and return types
+        should a) exist, and b) be as specific as possible. Something like
+
+        `async def run(self, arg: dict) -> dict: ...`
+
+        will *work* but not be very helpful to API consumers."""
+
+        result = await self.deployment_handle.call(text)
+        return {"summary": result[0]["summary_text"]}
+
+
+# Construct an app instance
+aana_app = AanaSDK(name="demo app")
+# bind the app to a network address.
+# setting show_logs=`True` will produce a LOT of logs!
+aana_app.connect(port=9000, host="127.0.0.1", show_logs=True)
+
+aana_app.register_deployment(
+    name="aana_deployment",
+    instance=deployment,
 )
 
-endpoints = [
-    {
-        "name": "index_video_stream",
-        "path": "/video/index_stream",
-        "summary": "Index a video and return the captions and transcriptions as a stream",
-        "endpoint_cls": IndexVideoEndpoint,
-    },
-]
+aana_app.register_endpoint(
+    name="summarize_text",
+    path="/text/summarize",
+    summary="Summarize a text",
+    endpoint_cls=SummarizeTextEndpoint,
+)
 
-if __name__ == "__main__":
-    """Runs the application."""
-    # Construct an app instance
-    aana_app = AanaSDK(name="demo app")
-    # bind the app to a network address.
-    # setting show_logs=`False` will produce a LOT of logs!
-    aana_app.conect(port=9000, host="127.0.0.1", show_logs=False)
+# Setting `blocking=False` will cause the app to exit as soon as it is set up, which may be useful for debugging initialization issues. 
+aana_app.deploy(blocking=True)
+```
 
-    aana_app.register_deployment(
-        name="aana_deployment",
-        instance=hf_blip2_opt_2_7b_deployment,
-    )
+You can send a request like
 
-    for endpoint in endpoints:
-        aana_app.register_endpoint(
-            name=endpoint["name"],
-            path=endpoint["path"],
-            summary=endpoint["summary"],
-            endpoint_cls=endpoint["endpoint_cls"],
-        )
-
-    aana_app.deploy(blocking=True)
+```bash
+curl -X POST 0.0.0.0:9000/text/summarize -F body='{"text": "Teachers of jurisprudence, when speaking of rights and claims, distinguish in a cause the question of right (quid juris) from the question of fact (quid facti), and while they demand proof of both, they give to the proof of the former, which goes to establish right or claim in law, the name of deduction. Now we make use of a great number of empirical conceptions, without opposition from any one, and consider ourselves, even without any attempt at deduction, justified in attaching to them a sense, and a supposititious signification, because we have always experience at hand to demonstrate their objective reality."}'
 ```
 
 ## Build Serve Config Files
