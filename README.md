@@ -65,7 +65,7 @@ if __name__ == "__main__":
     aana_app = AanaSDK(name="demo app")
     # bind the app to a network address.
     # setting show_logs=`False` will produce a LOT of logs!
-    aana_ap.conect(port=9000, host="127.0.0.1", show_logs=False)
+    aana_app.conect(port=9000, host="127.0.0.1", show_logs=False)
 
     aana_app.register_deployment(
         name="aana_deployment",
