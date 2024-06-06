@@ -117,6 +117,58 @@ You can send a request like
 curl -X POST 0.0.0.0:9000/text/summarize -F body='{"text": "Teachers of jurisprudence, when speaking of rights and claims, distinguish in a cause the question of right (quid juris) from the question of fact (quid facti), and while they demand proof of both, they give to the proof of the former, which goes to establish right or claim in law, the name of deduction. Now we make use of a great number of empirical conceptions, without opposition from any one, and consider ourselves, even without any attempt at deduction, justified in attaching to them a sense, and a supposititious signification, because we have always experience at hand to demonstrate their objective reality."}'
 ```
 
+Here is an example with video transcription:
+```python
+from aana.configs.deployments import (
+    whisper_medium_deployment,
+)
+from aana.projects.chat_with_video.endpoints import SimpleTranscribeVideoEndpoint
+from aana.sdk import AanaSDK
+
+deployments = [
+    {
+        "name": "asr_deployment",
+        "instance": whisper_medium_deployment,
+    }
+]
+
+endpoints = [
+    {
+        "name": "transcribe_video",
+        "path": "/video/transcribe",
+        "summary": "Transcribe a video as a stream",
+        "endpoint_cls": SimpleTranscribeVideoEndpoint,
+    },
+]
+
+aana_app = AanaSDK(name="transcribe_video_app")
+
+for deployment in deployments:
+    aana_app.register_deployment(
+        name=deployment["name"],
+        instance=deployment["instance"],
+    )
+
+for endpoint in endpoints:
+    aana_app.register_endpoint(
+        name=endpoint["name"],
+        path=endpoint["path"],
+        summary=endpoint["summary"],
+        endpoint_cls=endpoint["endpoint_cls"],
+    )
+
+aana_app.connect(host='127.0.0.1', port=9000, show_logs=True)
+
+aana_app.deploy(blocking=True)
+
+```
+
+```bash
+curl -X POST 0.0.0.0:9000/video/transcribe -Fbody='{"video":{"url":"https://www.youtube.com/watch?v=CfX_su1AUwE"}}'
+
+```
+
+
 ## Build Serve Config Files
 
 The Serve config is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve config files for the Aana applications.
