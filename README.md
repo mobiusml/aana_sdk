@@ -88,27 +88,27 @@ class SummarizeTextEndpoint(Endpoint):
         result = await self.deployment_handle.call(text)
         return {"summary": result[0]["summary_text"]}
 
+if __name__ == '__main__':
+    # Construct an app instance
+    aana_app = AanaSDK(name="demo app")
+    # bind the app to a network address.
+    # setting show_logs=`True` will produce a LOT of logs!
+    aana_app.connect(port=9000, host="127.0.0.1", show_logs=True)
 
-# Construct an app instance
-aana_app = AanaSDK(name="demo app")
-# bind the app to a network address.
-# setting show_logs=`True` will produce a LOT of logs!
-aana_app.connect(port=9000, host="127.0.0.1", show_logs=True)
+    aana_app.register_deployment(
+        name="aana_deployment",
+        instance=deployment,
+    )
 
-aana_app.register_deployment(
-    name="aana_deployment",
-    instance=deployment,
-)
+    aana_app.register_endpoint(
+        name="summarize_text",
+        path="/text/summarize",
+        summary="Summarize a text",
+        endpoint_cls=SummarizeTextEndpoint,
+    )
 
-aana_app.register_endpoint(
-    name="summarize_text",
-    path="/text/summarize",
-    summary="Summarize a text",
-    endpoint_cls=SummarizeTextEndpoint,
-)
-
-# Setting `blocking=False` will cause the app to exit as soon as it is set up, which may be useful for debugging initialization issues. 
-aana_app.deploy(blocking=True)
+    # Setting `blocking=False` will cause the app to exit as soon as it is set up, which may be useful for debugging initialization issues. 
+    aana_app.deploy(blocking=True)
 ```
 
 You can send a request like
@@ -140,25 +140,25 @@ endpoints = [
         "endpoint_cls": SimpleTranscribeVideoEndpoint,
     },
 ]
+if __name__ == '__main__':
+    aana_app = AanaSDK(name="transcribe_video_app")
+    aana_app.connect(host='127.0.0.1', port=9000, show_logs=True)
 
-aana_app = AanaSDK(name="transcribe_video_app")
-aana_app.connect(host='127.0.0.1', port=9000, show_logs=True)
+    for deployment in deployments:
+        aana_app.register_deployment(
+            name=deployment["name"],
+            instance=deployment["instance"],
+        )
 
-for deployment in deployments:
-    aana_app.register_deployment(
-        name=deployment["name"],
-        instance=deployment["instance"],
-    )
+    for endpoint in endpoints:
+        aana_app.register_endpoint(
+            name=endpoint["name"],
+            path=endpoint["path"],
+            summary=endpoint["summary"],
+            endpoint_cls=endpoint["endpoint_cls"],
+        )
 
-for endpoint in endpoints:
-    aana_app.register_endpoint(
-        name=endpoint["name"],
-        path=endpoint["path"],
-        summary=endpoint["summary"],
-        endpoint_cls=endpoint["endpoint_cls"],
-    )
-
-aana_app.deploy(blocking=True)
+    aana_app.deploy(blocking=True)
 
 ```
 
@@ -185,6 +185,10 @@ Use --help to see the available options.
 ```bash
 poetry run aana build --help
 ```
+
+## Running Serve Config Files
+
+Once you have generated YAML files in the previous step, you can run them with `ray serve deploy`.
 
 ## Run with Docker
 
