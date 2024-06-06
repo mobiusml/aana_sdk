@@ -72,12 +72,14 @@ class TaskQueueDeployment(BaseDeployment):
                         task.endpoint, **task.data
                     )
                     task.status = TaskStatus.COMPLETED
+                    task.completed_at = datetime.now()  # noqa: DTZ005
                     task.progress = 100
                     task.result = out
                     session.commit()
                 except Exception as e:
                     error_response = custom_exception_handler(None, e)
                     task.status = TaskStatus.FAILED
+                    task.completed_at = datetime.now()  # noqa: DTZ005
                     task.progress = 0
                     task.result = orjson.loads(error_response.body)
                     session.commit()
