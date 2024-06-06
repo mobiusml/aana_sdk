@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from uuid import UUID
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -15,6 +16,19 @@ class TaskRepository(BaseRepository[TaskEntity]):
     def __init__(self, session: Session):
         """Constructor."""
         super().__init__(session, TaskEntity)
+
+    def read(self, task_id: str | UUID) -> TaskEntity:
+        """Reads a single task by id from the database.
+
+        Args:
+            task_id (str | UUID): ID of the task to retrieve
+
+        Returns:
+            The corresponding task from the database if found.
+        """
+        if isinstance(task_id, str):
+            task_id = UUID(task_id)
+        return super().read(task_id)
 
     def get_unprocessed_tasks(self) -> list[TaskEntity]:
         """Fetches all unprocessed tasks.
