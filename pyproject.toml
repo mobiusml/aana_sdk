@@ -2,35 +2,44 @@
 name = "aana"
 version = "0.2.0"
 description = "Multimodal SDK"
-authors = ["Mobius Labs GmbH"]
-license = "License agreement"
+authors = ["Mobius Labs GmbH <dev@mobiuslabs.com>"]
+homepage = "https://www.mobiuslabs.com"
+repository = "https://github.com/mobiusml/aana_sdk"
+license = "Apache-2.0"
 readme = "README.md"
+keywords = ["multimodal", "ray", "serving", "video", "images", "audio", "llm", "vlm", "asr"]
+classifiers=[
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 
 [tool.poetry.dependencies]
 # Apart from python (1st) and other internal deps (2nd), please
 # keep this list alphabetized!
-python = "~3.10"
+python = ">=3.10"
 accelerate = "^0.26.1"
 alembic = "^1.12.1"
-autoawq = "^0.2.5"
-autoawq-kernels = "^0.0.6"
 av = "==11.*"
 bitsandbytes = "^0.42.0"
 decord = "^0.6.0"
 deepdiff = "^6.7.0"
 diffusers = "^0.23.1"
 fastapi = "^0.104.0"
-faster-whisper = { git = "https://github.com/mobiusml/faster-whisper.git", tag = "v1.0.1_mobiusml_v1.1" }
-flash-attn = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.1cxx11abiFALSE-cp310-cp310-linux_x86_64.whl" }
+faster-whisper = ">=1.0.1"
 hf-transfer = "^0.1.6"
 onnxruntime = "1.16.1"
 opencv-python = "^4.8.1.78"
+orjson = "^3.10.3"
 portpicker = "^1.6.0"
 pyannote-audio = "^3.1.1"
 pydantic = ">=2.0"
 pydantic-settings = "^2.1.0"
 python-multipart = "^0.0.6"
-pytest-timeout = "^2.2.0"
 qdrant-haystack = "^3.2.1"
 ray = {extras = ["serve"], version = ">=2.20"}
 rapidfuzz = "^3.4.0"
@@ -38,10 +47,10 @@ scipy = "^1.11.3"
 sentence-transformers = "^2.6.1"
 sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
 transformers = ">=4.37.0"
-torch = { url = "https://download.pytorch.org/whl/cu121/torch-2.1.2%2Bcu121-cp310-cp310-linux_x86_64.whl" }
-torchaudio = {url = "https://download.pytorch.org/whl/cu121/torchaudio-2.1.2%2Bcu121-cp310-cp310-linux_x86_64.whl"}
-torchvision = { url = "https://download.pytorch.org/whl/cu121/torchvision-0.16.2%2Bcu121-cp310-cp310-linux_x86_64.whl" }
-vllm = "0.3.2"
+torch = ">=2.0.0"
+torchaudio = ">=2.0.0"
+torchvision = ">=0.15.0"
+vllm = ">=0.3.2"
 yt-dlp = ">=2024.4.9"
 
 [tool.poetry.group.dev.dependencies]
@@ -55,6 +64,7 @@ pytest-asyncio = "^0.23.6"
 pytest-dotenv = "^0.5.2"
 pytest-env = "^1.1.3"
 pytest-mock = "^3.12.0"
+pytest-timeout = "^2.2.0"
 sqlalchemy-utils = "^0.41.1"
 
 [build-system]

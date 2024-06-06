@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Any, cast
 
 import torch
-from faster_whisper import BatchedInferencePipeline, WhisperModel
+from faster_whisper import WhisperModel
 from faster_whisper.tokenizer import Tokenizer
 from pydantic import BaseModel, Field
 from ray import serve
@@ -295,6 +295,14 @@ class WhisperDeployment(BaseDeployment):
         Raises:
             InferenceException: If the inference fails.
         """
+        try:
+            from faster_whisper import BatchedInferencePipeline
+        except ImportError as e:
+            raise ImportError(  # noqa: TRY003
+                "Batched version of whisper is not available. "
+                "Install faster-whisper from https://github.com/mobiusml/faster-whisper"
+            ) from e
+
         if not params:
             params = BatchedWhisperParams()
 
