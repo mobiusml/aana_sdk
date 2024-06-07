@@ -46,13 +46,13 @@ def upgrade() -> None:
         ),
         sa.Column(
             "assigned_at",
-            sa.DateTime(),
+            sa.DateTime(timezone=True),
             nullable=True,
             comment="Timestamp when the task was assigned",
         ),
         sa.Column(
             "completed_at",
-            sa.DateTime(),
+            sa.DateTime(timezone=True),
             nullable=True,
             comment="Timestamp when the task was completed",
         ),
