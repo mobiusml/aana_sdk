@@ -147,3 +147,7 @@ def test_aana_missing_app_path():
     result = CliRunner().invoke(cli, ["build"])
     assert result.exit_code == 2
     assert "Error: Missing argument 'APP_PATH'." in result.output
+
+    result = CliRunner().invoke(cli, ["migrate"])
+    assert result.exit_code == 2
+    assert "Error: Missing argument 'APP_PATH'." in result.output

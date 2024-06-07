@@ -96,3 +96,13 @@ def build(app_path: str, host: str, port: int, app_config_name: str, config_name
         app_config_name=app_config_name,
         config_name=config_name,
     )
+
+@cli.command()
+@click.argument("app_path", type=str)
+def migrate(app_path: str):
+    """Migrate the database for the application.
+
+    APP_PATH: Path to the application (module:app).
+    """
+    aana_app = load_app(app_path)
+    aana_app.migrate()
