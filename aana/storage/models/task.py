@@ -48,10 +48,14 @@ class TaskEntity(BaseEntity, TimeStampEntity):
         comment="Priority of the task (0 is the lowest)",
     )
     assigned_at = Column(
-        DateTime, nullable=True, comment="Timestamp when the task was assigned"
+        DateTime(timezone=True),
+        nullable=True,
+        comment="Timestamp when the task was assigned",
     )
     completed_at = Column(
-        DateTime, nullable=True, comment="Timestamp when the task was completed"
+        DateTime(timezone=True),
+        nullable=True,
+        comment="Timestamp when the task was completed",
     )
     progress = Column(
         Float, nullable=False, default=0.0, comment="Progress of the task in percentage"
