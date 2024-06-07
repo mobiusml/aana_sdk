@@ -22,7 +22,13 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-4. Run the SDK.
+4. Run migrations.
+
+```bash
+poetry run aana migrate aana.projects.chat_with_video.app:aana_app
+```
+
+5. Run the SDK.
 
 ```bash
 HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana.projects.chat_with_video.app:aana_app --port 8000 --host 0.0.0.0
