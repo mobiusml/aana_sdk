@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from uuid import UUID
 
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, desc, or_
 from sqlalchemy.orm import Session
 
 from aana.configs.settings import settings as aana_settings
@@ -58,7 +58,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
                     ),
                 )
             )
-            .order_by(TaskEntity.priority, TaskEntity.create_ts)
+            .order_by(desc(TaskEntity.priority), TaskEntity.create_ts)
             .limit(limit)
             .all()
         )
