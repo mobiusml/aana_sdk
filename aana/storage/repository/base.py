@@ -74,11 +74,11 @@ class BaseRepository(Generic[T]):
     #     #     is not None
     #     # )
 
-    def delete(self, id: int | MediaId, check: bool = False) -> T | None:
+    def delete(self, id: int | MediaId | UUID, check: bool = False) -> T | None:
         """Deletes an entity.
 
         Args:
-            id (int | MediaId): the id of the item to be deleted.
+            id (int | MediaId | UUID): the id of the item to be deleted.
             check (bool): whether to raise if the entity is not found (defaults to True).
 
         Returns:
@@ -87,7 +87,7 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        entity = self.read(str(id))
+        entity = self.read(id)
         if entity:
             self.session.delete(entity)
             self.session.flush()

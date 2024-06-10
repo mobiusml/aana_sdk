@@ -258,7 +258,7 @@ class Endpoint:
                 await self.initialize()
 
             if event_manager:
-                event_manager.handle(bound_path)
+                event_manager.handle(bound_path, defer=defer)
 
             # parse form data as a pydantic model and validate it
             data = RequestModel.model_validate_json(body)
@@ -317,6 +317,7 @@ class Endpoint:
             defer: bool = Query(
                 description="Defer execution of the endpoint to the task queue.",
                 default=False,
+                include_in_schema=aana_settings.task_queue.enabled,
             ),
         ):
             return await route_func_body(body=body, files=files, defer=defer)

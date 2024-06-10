@@ -167,6 +167,20 @@ def test_task_queue(app_setup):
     assert task_status == "completed"
     assert result == {"text": ["hello world!", "this is a test."]}
 
+    # Delete the task
+    response = requests.get(
+        f"http://localhost:{port}{route_prefix}/tasks/delete/{task_id}"
+    )
+    assert response.status_code == 200
+    assert response.json().get("task_id") == task_id
+
+    # Check that the task is deleted
+    response = requests.get(
+        f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
+    )
+    assert response.status_code == 404
+    assert response.json().get("error") == "NotFoundException"
+
     # Check non-existent task
     task_id = "d1b1b1b1-1b1b-1b1b-1b1b-1b1b1b1b1b1b"
     response = requests.get(

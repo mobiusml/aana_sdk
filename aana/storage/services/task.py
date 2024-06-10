@@ -62,10 +62,31 @@ def get_task(task_id: str) -> TaskEntity:
 
     Returns:
         TaskEntity: The task.
+
+    Raises:
+        NotFoundException: If the task is not found.
     """
     with Session(engine) as session:
         task_repo = TaskRepository(session)
         task = task_repo.read(task_id)
+        return task
+
+
+def delete_task(task_id: str) -> TaskEntity:
+    """Delete a task.
+
+    Args:
+        task_id (str): The task ID.
+
+    Returns:
+        TaskEntity: The deleted task.
+
+    Raises:
+        NotFoundException: If the task is not found.
+    """
+    with Session(engine) as session:
+        task_repo = TaskRepository(session)
+        task = task_repo.delete(task_id, check=True)
         return task
 
 
