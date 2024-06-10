@@ -7,7 +7,9 @@ from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_sche
 from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
-from aana.storage.services.task import TaskInfo, get_task_info
+from aana.configs.settings import settings as aana_settings
+from aana.core.models.task import TaskId
+from aana.storage.services.task import TaskInfo, delete_task, get_task_info
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -78,9 +80,6 @@ class RequestHandler:
                 endpoint = e
                 break
         else:
-            endpoint = None
-
-        if endpoint is None:
             raise ValueError(f"Endpoint {path} not found")  # noqa: TRY003
 
         if not endpoint.initialized:
@@ -95,8 +94,9 @@ class RequestHandler:
         "/tasks/get/{task_id}",
         summary="Get Task Status",
         description="Get the task status by task ID.",
+        include_in_schema=aana_settings.task_queue.enabled,
     )
-    async def get_task(self, task_id: str) -> TaskInfo:
+    async def get_task_endpoint(self, task_id: str) -> TaskInfo:
         """Get the task with the given ID.
 
         Args:
@@ -106,3 +106,21 @@ class RequestHandler:
             TaskInfo: The status of the task.
         """
         return get_task_info(task_id)
+
+    @app.get(
+        "/tasks/delete/{task_id}",
+        summary="Delete Task",
+        description="Delete the task by task ID.",
+        include_in_schema=aana_settings.task_queue.enabled,
+    )
+    async def delete_task_endpoint(self, task_id: str) -> TaskId:
+        """Delete the task with the given ID.
+
+        Args:
+            task_id (str): The ID of the task.
+
+        Returns:
+            TaskInfo: The deleted task.
+        """
+        task = delete_task(task_id)
+        return TaskId(task_id=str(task.id))

@@ -30,6 +30,23 @@ class TaskRepository(BaseRepository[TaskEntity]):
             task_id = UUID(task_id)
         return super().read(task_id)
 
+    def delete(self, task_id: str | UUID, check: bool = False) -> TaskEntity | None:
+        """Deletes a single task by id from the database.
+
+        Args:
+            task_id (str | UUID): ID of the task to delete
+            check (bool): Whether to check if the task exists before deleting
+
+        Returns:
+            The deleted task from the database if found.
+
+        Raises:
+            NotFoundException: The id does not correspond to a record in the database.
+        """
+        if isinstance(task_id, str):
+            task_id = UUID(task_id)
+        return super().delete(task_id, check)
+
     def get_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
         """Fetches all unprocessed tasks.
 
