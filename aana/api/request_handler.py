@@ -8,7 +8,6 @@ from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 from aana.storage.services.task import TaskInfo, get_task_info
-from aana.utils.typing import is_async_generator
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -74,21 +73,20 @@ class RequestHandler:
         Returns:
             Any: The response from the endpoint.
         """
-        endpoint = None
         for e in self.endpoints:
             if e.path == path:
                 endpoint = e
                 break
+        else:
+            endpoint = None
+
         if endpoint is None:
             raise ValueError(f"Endpoint {path} not found")  # noqa: TRY003
 
         if not endpoint.initialized:
             await endpoint.initialize()
 
-        annotations = endpoint.run.__annotations__
-        return_type = annotations.get("return", None)
-
-        if is_async_generator(return_type):
+        if endpoint.is_streaming_response():
             return [item async for item in endpoint.run(**kwargs)]
         else:
             return await endpoint.run(**kwargs)

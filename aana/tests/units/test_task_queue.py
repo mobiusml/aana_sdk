@@ -1,6 +1,7 @@
 # ruff: noqa: S101, S113
 import json
 import time
+from collections.abc import AsyncGenerator
 from typing import Annotated, TypedDict
 
 import requests
@@ -64,6 +65,32 @@ class LowercaseEndpoint(Endpoint):
         return {"text": lowercase_output["text"]}
 
 
+class LowercaseSteamEndpoint(Endpoint):
+    """Lowercase endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.lowercase_handle = await AanaDeploymentHandle.create(
+            "lowercase_deployment"
+        )
+        await super().initialize()
+
+    async def run(
+        self, text: TextList
+    ) -> AsyncGenerator[LowercaseEndpointOutput, None]:
+        """Lowercase the text.
+
+        Args:
+            text (TextList): The list of text to lowercase
+
+        Returns:
+            LowercaseEndpointOutput: The lowercase texts
+        """
+        lowercase_output = await self.lowercase_handle.lower(text=text)
+        for t in lowercase_output["text"]:
+            yield {"text": t}
+
+
 deployments = [
     {
         "name": "lowercase_deployment",
@@ -85,7 +112,13 @@ endpoints = [
         "path": "/lowercase",
         "summary": "Lowercase text",
         "endpoint_cls": LowercaseEndpoint,
-    }
+    },
+    {
+        "name": "lowercase_stream",
+        "path": "/lowercase_stream",
+        "summary": "Lowercase text",
+        "endpoint_cls": LowercaseSteamEndpoint,
+    },
 ]
 
 
@@ -141,3 +174,41 @@ def test_task_queue(app_setup):
     )
     assert response.status_code == 404
     assert response.json().get("error") == "NotFoundException"
+
+    # Test lowercase streaming endpoint
+    data = {"text": ["Hello World!", "This is a test."]}
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase_stream",
+        data={"body": json.dumps(data)},
+        stream=True,
+    )
+    assert response.status_code == 200
+
+    for i, chunk in enumerate(response.iter_content(chunk_size=None)):
+        json_data = json.loads(chunk)
+        assert "text" in json_data
+        assert json_data["text"] == lowercase_text[i]
+
+    # Test task queue with streaming endpoint
+    data = {"text": ["Hello World!", "This is a test."]}
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase_stream?defer=True",
+        data={"body": json.dumps(data)},
+    )
+    assert response.status_code == 200
+    task_id = response.json().get("task_id")
+
+    # Check the task status with timeout of 10 seconds
+    start_time = time.time()
+    while time.time() - start_time < 10:
+        response = requests.get(
+            f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
+        )
+        task_status = response.json().get("status")
+        result = response.json().get("result")
+        if task_status == "completed":
+            break
+        time.sleep(0.1)
+
+    assert task_status == "completed"
+    assert [chunk["text"] for chunk in result] == lowercase_text

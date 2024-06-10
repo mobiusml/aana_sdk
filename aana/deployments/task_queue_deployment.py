@@ -1,18 +1,20 @@
 import asyncio
 import concurrent.futures
-from datetime import datetime
 from typing import Any
 
 import orjson
 from pydantic import BaseModel, Field
 from ray import serve
-from sqlalchemy.orm import Session
 
 from aana.api.exception_handler import custom_exception_handler
 from aana.configs.settings import settings as aana_settings
 from aana.deployments.base_deployment import BaseDeployment
 from aana.storage.models.task import Status as TaskStatus
-from aana.storage.repository.task import TaskRepository
+from aana.storage.services.task import (
+    get_task,
+    get_unprocessed_tasks,
+    update_task_status,
+)
 from aana.utils.asyncio import run_async
 
 
@@ -53,72 +55,71 @@ class TaskQueueDeployment(BaseDeployment):
             max_workers=aana_settings.task_queue.num_workers,
         )
 
-    async def loop(self):
+    async def loop(self):  # noqa: C901
         """The main loop for the task queue deployment.
 
         The loop will check the queue and assign tasks to workers.
         """
-        from aana.storage.engine import engine
 
         async def handle_task(task_id: str):
             """Process a task."""
-            with Session(engine) as session:
-                task_repo = TaskRepository(session)
-                task = task_repo.read(task_id)
-                task.status = TaskStatus.RUNNING
-                session.commit()
-                try:
-                    out = await self.handle.call_endpoint.remote(
-                        task.endpoint, **task.data
-                    )
-                    task.status = TaskStatus.COMPLETED
-                    task.completed_at = datetime.now()  # noqa: DTZ005
-                    task.progress = 100
-                    task.result = out
-                    session.commit()
-                except Exception as e:
-                    error_response = custom_exception_handler(None, e)
-                    task.status = TaskStatus.FAILED
-                    task.completed_at = datetime.now()  # noqa: DTZ005
-                    task.progress = 0
-                    task.result = orjson.loads(error_response.body)
-                    session.commit()
+            # Fetch the task details
+            task = get_task(task_id)
+            # Initially set the task status to RUNNING
+            update_task_status(task_id, TaskStatus.RUNNING, 0)
+            try:
+                # Call the endpoint asynchronously
+                out = await self.handle.call_endpoint.remote(task.endpoint, **task.data)
+                # Update the task status to COMPLETED
+                update_task_status(task_id, TaskStatus.COMPLETED, 100, out)
+            except Exception as e:
+                # Handle the exception and update the task status to FAILED
+                error_response = custom_exception_handler(None, e)
+                error = orjson.loads(error_response.body)
+                update_task_status(task_id, TaskStatus.FAILED, 0, error)
 
         def run_handle_task(task_id):
             """Wrapper to run the handle_task function."""
             run_async(handle_task(task_id))
 
-        with Session(engine) as session:
-            task_repo = TaskRepository(session)
-            while True:
-                if not self.configured:
-                    # Wait for the deployment to be configured.
-                    await asyncio.sleep(1)
-                    continue
+        def is_thread_pool_full():
+            """Check if the thread pool has too many tasks.
 
-                tasks = task_repo.get_unprocessed_tasks(
-                    limit=aana_settings.task_queue.num_workers * 2
-                )
-                if not tasks:
+            We use it to stop assigning tasks to the thread pool if it's full
+            to prevent the thread pool from being overwhelmed.
+            We don't want to schedule all tasks from the task queue (could be millions).
+            """
+            return (
+                self.thread_pool._work_queue.qsize()
+                > aana_settings.task_queue.num_workers * 2
+            )
+
+        while True:
+            if not self.configured:
+                # Wait for the deployment to be configured.
+                await asyncio.sleep(1)
+                continue
+
+            if is_thread_pool_full():
+                # wait a bit to give the thread pool time to process tasks
+                await asyncio.sleep(0.1)
+                continue
+
+            tasks = get_unprocessed_tasks(
+                limit=aana_settings.task_queue.num_workers * 2
+            )
+
+            if not tasks:
+                await asyncio.sleep(0.1)
+                continue
+
+            if not self.handle:
+                self.handle = serve.get_app_handle(self.app_name)
+
+            for task in tasks:
+                if is_thread_pool_full():
+                    # wait a bit to give the thread pool time to process tasks
                     await asyncio.sleep(0.1)
-                    continue
-
-                if not self.handle:
-                    self.handle = serve.get_app_handle(self.app_name)
-
-                for task in tasks:
-                    # Check if the thread pool has too many tasks.
-                    # If so, stop assigning tasks.
-                    # We do it to prevent the thread pool from being overwhelmed.
-                    # We don't want to schedule all tasks from the task queue (could be millions).
-                    if (
-                        self.thread_pool._work_queue.qsize()
-                        > aana_settings.task_queue.num_workers * 2
-                    ):
-                        # wait a bit to give the thread pool time to process tasks
-                        await asyncio.sleep(0.1)
-                        break
-                    task.status = TaskStatus.ASSIGNED
-                    task.assigned_at = datetime.now()  # noqa: DTZ005
-                    session.commit()
-                    self.thread_pool.submit(run_handle_task, task.id)
+                    break
+                update_task_status(task.id, TaskStatus.ASSIGNED, 0)
+                self.thread_pool.submit(run_handle_task, task.id)
