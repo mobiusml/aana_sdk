@@ -92,6 +92,7 @@ def test_extract_frames_failure():
         params = VideoParams(extract_fps=1.0, fast_mode_enabled=False)
         extract_frames(video=invalid_video, params=params)
 
+
 @pytest.mark.parametrize(
     "mode, url, channel_number, extract_fps",
     [

@@ -36,7 +36,7 @@ class StreamInput(BaseModel):
     )
 
     extract_fps: float = Field(
-                default=3.0,
+        default=3.0,
         gt=0.0,
         description=(
             "The number of frames to extract per second. "

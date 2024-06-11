@@ -103,6 +103,7 @@ class VideoReadingException(VideoException):
 
     pass
 
+
 class StreamReadingException(BaseException):
     """Exception raised when there is an error reading an stream.
 
