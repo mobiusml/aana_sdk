@@ -4,11 +4,22 @@ import itertools
 import wave
 from collections.abc import Generator
 from pathlib import Path
+from typing import TypedDict
 
 import av
 import numpy as np
 
 from aana.core.libraries.audio import AbstractAudioLibrary
+from aana.core.models.image import Image
+from aana.core.models.stream import StreamInput
+from aana.exceptions.io import StreamReadingException
+
+
+class FramesDict(TypedDict):
+    """Represents a set of frames with ids, timestamps."""
+    frames: list[Image]
+    timestamps: list[float]
+    frame_ids: list[int]
 
 
 def load_audio(file: Path | None, sample_rate: int = 16000) -> bytes:
@@ -119,6 +130,69 @@ def resample_frames(frames: Generator, resampler) -> Generator:
     for frame in itertools.chain(frames, [None]):
         yield from resampler.resample(frame)
 
+
+def fetch_stream_frames(
+    stream_input: StreamInput, batch_size: int = 2
+) -> Generator[FramesDict, None, None]:
+    """Generate frames from a video using decord.
+
+    Args:
+        stream_input (StreamInput): the video stream to fetch frames from
+        batch_size (int): the number of frames to yield at each iteration
+    Yields:
+        FramesDict: a dictionary containing the extracted frames, frame ids, timestamps, and duration for each batch
+    """
+    stream_url = stream_input.url
+    channel = stream_input.channel_number
+    extraction_fps = stream_input.extract_fps
+
+    try:
+        stream_container = av.open(stream_url)
+    except Exception as e:
+        raise StreamReadingException(stream_url) from e
+
+    available_streams = [s for s in stream_container.streams if s.type == "video"]
+
+    # Check the stream channel be valid
+    if len(available_streams) == 0 or channel >= len(available_streams):
+        raise StreamReadingException(
+            stream_url,
+            msg=f"selected channel does not exist: {channel + 1} from {len(available_streams)}",
+        )
+    video_stream = available_streams[channel]
+
+    avg_rate = float(video_stream.average_rate)
+
+    if extraction_fps > avg_rate:
+        extraction_fps = avg_rate
+
+    frame_rate = int(avg_rate / extraction_fps)
+
+    # read frames from the stream
+    frame_number = 0
+    batch_frames = []
+    batch_timestamps = []
+    num_batches = 0
+
+    for packet in stream_container.demux(video_stream):
+        for frame in packet.decode():
+            if frame_number % frame_rate == 0:
+                img = Image(numpy=frame.to_rgb().to_ndarray())
+                packet_timestamp = float(frame.pts * frame.time_base)  # in seconds
+                batch_frames.append(img)
+                batch_timestamps.append(packet_timestamp)
+            frame_number += 1
+            if len(batch_frames) == batch_size:
+                num_batches += 1
+                yield FramesDict(
+                    frames=batch_frames,
+                    frame_ids=list(
+                        range(num_batches * batch_size, (num_batches + 1) * batch_size)
+                    ),
+                    timestamps=batch_timestamps,
+                )
+                batch_frames = []
+                batch_timestamps = []
 
 class pyAVWrapper(AbstractAudioLibrary):
     """Class for audio handling using PyAV library."""

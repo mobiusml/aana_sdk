@@ -4,8 +4,10 @@ from importlib import resources
 import pytest
 
 from aana.core.models.image import Image
+from aana.core.models.stream import StreamInput
 from aana.core.models.video import Video, VideoParams
-from aana.exceptions.io import VideoReadingException
+from aana.exceptions.io import StreamReadingException, VideoReadingException
+from aana.integrations.external.av import fetch_stream_frames
 from aana.integrations.external.decord import extract_frames, generate_frames
 
 
@@ -89,3 +91,64 @@ def test_extract_frames_failure():
         invalid_video = Video(path=path)
         params = VideoParams(extract_fps=1.0, fast_mode_enabled=False)
         extract_frames(video=invalid_video, params=params)
+
+@pytest.mark.parametrize(
+    "mode, url, channel_number, extract_fps",
+    [
+        (
+            "hls",
+            "https://live-par-2-cdn-alt.livepush.io/live/bigbuckbunnyclip/index.m3u8",
+            0,
+            3,
+        ),
+        (
+            "dash",
+            "https://live-par-2-cdn-alt.livepush.io/live/bigbuckbunnyclip/index.mpd",
+            0,
+            3,
+        ),
+        (
+            "mp4",
+            "https://live-par-2-abr.livepush.io/vod/bigbuckbunnyclip.mp4",
+            0,
+            3,
+        ),
+    ],
+)
+def test_fetch_stream_frames(mode, url, channel_number, extract_fps):
+    """Test fetch_stream_frames.
+
+    fetch_stream_frames is a generator function that yields a dictionary
+    containing the frames, timestamps and frame_ids of the stream.
+    """
+    stream_input = StreamInput(
+        url=url, channel_number=channel_number, extract_fps=extract_fps
+    )
+    gen_frame = fetch_stream_frames(stream_input, batch_size=1)
+    total_frames = 0
+    for result in gen_frame:
+        assert "frames" in result
+        assert "frame_ids" in result
+        assert "timestamps" in result
+        assert isinstance(result["frames"], list)
+        assert isinstance(result["frame_ids"], list)
+        assert isinstance(result["timestamps"], list)
+
+        assert isinstance(result["frames"][0], Image)
+        assert len(result["frames"]) == 1  # batch_size = 1
+        assert len(result["timestamps"]) == 1  # batch_size = 1
+
+        total_frames += 1
+        if total_frames > 10:
+            return
+    print(f"{mode} is supported")
+
+
+def test_fetch_stream_frames_failure():
+    """Test that frames cannot be extracted from a youtube video."""
+    url = "https://www.youtube.com/watch?v=T98dnE2vPdY"
+    stream_input = StreamInput(url=url, channel_number=0, extract_fps=3)
+    with pytest.raises(StreamReadingException):
+        gen_frame = fetch_stream_frames(stream_input, batch_size=1)
+        for _ in gen_frame:
+            return
