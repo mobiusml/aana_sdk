@@ -3,18 +3,19 @@ from dataclasses import dataclass
 from pathlib import Path
 import torch, decord  # noqa: F401  # See https://github.com/dmlc/decord/issues/263
 from decord import DECORDError
-
+from typing import Annotated
 from aana.configs.settings import settings
 from aana.exceptions.io import VideoReadingException
 from aana.core.models.media import Media
 import uuid
 
 from pydantic import (
+    AfterValidator,
+    AnyUrl,
     BaseModel,
     ConfigDict,
     Field,
     ValidationError,
-    field_validator,
     model_validator,
 )
 from pydantic_core import InitErrorDetails
@@ -144,7 +145,7 @@ class VideoParams(BaseModel):
     """A pydantic model for video parameters.
 
     Attributes:
-        extract_fps (int): the number of frames to extract per second
+        extract_fps (float): the number of frames to extract per second
         fast_mode_enabled (bool): whether to use fast mode (keyframes only)
     """
 
@@ -179,14 +180,16 @@ class VideoInput(BaseModel):
     Attributes:
         media_id (MediaId): the ID of the video. If not provided, it will be generated automatically.
         path (str): the file path of the video
-        url (str): the URL of the video (supports YouTube videos)
+        url (AnyUrl): the URL of the video (supports YouTube videos)
         content (bytes): the content of the video in bytes
     """
 
     path: str | None = Field(None, description="The file path of the video.")
-    url: str | None = Field(
-        None, description="The URL of the video (supports YouTube videos)."
-    )
+    url: Annotated[
+        AnyUrl | None,
+        AfterValidator(lambda x: str(x) if x else None),
+        Field(None, description="The URL of the video (supports YouTube videos)."),
+    ]
     content: bytes | None = Field(
         None,
         description=(
@@ -198,43 +201,6 @@ class VideoInput(BaseModel):
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
-
-    @field_validator("url")
-    @classmethod
-    def check_url(cls, url: str) -> str:
-        """Check that the URL is valid and supported.
-
-        Right now, we support normal URLs and youtube URLs.
-
-        Args:
-            url (str): the URL
-
-        Returns:
-            str: the valid URL
-
-        Raises:
-            ValueError: if the URL is invalid or unsupported
-        """
-        # TODO: implement the youtube URL validation
-        return url
-
-    @field_validator("media_id")
-    @classmethod
-    def media_id_must_not_be_empty(cls, media_id):
-        """Validates that the media_id is not an empty string.
-
-        Args:
-            media_id (MediaId): The value of the media_id field.
-
-        Raises:
-            ValueError: If the media_id is an empty string.
-
-        Returns:
-            str: The non-empty media_id value.
-        """
-        if media_id == "":
-            raise ValueError("media_id cannot be an empty string")  # noqa: TRY003
-        return media_id
 
     @model_validator(mode="after")
     def check_only_one_field(self) -> Self:
