@@ -24,6 +24,7 @@ class ImageGenerationEndpoint(Endpoint):
         self.image_generation_handle = await AanaDeploymentHandle.create(
             "image_generation_deployment"
         )
+        await super().initialize()
 
     async def run(self, prompt: Prompt) -> ImageGenerationEndpointOutput:
         """Run the image generation endpoint."""

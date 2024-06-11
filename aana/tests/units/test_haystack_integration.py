@@ -52,6 +52,7 @@ class HaystackTestEndpoint(Endpoint):
         self.query_pipeline.connect(
             "text_embedder.embedding", "retriever.query_embedding"
         )
+        await super().initialize()
 
     async def run(self, query: str) -> HaystackTestEndpointOutput:
         """Run the test endpoint for Haystack Integration."""
