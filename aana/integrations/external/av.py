@@ -17,6 +17,7 @@ from aana.exceptions.io import StreamReadingException
 
 class FramesDict(TypedDict):
     """Represents a set of frames with ids, timestamps."""
+
     frames: list[Image]
     timestamps: list[float]
     frame_ids: list[int]
@@ -193,6 +194,7 @@ def fetch_stream_frames(
                 )
                 batch_frames = []
                 batch_timestamps = []
+
 
 class pyAVWrapper(AbstractAudioLibrary):
     """Class for audio handling using PyAV library."""
