@@ -21,6 +21,7 @@ class LlmGenerateEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
+        await super().initialize()
 
     async def run(
         self, prompt: Prompt, sampling_params: SamplingParams
@@ -38,6 +39,7 @@ class LlmGenerateStreamEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
+        await super().initialize()
 
     async def run(
         self, prompt: Prompt, sampling_params: SamplingParams
@@ -61,6 +63,7 @@ class LlmChatEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
+        await super().initialize()
 
     async def run(
         self, dialog: ChatDialog, sampling_params: SamplingParams
@@ -84,6 +87,7 @@ class LlmChatStreamEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
+        await super().initialize()
 
     async def run(
         self, dialog: ChatDialog, sampling_params: SamplingParams
