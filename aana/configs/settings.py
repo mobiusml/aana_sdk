@@ -14,7 +14,15 @@ class TestSettings(BaseSettings):
 
 
 class TaskQueueSettings(BaseSettings):
-    """A pydantic model for task queue settings."""
+    """A pydantic model for task queue settings.
+
+    Attributes:
+        enabled (bool): Flag indicating if the task queue is enabled.
+        num_workers (int): The number of workers in the task queue.
+        execution_timeout (int): The maximum execution time for a task in seconds.
+            After this time, if the task is still running,
+            it will be considered as stuck and will be reassign to another worker.
+    """
 
     enabled: bool = True
     num_workers: int = 4
