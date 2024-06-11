@@ -50,7 +50,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
     def get_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
         """Fetches all unprocessed tasks.
 
-        The task is considered unprocessed if it is in CREATED state or
+        The task is considered unprocessed if it is in CREATED or NOT_FINISHED state or
         in RUNNING or ASSIGNED state and the update timestamp is older
         than the execution timeout (to handle stuck tasks).
 
@@ -66,7 +66,9 @@ class TaskRepository(BaseRepository[TaskEntity]):
             self.session.query(TaskEntity)
             .filter(
                 or_(
-                    TaskEntity.status == TaskStatus.CREATED,
+                    TaskEntity.status.in_(
+                        [TaskStatus.CREATED, TaskStatus.NOT_FINISHED]
+                    ),
                     and_(
                         TaskEntity.status.in_(
                             [TaskStatus.RUNNING, TaskStatus.ASSIGNED]

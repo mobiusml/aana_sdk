@@ -24,6 +24,7 @@ class Status(str, Enum):
     COMPLETED = "completed"
     RUNNING = "running"
     FAILED = "failed"
+    NOT_FINISHED = "not_finished"
 
 
 class TaskEntity(BaseEntity, TimeStampEntity):
