@@ -105,7 +105,8 @@ def update_task_status(
         task_repo = TaskRepository(session)
         task = task_repo.read(task_id)
         task.status = status
-        task.completed_at = datetime.now()  # noqa: DTZ005
+        if status == TaskStatus.COMPLETED or status == TaskStatus.FAILED:
+            task.completed_at = datetime.now()  # noqa: DTZ005
         if progress is not None:
             task.progress = progress
         task.result = result
@@ -115,7 +116,7 @@ def update_task_status(
 def get_unprocessed_tasks(limit: int | None = None) -> list[TaskEntity]:
     """Fetches all unprocessed tasks.
 
-    The task is considered unprocessed if it is in CREATED state or
+    The task is considered unprocessed if it is in CREATED or NOT_FINISHED state or
     in RUNNING or ASSIGNED state and the update timestamp is older
     than the execution timeout (to handle stuck tasks).
 

@@ -33,7 +33,13 @@ def upgrade() -> None:
         sa.Column(
             "status",
             sa.Enum(
-                "CREATED", "ASSIGNED", "COMPLETED", "RUNNING", "FAILED", name="status"
+                "CREATED",
+                "ASSIGNED",
+                "COMPLETED",
+                "RUNNING",
+                "FAILED",
+                "NOT_FINISHED",
+                name="status",
             ),
             nullable=False,
             comment="Status of the task",

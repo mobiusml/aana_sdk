@@ -3,6 +3,7 @@ import concurrent.futures
 from typing import Any
 
 import orjson
+import ray
 from pydantic import BaseModel, Field
 from ray import serve
 
@@ -31,15 +32,27 @@ class TaskQueueDeployment(BaseDeployment):
     def __init__(self):
         """Initialize the task queue deployment."""
         super().__init__()
+        self.futures = {}
         loop = asyncio.get_running_loop()
         self.loop_task = loop.create_task(self.loop())
-        self.loop_task.add_done_callback(lambda fut: fut.result())
+        self.loop_task.add_done_callback(
+            lambda fut: fut.result() if not fut.cancelled() else None
+        )
 
     def check_health(self):
         """Check the health of the deployment."""
         # if the loop is not running, the deployment is unhealthy
         if self.loop_task.done():
             raise RuntimeError("Task queue loop is not running")  # noqa: TRY003
+
+    def __del__(self):
+        """Clean up the deployment."""
+        # Cancel the loop task to prevent tasks from being reassigned
+        self.loop_task.cancel()
+        # Set all non-completed tasks to NOT_FINISHED
+        for task_id, future in self.futures.items():
+            if not future.done():
+                update_task_status(task_id, TaskStatus.NOT_FINISHED, 0)
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
@@ -100,6 +113,11 @@ class TaskQueueDeployment(BaseDeployment):
                 await asyncio.sleep(1)
                 continue
 
+            # Remove completed tasks from the futures dictionary
+            for task_id in list(self.futures.keys()):
+                if self.futures[task_id].done():
+                    del self.futures[task_id]
+
             if is_thread_pool_full():
                 # wait a bit to give the thread pool time to process tasks
                 await asyncio.sleep(0.1)
@@ -114,7 +132,22 @@ class TaskQueueDeployment(BaseDeployment):
                 continue
 
             if not self.handle:
-                self.handle = serve.get_app_handle(self.app_name)
+                # Sometimes the app isn't available immediately after the deployment is created
+                # so we need to wait for it to become available
+                for _ in range(10):
+                    try:
+                        self.handle = serve.get_app_handle(self.app_name)
+                        break
+                    except ray.serve.exceptions.RayServeException as e:
+                        print(
+                            f"App {self.app_name} not available yet: {e}, retrying..."
+                        )
+                        await asyncio.sleep(1)
+                else:
+                    # If the app is not available after all retries, try again
+                    # but without catching the exception
+                    # (if it fails, the deployment will be unhealthy, and restart will be attempted)
+                    self.handle = serve.get_app_handle(self.app_name)
 
             for task in tasks:
                 if is_thread_pool_full():
@@ -122,4 +155,5 @@ class TaskQueueDeployment(BaseDeployment):
                     await asyncio.sleep(0.1)
                     break
                 update_task_status(task.id, TaskStatus.ASSIGNED, 0)
-                self.thread_pool.submit(run_handle_task, task.id)
+                future = self.thread_pool.submit(run_handle_task, task.id)
+                self.futures[task.id] = future
