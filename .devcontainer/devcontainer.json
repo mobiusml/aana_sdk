@@ -1,5 +1,6 @@
 {
 	"name": "Ubuntu",
+    "runArgs": ["--name", "${localEnv:USER}_dev_container"],
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
