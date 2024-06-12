@@ -26,7 +26,7 @@ def test_new_imageinput_success():
     assert image_input.path == "image.png"
 
     image_input = ImageInput(url="http://image.png")
-    assert image_input.url == "http://image.png"
+    assert image_input.url == "http://image.png/"
 
     image_input = ImageInput(content=b"file")
     assert image_input.content == b"file"
