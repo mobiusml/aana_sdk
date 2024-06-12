@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import Field, ValidationError, create_model
 from pydantic.main import BaseModel
@@ -13,10 +13,12 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
+from aana.configs.settings import settings as aana_settings
 from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
 )
+from aana.storage.services.task import create_task
 
 
 def get_default_values(func):
@@ -61,7 +63,7 @@ class Endpoint:
 
     async def initialize(self):
         """Initialize the endpoint."""
-        pass
+        self.initialized = True
 
     async def run(self, *args, **kwargs):
         """Run the endpoint."""
@@ -249,12 +251,14 @@ class Endpoint:
         # Copy path to a bound variable so we don't retain an external reference
         bound_path = self.path
 
-        async def route_func_body(body: str, files: list[UploadFile] | None = None):
+        async def route_func_body(  # noqa: C901
+            body: str, files: list[UploadFile] | None = None, defer=False
+        ):
             if not self.initialized:
                 await self.initialize()
 
             if event_manager:
-                event_manager.handle(bound_path)
+                event_manager.handle(bound_path, defer=defer)
 
             # parse form data as a pydantic model and validate it
             data = RequestModel.model_validate_json(body)
@@ -271,6 +275,16 @@ class Endpoint:
             for field_name in data.model_fields:
                 field_value = getattr(data, field_name)
                 data_dict[field_name] = field_value
+
+            if defer:
+                if not aana_settings.task_queue.enabled:
+                    raise RuntimeError("Task queue is not enabled.")  # noqa: TRY003
+
+                task_id = create_task(
+                    endpoint=bound_path,
+                    data=data_dict,
+                )
+                return AanaJSONResponse(content={"task_id": task_id})
 
             if isasyncgenfunction(self.run):
 
@@ -297,8 +311,16 @@ class Endpoint:
         else:
             files = None
 
-        async def route_func(body: str = Form(...), files=files):
-            return await route_func_body(body=body, files=files)
+        async def route_func(
+            body: str = Form(...),
+            files=files,
+            defer: bool = Query(
+                description="Defer execution of the endpoint to the task queue.",
+                default=False,
+                include_in_schema=aana_settings.task_queue.enabled,
+            ),
+        ):
+            return await route_func_body(body=body, files=files, defer=defer)
 
         return route_func
 

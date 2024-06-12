@@ -35,6 +35,22 @@ def test_videoinput_invalid_media_id():
     with pytest.raises(ValidationError):
         VideoInput(path="video.mp4", media_id="")
 
+@pytest.mark.parametrize(
+    "url", [
+        "domain",
+        "domain.com",
+        "http://",
+        "www.domain.com",
+        "/subdomain",
+        "../subdomain",
+        "",
+    ],
+)
+def test_videoinput_invalid_url(url):
+    """Test that VideoInput can't be created if url is invalid."""
+    with pytest.raises(ValidationError):
+        VideoInput(url=url)
+
 
 def test_videoinput_check_only_one_field():
     """Test that exactly one of 'path', 'url', or 'content' is provided."""

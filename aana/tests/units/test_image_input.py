@@ -26,7 +26,7 @@ def test_new_imageinput_success():
     assert image_input.path == "image.png"
 
     image_input = ImageInput(url="http://image.png")
-    assert image_input.url == "http://image.png"
+    assert image_input.url == "http://image.png/"
 
     image_input = ImageInput(content=b"file")
     assert image_input.content == b"file"
@@ -40,6 +40,21 @@ def test_imageinput_invalid_media_id():
     with pytest.raises(ValidationError):
         ImageInput(path="image.png", media_id="")
 
+@pytest.mark.parametrize(
+    "url", [
+        "domain",
+        "domain.com",
+        "http://",
+        "www.domain.com",
+        "/subdomain",
+        "../subdomain",
+        "",
+    ],
+)
+def test_imageinput_invalid_url(url):
+    """Test that ImageInput can't be created if url is invalid."""
+    with pytest.raises(ValidationError):
+        ImageInput(url=url)
 
 def test_imageinput_check_only_one_field():
     """Test that exactly one of 'path', 'url', 'content', or 'numpy' is provided."""
