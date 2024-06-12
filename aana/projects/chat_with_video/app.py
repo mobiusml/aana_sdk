@@ -1,6 +1,6 @@
 from aana.configs.deployments import (
-    meta_llama3_8b_instruct_deployment,
     hf_blip2_opt_2_7b_deployment,
+    meta_llama3_8b_instruct_deployment,
     vad_deployment,
     whisper_medium_deployment,
 )
