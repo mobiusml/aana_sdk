@@ -31,8 +31,6 @@ class AanaSDK:
         self.endpoints: dict[str, Endpoint] = {}
         self.deployments: dict[str, Deployment] = {}
 
-        run_alembic_migrations(aana_settings)
-
         if aana_settings.task_queue.enabled:
             self.add_task_queue(deploy=False)
 
@@ -82,6 +80,10 @@ class AanaSDK:
             # TODO: check if the port is already in use if serve is not running yet or
             # check if the port is the same as an existing serve instance if serve is running
             serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
+
+    def migrate(self):
+        """Run Alembic migrations."""
+        run_alembic_migrations(aana_settings)
 
     def show_status(self, app_name: str):
         """Show the status of the application.
