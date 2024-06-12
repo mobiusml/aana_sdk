@@ -22,3 +22,7 @@ def test_media_id_creation():
 
     with pytest.raises(ValidationError):
         TestModel(media_id="").media_id  # noqa: B018
+
+    # MediaId is a string with a maximum length of 36
+    with pytest.raises(ValidationError):
+        TestModel(media_id="a" * 37).media_id  # noqa: B018
