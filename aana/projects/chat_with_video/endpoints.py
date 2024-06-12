@@ -94,7 +94,7 @@ class IndexVideoEndpoint(Endpoint):
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
         video_obj: Video = await run_remote(download_video)(video_input=video)
-        video_duration = await run_remote(get_video_duration)(video_input=video)
+        video_duration = await run_remote(get_video_duration)(video=video_obj)
         save_video(video=video_obj, duration=video_duration)
 
         audio: Audio = extract_audio(video=video_obj)
