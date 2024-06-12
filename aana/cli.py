@@ -41,21 +41,34 @@ def load_app(app_path: str):
 @click.option(
     "--port", default=8000, type=int, help="Port to run the application (default: 8000)"
 )
-@click.option(
-    "--show-logs", is_flag=True, default=True, help="Show logs (default: True)"
-)
+@click.option("--hide-logs", is_flag=True, help="Hide logs")
 @click.option(
     "--ray-address",
     default="auto",
     type=str,
     help="Address of the Ray cluster (default: auto)",
 )
-def deploy(app_path: str, host: str, port: int, show_logs: bool, ray_address: str):
+@click.option(
+    "--skip-migrations",
+    is_flag=True,
+    help="Skip migrations before deploying",
+)
+def deploy(
+    app_path: str,
+    host: str,
+    port: int,
+    hide_logs: bool,
+    ray_address: str,
+    skip_migrations: bool,
+):
     """Deploy the application.
 
     APP_PATH: Path to the application (module:app).
     """
     aana_app = load_app(app_path)
+    if not skip_migrations:
+        aana_app.migrate()
+    show_logs = not hide_logs
     aana_app.connect(port=port, host=host, show_logs=show_logs, address=ray_address)
     aana_app.deploy(blocking=True)
 
@@ -96,6 +109,7 @@ def build(app_path: str, host: str, port: int, app_config_name: str, config_name
         app_config_name=app_config_name,
         config_name=config_name,
     )
+
 
 @cli.command()
 @click.argument("app_path", type=str)
