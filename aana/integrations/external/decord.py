@@ -74,6 +74,7 @@ def extract_frames(video: Video, params: VideoParams) -> FramesDict:
         frame_ids=list(range(len(frames))),
     )
 
+
 def get_video_duration(video: Video) -> float:
     """Extract video duration using decord.
 
@@ -85,9 +86,7 @@ def get_video_duration(video: Video) -> float:
     """
     device = decord.cpu(0)
     try:
-        video_reader = decord.VideoReader(
-            str(video.path), ctx=device, num_threads=1
-        )
+        video_reader = decord.VideoReader(str(video.path), ctx=device, num_threads=1)
     except DECORDError:
         return 0.0
 
