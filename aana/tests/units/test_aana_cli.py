@@ -97,6 +97,7 @@ def test_aana_build(config_paths):
     expected_app_config = (
         "from aana.projects.lowercase.app import aana_app\n"
         "\n"
+        "task_queue_deployment = aana_app.get_deployment_app('task_queue_deployment')\n"
         "lowercase_deployment = aana_app.get_deployment_app('lowercase_deployment')\n"
         "lowercase_app = aana_app.get_main_app()\n"
     )
@@ -133,9 +134,13 @@ def test_aana_build(config_paths):
 
     assert config["http_options"]["port"] == port
     assert "applications" in config
-    assert len(config["applications"]) == 2
+    assert len(config["applications"]) == 3
     for app in config["applications"]:
-        assert app["name"] in ["lowercase_deployment", "lowercase_app"]
+        assert app["name"] in [
+            "lowercase_deployment",
+            "lowercase_app",
+            "task_queue_deployment",
+        ]
 
 
 def test_aana_missing_app_path():
@@ -145,5 +150,9 @@ def test_aana_missing_app_path():
     assert "Error: Missing argument 'APP_PATH'." in result.output
 
     result = CliRunner().invoke(cli, ["build"])
+    assert result.exit_code == 2
+    assert "Error: Missing argument 'APP_PATH'." in result.output
+
+    result = CliRunner().invoke(cli, ["migrate"])
     assert result.exit_code == 2
     assert "Error: Missing argument 'APP_PATH'." in result.output

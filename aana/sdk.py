@@ -31,7 +31,8 @@ class AanaSDK:
         self.endpoints: dict[str, Endpoint] = {}
         self.deployments: dict[str, Deployment] = {}
 
-        run_alembic_migrations(aana_settings)
+        if aana_settings.task_queue.enabled:
+            self.add_task_queue(deploy=False)
 
     def connect(
         self,
@@ -80,6 +81,10 @@ class AanaSDK:
             # check if the port is the same as an existing serve instance if serve is running
             serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
 
+    def migrate(self):
+        """Run Alembic migrations."""
+        run_alembic_migrations(aana_settings)
+
     def show_status(self, app_name: str):
         """Show the status of the application.
 
@@ -103,6 +108,32 @@ class AanaSDK:
             print_header(f"Deployment {deployment_name}")
             print_status("Status", deployment_status.status.value)
             print(f"\n{deployment_status.message}\n")
+
+    def add_task_queue(self, blocking: bool = False, deploy: bool = False):
+        """Add a task queue deployment.
+
+        Args:
+            blocking (bool, optional): If True, the function will block until deployment is complete. Defaults to False.
+            deploy (bool, optional): If True, the deployment will be deployed immediately,
+                    otherwise it will be registered and can be deployed later when deploy() is called. Defaults to False.
+        """
+        from aana.deployments.task_queue_deployment import (
+            TaskQueueConfig,
+            TaskQueueDeployment,
+        )
+
+        task_queue_deployment = TaskQueueDeployment.options(
+            num_replicas=1,
+            user_config=TaskQueueConfig(
+                app_name=self.name,
+            ).model_dump(mode="json"),
+        )
+        self.register_deployment(
+            "task_queue_deployment",
+            task_queue_deployment,
+            deploy=deploy,
+            blocking=blocking,
+        )
 
     def register_deployment(
         self,
