@@ -115,7 +115,7 @@ If you are using Visual Studio Code, you can run this repository in a
 run everything you need for the repo in an isolated environment via docker on a host system. 
 Running it somewhere other than a Mobius dev server may cause issues due to the mounts of `/nas` and
 `/nas2` inside the container, but you can specify the environment variables for VS Code `PATH_NAS` and
-`PATH_NAS2` which will override the default locations used for these mount points (otherise they default 
+`PATH_NAS2` which will override the default locations used for these mount points (otherwise they default 
 to look for `/nas` and `/nas2`). You can read more about environment variables for dev containers 
 [here](https://containers.dev/implementors/json_reference/).
 
@@ -201,7 +201,7 @@ This will run the tests normally using GPU and save the deployment cache after r
 
 
 ## Databases
-The project uses two databases: a vector database as well as a tradtional SQL database,
+The project uses two databases: a vector database as well as a traditional SQL database,
 referred to internally as vectorstore and datastore, respectively.
 
 ### Vectorstore
@@ -225,7 +225,7 @@ Higher level code for interacting with the ORM is available in `aana.repository.
 
 ## Settings
 
-Here are the environment variables that can be used to configure the Aaana SDK:
+Here are the environment variables that can be used to configure the Aana SDK:
 - TMP_DATA_DIR: The directory to store temporary data. Default: `/tmp/aana`.
 - NUM_WORKERS: The number of request workers. Default: `2`.
 - DB_CONFIG: The database configuration in the format `{"datastore_type": "sqlite", "datastore_config": {"path": "/path/to/sqlite.db"}}`. Currently only SQLite and PostgreSQL are supported. Default: `{"datastore_type": "sqlite", "datastore_config": {"path": "/var/lib/aana_data"}}`.
