@@ -1,6 +1,7 @@
 # ruff: noqa: A002
 from collections.abc import Iterable
 from typing import Generic, TypeVar
+from uuid import UUID
 
 from sqlalchemy.orm import Session
 
@@ -42,11 +43,11 @@ class BaseRepository(Generic[T]):
         self.session.commit()
         return entities
 
-    def read(self, item_id: int | MediaId) -> T:
+    def read(self, item_id: int | MediaId | UUID) -> T:
         """Reads a single item by id from the database.
 
         Args:
-            item_id (int | MediaId): id of the item to retrieve
+            item_id (int | MediaId | UUID): id of the item to retrieve
 
         Returns:
             The corresponding entity from the database if found.
@@ -54,7 +55,7 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        entity: T | None = self.session.query(self.model_class).get(str(item_id))
+        entity: T | None = self.session.query(self.model_class).get(item_id)
         if not entity:
             raise NotFoundException(self.table_name, item_id)
         return entity
@@ -73,11 +74,11 @@ class BaseRepository(Generic[T]):
     #     #     is not None
     #     # )
 
-    def delete(self, id: int | MediaId, check: bool = False) -> T | None:
+    def delete(self, id: int | MediaId | UUID, check: bool = False) -> T | None:
         """Deletes an entity.
 
         Args:
-            id (int | MediaId): the id of the item to be deleted.
+            id (int | MediaId | UUID): the id of the item to be deleted.
             check (bool): whether to raise if the entity is not found (defaults to True).
 
         Returns:
@@ -86,7 +87,7 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        entity = self.read(str(id))
+        entity = self.read(id)
         if entity:
             self.session.delete(entity)
             self.session.flush()
