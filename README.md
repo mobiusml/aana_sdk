@@ -22,13 +22,7 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-4. Run migrations.
-
-```bash
-poetry run aana migrate aana.projects.chat_with_video.app:aana_app
-```
-
-5. Run the SDK.
+4. Run the SDK.
 
 ```bash
 HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana.projects.chat_with_video.app:aana_app --port 8000 --host 0.0.0.0
@@ -48,7 +42,7 @@ The documentation will be available at http://localhost:8000/docs and http://loc
 
 For HuggingFace Transformers, you need to specify HF_AUTH environment variable with your HuggingFace API token.
 
-6. Send a request to the server.
+5. Send a request to the server.
 
 You can find examples in the [demo notebook](notebooks/demo.ipynb).
 
@@ -68,6 +62,12 @@ Use --help to see the available options.
 
 ```bash
 poetry run aana build --help
+```
+
+When you are running the Aana application using the Serve config files, you need to run the migrations to create the database tables for the application. To run the migrations, use the following command:
+
+```bash
+poetry run aana migrate aana.projects.chat_with_video.app:aana_app
 ```
 
 ## Run with Docker
