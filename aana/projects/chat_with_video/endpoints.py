@@ -16,7 +16,7 @@ from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
 from aana.core.models.whisper import BatchedWhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.integrations.external.decord import generate_frames
+from aana.integrations.external.decord import generate_frames, get_video_duration
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
@@ -93,6 +93,9 @@ class IndexVideoEndpoint(Endpoint):
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
         video_obj: Video = await run_remote(download_video)(video_input=video)
+        video_duration = await run_remote(get_video_duration)(video_input=video)
+        save_video(video=video_obj, duration=video_duration)
+
         audio: Audio = extract_audio(video=video_obj)
 
         vad_output = await self.vad_handle.asr_preprocess_vad(
@@ -121,13 +124,12 @@ class IndexVideoEndpoint(Endpoint):
         captions = []
         timestamps = []
         frame_ids = []
-        video_duration = 0.0
+
         async for frames_dict in run_remote(generate_frames)(
             video=video_obj, params=video_params
         ):
             timestamps.extend(frames_dict["timestamps"])
             frame_ids.extend(frames_dict["frame_ids"])
-            video_duration = frames_dict["duration"]
 
             captioning_output = await self.captioning_handle.generate_batch(
                 images=frames_dict["frames"]
@@ -138,8 +140,6 @@ class IndexVideoEndpoint(Endpoint):
                 "captions": captioning_output["captions"],
                 "timestamps": frames_dict["timestamps"],
             }
-
-        save_video(video=video_obj, duration=video_duration)
 
         save_video_transcription_output = save_video_transcription(
             model_name=asr_model_name,
