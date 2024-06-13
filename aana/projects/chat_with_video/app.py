@@ -1,7 +1,7 @@
 from aana.configs.deployments import (
     hf_blip2_opt_2_7b_deployment,
+    meta_llama3_8b_instruct_deployment,
     vad_deployment,
-    vllm_llama2_7b_chat_deployment,
     whisper_medium_deployment,
 )
 from aana.projects.chat_with_video.endpoints import (
@@ -27,7 +27,7 @@ deployments = [
     },
     {
         "name": "llm_deployment",
-        "instance": vllm_llama2_7b_chat_deployment,
+        "instance": meta_llama3_8b_instruct_deployment,
     },
 ]
 

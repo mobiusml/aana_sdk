@@ -1,8 +1,8 @@
 {
     "segments": [
         {
-            "confidence": 0.9158961166806766,
-            "no_speech_confidence": 0.007335662841796875,
+            "confidence": 0.9157558281907482,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " Now I want to return to the conservation of mechanical energy.",
             "time_interval": {
                 "end": 4.94,
@@ -10,7 +10,7 @@
             },
             "words": [
                 {
-                    "alignment_confidence": 0.8818359375,
+                    "alignment_confidence": 0.88134765625,
                     "time_interval": {
                         "end": 0.24,
                         "start": 0.0
@@ -18,7 +18,7 @@
                     "word": " Now"
                 },
                 {
-                    "alignment_confidence": 0.94287109375,
+                    "alignment_confidence": 0.9443359375,
                     "time_interval": {
                         "end": 0.36,
                         "start": 0.24
@@ -76,7 +76,7 @@
                 {
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 3.72,
+                        "end": 3.7,
                         "start": 3.34
                     },
                     "word": " of"
@@ -85,7 +85,7 @@
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
                         "end": 4.32,
-                        "start": 3.72
+                        "start": 3.7
                     },
                     "word": " mechanical"
                 },
@@ -100,8 +100,8 @@
             ]
         },
         {
-            "confidence": 0.9158961166806766,
-            "no_speech_confidence": 0.007335662841796875,
+            "confidence": 0.9157558281907482,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " I have here a pendulum.",
             "time_interval": {
                 "end": 9.1,
@@ -151,8 +151,8 @@
             ]
         },
         {
-            "confidence": 0.9158961166806766,
-            "no_speech_confidence": 0.007335662841796875,
+            "confidence": 0.9157558281907482,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " I have an object that weighs 15 kilograms",
             "time_interval": {
                 "end": 12.2,
@@ -226,8 +226,8 @@
             ]
         },
         {
-            "confidence": 0.9158961166806766,
-            "no_speech_confidence": 0.007335662841796875,
+            "confidence": 0.9157558281907482,
+            "no_speech_confidence": 0.007221221923828125,
             "text": " and I can lift it up one meter, which I have done now.",
             "time_interval": {
                 "end": 15.4,
@@ -283,7 +283,7 @@
                     "word": " up"
                 },
                 {
-                    "alignment_confidence": 0.9287109375,
+                    "alignment_confidence": 0.9306640625,
                     "time_interval": {
                         "end": 13.88,
                         "start": 13.4
@@ -315,7 +315,7 @@
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.9970703125,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
                         "end": 14.72,
                         "start": 14.54
@@ -342,7 +342,7 @@
         },
         {
             "confidence": 0.8740019997697033,
-            "no_speech_confidence": 0.107177734375,
+            "no_speech_confidence": 0.108642578125,
             "text": " That means I've done work, MGH is the work I have done, believe me.",
             "time_interval": {
                 "end": 19.84,
@@ -390,7 +390,7 @@
                     "word": " work,"
                 },
                 {
-                    "alignment_confidence": 0.5943603515625,
+                    "alignment_confidence": 0.595947265625,
                     "time_interval": {
                         "end": 18.12,
                         "start": 17.7
@@ -398,7 +398,7 @@
                     "word": " MGH"
                 },
                 {
-                    "alignment_confidence": 0.95947265625,
+                    "alignment_confidence": 0.96044921875,
                     "time_interval": {
                         "end": 18.4,
                         "start": 18.12
@@ -465,7 +465,7 @@
         },
         {
             "confidence": 0.8740019997697033,
-            "no_speech_confidence": 0.107177734375,
+            "no_speech_confidence": 0.108642578125,
             "text": " I've increased the potential energy of this object.",
             "time_interval": {
                 "end": 22.46,
@@ -540,7 +540,7 @@
         },
         {
             "confidence": 0.8740019997697033,
-            "no_speech_confidence": 0.107177734375,
+            "no_speech_confidence": 0.108642578125,
             "text": " 15 times 10 is about 150 joules.",
             "time_interval": {
                 "end": 25.74,
@@ -548,7 +548,7 @@
             },
             "words": [
                 {
-                    "alignment_confidence": 0.76318359375,
+                    "alignment_confidence": 0.765625,
                     "time_interval": {
                         "end": 23.42,
                         "start": 23.06
@@ -556,7 +556,7 @@
                     "word": " 15"
                 },
                 {
-                    "alignment_confidence": 0.8837890625,
+                    "alignment_confidence": 0.88037109375,
                     "time_interval": {
                         "end": 23.76,
                         "start": 23.42
@@ -572,7 +572,7 @@
                     "word": " 10"
                 },
                 {
-                    "alignment_confidence": 0.66015625,
+                    "alignment_confidence": 0.6630859375,
                     "time_interval": {
                         "end": 24.36,
                         "start": 24.14
@@ -596,7 +596,7 @@
                     "word": " 150"
                 },
                 {
-                    "alignment_confidence": 0.972412109375,
+                    "alignment_confidence": 0.97216796875,
                     "time_interval": {
                         "end": 25.74,
                         "start": 25.1
@@ -607,7 +607,7 @@
         },
         {
             "confidence": 0.8740019997697033,
-            "no_speech_confidence": 0.107177734375,
+            "no_speech_confidence": 0.108642578125,
             "text": " If I let it fall, then that will be converted to kinetic energy.",
             "time_interval": {
                 "end": 30.9,
@@ -721,8 +721,8 @@
             ]
         },
         {
-            "confidence": 0.9110796087700519,
-            "no_speech_confidence": 0.03814697265625,
+            "confidence": 0.9112219726865124,
+            "no_speech_confidence": 0.039886474609375,
             "text": " If I would let it swing from one meter height",
             "time_interval": {
                 "end": 36.8,
@@ -730,7 +730,7 @@
             },
             "words": [
                 {
-                    "alignment_confidence": 0.80224609375,
+                    "alignment_confidence": 0.80126953125,
                     "time_interval": {
                         "end": 32.14,
                         "start": 31.7
@@ -786,7 +786,7 @@
                     "word": " from"
                 },
                 {
-                    "alignment_confidence": 0.955078125,
+                    "alignment_confidence": 0.95361328125,
                     "time_interval": {
                         "end": 36.02,
                         "start": 35.82
@@ -794,7 +794,7 @@
                     "word": " one"
                 },
                 {
-                    "alignment_confidence": 0.85546875,
+                    "alignment_confidence": 0.85498046875,
                     "time_interval": {
                         "end": 36.22,
                         "start": 36.02
@@ -812,8 +812,8 @@
             ]
         },
         {
-            "confidence": 0.9110796087700519,
-            "no_speech_confidence": 0.03814697265625,
+            "confidence": 0.9112219726865124,
+            "no_speech_confidence": 0.039886474609375,
             "text": " and you would be there and it would hit you, you'd be dead.",
             "time_interval": {
                 "end": 40.04,
@@ -821,7 +821,7 @@
             },
             "words": [
                 {
-                    "alignment_confidence": 0.79736328125,
+                    "alignment_confidence": 0.80078125,
                     "time_interval": {
                         "end": 37.3,
                         "start": 36.8
@@ -901,7 +901,7 @@
                     "word": " you,"
                 },
                 {
-                    "alignment_confidence": 0.94091796875,
+                    "alignment_confidence": 0.940673828125,
                     "time_interval": {
                         "end": 39.34,
                         "start": 39.1
@@ -927,8 +927,8 @@
             ]
         },
         {
-            "confidence": 0.9110796087700519,
-            "no_speech_confidence": 0.03814697265625,
+            "confidence": 0.9112219726865124,
+            "no_speech_confidence": 0.039886474609375,
             "text": " 150 joules is enough to kill you.",
             "time_interval": {
                 "end": 43.16,
@@ -994,8 +994,8 @@
             ]
         },
         {
-            "confidence": 0.9110796087700519,
-            "no_speech_confidence": 0.03814697265625,
+            "confidence": 0.9112219726865124,
+            "no_speech_confidence": 0.039886474609375,
             "text": " They use these devices.",
             "time_interval": {
                 "end": 45.68,
@@ -1037,94 +1037,43 @@
             ]
         },
         {
-            "confidence": 0.8523435284930437,
-            "no_speech_confidence": 0.68212890625,
-            "text": " They're called a wrecker ball.",
-            "time_interval": {
-                "end": 47.3,
-                "start": 45.68
-            },
-            "words": [
-                {
-                    "alignment_confidence": 0.5760498046875,
-                    "time_interval": {
-                        "end": 46.28,
-                        "start": 45.68
-                    },
-                    "word": " They're"
-                },
-                {
-                    "alignment_confidence": 0.99560546875,
-                    "time_interval": {
-                        "end": 46.42,
-                        "start": 46.28
-                    },
-                    "word": " called"
-                },
-                {
-                    "alignment_confidence": 0.9423828125,
-                    "time_interval": {
-                        "end": 46.72,
-                        "start": 46.42
-                    },
-                    "word": " a"
-                },
-                {
-                    "alignment_confidence": 0.781494140625,
-                    "time_interval": {
-                        "end": 46.92,
-                        "start": 46.72
-                    },
-                    "word": " wrecker"
-                },
-                {
-                    "alignment_confidence": 0.85498046875,
-                    "time_interval": {
-                        "end": 47.3,
-                        "start": 46.92
-                    },
-                    "word": " ball."
-                }
-            ]
-        },
-        {
-            "confidence": 0.8523435284930437,
-            "no_speech_confidence": 0.68212890625,
+            "confidence": 0.850807701839507,
+            "no_speech_confidence": 0.6787109375,
             "text": " They use them to demolish buildings.",
             "time_interval": {
                 "end": 49.52,
-                "start": 47.94
+                "start": 47.12
             },
             "words": [
                 {
-                    "alignment_confidence": 0.984375,
+                    "alignment_confidence": 0.344970703125,
                     "time_interval": {
-                        "end": 48.14,
-                        "start": 47.94
+                        "end": 47.78,
+                        "start": 47.12
                     },
                     "word": " They"
                 },
                 {
-                    "alignment_confidence": 0.9365234375,
+                    "alignment_confidence": 0.05169677734375,
                     "time_interval": {
-                        "end": 48.36,
-                        "start": 48.14
+                        "end": 48.32,
+                        "start": 47.78
                     },
                     "word": " use"
                 },
                 {
-                    "alignment_confidence": 0.9970703125,
+                    "alignment_confidence": 0.97509765625,
                     "time_interval": {
-                        "end": 48.52,
-                        "start": 48.36
+                        "end": 48.5,
+                        "start": 48.32
                     },
                     "word": " them"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 48.68,
-                        "start": 48.52
+                        "end": 48.64,
+                        "start": 48.5
                     },
                     "word": " to"
                 },
@@ -1132,12 +1081,12 @@
                     "alignment_confidence": 0.999755859375,
                     "time_interval": {
                         "end": 49.02,
-                        "start": 48.68
+                        "start": 48.64
                     },
                     "word": " demolish"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
                         "end": 49.52,
                         "start": 49.02
@@ -1147,19 +1096,19 @@
             ]
         },
         {
-            "confidence": 0.8523435284930437,
-            "no_speech_confidence": 0.68212890625,
+            "confidence": 0.850807701839507,
+            "no_speech_confidence": 0.6787109375,
             "text": " You lift up a very heavy object, even heavier than this,",
             "time_interval": {
                 "end": 54.14,
-                "start": 50.38
+                "start": 50.4
             },
             "words": [
                 {
-                    "alignment_confidence": 0.99658203125,
+                    "alignment_confidence": 0.994140625,
                     "time_interval": {
-                        "end": 50.78,
-                        "start": 50.38
+                        "end": 50.76,
+                        "start": 50.4
                     },
                     "word": " You"
                 },
@@ -1167,14 +1116,14 @@
                     "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 51.08,
-                        "start": 50.78
+                        "start": 50.76
                     },
                     "word": " lift"
                 },
                 {
                     "alignment_confidence": 0.9970703125,
                     "time_interval": {
-                        "end": 51.54,
+                        "end": 51.58,
                         "start": 51.08
                     },
                     "word": " up"
@@ -1182,8 +1131,8 @@
                 {
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 51.72,
-                        "start": 51.54
+                        "end": 51.74,
+                        "start": 51.58
                     },
                     "word": " a"
                 },
@@ -1191,7 +1140,7 @@
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 52.02,
-                        "start": 51.72
+                        "start": 51.74
                     },
                     "word": " very"
                 },
@@ -1212,7 +1161,7 @@
                     "word": " object,"
                 },
                 {
-                    "alignment_confidence": 0.9970703125,
+                    "alignment_confidence": 0.99462890625,
                     "time_interval": {
                         "end": 53.18,
                         "start": 52.9
@@ -1228,7 +1177,7 @@
                     "word": " heavier"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 53.62,
                         "start": 53.42
@@ -1246,24 +1195,24 @@
             ]
         },
         {
-            "confidence": 0.8523435284930437,
-            "no_speech_confidence": 0.68212890625,
+            "confidence": 0.850807701839507,
+            "no_speech_confidence": 0.6787109375,
             "text": " and then you let it go, you swing it,",
             "time_interval": {
-                "end": 69.68,
-                "start": 54.48
+                "end": 57.32,
+                "start": 54.56
             },
             "words": [
                 {
-                    "alignment_confidence": 0.99560546875,
+                    "alignment_confidence": 0.99365234375,
                     "time_interval": {
                         "end": 54.92,
-                        "start": 54.48
+                        "start": 54.56
                     },
                     "word": " and"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 55.58,
                         "start": 54.92
@@ -1303,7 +1252,7 @@
                     "word": " go,"
                 },
                 {
-                    "alignment_confidence": 0.99462890625,
+                    "alignment_confidence": 0.994140625,
                     "time_interval": {
                         "end": 56.7,
                         "start": 56.46
@@ -1321,7 +1270,7 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 69.68,
+                        "end": 57.32,
                         "start": 56.9
                     },
                     "word": " it,"
@@ -1329,50 +1278,240 @@
             ]
         },
         {
-            "confidence": 0.9180450961297113,
-            "no_speech_confidence": 0.007781982421875,
-            "text": " and it breaks a building.",
+            "confidence": 0.850807701839507,
+            "no_speech_confidence": 0.6787109375,
+            "text": " thereby converting gravitational potential energy",
             "time_interval": {
-                "end": 71.38,
-                "start": 69.68
+                "end": 60.14,
+                "start": 57.4
             },
             "words": [
                 {
-                    "alignment_confidence": 0.4404296875,
+                    "alignment_confidence": 0.99462890625,
                     "time_interval": {
-                        "end": 70.54,
-                        "start": 69.68
+                        "end": 57.7,
+                        "start": 57.4
+                    },
+                    "word": " thereby"
+                },
+                {
+                    "alignment_confidence": 0.998046875,
+                    "time_interval": {
+                        "end": 58.24,
+                        "start": 57.7
+                    },
+                    "word": " converting"
+                },
+                {
+                    "alignment_confidence": 0.99853515625,
+                    "time_interval": {
+                        "end": 58.98,
+                        "start": 58.24
+                    },
+                    "word": " gravitational"
+                },
+                {
+                    "alignment_confidence": 0.98486328125,
+                    "time_interval": {
+                        "end": 59.76,
+                        "start": 58.98
+                    },
+                    "word": " potential"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 60.14,
+                        "start": 59.76
+                    },
+                    "word": " energy"
+                }
+            ]
+        },
+        {
+            "confidence": 0.8986252293616015,
+            "no_speech_confidence": 0.13134765625,
+            "text": " into kinetic energy and that way you can demolish a building.",
+            "time_interval": {
+                "end": 65.22,
+                "start": 60.14
+            },
+            "words": [
+                {
+                    "alignment_confidence": 0.52587890625,
+                    "time_interval": {
+                        "end": 60.8,
+                        "start": 60.14
+                    },
+                    "word": " into"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 61.62,
+                        "start": 60.8
+                    },
+                    "word": " kinetic"
+                },
+                {
+                    "alignment_confidence": 1.0,
+                    "time_interval": {
+                        "end": 62.22,
+                        "start": 61.62
+                    },
+                    "word": " energy"
+                },
+                {
+                    "alignment_confidence": 0.57177734375,
+                    "time_interval": {
+                        "end": 62.56,
+                        "start": 62.22
                     },
                     "word": " and"
                 },
                 {
-                    "alignment_confidence": 0.98095703125,
+                    "alignment_confidence": 0.97314453125,
                     "time_interval": {
-                        "end": 70.66,
-                        "start": 70.54
+                        "end": 62.78,
+                        "start": 62.56
                     },
-                    "word": " it"
+                    "word": " that"
                 },
                 {
-                    "alignment_confidence": 0.99755859375,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 70.94,
-                        "start": 70.66
+                        "end": 63.3,
+                        "start": 62.78
                     },
-                    "word": " breaks"
+                    "word": " way"
                 },
                 {
-                    "alignment_confidence": 0.9775390625,
+                    "alignment_confidence": 0.92236328125,
                     "time_interval": {
-                        "end": 71.08,
-                        "start": 70.94
+                        "end": 63.46,
+                        "start": 63.3
+                    },
+                    "word": " you"
+                },
+                {
+                    "alignment_confidence": 0.998046875,
+                    "time_interval": {
+                        "end": 64.3,
+                        "start": 63.46
+                    },
+                    "word": " can"
+                },
+                {
+                    "alignment_confidence": 0.999267578125,
+                    "time_interval": {
+                        "end": 64.78,
+                        "start": 64.3
+                    },
+                    "word": " demolish"
+                },
+                {
+                    "alignment_confidence": 0.99609375,
+                    "time_interval": {
+                        "end": 64.92,
+                        "start": 64.78
                     },
                     "word": " a"
                 },
                 {
                     "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 71.38,
+                        "end": 65.22,
+                        "start": 64.92
+                    },
+                    "word": " building."
+                }
+            ]
+        },
+        {
+            "confidence": 0.8986252293616015,
+            "no_speech_confidence": 0.13134765625,
+            "text": " You just let it hit and it breaks a building.",
+            "time_interval": {
+                "end": 71.4,
+                "start": 65.5
+            },
+            "words": [
+                {
+                    "alignment_confidence": 0.99169921875,
+                    "time_interval": {
+                        "end": 65.94,
+                        "start": 65.5
+                    },
+                    "word": " You"
+                },
+                {
+                    "alignment_confidence": 0.99853515625,
+                    "time_interval": {
+                        "end": 66.14,
+                        "start": 65.94
+                    },
+                    "word": " just"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 66.28,
+                        "start": 66.14
+                    },
+                    "word": " let"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 66.46,
+                        "start": 66.28
+                    },
+                    "word": " it"
+                },
+                {
+                    "alignment_confidence": 0.998046875,
+                    "time_interval": {
+                        "end": 67.04,
+                        "start": 66.46
+                    },
+                    "word": " hit"
+                },
+                {
+                    "alignment_confidence": 0.382080078125,
+                    "time_interval": {
+                        "end": 70.52,
+                        "start": 67.04
+                    },
+                    "word": " and"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 70.7,
+                        "start": 70.52
+                    },
+                    "word": " it"
+                },
+                {
+                    "alignment_confidence": 0.99755859375,
+                    "time_interval": {
+                        "end": 70.96,
+                        "start": 70.7
+                    },
+                    "word": " breaks"
+                },
+                {
+                    "alignment_confidence": 0.98779296875,
+                    "time_interval": {
+                        "end": 71.08,
+                        "start": 70.96
+                    },
+                    "word": " a"
+                },
+                {
+                    "alignment_confidence": 1.0,
+                    "time_interval": {
+                        "end": 71.4,
                         "start": 71.08
                     },
                     "word": " building."
@@ -1380,24 +1519,24 @@
             ]
         },
         {
-            "confidence": 0.9180450961297113,
-            "no_speech_confidence": 0.007781982421875,
+            "confidence": 0.8986252293616015,
+            "no_speech_confidence": 0.13134765625,
             "text": " And that's the whole idea of wrecking.",
             "time_interval": {
-                "end": 73.94,
-                "start": 71.58
+                "end": 74.04,
+                "start": 71.5
             },
             "words": [
                 {
-                    "alignment_confidence": 0.9609375,
+                    "alignment_confidence": 0.9638671875,
                     "time_interval": {
                         "end": 71.72,
-                        "start": 71.58
+                        "start": 71.5
                     },
                     "word": " And"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.998291015625,
                     "time_interval": {
                         "end": 71.96,
                         "start": 71.72
@@ -1423,40 +1562,40 @@
                 {
                     "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 72.84,
+                        "end": 72.88,
                         "start": 72.18
                     },
                     "word": " idea"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 73.4,
-                        "start": 72.84
+                        "end": 73.42,
+                        "start": 72.88
                     },
                     "word": " of"
                 },
                 {
-                    "alignment_confidence": 0.9619140625,
+                    "alignment_confidence": 0.949951171875,
                     "time_interval": {
-                        "end": 73.94,
-                        "start": 73.4
+                        "end": 74.04,
+                        "start": 73.42
                     },
                     "word": " wrecking."
                 }
             ]
         },
         {
-            "confidence": 0.9180450961297113,
-            "no_speech_confidence": 0.007781982421875,
-            "text": " So you're using then the conversion",
+            "confidence": 0.8986252293616015,
+            "no_speech_confidence": 0.13134765625,
+            "text": " So you are using, then, the conversion of gravitational",
             "time_interval": {
-                "end": 78.08,
+                "end": 80.1,
                 "start": 75.5
             },
             "words": [
                 {
-                    "alignment_confidence": 0.96240234375,
+                    "alignment_confidence": 0.9599609375,
                     "time_interval": {
                         "end": 75.84,
                         "start": 75.5
@@ -1464,108 +1603,116 @@
                     "word": " So"
                 },
                 {
-                    "alignment_confidence": 0.6763916015625,
+                    "alignment_confidence": 0.9814453125,
                     "time_interval": {
-                        "end": 76.12,
+                        "end": 76.04,
                         "start": 75.84
                     },
-                    "word": " you're"
+                    "word": " you"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.62939453125,
                     "time_interval": {
-                        "end": 76.44,
-                        "start": 76.12
+                        "end": 76.16,
+                        "start": 76.04
                     },
-                    "word": " using"
+                    "word": " are"
                 },
                 {
-                    "alignment_confidence": 0.2822265625,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 76.96,
-                        "start": 76.44
+                        "end": 76.46,
+                        "start": 76.16
                     },
-                    "word": " then"
+                    "word": " using,"
                 },
                 {
-                    "alignment_confidence": 0.986328125,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 77.48,
-                        "start": 76.96
+                        "end": 77.0,
+                        "start": 76.94
+                    },
+                    "word": " then,"
+                },
+                {
+                    "alignment_confidence": 0.998046875,
+                    "time_interval": {
+                        "end": 77.5,
+                        "start": 77.3
                     },
                     "word": " the"
                 },
                 {
                     "alignment_confidence": 0.99658203125,
                     "time_interval": {
-                        "end": 78.08,
-                        "start": 77.48
+                        "end": 78.18,
+                        "start": 77.5
                     },
                     "word": " conversion"
-                }
-            ]
-        },
-        {
-            "confidence": 0.9180450961297113,
-            "no_speech_confidence": 0.007781982421875,
-            "text": " of gravitational potential energy to kinetic energy.",
-            "time_interval": {
-                "end": 83.1,
-                "start": 78.08
-            },
-            "words": [
+                },
                 {
                     "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 79.64,
-                        "start": 78.08
+                        "start": 78.18
                     },
                     "word": " of"
                 },
                 {
-                    "alignment_confidence": 0.99658203125,
+                    "alignment_confidence": 0.9970703125,
                     "time_interval": {
                         "end": 80.1,
                         "start": 79.64
                     },
                     "word": " gravitational"
-                },
+                }
+            ]
+        },
+        {
+            "confidence": 0.9557131384740162,
+            "no_speech_confidence": 0.0328369140625,
+            "text": " potential energy to kinetic energy.",
+            "time_interval": {
+                "end": 83.08,
+                "start": 80.1
+            },
+            "words": [
                 {
-                    "alignment_confidence": 0.982421875,
+                    "alignment_confidence": 0.1656494140625,
                     "time_interval": {
-                        "end": 80.66,
+                        "end": 80.58,
                         "start": 80.1
                     },
                     "word": " potential"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 81.18,
-                        "start": 80.66
+                        "end": 81.26,
+                        "start": 80.58
                     },
                     "word": " energy"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.9716796875,
                     "time_interval": {
-                        "end": 82.06,
-                        "start": 81.18
+                        "end": 82.24,
+                        "start": 81.26
                     },
                     "word": " to"
                 },
                 {
-                    "alignment_confidence": 1.0,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 82.62,
-                        "start": 82.06
+                        "start": 82.24
                     },
                     "word": " kinetic"
                 },
                 {
                     "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 83.1,
+                        "end": 83.08,
                         "start": 82.62
                     },
                     "word": " energy."
@@ -1573,27 +1720,27 @@
             ]
         },
         {
-            "confidence": 0.9719737693762822,
-            "no_speech_confidence": 0.0093841552734375,
-            "text": " Now, I am such a strong believer",
+            "confidence": 0.9557131384740162,
+            "no_speech_confidence": 0.0328369140625,
+            "text": " Now, I am such a strong believer of the conservation of mechanical energy",
             "time_interval": {
-                "end": 86.74,
-                "start": 83.1
+                "end": 91.72,
+                "start": 84.02
             },
             "words": [
                 {
-                    "alignment_confidence": 0.78564453125,
+                    "alignment_confidence": 0.9921875,
                     "time_interval": {
-                        "end": 84.34,
-                        "start": 83.1
+                        "end": 84.5,
+                        "start": 84.02
                     },
                     "word": " Now,"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 85.3,
-                        "start": 84.6
+                        "end": 85.32,
+                        "start": 84.54
                     },
                     "word": " I"
                 },
@@ -1601,7 +1748,7 @@
                     "alignment_confidence": 0.99560546875,
                     "time_interval": {
                         "end": 85.58,
-                        "start": 85.3
+                        "start": 85.32
                     },
                     "word": " am"
                 },
@@ -1614,7 +1761,7 @@
                     "word": " such"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 86.06,
                         "start": 85.78
@@ -1632,56 +1779,45 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 86.74,
+                        "end": 86.72,
                         "start": 86.32
                     },
                     "word": " believer"
-                }
-            ]
-        },
-        {
-            "confidence": 0.9719737693762822,
-            "no_speech_confidence": 0.0093841552734375,
-            "text": " of the conservation of mechanical energy",
-            "time_interval": {
-                "end": 91.64,
-                "start": 86.74
-            },
-            "words": [
+                },
                 {
-                    "alignment_confidence": 0.9873046875,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
-                        "end": 88.0,
-                        "start": 86.74
+                        "end": 87.94,
+                        "start": 86.72
                     },
                     "word": " of"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 89.02,
-                        "start": 88.0
+                        "start": 87.94
                     },
                     "word": " the"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 89.74,
+                        "end": 89.72,
                         "start": 89.02
                     },
                     "word": " conservation"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 90.5,
-                        "start": 89.74
+                        "start": 89.72
                     },
                     "word": " of"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 90.9,
                         "start": 90.5
@@ -1691,7 +1827,7 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 91.64,
+                        "end": 91.72,
                         "start": 90.9
                     },
                     "word": " energy"
@@ -1699,19 +1835,19 @@
             ]
         },
         {
-            "confidence": 0.9719737693762822,
-            "no_speech_confidence": 0.0093841552734375,
+            "confidence": 0.9557131384740162,
+            "no_speech_confidence": 0.0328369140625,
             "text": " that I am willing to put my life on the line.",
             "time_interval": {
                 "end": 96.1,
-                "start": 91.64
+                "start": 91.72
             },
             "words": [
                 {
-                    "alignment_confidence": 0.97998046875,
+                    "alignment_confidence": 0.984375,
                     "time_interval": {
                         "end": 92.36,
-                        "start": 91.64
+                        "start": 91.72
                     },
                     "word": " that"
                 },
@@ -1724,26 +1860,26 @@
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.994140625,
+                    "alignment_confidence": 0.99560546875,
                     "time_interval": {
-                        "end": 92.74,
+                        "end": 92.76,
                         "start": 92.58
                     },
                     "word": " am"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 93.1,
-                        "start": 92.74
+                        "end": 93.06,
+                        "start": 92.76
                     },
                     "word": " willing"
                 },
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 93.96,
-                        "start": 93.1
+                        "end": 94.0,
+                        "start": 93.06
                     },
                     "word": " to"
                 },
@@ -1751,7 +1887,7 @@
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 94.14,
-                        "start": 93.96
+                        "start": 94.0
                     },
                     "word": " put"
                 },
@@ -1766,7 +1902,7 @@
                 {
                     "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 95.04,
+                        "end": 95.06,
                         "start": 94.38
                     },
                     "word": " life"
@@ -1775,7 +1911,7 @@
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
                         "end": 95.56,
-                        "start": 95.04
+                        "start": 95.06
                     },
                     "word": " on"
                 },
@@ -1798,19 +1934,19 @@
             ]
         },
         {
-            "confidence": 0.9719737693762822,
-            "no_speech_confidence": 0.0093841552734375,
+            "confidence": 0.9557131384740162,
+            "no_speech_confidence": 0.0328369140625,
             "text": " If I release that bob from a certain height,",
             "time_interval": {
-                "end": 103.35,
-                "start": 98.41
+                "end": 103.41,
+                "start": 98.49
             },
             "words": [
                 {
-                    "alignment_confidence": 0.986328125,
+                    "alignment_confidence": 0.98828125,
                     "time_interval": {
                         "end": 98.69,
-                        "start": 98.41
+                        "start": 98.49
                     },
                     "word": " If"
                 },
@@ -1823,9 +1959,9 @@
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 99.85,
+                        "end": 99.87,
                         "start": 99.07
                     },
                     "word": " release"
@@ -1834,23 +1970,23 @@
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 100.85,
-                        "start": 99.85
+                        "start": 99.87
                     },
                     "word": " that"
                 },
                 {
-                    "alignment_confidence": 0.90185546875,
+                    "alignment_confidence": 0.80419921875,
                     "time_interval": {
-                        "end": 101.21,
+                        "end": 101.19,
                         "start": 100.85
                     },
                     "word": " bob"
                 },
                 {
-                    "alignment_confidence": 0.99560546875,
+                    "alignment_confidence": 0.99462890625,
                     "time_interval": {
                         "end": 102.31,
-                        "start": 101.21
+                        "start": 101.19
                     },
                     "word": " from"
                 },
@@ -1871,9 +2007,9 @@
                     "word": " certain"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
-                        "end": 103.35,
+                        "end": 103.41,
                         "start": 102.81
                     },
                     "word": " height,"
@@ -1881,16 +2017,16 @@
             ]
         },
         {
-            "confidence": 0.9443063062873748,
-            "no_speech_confidence": 0.0190887451171875,
-            "text": " then that bob can never come back",
+            "confidence": 0.9174365324439642,
+            "no_speech_confidence": 0.00829315185546875,
+            "text": " then that bob can never come back to a point",
             "time_interval": {
-                "end": 108.11,
+                "end": 109.03,
                 "start": 104.85
             },
             "words": [
                 {
-                    "alignment_confidence": 0.43408203125,
+                    "alignment_confidence": 0.315673828125,
                     "time_interval": {
                         "end": 105.45,
                         "start": 104.85
@@ -1898,7 +2034,7 @@
                     "word": " then"
                 },
                 {
-                    "alignment_confidence": 0.9873046875,
+                    "alignment_confidence": 0.984375,
                     "time_interval": {
                         "end": 106.05,
                         "start": 105.45
@@ -1906,7 +2042,7 @@
                     "word": " that"
                 },
                 {
-                    "alignment_confidence": 0.410400390625,
+                    "alignment_confidence": 0.4814453125,
                     "time_interval": {
                         "end": 106.29,
                         "start": 106.05
@@ -1914,7 +2050,7 @@
                     "word": " bob"
                 },
                 {
-                    "alignment_confidence": 0.9951171875,
+                    "alignment_confidence": 0.99462890625,
                     "time_interval": {
                         "end": 106.57,
                         "start": 106.29
@@ -1922,9 +2058,9 @@
                     "word": " can"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
-                        "end": 107.03,
+                        "end": 107.05,
                         "start": 106.57
                     },
                     "word": " never"
@@ -1933,7 +2069,7 @@
                     "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 107.47,
-                        "start": 107.03
+                        "start": 107.05
                     },
                     "word": " come"
                 },
@@ -1944,20 +2080,9 @@
                         "start": 107.47
                     },
                     "word": " back"
-                }
-            ]
-        },
-        {
-            "confidence": 0.9443063062873748,
-            "no_speech_confidence": 0.0190887451171875,
-            "text": " to a point where the height is any larger.",
-            "time_interval": {
-                "end": 111.23,
-                "start": 108.11
-            },
-            "words": [
+                },
                 {
-                    "alignment_confidence": 0.99658203125,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
                         "end": 108.45,
                         "start": 108.11
@@ -1965,7 +2090,7 @@
                     "word": " to"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
                         "end": 108.61,
                         "start": 108.45
@@ -1975,21 +2100,32 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 109.01,
+                        "end": 109.03,
                         "start": 108.61
                     },
                     "word": " point"
-                },
+                }
+            ]
+        },
+        {
+            "confidence": 0.9174365324439642,
+            "no_speech_confidence": 0.00829315185546875,
+            "text": " where the height is any larger.",
+            "time_interval": {
+                "end": 111.23,
+                "start": 109.03
+            },
+            "words": [
                 {
-                    "alignment_confidence": 0.99755859375,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
                         "end": 109.71,
-                        "start": 109.01
+                        "start": 109.03
                     },
                     "word": " where"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 109.91,
                         "start": 109.71
@@ -1997,18 +2133,18 @@
                     "word": " the"
                 },
                 {
-                    "alignment_confidence": 0.994140625,
+                    "alignment_confidence": 0.9921875,
                     "time_interval": {
-                        "end": 110.21,
+                        "end": 110.23,
                         "start": 109.91
                     },
                     "word": " height"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
                         "end": 110.55,
-                        "start": 110.21
+                        "start": 110.23
                     },
                     "word": " is"
                 },
@@ -2031,24 +2167,24 @@
             ]
         },
         {
-            "confidence": 0.9443063062873748,
-            "no_speech_confidence": 0.0190887451171875,
+            "confidence": 0.9174365324439642,
+            "no_speech_confidence": 0.00829315185546875,
             "text": " If I release it from this height and it swings,",
             "time_interval": {
                 "end": 115.37,
-                "start": 111.89
+                "start": 111.91
             },
             "words": [
                 {
-                    "alignment_confidence": 0.98681640625,
+                    "alignment_confidence": 0.9833984375,
                     "time_interval": {
                         "end": 112.07,
-                        "start": 111.89
+                        "start": 111.91
                     },
                     "word": " If"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 112.35,
                         "start": 112.07
@@ -2056,7 +2192,7 @@
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.990234375,
+                    "alignment_confidence": 0.98974609375,
                     "time_interval": {
                         "end": 112.61,
                         "start": 112.35
@@ -2064,7 +2200,7 @@
                     "word": " release"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 112.77,
                         "start": 112.61
@@ -2072,7 +2208,7 @@
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 112.97,
                         "start": 112.77
@@ -2096,7 +2232,7 @@
                     "word": " height"
                 },
                 {
-                    "alignment_confidence": 0.953125,
+                    "alignment_confidence": 0.95068359375,
                     "time_interval": {
                         "end": 114.49,
                         "start": 113.77
@@ -2106,7 +2242,7 @@
                 {
                     "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 114.71,
+                        "end": 114.73,
                         "start": 114.49
                     },
                     "word": " it"
@@ -2115,23 +2251,23 @@
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
                         "end": 115.37,
-                        "start": 114.71
+                        "start": 114.73
                     },
                     "word": " swings,"
                 }
             ]
         },
         {
-            "confidence": 0.9443063062873748,
-            "no_speech_confidence": 0.0190887451171875,
+            "confidence": 0.9174365324439642,
+            "no_speech_confidence": 0.00829315185546875,
             "text": " then when it reaches here, it could not be higher.",
             "time_interval": {
-                "end": 118.63,
+                "end": 118.61,
                 "start": 116.23
             },
             "words": [
                 {
-                    "alignment_confidence": 0.99755859375,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
                         "end": 116.43,
                         "start": 116.23
@@ -2139,7 +2275,7 @@
                     "word": " then"
                 },
                 {
-                    "alignment_confidence": 0.93798828125,
+                    "alignment_confidence": 0.94091796875,
                     "time_interval": {
                         "end": 116.61,
                         "start": 116.43
@@ -2149,7 +2285,7 @@
                 {
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 116.83,
+                        "end": 116.81,
                         "start": 116.61
                     },
                     "word": " it"
@@ -2158,12 +2294,12 @@
                     "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 117.13,
-                        "start": 116.83
+                        "start": 116.81
                     },
                     "word": " reaches"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 117.43,
                         "start": 117.13
@@ -2171,7 +2307,7 @@
                     "word": " here,"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 117.57,
                         "start": 117.43
@@ -2179,7 +2315,7 @@
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.99609375,
+                    "alignment_confidence": 0.9951171875,
                     "time_interval": {
                         "end": 117.81,
                         "start": 117.57
@@ -2203,9 +2339,9 @@
                     "word": " be"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 118.63,
+                        "end": 118.61,
                         "start": 118.19
                     },
                     "word": " higher."
@@ -2213,24 +2349,24 @@
             ]
         },
         {
-            "confidence": 0.9163847405004522,
-            "no_speech_confidence": 0.1500244140625,
+            "confidence": 0.8976616176290693,
+            "no_speech_confidence": 0.1455078125,
             "text": " There is a conversion from gravitational potential energy",
             "time_interval": {
                 "end": 122.07,
-                "start": 118.63
+                "start": 118.61
             },
             "words": [
                 {
-                    "alignment_confidence": 0.580078125,
+                    "alignment_confidence": 0.64892578125,
                     "time_interval": {
                         "end": 119.39,
-                        "start": 118.63
+                        "start": 118.61
                     },
                     "word": " There"
                 },
                 {
-                    "alignment_confidence": 0.9814453125,
+                    "alignment_confidence": 0.98388671875,
                     "time_interval": {
                         "end": 119.63,
                         "start": 119.39
@@ -2248,21 +2384,21 @@
                 {
                     "alignment_confidence": 0.99560546875,
                     "time_interval": {
-                        "end": 120.21,
+                        "end": 120.19,
                         "start": 119.79
                     },
                     "word": " conversion"
                 },
                 {
-                    "alignment_confidence": 0.99560546875,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
                         "end": 120.65,
-                        "start": 120.21
+                        "start": 120.19
                     },
                     "word": " from"
                 },
                 {
-                    "alignment_confidence": 0.984375,
+                    "alignment_confidence": 0.98583984375,
                     "time_interval": {
                         "end": 121.21,
                         "start": 120.65
@@ -2270,7 +2406,7 @@
                     "word": " gravitational"
                 },
                 {
-                    "alignment_confidence": 0.9111328125,
+                    "alignment_confidence": 0.91162109375,
                     "time_interval": {
                         "end": 121.73,
                         "start": 121.21
@@ -2288,8 +2424,8 @@
             ]
         },
         {
-            "confidence": 0.9163847405004522,
-            "no_speech_confidence": 0.1500244140625,
+            "confidence": 0.8976616176290693,
+            "no_speech_confidence": 0.1455078125,
             "text": " to kinetic energy back to gravitational potential energy",
             "time_interval": {
                 "end": 125.09,
@@ -2297,7 +2433,7 @@
             },
             "words": [
                 {
-                    "alignment_confidence": 0.96240234375,
+                    "alignment_confidence": 0.95947265625,
                     "time_interval": {
                         "end": 122.27,
                         "start": 122.07
@@ -2321,7 +2457,7 @@
                     "word": " energy"
                 },
                 {
-                    "alignment_confidence": 0.93798828125,
+                    "alignment_confidence": 0.939453125,
                     "time_interval": {
                         "end": 123.25,
                         "start": 122.99
@@ -2363,8 +2499,8 @@
             ]
         },
         {
-            "confidence": 0.9163847405004522,
-            "no_speech_confidence": 0.1500244140625,
+            "confidence": 0.8976616176290693,
+            "no_speech_confidence": 0.1455078125,
             "text": " and it will come to a stop here.",
             "time_interval": {
                 "end": 126.57,
@@ -2372,7 +2508,7 @@
             },
             "words": [
                 {
-                    "alignment_confidence": 0.68701171875,
+                    "alignment_confidence": 0.6865234375,
                     "time_interval": {
                         "end": 125.17,
                         "start": 125.09
@@ -2380,7 +2516,7 @@
                     "word": " and"
                 },
                 {
-                    "alignment_confidence": 0.8720703125,
+                    "alignment_confidence": 0.8837890625,
                     "time_interval": {
                         "end": 125.35,
                         "start": 125.17
@@ -2388,7 +2524,7 @@
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.99072265625,
+                    "alignment_confidence": 0.990234375,
                     "time_interval": {
                         "end": 125.49,
                         "start": 125.35
@@ -2398,7 +2534,7 @@
                 {
                     "alignment_confidence": 0.998046875,
                     "time_interval": {
-                        "end": 125.67,
+                        "end": 125.65,
                         "start": 125.49
                     },
                     "word": " come"
@@ -2407,12 +2543,12 @@
                     "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 125.91,
-                        "start": 125.67
+                        "start": 125.65
                     },
                     "word": " to"
                 },
                 {
-                    "alignment_confidence": 0.99072265625,
+                    "alignment_confidence": 0.9912109375,
                     "time_interval": {
                         "end": 126.01,
                         "start": 125.91
@@ -2428,7 +2564,7 @@
                     "word": " stop"
                 },
                 {
-                    "alignment_confidence": 0.986328125,
+                    "alignment_confidence": 0.9853515625,
                     "time_interval": {
                         "end": 126.57,
                         "start": 126.17
@@ -2438,177 +2574,43 @@
             ]
         },
         {
-            "confidence": 0.9163847405004522,
-            "no_speech_confidence": 0.1500244140625,
-            "text": " And when it swings back,",
-            "time_interval": {
-                "end": 127.87,
-                "start": 126.57
-            },
-            "words": [
-                {
-                    "alignment_confidence": 0.99267578125,
-                    "time_interval": {
-                        "end": 126.87,
-                        "start": 126.57
-                    },
-                    "word": " And"
-                },
-                {
-                    "alignment_confidence": 0.9970703125,
-                    "time_interval": {
-                        "end": 127.03,
-                        "start": 126.87
-                    },
-                    "word": " when"
-                },
-                {
-                    "alignment_confidence": 0.9990234375,
-                    "time_interval": {
-                        "end": 127.19,
-                        "start": 127.03
-                    },
-                    "word": " it"
-                },
-                {
-                    "alignment_confidence": 0.998046875,
-                    "time_interval": {
-                        "end": 127.45,
-                        "start": 127.19
-                    },
-                    "word": " swings"
-                },
-                {
-                    "alignment_confidence": 0.99951171875,
-                    "time_interval": {
-                        "end": 127.87,
-                        "start": 127.45
-                    },
-                    "word": " back,"
-                }
-            ]
-        },
-        {
-            "confidence": 0.9171515476992799,
-            "no_speech_confidence": 0.0701904296875,
-            "text": " it should not be able to reach any higher,",
-            "time_interval": {
-                "end": 131.29,
-                "start": 127.87
-            },
-            "words": [
-                {
-                    "alignment_confidence": 0.68115234375,
-                    "time_interval": {
-                        "end": 128.55,
-                        "start": 127.87
-                    },
-                    "word": " it"
-                },
-                {
-                    "alignment_confidence": 0.99462890625,
-                    "time_interval": {
-                        "end": 128.79,
-                        "start": 128.55
-                    },
-                    "word": " should"
-                },
-                {
-                    "alignment_confidence": 0.99853515625,
-                    "time_interval": {
-                        "end": 128.97,
-                        "start": 128.79
-                    },
-                    "word": " not"
-                },
-                {
-                    "alignment_confidence": 0.9990234375,
-                    "time_interval": {
-                        "end": 129.19,
-                        "start": 128.97
-                    },
-                    "word": " be"
-                },
-                {
-                    "alignment_confidence": 0.99951171875,
-                    "time_interval": {
-                        "end": 129.37,
-                        "start": 129.19
-                    },
-                    "word": " able"
-                },
-                {
-                    "alignment_confidence": 0.99951171875,
-                    "time_interval": {
-                        "end": 129.61,
-                        "start": 129.37
-                    },
-                    "word": " to"
-                },
-                {
-                    "alignment_confidence": 0.99853515625,
-                    "time_interval": {
-                        "end": 130.17,
-                        "start": 129.61
-                    },
-                    "word": " reach"
-                },
-                {
-                    "alignment_confidence": 0.9990234375,
-                    "time_interval": {
-                        "end": 130.65,
-                        "start": 130.17
-                    },
-                    "word": " any"
-                },
-                {
-                    "alignment_confidence": 0.9990234375,
-                    "time_interval": {
-                        "end": 131.29,
-                        "start": 130.65
-                    },
-                    "word": " higher,"
-                }
-            ]
-        },
-        {
-            "confidence": 0.9171515476992799,
-            "no_speech_confidence": 0.0701904296875,
-            "text": " provided that I do not give this object an initial speed",
+            "confidence": 0.8976616176290693,
+            "no_speech_confidence": 0.1455078125,
+            "text": " Provided that I do not give this object an initial speed",
             "time_interval": {
                 "end": 136.79,
-                "start": 132.01
+                "start": 132.35
             },
             "words": [
                 {
-                    "alignment_confidence": 0.98583984375,
+                    "alignment_confidence": 0.49389657378196716,
                     "time_interval": {
-                        "end": 132.45,
-                        "start": 132.01
+                        "end": 133.03,
+                        "start": 132.35
                     },
-                    "word": " provided"
+                    "word": " Provided"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.97119140625,
                     "time_interval": {
-                        "end": 133.73,
-                        "start": 132.45
+                        "end": 133.71,
+                        "start": 133.03
                     },
                     "word": " that"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.9775390625,
                     "time_interval": {
-                        "end": 134.07,
-                        "start": 133.73
+                        "end": 134.01,
+                        "start": 133.71
                     },
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.99267578125,
                     "time_interval": {
                         "end": 134.25,
-                        "start": 134.07
+                        "start": 134.01
                     },
                     "word": " do"
                 },
@@ -2621,7 +2623,7 @@
                     "word": " not"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 134.61,
                         "start": 134.41
@@ -2639,185 +2641,319 @@
                 {
                     "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 135.43,
+                        "end": 135.41,
                         "start": 134.85
                     },
                     "word": " object"
                 },
                 {
-                    "alignment_confidence": 0.99365234375,
+                    "alignment_confidence": 0.96923828125,
                     "time_interval": {
-                        "end": 136.03,
-                        "start": 135.43
+                        "end": 136.01,
+                        "start": 135.41
                     },
                     "word": " an"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 136.37,
-                        "start": 136.03
+                        "end": 136.39,
+                        "start": 136.01
                     },
                     "word": " initial"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 136.79,
-                        "start": 136.37
+                        "start": 136.39
                     },
                     "word": " speed"
                 }
             ]
         },
         {
-            "confidence": 0.9171515476992799,
-            "no_speech_confidence": 0.0701904296875,
-            "text": " when I stand here.",
+            "confidence": 0.8636437433944959,
+            "no_speech_confidence": 0.337158203125,
+            "text": " when I stand here, I trust the conservation of mechanical energy",
             "time_interval": {
-                "end": 137.87,
+                "end": 143.39,
                 "start": 136.79
             },
             "words": [
                 {
-                    "alignment_confidence": 0.978515625,
+                    "alignment_confidence": 0.1610107421875,
                     "time_interval": {
-                        "end": 136.97,
+                        "end": 136.85,
                         "start": 136.79
                     },
                     "word": " when"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9970703125,
                     "time_interval": {
-                        "end": 137.27,
-                        "start": 136.97
+                        "end": 137.19,
+                        "start": 136.85
                     },
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 137.45,
-                        "start": 137.27
+                        "start": 137.19
                     },
                     "word": " stand"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 137.87,
+                        "end": 137.93,
                         "start": 137.45
                     },
-                    "word": " here."
-                }
-            ]
-        },
-        {
-            "confidence": 0.9171515476992799,
-            "no_speech_confidence": 0.0701904296875,
-            "text": " I'm going to release this object",
-            "time_interval": {
-                "end": 151.52,
-                "start": 143.13
-            },
-            "words": [
-                {
-                    "alignment_confidence": 0.49927112460136414,
-                    "time_interval": {
-                        "end": 143.89,
-                        "start": 143.13
-                    },
-                    "word": " I'm"
+                    "word": " here,"
                 },
                 {
-                    "alignment_confidence": 0.90234375,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
-                        "end": 144.57,
-                        "start": 143.89
+                        "end": 140.15,
+                        "start": 139.93
                     },
-                    "word": " going"
+                    "word": " I"
                 },
                 {
                     "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 148.57,
-                        "start": 144.57
+                        "end": 140.85,
+                        "start": 140.15
                     },
-                    "word": " to"
+                    "word": " trust"
                 },
                 {
-                    "alignment_confidence": 0.9951171875,
+                    "alignment_confidence": 0.99462890625,
                     "time_interval": {
-                        "end": 150.72,
-                        "start": 150.46
+                        "end": 141.67,
+                        "start": 140.85
                     },
-                    "word": " release"
+                    "word": " the"
+                },
+                {
+                    "alignment_confidence": 0.99755859375,
+                    "time_interval": {
+                        "end": 142.13,
+                        "start": 141.67
+                    },
+                    "word": " conservation"
+                },
+                {
+                    "alignment_confidence": 0.99609375,
+                    "time_interval": {
+                        "end": 142.31,
+                        "start": 142.13
+                    },
+                    "word": " of"
+                },
+                {
+                    "alignment_confidence": 0.97509765625,
+                    "time_interval": {
+                        "end": 142.73,
+                        "start": 142.31
+                    },
+                    "word": " mechanical"
+                },
+                {
+                    "alignment_confidence": 0.9990234375,
+                    "time_interval": {
+                        "end": 143.39,
+                        "start": 142.73
+                    },
+                    "word": " energy"
+                }
+            ]
+        },
+        {
+            "confidence": 0.8636437433944959,
+            "no_speech_confidence": 0.337158203125,
+            "text": " for 100%.",
+            "time_interval": {
+                "end": 144.95,
+                "start": 143.39
+            },
+            "words": [
+                {
+                    "alignment_confidence": 0.89111328125,
+                    "time_interval": {
+                        "end": 143.87,
+                        "start": 143.39
+                    },
+                    "word": " for"
+                },
+                {
+                    "alignment_confidence": 0.89892578125,
+                    "time_interval": {
+                        "end": 144.95,
+                        "start": 143.87
+                    },
+                    "word": " 100%."
+                }
+            ]
+        },
+        {
+            "confidence": 0.8636437433944959,
+            "no_speech_confidence": 0.337158203125,
+            "text": " I may not trust myself.",
+            "time_interval": {
+                "end": 147.37,
+                "start": 144.95
+            },
+            "words": [
+                {
+                    "alignment_confidence": 0.92138671875,
+                    "time_interval": {
+                        "end": 145.97,
+                        "start": 144.95
+                    },
+                    "word": " I"
+                },
+                {
+                    "alignment_confidence": 0.9990234375,
+                    "time_interval": {
+                        "end": 146.21,
+                        "start": 145.97
+                    },
+                    "word": " may"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 146.39,
+                        "start": 146.21
+                    },
+                    "word": " not"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 146.61,
+                        "start": 146.39
+                    },
+                    "word": " trust"
                 },
                 {
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 150.98,
-                        "start": 150.72
+                        "end": 147.37,
+                        "start": 146.61
+                    },
+                    "word": " myself."
+                }
+            ]
+        },
+        {
+            "confidence": 0.8636437433944959,
+            "no_speech_confidence": 0.337158203125,
+            "text": " I'm going to release this object",
+            "time_interval": {
+                "end": 151.54,
+                "start": 149.84
+            },
+            "words": [
+                {
+                    "alignment_confidence": 0.920166015625,
+                    "time_interval": {
+                        "end": 150.12,
+                        "start": 149.84
+                    },
+                    "word": " I'm"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 150.26,
+                        "start": 150.12
+                    },
+                    "word": " going"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 150.5,
+                        "start": 150.26
+                    },
+                    "word": " to"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 150.76,
+                        "start": 150.5
+                    },
+                    "word": " release"
+                },
+                {
+                    "alignment_confidence": 0.99951171875,
+                    "time_interval": {
+                        "end": 151.0,
+                        "start": 150.76
                     },
                     "word": " this"
                 },
                 {
                     "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 151.52,
-                        "start": 150.98
+                        "end": 151.54,
+                        "start": 151.0
                     },
                     "word": " object"
                 }
             ]
         },
         {
-            "confidence": 0.9142197486337178,
-            "no_speech_confidence": 0.22607421875,
+            "confidence": 0.8636437433944959,
+            "no_speech_confidence": 0.337158203125,
             "text": " and I hope I will be able to do it at zero speed",
             "time_interval": {
-                "end": 155.34,
-                "start": 151.52
+                "end": 155.4,
+                "start": 151.54
             },
             "words": [
                 {
-                    "alignment_confidence": 0.337158203125,
+                    "alignment_confidence": 0.69775390625,
                     "time_interval": {
-                        "end": 152.32,
-                        "start": 151.52
+                        "end": 152.34,
+                        "start": 151.54
                     },
                     "word": " and"
                 },
                 {
-                    "alignment_confidence": 0.982421875,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
-                        "end": 152.44,
-                        "start": 152.32
+                        "end": 152.5,
+                        "start": 152.34
                     },
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.99169921875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 152.68,
-                        "start": 152.44
+                        "start": 152.5
                     },
                     "word": " hope"
                 },
                 {
-                    "alignment_confidence": 0.99169921875,
+                    "alignment_confidence": 0.9931640625,
                     "time_interval": {
-                        "end": 152.8,
+                        "end": 152.84,
                         "start": 152.68
                     },
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.99365234375,
+                    "alignment_confidence": 0.9951171875,
                     "time_interval": {
                         "end": 152.98,
-                        "start": 152.8
+                        "start": 152.84
                     },
                     "word": " will"
                 },
@@ -2832,7 +2968,7 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 153.34,
+                        "end": 153.32,
                         "start": 153.16
                     },
                     "word": " able"
@@ -2841,46 +2977,46 @@
                     "alignment_confidence": 0.99853515625,
                     "time_interval": {
                         "end": 153.52,
-                        "start": 153.34
+                        "start": 153.32
                     },
                     "word": " to"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 153.64,
+                        "end": 153.62,
                         "start": 153.52
                     },
                     "word": " do"
                 },
                 {
-                    "alignment_confidence": 0.99755859375,
+                    "alignment_confidence": 0.9970703125,
                     "time_interval": {
-                        "end": 153.84,
-                        "start": 153.64
+                        "end": 153.82,
+                        "start": 153.62
                     },
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.99560546875,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
-                        "end": 154.06,
-                        "start": 153.84
+                        "end": 154.04,
+                        "start": 153.82
                     },
                     "word": " at"
                 },
                 {
-                    "alignment_confidence": 0.99609375,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
                         "end": 154.42,
-                        "start": 154.06
+                        "start": 154.04
                     },
                     "word": " zero"
                 },
                 {
-                    "alignment_confidence": 0.9970703125,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
-                        "end": 155.34,
+                        "end": 155.4,
                         "start": 154.42
                     },
                     "word": " speed"
@@ -2888,32 +3024,32 @@
             ]
         },
         {
-            "confidence": 0.9142197486337178,
-            "no_speech_confidence": 0.22607421875,
+            "confidence": 0.9320337947271228,
+            "no_speech_confidence": 0.05712890625,
             "text": " so that when it comes back it may touch my chin",
             "time_interval": {
-                "end": 158.72,
-                "start": 155.86
+                "end": 158.66,
+                "start": 155.4
             },
             "words": [
                 {
-                    "alignment_confidence": 0.875,
+                    "alignment_confidence": 0.75244140625,
                     "time_interval": {
-                        "end": 156.3,
-                        "start": 155.86
+                        "end": 156.28,
+                        "start": 155.4
                     },
                     "word": " so"
                 },
                 {
-                    "alignment_confidence": 0.99609375,
+                    "alignment_confidence": 0.98876953125,
                     "time_interval": {
                         "end": 156.4,
-                        "start": 156.3
+                        "start": 156.28
                     },
                     "word": " that"
                 },
                 {
-                    "alignment_confidence": 0.9501953125,
+                    "alignment_confidence": 0.9541015625,
                     "time_interval": {
                         "end": 156.54,
                         "start": 156.4
@@ -2921,39 +3057,39 @@
                     "word": " when"
                 },
                 {
-                    "alignment_confidence": 0.99755859375,
+                    "alignment_confidence": 0.9970703125,
                     "time_interval": {
-                        "end": 156.66,
+                        "end": 156.68,
                         "start": 156.54
                     },
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
                         "end": 156.94,
-                        "start": 156.66
+                        "start": 156.68
                     },
                     "word": " comes"
                 },
                 {
                     "alignment_confidence": 1.0,
                     "time_interval": {
-                        "end": 157.3,
+                        "end": 157.32,
                         "start": 156.94
                     },
                     "word": " back"
                 },
                 {
-                    "alignment_confidence": 0.74755859375,
+                    "alignment_confidence": 0.64599609375,
                     "time_interval": {
                         "end": 157.46,
-                        "start": 157.3
+                        "start": 157.32
                     },
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
                         "end": 157.72,
                         "start": 157.46
@@ -2979,7 +3115,7 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 158.72,
+                        "end": 158.66,
                         "start": 158.3
                     },
                     "word": " chin"
@@ -2987,24 +3123,24 @@
             ]
         },
         {
-            "confidence": 0.9142197486337178,
-            "no_speech_confidence": 0.22607421875,
+            "confidence": 0.9320337947271228,
+            "no_speech_confidence": 0.05712890625,
             "text": " but it may not crush my chin.",
             "time_interval": {
-                "end": 160.62,
-                "start": 158.72
+                "end": 160.6,
+                "start": 158.66
             },
             "words": [
                 {
-                    "alignment_confidence": 0.87451171875,
+                    "alignment_confidence": 0.865234375,
                     "time_interval": {
                         "end": 159.28,
-                        "start": 158.72
+                        "start": 158.66
                     },
                     "word": " but"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 159.4,
                         "start": 159.28
@@ -3012,9 +3148,9 @@
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
-                        "end": 159.6,
+                        "end": 159.62,
                         "start": 159.4
                     },
                     "word": " may"
@@ -3023,14 +3159,14 @@
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 159.8,
-                        "start": 159.6
+                        "start": 159.62
                     },
                     "word": " not"
                 },
                 {
                     "alignment_confidence": 0.9970703125,
                     "time_interval": {
-                        "end": 160.04,
+                        "end": 160.02,
                         "start": 159.8
                     },
                     "word": " crush"
@@ -3039,14 +3175,14 @@
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 160.32,
-                        "start": 160.04
+                        "start": 160.02
                     },
                     "word": " my"
                 },
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 160.62,
+                        "end": 160.6,
                         "start": 160.32
                     },
                     "word": " chin."
@@ -3054,35 +3190,35 @@
             ]
         },
         {
-            "confidence": 0.9142197486337178,
-            "no_speech_confidence": 0.22607421875,
-            "text": " I want you to be extremely quiet",
+            "confidence": 0.9320337947271228,
+            "no_speech_confidence": 0.05712890625,
+            "text": " I want you to be extremely quiet because this is no joke.",
             "time_interval": {
-                "end": 164.46,
-                "start": 162.68
+                "end": 165.74,
+                "start": 162.7
             },
             "words": [
                 {
-                    "alignment_confidence": 0.9970703125,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
                         "end": 162.86,
-                        "start": 162.68
+                        "start": 162.7
                     },
                     "word": " I"
                 },
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 163.08,
+                        "end": 163.06,
                         "start": 162.86
                     },
                     "word": " want"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 163.2,
-                        "start": 163.08
+                        "start": 163.06
                     },
                     "word": " you"
                 },
@@ -3103,7 +3239,7 @@
                     "word": " be"
                 },
                 {
-                    "alignment_confidence": 0.99951171875,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 163.94,
                         "start": 163.56
@@ -3111,26 +3247,15 @@
                     "word": " extremely"
                 },
                 {
-                    "alignment_confidence": 0.99658203125,
+                    "alignment_confidence": 0.9951171875,
                     "time_interval": {
                         "end": 164.46,
                         "start": 163.94
                     },
                     "word": " quiet"
-                }
-            ]
-        },
-        {
-            "confidence": 0.9251572637202267,
-            "no_speech_confidence": 0.58984375,
-            "text": " because this is no joke.",
-            "time_interval": {
-                "end": 165.84,
-                "start": 164.46
-            },
-            "words": [
+                },
                 {
-                    "alignment_confidence": 0.60302734375,
+                    "alignment_confidence": 0.71240234375,
                     "time_interval": {
                         "end": 164.74,
                         "start": 164.46
@@ -3138,23 +3263,23 @@
                     "word": " because"
                 },
                 {
-                    "alignment_confidence": 0.98876953125,
+                    "alignment_confidence": 0.97998046875,
                     "time_interval": {
-                        "end": 164.94,
+                        "end": 164.92,
                         "start": 164.74
                     },
                     "word": " this"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.99853515625,
                     "time_interval": {
                         "end": 165.14,
-                        "start": 164.94
+                        "start": 164.92
                     },
                     "word": " is"
                 },
                 {
-                    "alignment_confidence": 0.99609375,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
                         "end": 165.32,
                         "start": 165.14
@@ -3162,9 +3287,9 @@
                     "word": " no"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 165.84,
+                        "end": 165.74,
                         "start": 165.32
                     },
                     "word": " joke."
@@ -3172,24 +3297,24 @@
             ]
         },
         {
-            "confidence": 0.9251572637202267,
-            "no_speech_confidence": 0.58984375,
+            "confidence": 0.9320337947271228,
+            "no_speech_confidence": 0.05712890625,
             "text": " If I don't succeed in giving it zero speed,",
             "time_interval": {
-                "end": 169.9,
-                "start": 166.74
+                "end": 169.96,
+                "start": 166.72
             },
             "words": [
                 {
-                    "alignment_confidence": 0.98583984375,
+                    "alignment_confidence": 0.98779296875,
                     "time_interval": {
                         "end": 166.88,
-                        "start": 166.74
+                        "start": 166.72
                     },
                     "word": " If"
                 },
                 {
-                    "alignment_confidence": 0.99853515625,
+                    "alignment_confidence": 0.998046875,
                     "time_interval": {
                         "end": 167.38,
                         "start": 166.88
@@ -3199,7 +3324,7 @@
                 {
                     "alignment_confidence": 0.999267578125,
                     "time_interval": {
-                        "end": 167.72,
+                        "end": 167.68,
                         "start": 167.38
                     },
                     "word": " don't"
@@ -3207,91 +3332,91 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 168.24,
-                        "start": 167.72
+                        "end": 168.26,
+                        "start": 167.68
                     },
                     "word": " succeed"
                 },
                 {
-                    "alignment_confidence": 0.99560546875,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
-                        "end": 168.6,
-                        "start": 168.24
+                        "end": 168.58,
+                        "start": 168.26
                     },
                     "word": " in"
                 },
                 {
-                    "alignment_confidence": 0.994140625,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
                         "end": 168.76,
-                        "start": 168.6
+                        "start": 168.58
                     },
                     "word": " giving"
                 },
                 {
-                    "alignment_confidence": 0.99462890625,
+                    "alignment_confidence": 0.99658203125,
                     "time_interval": {
-                        "end": 169.04,
+                        "end": 169.06,
                         "start": 168.76
                     },
                     "word": " it"
                 },
                 {
-                    "alignment_confidence": 0.994140625,
+                    "alignment_confidence": 0.9951171875,
                     "time_interval": {
-                        "end": 169.32,
-                        "start": 169.04
+                        "end": 169.3,
+                        "start": 169.06
                     },
                     "word": " zero"
                 },
                 {
-                    "alignment_confidence": 0.99658203125,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
-                        "end": 169.9,
-                        "start": 169.32
+                        "end": 169.96,
+                        "start": 169.3
                     },
                     "word": " speed,"
                 }
             ]
         },
         {
-            "confidence": 0.9251572637202267,
-            "no_speech_confidence": 0.58984375,
+            "confidence": 0.9040926065601008,
+            "no_speech_confidence": 0.1513671875,
             "text": " then this will be my last lecture.",
             "time_interval": {
                 "end": 172.42,
-                "start": 170.34
+                "start": 169.96
             },
             "words": [
                 {
-                    "alignment_confidence": 0.99462890625,
+                    "alignment_confidence": 0.587890625,
                     "time_interval": {
-                        "end": 170.74,
-                        "start": 170.34
+                        "end": 170.7,
+                        "start": 169.96
                     },
                     "word": " then"
                 },
                 {
-                    "alignment_confidence": 0.9892578125,
+                    "alignment_confidence": 0.9765625,
                     "time_interval": {
-                        "end": 171.4,
-                        "start": 170.74
+                        "end": 171.38,
+                        "start": 170.7
                     },
                     "word": " this"
                 },
                 {
                     "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 171.54,
-                        "start": 171.4
+                        "end": 171.52,
+                        "start": 171.38
                     },
                     "word": " will"
                 },
                 {
-                    "alignment_confidence": 0.9990234375,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 171.66,
-                        "start": 171.54
+                        "end": 171.68,
+                        "start": 171.52
                     },
                     "word": " be"
                 },
@@ -3299,7 +3424,7 @@
                     "alignment_confidence": 0.9990234375,
                     "time_interval": {
                         "end": 171.82,
-                        "start": 171.66
+                        "start": 171.68
                     },
                     "word": " my"
                 },
@@ -3322,24 +3447,24 @@
             ]
         },
         {
-            "confidence": 0.9251572637202267,
-            "no_speech_confidence": 0.58984375,
+            "confidence": 0.9040926065601008,
+            "no_speech_confidence": 0.1513671875,
             "text": " I will close my eyes.",
             "time_interval": {
-                "end": 175.98,
-                "start": 174.78
+                "end": 175.96,
+                "start": 174.88
             },
             "words": [
                 {
-                    "alignment_confidence": 0.99658203125,
+                    "alignment_confidence": 0.99609375,
                     "time_interval": {
                         "end": 174.94,
-                        "start": 174.78
+                        "start": 174.88
                     },
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.9921875,
+                    "alignment_confidence": 0.99365234375,
                     "time_interval": {
                         "end": 175.2,
                         "start": 174.94
@@ -3365,7 +3490,7 @@
                 {
                     "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 175.98,
+                        "end": 175.96,
                         "start": 175.72
                     },
                     "word": " eyes."
@@ -3373,58 +3498,58 @@
             ]
         },
         {
-            "confidence": 0.8639802581489453,
-            "no_speech_confidence": 0.408935546875,
+            "confidence": 0.9040926065601008,
+            "no_speech_confidence": 0.1513671875,
             "text": " I don't want to see this.",
             "time_interval": {
-                "end": 177.3,
-                "start": 175.98
+                "end": 177.26,
+                "start": 176.04
             },
             "words": [
                 {
-                    "alignment_confidence": 0.86962890625,
+                    "alignment_confidence": 0.9990234375,
                     "time_interval": {
-                        "end": 176.1,
-                        "start": 175.98
+                        "end": 176.16,
+                        "start": 176.04
                     },
                     "word": " I"
                 },
                 {
-                    "alignment_confidence": 0.990478515625,
+                    "alignment_confidence": 0.999267578125,
                     "time_interval": {
-                        "end": 176.28,
-                        "start": 176.1
+                        "end": 176.32,
+                        "start": 176.16
                     },
                     "word": " don't"
                 },
                 {
-                    "alignment_confidence": 0.87060546875,
+                    "alignment_confidence": 0.9658203125,
                     "time_interval": {
-                        "end": 176.46,
-                        "start": 176.28
+                        "end": 176.44,
+                        "start": 176.32
                     },
                     "word": " want"
                 },
                 {
-                    "alignment_confidence": 0.99560546875,
+                    "alignment_confidence": 0.99853515625,
                     "time_interval": {
-                        "end": 176.54,
-                        "start": 176.46
+                        "end": 176.56,
+                        "start": 176.44
                     },
                     "word": " to"
                 },
                 {
-                    "alignment_confidence": 0.99755859375,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
                         "end": 176.72,
-                        "start": 176.54
+                        "start": 176.56
                     },
                     "word": " see"
                 },
                 {
-                    "alignment_confidence": 0.998046875,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 177.3,
+                        "end": 177.26,
                         "start": 176.72
                     },
                     "word": " this."
@@ -3432,113 +3557,62 @@
             ]
         },
         {
-            "confidence": 0.8639802581489453,
-            "no_speech_confidence": 0.408935546875,
-            "text": " Please be very quiet.",
+            "confidence": 0.9040926065601008,
+            "no_speech_confidence": 0.1513671875,
+            "text": " So please be very quiet.",
             "time_interval": {
                 "end": 179.82,
-                "start": 178.34
+                "start": 178.12
             },
             "words": [
                 {
-                    "alignment_confidence": 0.038787841796875,
+                    "alignment_confidence": 0.97802734375,
                     "time_interval": {
-                        "end": 178.62,
-                        "start": 178.34
+                        "end": 178.44,
+                        "start": 178.12
                     },
-                    "word": " Please"
+                    "word": " So"
                 },
                 {
-                    "alignment_confidence": 0.94580078125,
+                    "alignment_confidence": 0.9208984375,
+                    "time_interval": {
+                        "end": 178.74,
+                        "start": 178.44
+                    },
+                    "word": " please"
+                },
+                {
+                    "alignment_confidence": 0.97802734375,
                     "time_interval": {
                         "end": 178.96,
-                        "start": 178.62
+                        "start": 178.74
                     },
                     "word": " be"
                 },
                 {
-                    "alignment_confidence": 0.994140625,
+                    "alignment_confidence": 0.99951171875,
                     "time_interval": {
-                        "end": 179.34,
+                        "end": 179.3,
                         "start": 178.96
                     },
                     "word": " very"
                 },
                 {
-                    "alignment_confidence": 0.990234375,
+                    "alignment_confidence": 0.99755859375,
                     "time_interval": {
                         "end": 179.82,
-                        "start": 179.34
+                        "start": 179.3
                     },
                     "word": " quiet."
-                }
-            ]
-        },
-        {
-            "confidence": 0.8639802581489453,
-            "no_speech_confidence": 0.408935546875,
-            "text": " I almost didn't sleep all night.",
-            "time_interval": {
-                "end": 183.76,
-                "start": 182.32
-            },
-            "words": [
-                {
-                    "alignment_confidence": 0.97900390625,
-                    "time_interval": {
-                        "end": 182.34,
-                        "start": 182.32
-                    },
-                    "word": " I"
-                },
-                {
-                    "alignment_confidence": 0.953125,
-                    "time_interval": {
-                        "end": 182.58,
-                        "start": 182.34
-                    },
-                    "word": " almost"
-                },
-                {
-                    "alignment_confidence": 0.997314453125,
-                    "time_interval": {
-                        "end": 182.84,
-                        "start": 182.58
-                    },
-                    "word": " didn't"
-                },
-                {
-                    "alignment_confidence": 0.9990234375,
-                    "time_interval": {
-                        "end": 183.1,
-                        "start": 182.84
-                    },
-                    "word": " sleep"
-                },
-                {
-                    "alignment_confidence": 0.9921875,
-                    "time_interval": {
-                        "end": 183.34,
-                        "start": 183.1
-                    },
-                    "word": " all"
-                },
-                {
-                    "alignment_confidence": 0.9970703125,
-                    "time_interval": {
-                        "end": 183.76,
-                        "start": 183.34
-                    },
-                    "word": " night."
                 }
             ]
         }
     ],
     "transcription": {
-        "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work, MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall, then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices. They're called a wrecker ball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this, and then you let it go, you swing it, and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy. Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here. I'm going to release this object and I hope I will be able to do it at zero speed so that when it comes back it may touch my chin but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed, then this will be my last lecture. I will close my eyes. I don't want to see this. Please be very quiet. I almost didn't sleep all night."
+        "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work, MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall, then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices. They use them to demolish buildings. You lift up a very heavy object, even heavier than this, and then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy and that way you can demolish a building. You just let it hit and it breaks a building. And that's the whole idea of wrecking. So you are using, then, the conversion of gravitational potential energy to kinetic energy. Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. Provided that I do not give this object an initial speed when I stand here, I trust the conservation of mechanical energy for 100%. I may not trust myself. I'm going to release this object and I hope I will be able to do it at zero speed so that when it comes back it may touch my chin but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed, then this will be my last lecture. I will close my eyes. I don't want to see this. So please be very quiet."
     },
     "transcription_info": {
         "language": "en",
-        "language_confidence": 0.982421875
+        "language_confidence": 0.98291015625
     }
 }

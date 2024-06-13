@@ -162,11 +162,11 @@ if __name__ == '__main__':
 
 ```
 
+5. Send a request to the server.
+
 ```bash
 curl -X POST 0.0.0.0:9000/video/transcribe -Fbody='{"video":{"url":"https://www.youtube.com/watch?v=CfX_su1AUwE"}}'
-
 ```
-
 
 ## Build Serve Config Files
 
@@ -188,7 +188,13 @@ poetry run aana build --help
 
 ## Running Serve Config Files
 
-Once you have generated YAML files in the previous step, you can run them with `ray serve deploy`.
+When you are running the Aana application using the Serve config files, you need to run the migrations to create the database tables for the application. To run the migrations, use the following command:
+
+```bash
+poetry run aana migrate aana.projects.chat_with_video.app:aana_app
+```
+
+Once you have generated YAML files in the previous step, you can run them with `serve deploy`.
 
 ## Run with Docker
 
