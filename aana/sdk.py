@@ -9,6 +9,7 @@ import yaml
 from ray import serve
 from ray.serve.config import HTTPOptions
 from ray.serve.deployment import Application, Deployment
+from rich import print
 
 from aana.api.api_generation import Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
@@ -259,7 +260,12 @@ class AanaSDK:
                 route_prefix="/",
                 blocking=False,  # blocking manually after to display the message "Deployed successfully."
             )
-            print("Deployed successfully.")
+            print("[green]Deployed successfully.[/green]")
+            print(
+                "Documentation is available at "
+                "[link=http://127.0.0.1:8000/docs]http://127.0.0.1:8000/docs[/link] and "
+                "[link=http://127.0.0.1:8000/redoc]http://127.0.0.1:8000/redoc[/link]"
+            )
             while blocking:
                 time.sleep(10)
         except KeyboardInterrupt:
