@@ -36,7 +36,7 @@ def generate_dialog(
 
     Ensure you do not introduce any new named entities in your output and maintain the utmost factual accuracy in your responses.
 
-    In the addition you will be provided with title and description of video extracted.
+    In the addition you will be provided with title of video extracted.
     """
     instruction = (
         "Provide a short and concise answer to the following user's question. "
@@ -56,8 +56,6 @@ def generate_dialog(
         "{timeline_json}"
         "\n"
         "The title of the video is {video_title}"
-        "\n"
-        "The description of the video is {video_description}"
     )
 
     timeline_json = json.dumps(timeline, indent=4, separators=(",", ": "))
@@ -77,7 +75,6 @@ def generate_dialog(
                 question=question,
                 timeline_json=timeline_json,
                 video_title=metadata.title,
-                video_description=metadata.description,
             ),
             role="user",
         )
