@@ -15,7 +15,13 @@ Aana SDK is a powerful serving layer designed for constructing web applications 
 
 ### Installing via PyPI
 
-TBD
+To install Aana SDK via PyPI, you can use the following command:
+
+```bash
+pip install aana
+```
+
+Make sure you have the necessary dependencies installed, such as `libgl1` for OpenCV.
 
 ### Installing from Github
 
@@ -31,118 +37,83 @@ You should also install [PyTorch](https://pytorch.org/get-started/locally/) vers
 
 3. Install the package with poetry.
 
+The project is managed with [Poetry](https://python-poetry.org/docs/). See the [Poetry installation instructions](https://python-poetry.org/docs/#installation) on how to install it on your system.
+
 It will install the package and all dependencies in a virtual environment.
 
 ```bash
 sh install.sh
 ```
 
-### Creating Application 
+### Creating Application
+
 You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components:
 
+
+Let's create a simple application that transcribes a video using the Aana SDK. The application will download a video from YouTube, extract the audio, and transcribe it using an ASR model.
+
+Aana SDK already provides a deployment for ASR (Automatic Speech Recognition) based on the Whisper model. We will use this deployment in the example.
+
 ```python
-from typing_extensions import TypedDict
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0" # If you have a GPU, set the GPU ID here.
 
 from aana.api.api_generation import Endpoint
-from aana.sdk import AanaSDK
+from aana.core.models.video import VideoInput
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.deployments.whisper_deployment import (
+    WhisperComputeType,
+    WhisperConfig,
+    WhisperDeployment,
+    WhisperModelSize,
+    WhisperOutput,
+)
+from aana.integrations.external.yt_dlp import download_video
+from aana.processors.remote import run_remote
+from aana.processors.video import extract_audio
+from aana.sdk import AanaSDK
 
-from aana.deployments.hf_pipeline_deployment import HfPipelineConfig, HfPipelineDeployment
 
-
-deployment = HfPipelineDeployment.options(
+# Define the model deployments.
+asr_deployment = WhisperDeployment.options(
     num_replicas=1,
-    ray_actor_options={"num_gpus": 1},
-    user_config=HfPipelineConfig(
-        model_id="google-t5/t5-small",
-        task="summarization",
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(
+        model_size=WhisperModelSize.MEDIUM,
+        compute_type=WhisperComputeType.FLOAT16,
     ).model_dump(mode="json"),
 )
+deployments = [{"name": "asr_deployment", "instance": asr_deployment}]
 
-deployment_name = "aana_deployment"
 
-class SummarizationOutput(TypedDict):
-    """Simple class for summarization output.
+# Define the endpoint to transcribe the video.
+class TranscribeVideoEndpoint(Endpoint):
+    """Transcribe video endpoint."""
 
-    You can also use a Pydantic object here.
-    """
-    summary: str
-
-class SummarizeTextEndpoint(Endpoint):
-    """Class for an endoint for the app's API. In this case, text summary."""
     async def initialize(self):
-        """Initializes the endpoint's deployment handles and any other state.'"""
-        self.deployment_handle = await AanaDeploymentHandle.create(deployment_name)
+        """Initialize the endpoint."""
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+        await super().initialize()
 
-    async def run(self, text: str) -> SummarizationOutput:
-        """Method run for each endpoint call.
-
-        Documentation for the endpoint (see below) is generated automatically based on
-        this method's type annotations, so annotations for parameters and return types
-        should a) exist, and b) be as specific as possible. Something like
-
-        `async def run(self, arg: dict) -> dict: ...`
-
-        will *work* but not be very helpful to API consumers."""
-
-        result = await self.deployment_handle.call(text)
-        return {"summary": result[0]["summary_text"]}
-
-if __name__ == '__main__':
-    # Construct an app instance
-    aana_app = AanaSDK(name="demo app")
-    # bind the app to a network address.
-    # setting show_logs=`True` will produce a LOT of logs!
-    aana_app.connect(port=9000, host="127.0.0.1", show_logs=True)
-
-    aana_app.register_deployment(
-        name="aana_deployment",
-        instance=deployment,
-    )
-
-    aana_app.register_endpoint(
-        name="summarize_text",
-        path="/text/summarize",
-        summary="Summarize a text",
-        endpoint_cls=SummarizeTextEndpoint,
-    )
-
-    # Setting `blocking=False` will cause the app to exit as soon as it is set up, which may be useful for debugging initialization issues. 
-    aana_app.deploy(blocking=True)
-```
-
-You can send a request like
-
-```bash
-curl -X POST 0.0.0.0:9000/text/summarize -F body='{"text": "Teachers of jurisprudence, when speaking of rights and claims, distinguish in a cause the question of right (quid juris) from the question of fact (quid facti), and while they demand proof of both, they give to the proof of the former, which goes to establish right or claim in law, the name of deduction. Now we make use of a great number of empirical conceptions, without opposition from any one, and consider ourselves, even without any attempt at deduction, justified in attaching to them a sense, and a supposititious signification, because we have always experience at hand to demonstrate their objective reality."}'
-```
-
-Here is an example with video transcription:
-```python
-from aana.configs.deployments import (
-    whisper_medium_deployment,
-)
-from aana.projects.chat_with_video.endpoints import SimpleTranscribeVideoEndpoint
-from aana.sdk import AanaSDK
-
-deployments = [
-    {
-        "name": "asr_deployment",
-        "instance": whisper_medium_deployment,
-    }
-]
+    async def run(self, video: VideoInput) -> WhisperOutput:
+        """Transcribe video."""
+        video_obj = await run_remote(download_video)(video_input=video)
+        audio = extract_audio(video=video_obj)
+        transcription = await self.asr_handle.transcribe(audio=audio)
+        return transcription
 
 endpoints = [
     {
         "name": "transcribe_video",
         "path": "/video/transcribe",
-        "summary": "Transcribe a video as a stream",
-        "endpoint_cls": SimpleTranscribeVideoEndpoint,
+        "summary": "Transcribe a video",
+        "endpoint_cls": TranscribeVideoEndpoint,
     },
 ]
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     aana_app = AanaSDK(name="transcribe_video_app")
-    aana_app.connect(host='127.0.0.1', port=9000, show_logs=True)
+    aana_app.connect(host="127.0.0.1", port=8000, show_logs=False)
 
     for deployment in deployments:
         aana_app.register_deployment(
@@ -158,15 +129,21 @@ if __name__ == '__main__':
             endpoint_cls=endpoint["endpoint_cls"],
         )
 
+    aana_app.migrate()
     aana_app.deploy(blocking=True)
-
 ```
 
-5. Send a request to the server.
+You can copy the code above to a Python file, for example `app.py`, and run it or run it in a Jupyter notebook.
+
+Once the application is running, you will see the message `Deployed successfully.` in the logs. You can now send a request to the application to transcribe a video.
+
+Let's transcribe [Gordon Ramsay's perfect scrambled eggs tutorial](https://www.youtube.com/watch?v=VhJFyyukAzA) using the application.
 
 ```bash
-curl -X POST 0.0.0.0:9000/video/transcribe -Fbody='{"video":{"url":"https://www.youtube.com/watch?v=CfX_su1AUwE"}}'
+curl -X POST http://127.0.0.1:8000/video/transcribe -Fbody='{"video":{"url":"https://www.youtube.com/watch?v=VhJFyyukAzA"}}'
 ```
+
+This will return the full transcription of the video, transcription for each segment, and transcription info like identified language. You can also use the [Swagger UI](http://127.0.0.1:8000/docs) to send the request.
 
 ## Build Serve Config Files
 
