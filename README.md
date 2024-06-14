@@ -2,14 +2,204 @@
 
 # Aana
 
-Aana SDK is a powerful serving layer designed for constructing web applications utilizing advanced multimodal models and RAG (Retrieval-Augmented Generation) systems. It facilitates the deployment of large-scale machine learning models, including those for vision, audio, and language, enabling the development of multimodal content applications such as search engines, recommendation systems, and data insights platforms.
+Aana SDK is a powerful framework for building multimodal applications. It facilitates the large-scale deployment of machine learning models, including those for vision, audio, and language, and supports Retrieval-Augmented Generation (RAG) systems. This enables the development of advanced applications such as search engines, recommendation systems, and data insights platforms.
 
-## Features
+## Why use Aana SDK?
+
+Nowadays, it is getting easier to experiment with machine learning models and build prototypes. However, deploying these models at scale and integrating them into real-world applications is still a challenge. 
+
+Aana SDK simplifies this process by providing a framework that allows:
+- Deploy and scale machine learning models on a single machine or a cluster.
+- Build multimodal applications that combine multiple different machine learning models.
+
+### Main components
+
+<!-- To build an application with Aana SDK, you need to:
+- Define the deployment for each model you want to use. 
+- Define the endpoints that will be available in your application. -->
+
+There are three main components in Aana SDK: deployments, endpoints, and AanaSDK.
+
+#### Deployments
+
+Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
+
+Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
+
+For example, we have a predefined deployment for the Whisper model that allows you to transcribe audio. You can define the deployment like this:
+
+```python
+from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
+
+asr_deployment = WhisperDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(model_size=WhisperModelSize.MEDIUM, compute_type=WhisperComputeType.FLOAT16).model_dump(mode="json"),
+)
+```
+
+#### Endpoints
+
+Endpoints define the functionality of your application. They allow you to connect multiple deployments (models) to each other and define the input and output of your application.
+
+Each endpoint is defined as a class that inherits from the `Endpoint` class. The class has two main methods: `initialize` and `run`.
+
+For example, you can define an endpoint that transcribes a video like this:
+
+```python
+class TranscribeVideoEndpoint(Endpoint):
+    """Transcribe video endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+        await super().initialize()
+
+    async def run(self, video: VideoInput) -> WhisperOutput:
+        """Transcribe video."""
+        video_obj = await run_remote(download_video)(video_input=video)
+        audio = extract_audio(video=video_obj)
+        transcription = await self.asr_handle.transcribe(audio=audio)
+        return transcription
+```
+
+#### AanaSDK
+
+AanaSDK is the main class that you use to build your application. It allows you to deploy the deployments and endpoints you defined and start the application.
+
+For example, you can define an application that transcribes a video like this:
+
+```python
+aana_app = AanaSDK(name="transcribe_video_app")
+
+aana_app.register_deployment(name="asr_deployment", instance=asr_deployment)
+aana_app.register_endpoint(
+    name="transcribe_video",
+    path="/video/transcribe",
+    summary="Transcribe a video",
+    endpoint_cls=TranscribeVideoEndpoint,
+)
+
+aana_app.connect()  # Connects to the Ray cluster or starts a new one.
+aana_app.migrate()  # Runs the migrations to create the database tables.
+aana_app.deploy()   # Deploys the application.
+```
+
+<!-- All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
+- Deploy the models: on a single machine or scale them across a cluster.
+- Generate an API for your application based on the endpoints you defined.
+- Input and output of the endpoints will be automatically validated. All you need to do is to annotate the input and output of the endpoint functions. Aana SDK also comes with a set of predefined types for things like images, videos, etc.
+- Generate the documentation for your application based on the endpoints you defined.
+- Streaming support for the output of the endpoints. You can stream the output of the endpoint to the client as it is generated. This is useful for real-time applications and Large Language Models (LLMs).
+- Add task queue support for your application which allows you to run every endpoint you define as a task in the background. No changes to your code are needed! -->
+
+
+All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
+
+#### Key Features
+
+- **Model Deployment**:
+  - Deploy models on a single machine or scale them across a cluster.
+
+- **API Generation**:
+  - Automatically generate an API for your application based on the endpoints you define.
+  - Input and output of the endpoints will be automatically validated.
+  - Simply annotate the types of the input and output of the endpoint functions.
+
+- **Predefined Types**:
+  - Comes with a set of predefined types for various data such as images, videos, etc.
+
+- **Documentation Generation**:
+  - Automatically generate documentation for your application based on the defined endpoints.
+
+- **Streaming Support**:
+  - Stream the output of the endpoint to the client as it is generated.
+  - Ideal for real-time applications and Large Language Models (LLMs).
+
+- **Task Queue Support**:
+  - Run every endpoint you define as a task in the background without any changes to your code.
+
+
+<!-- The models are defined as "deployments". Aana SDK comes with a set of predefined deployments that you can use out of the box:
+- Whisper: transcribe audio with automatic Speech Recognition (ASR) model based on the [faster-whisper](https://github.com/SYSTRAN/faster-whisper). 
+- vLLM: efficiently serve Large Language Model (LLM) with [vLLM](https://github.com/vllm-project/vllm/) library.
+- Hugging Face Transformers: serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models) with the [Hugging Face Pipeline](https://huggingface.co/transformers/main_classes/pipelines.html) deployment.
+- Haystack: build Retrieval-Augmented Generation (RAG) systems with the [Deepset Haystack](https://github.com/deepset-ai/haystack). -->
+
+### Integrations
+
+Aana SDK comes with a set of predefined deployments that you can use out of the box to deploy models.
+
+#### Whisper
+
+Whisper deployment allows you to transcribe audio with an automatic Speech Recognition (ASR) model based on the [faster-whisper](https://github.com/SYSTRAN/faster-whisper). 
+
+```python
+from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
+
+WhisperDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(model_size=WhisperModelSize.MEDIUM, compute_type=WhisperComputeType.FLOAT16).model_dump(mode="json"),
+)
+```
+
+#### vLLM
+
+vLLM deployment allows you to efficiently serve Large Language Model (LLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
+
+```python
+from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
+VLLMDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 1},
+    user_config=VLLMConfig(
+        model="meta-llama/Meta-Llama-3-8B-Instruct",
+        dtype=Dtype.AUTO,
+        gpu_memory_reserved=30000,
+        enforce_eager=True,
+        default_sampling_params=SamplingParams(
+            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+        ),
+    ).model_dump(mode="json"),
+)
+```
+
+#### Hugging Face Transformers
+
+Hugging Face Pipeline deployment allows you to serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models). It is a wrapper for [Hugging Face Pipelines](https://huggingface.co/transformers/main_classes/pipelines.html) so you can deploy and scale *almost* any model from the Hugging Face Hub with a few lines of code.
+
+```python
+from transformers import BitsAndBytesConfig
+from aana.deployments.hf_pipeline_deployment import HfPipelineConfig, HfPipelineDeployment
+
+HfPipelineDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 1},
+    user_config=HfPipelineConfig(
+        model_id="Salesforce/blip2-opt-2.7b",
+        task="image-to-text",
+        model_kwargs={
+            "quantization_config": BitsAndBytesConfig(load_in_8bit=False, load_in_4bit=True),
+        },
+    ).model_dump(mode="json"),
+)
+```
+
+#### Haystack
+
+Haystack integration allows you to build Retrieval-Augmented Generation (RAG) systems with the [Deepset Haystack](https://github.com/deepset-ai/haystack). 
+
+TODO: Add example
+
+
+<!-- ## Features
 
 - *Multimodal Input Handling:* Aana SDK seamlessly handles various types of multimodal inputs, providing versatility in application development.
 - *Streaming Support:* With streaming support for both input and output, Aana SDK ensures smooth data processing for real-time applications.
 - *Scalability:* Leveraging the capabilities of Ray serve, Aana SDK allows the deployment of multimodal models and applications across clusters, ensuring scalability and efficient resource utilization.
-- *Rapid Development:* Aana SDK enables developers to swiftly create robust multimodal applications in a Pythonic manner, utilizing its underlying components for fast configurations and RAG setups.
+- *Rapid Development:* Aana SDK enables developers to swiftly create robust multimodal applications in a Pythonic manner, utilizing its underlying components for fast configurations and RAG setups. -->
 
 ## Usage
 
