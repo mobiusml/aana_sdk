@@ -101,7 +101,8 @@ class IndexVideoEndpoint(Endpoint):
         """Transcribe video in chunks."""
         video_obj: Video = await run_remote(download_video)(video_input=video)
         video_duration = await run_remote(get_video_duration)(video=video_obj)
-        media_id = save_video(video=video_obj, duration=video_duration)
+        video_entity = save_video(video=video_obj, duration=video_duration)
+        media_id = video_entity["media_id"]
         yield {
             "media_id": media_id,
             "metadata": VideoMetadata(

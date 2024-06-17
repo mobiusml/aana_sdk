@@ -25,5 +25,5 @@ class VideoRepository(BaseRepository[VideoEntity]):
         Raises:
             NotFoundException: The id does not correspond to a video record in the database.
         """
-        entity: VideoEntity = self.read(media_id=media_id)
+        entity: VideoEntity = self.read(media_id)
         return entity.status
