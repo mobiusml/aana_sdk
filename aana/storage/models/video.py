@@ -15,6 +15,7 @@ class Status(str, Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
+
 class VideoEntity(BaseEntity, TimeStampEntity):
     """ORM class for video file (video, etc)."""
 

@@ -118,6 +118,7 @@ def save_video(video: Video, duration: float) -> dict:
             "media_id": media_entity.id,
         }
 
+
 def get_video_status(
     media_id: MediaId,
 ) -> VideoStatus:
@@ -134,8 +135,7 @@ def get_video_status(
         return video_status
 
 
-def update_video_status(
-    media_id: MediaId, status: VideoStatus):
+def update_video_status(media_id: MediaId, status: VideoStatus):
     """Update the video status.
 
     Args:
