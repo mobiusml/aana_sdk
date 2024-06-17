@@ -16,6 +16,7 @@ from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
 from aana.core.models.whisper import BatchedWhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.exceptions.db import LoadVideoException
 from aana.integrations.external.decord import generate_frames, get_video_duration
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
@@ -24,14 +25,17 @@ from aana.projects.chat_with_video.const import asr_model_name, captioning_model
 from aana.projects.chat_with_video.utils import (
     generate_dialog,
 )
+from aana.storage.models.video import Status as VideoStatus
 from aana.storage.services.video import (
     delete_media,
+    get_video_status,
     load_video_captions,
     load_video_metadata,
     load_video_transcription,
     save_video,
     save_video_captions,
     save_video_transcription,
+    update_video_status,
 )
 
 if TYPE_CHECKING:
@@ -41,7 +45,8 @@ if TYPE_CHECKING:
 
 class IndexVideoOutput(TypedDict):
     """The output of the transcribe video endpoint."""
-
+    media_id: MediaId
+    metadata: VideoMetadata
     transcription: AsrTranscription
     transcription_info: AsrTranscriptionInfo
     segments: AsrSegments
@@ -95,8 +100,16 @@ class IndexVideoEndpoint(Endpoint):
         """Transcribe video in chunks."""
         video_obj: Video = await run_remote(download_video)(video_input=video)
         video_duration = await run_remote(get_video_duration)(video=video_obj)
-        save_video(video=video_obj, duration=video_duration)
+        media_id = save_video(video=video_obj, duration=video_duration)
+        yield {
+            "media_id": media_id,
+            "metadata": VideoMetadata(
+                title=video_obj.title,
+                description=video_obj.description
+            )
+        }
 
+        update_video_status(media_id=MediaId, status=VideoStatus.RUNNING)
         audio: Audio = extract_audio(video=video_obj)
 
         vad_output = await self.vad_handle.asr_preprocess_vad(
@@ -157,7 +170,7 @@ class IndexVideoEndpoint(Endpoint):
             timestamps=timestamps,
             frame_ids=frame_ids,
         )
-
+        update_video_status(media_id=MediaId, status=VideoStatus.COMPLETED)
         yield {
             "transcription_id": save_video_transcription_output["transcription_id"],
             "caption_ids": save_video_captions_output["caption_ids"],
@@ -176,6 +189,11 @@ class VideoChatEndpoint(Endpoint):
         self, media_id: MediaId, question: Question, sampling_params: SamplingParams
     ) -> AsyncGenerator[VideoChatEndpointOutput, None]:
         """Run the video chat endpoint."""
+        # check to see if video already processed
+        video_status = get_video_status(media_id=media_id)
+        if video_status != VideoStatus.COMPLETED:
+            raise LoadVideoException(media_id=media_id, message=f"The video processing is not finished, status: {video_status}")
+
         load_video_transcription_output = load_video_transcription(
             media_id=media_id, model_name=asr_model_name
         )

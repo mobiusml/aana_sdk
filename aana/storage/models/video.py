@@ -1,9 +1,19 @@
+from enum import Enum, StrEnum
+
 from sqlalchemy import Column, Float, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from aana.storage.models.base import BaseEntity, TimeStampEntity
 from aana.storage.types import MediaIdSqlType
 
+
+class Status(str, Enum):
+    """Enum for video status."""
+
+    CREATED = "created"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 class VideoEntity(BaseEntity, TimeStampEntity):
     """ORM class for video file (video, etc)."""
@@ -16,7 +26,12 @@ class VideoEntity(BaseEntity, TimeStampEntity):
     orig_url = Column(String, comment="Original URL")
     title = Column(String, comment="Title of the video")
     description = Column(String, comment="Description of the video")
-
+    status = Column(
+        StrEnum(Status),
+        nullable=False,
+        default=Status.CREATED,
+        comment="Status of the video",
+    )
     media = relationship("MediaEntity", back_populates="video", uselist=False)
 
     captions = relationship(
