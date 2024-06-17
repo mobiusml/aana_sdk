@@ -40,6 +40,7 @@ class MediaIdAlreadyExistsException(BaseException):
         """Used for pickling."""
         return (self.__class__, (self.table_name, self.media_id))
 
+
 class LoadVideoException(BaseException):
     """Exception raised when try to fetch unfinished video.
 
@@ -58,6 +59,7 @@ class LoadVideoException(BaseException):
         super().__init__(media_id=media_id, message=message)
         self.media_id = media_id
         self.message = message
+
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.media_id, self.message))
