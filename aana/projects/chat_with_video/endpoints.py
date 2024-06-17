@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 
 class IndexVideoOutput(TypedDict):
     """The output of the transcribe video endpoint."""
+
     media_id: MediaId
     metadata: VideoMetadata
     transcription: AsrTranscription
@@ -104,9 +105,8 @@ class IndexVideoEndpoint(Endpoint):
         yield {
             "media_id": media_id,
             "metadata": VideoMetadata(
-                title=video_obj.title,
-                description=video_obj.description
-            )
+                title=video_obj.title, description=video_obj.description
+            ),
         }
 
         update_video_status(media_id=MediaId, status=VideoStatus.RUNNING)
@@ -192,7 +192,10 @@ class VideoChatEndpoint(Endpoint):
         # check to see if video already processed
         video_status = get_video_status(media_id=media_id)
         if video_status != VideoStatus.COMPLETED:
-            raise LoadVideoException(media_id=media_id, message=f"The video processing is not finished, status: {video_status}")
+            raise LoadVideoException(
+                media_id=media_id,
+                message=f"The video processing is not finished, status: {video_status}",
+            )
 
         load_video_transcription_output = load_video_transcription(
             media_id=media_id, model_name=asr_model_name
