@@ -1,4 +1,4 @@
-"""Initialize
+"""Initialize.
 
 Revision ID: 6d95f693a277
 Revises: 
@@ -48,6 +48,7 @@ def upgrade() -> None:
     sa.Column('orig_url', sa.String(), nullable=True, comment='Original URL'),
     sa.Column('title', sa.String(), nullable=True, comment='Title of the video'),
     sa.Column('description', sa.String(), nullable=True, comment='Description of the video'),
+    sa.Column('status', sa.Enum('CREATED', 'RUNNING', 'COMPLETED', 'FAILED', name='status'), nullable=False, comment='Status of the task'),
     sa.Column('create_ts', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True, comment='Timestamp when row is inserted'),
     sa.Column('update_ts', sa.DateTime(timezone=True), nullable=True, comment='Timestamp when row is updated'),
     sa.ForeignKeyConstraint(['id'], ['media.id'], name=op.f('fk_video_id_media')),

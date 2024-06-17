@@ -22,6 +22,7 @@ from aana.storage.models import (
     TranscriptEntity,
     VideoEntity,
 )
+from aana.storage.models.video import Status as VideoStatus
 from aana.storage.repository.caption import CaptionRepository
 from aana.storage.repository.media import MediaRepository
 from aana.storage.repository.transcript import TranscriptRepository
@@ -116,6 +117,36 @@ def save_video(video: Video, duration: float) -> dict:
         return {
             "media_id": media_entity.id,
         }
+
+def get_video_status(
+    media_id: MediaId,
+) -> VideoStatus:
+    """Load video status from database.
+
+    Args:
+        media_id (MediaId): The media ID.
+
+    Returns:
+        VideoStatus: The video status.
+    """
+    with Session(engine) as session:
+        video_status = VideoRepository(session).get_status(media_id)
+        return video_status
+
+
+def update_video_status(
+    media_id: MediaId, status: VideoStatus):
+    """Update the video status.
+
+    Args:
+        media_id (str): The media ID.
+        status (VideoStatus): The new status.
+    """
+    with Session(engine) as session:
+        video_repo = VideoRepository(session)
+        media_entity = video_repo.read(media_id)
+        media_entity.status = status
+        session.commit()
 
 
 def delete_media(media_id: MediaId) -> dict:
