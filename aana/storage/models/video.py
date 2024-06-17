@@ -1,6 +1,7 @@
-from enum import Enum, StrEnum
+from enum import Enum
 
 from sqlalchemy import Column, Float, ForeignKey, String
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import relationship
 
 from aana.storage.models.base import BaseEntity, TimeStampEntity
@@ -28,7 +29,7 @@ class VideoEntity(BaseEntity, TimeStampEntity):
     title = Column(String, comment="Title of the video")
     description = Column(String, comment="Description of the video")
     status = Column(
-        StrEnum(Status),
+        SqlEnum(Status),
         nullable=False,
         default=Status.CREATED,
         comment="Status of the video",
