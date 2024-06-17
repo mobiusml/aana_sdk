@@ -109,7 +109,7 @@ class IndexVideoEndpoint(Endpoint):
             ),
         }
 
-        update_video_status(media_id=MediaId, status=VideoStatus.RUNNING)
+        update_video_status(media_id=media_id, status=VideoStatus.RUNNING)
         audio: Audio = extract_audio(video=video_obj)
 
         vad_output = await self.vad_handle.asr_preprocess_vad(
@@ -170,7 +170,7 @@ class IndexVideoEndpoint(Endpoint):
             timestamps=timestamps,
             frame_ids=frame_ids,
         )
-        update_video_status(media_id=MediaId, status=VideoStatus.COMPLETED)
+        update_video_status(media_id=media_id, status=VideoStatus.COMPLETED)
         yield {
             "transcription_id": save_video_transcription_output["transcription_id"],
             "caption_ids": save_video_captions_output["caption_ids"],
