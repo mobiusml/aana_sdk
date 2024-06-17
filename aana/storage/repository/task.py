@@ -26,7 +26,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
 
         Returns:
             The corresponding task from the database if found.
-        
+
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
