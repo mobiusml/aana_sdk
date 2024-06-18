@@ -297,7 +297,7 @@ You can deploy example applications using Docker. See the [documentation on how 
 
 ## License
 
-Aana SDK is licensed under the [Apache License 2.0](./LICENSE.md). Commercial licensing options are also available.
+Aana SDK is licensed under the [Apache License 2.0](./LICENSE). Commercial licensing options are also available.
 
 ## Contributing
 
