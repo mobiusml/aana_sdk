@@ -4,6 +4,16 @@
 
 Aana SDK is a powerful framework for building multimodal applications. It facilitates the large-scale deployment of machine learning models, including those for vision, audio, and language, and supports Retrieval-Augmented Generation (RAG) systems. This enables the development of advanced applications such as search engines, recommendation systems, and data insights platforms.
 
+The SDK is designed according to the following principles:
+
+- **Reliability**: Aana is designed to be reliable and robust. It is built to be fault-tolerant and to handle failures gracefully.
+- **Scalability**: Aana is designed to be scalable. It is built on top of Ray, a distributed computing framework, and can be easily scaled to multiple servers.
+- **Efficiency**: Aana is designed to be efficient. It is built to be fast and parallel and to use resources efficiently.
+- **Easy to Use**: Aana is designed to be easy to use by developers. It is built to be modular, with a lot of automation and abstraction.
+These design principles are reflected in the architecture of the SDK. The SDK is built on top of Ray, a distributed computing framework.
+
+Although we are trying to follow these principles, we are aware that there is always room for improvement. The SDK is still in development, and not all features are fully implemented. We are constantly working on improving the SDK, and we welcome any feedback or suggestions.
+
 ## Why use Aana SDK?
 
 Nowadays, it is getting easier to experiment with machine learning models and build prototypes. However, deploying these models at scale and integrating them into real-world applications is still a challenge. 
@@ -13,10 +23,6 @@ Aana SDK simplifies this process by providing a framework that allows:
 - Build multimodal applications that combine multiple different machine learning models.
 
 ### Main components
-
-<!-- To build an application with Aana SDK, you need to:
-- Define the deployment for each model you want to use. 
-- Define the endpoints that will be available in your application. -->
 
 There are three main components in Aana SDK: deployments, endpoints, and AanaSDK.
 
@@ -85,18 +91,9 @@ aana_app.migrate()  # Runs the migrations to create the database tables.
 aana_app.deploy()   # Deploys the application.
 ```
 
-<!-- All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
-- Deploy the models: on a single machine or scale them across a cluster.
-- Generate an API for your application based on the endpoints you defined.
-- Input and output of the endpoints will be automatically validated. All you need to do is to annotate the input and output of the endpoint functions. Aana SDK also comes with a set of predefined types for things like images, videos, etc.
-- Generate the documentation for your application based on the endpoints you defined.
-- Streaming support for the output of the endpoints. You can stream the output of the endpoint to the client as it is generated. This is useful for real-time applications and Large Language Models (LLMs).
-- Add task queue support for your application which allows you to run every endpoint you define as a task in the background. No changes to your code are needed! -->
-
-
 All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
 
-#### Key Features
+### Key Features
 
 - **Model Deployment**:
   - Deploy models on a single machine or scale them across a cluster.
@@ -119,89 +116,11 @@ All you need to do is define the deployments and endpoints you want to use in yo
 - **Task Queue Support**:
   - Run every endpoint you define as a task in the background without any changes to your code.
 
+## Integrations
 
-<!-- The models are defined as "deployments". Aana SDK comes with a set of predefined deployments that you can use out of the box:
-- Whisper: transcribe audio with automatic Speech Recognition (ASR) model based on the [faster-whisper](https://github.com/SYSTRAN/faster-whisper). 
-- vLLM: efficiently serve Large Language Model (LLM) with [vLLM](https://github.com/vllm-project/vllm/) library.
-- Hugging Face Transformers: serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models) with the [Hugging Face Pipeline](https://huggingface.co/transformers/main_classes/pipelines.html) deployment.
-- Haystack: build Retrieval-Augmented Generation (RAG) systems with the [Deepset Haystack](https://github.com/deepset-ai/haystack). -->
+Aana SDK have integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come. See the [Integrations](docs/integrations.md) documentation for more information.
 
-### Integrations
-
-Aana SDK comes with a set of predefined deployments that you can use out of the box to deploy models.
-
-#### Whisper
-
-Whisper deployment allows you to transcribe audio with an automatic Speech Recognition (ASR) model based on the [faster-whisper](https://github.com/SYSTRAN/faster-whisper). 
-
-```python
-from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
-
-WhisperDeployment.options(
-    num_replicas=1,
-    ray_actor_options={"num_gpus": 0.25},
-    user_config=WhisperConfig(model_size=WhisperModelSize.MEDIUM, compute_type=WhisperComputeType.FLOAT16).model_dump(mode="json"),
-)
-```
-
-#### vLLM
-
-vLLM deployment allows you to efficiently serve Large Language Model (LLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
-
-```python
-from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
-
-VLLMDeployment.options(
-    num_replicas=1,
-    ray_actor_options={"num_gpus": 1},
-    user_config=VLLMConfig(
-        model="meta-llama/Meta-Llama-3-8B-Instruct",
-        dtype=Dtype.AUTO,
-        gpu_memory_reserved=30000,
-        enforce_eager=True,
-        default_sampling_params=SamplingParams(
-            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
-        ),
-    ).model_dump(mode="json"),
-)
-```
-
-#### Hugging Face Transformers
-
-Hugging Face Pipeline deployment allows you to serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models). It is a wrapper for [Hugging Face Pipelines](https://huggingface.co/transformers/main_classes/pipelines.html) so you can deploy and scale *almost* any model from the Hugging Face Hub with a few lines of code.
-
-```python
-from transformers import BitsAndBytesConfig
-from aana.deployments.hf_pipeline_deployment import HfPipelineConfig, HfPipelineDeployment
-
-HfPipelineDeployment.options(
-    num_replicas=1,
-    ray_actor_options={"num_gpus": 1},
-    user_config=HfPipelineConfig(
-        model_id="Salesforce/blip2-opt-2.7b",
-        task="image-to-text",
-        model_kwargs={
-            "quantization_config": BitsAndBytesConfig(load_in_8bit=False, load_in_4bit=True),
-        },
-    ).model_dump(mode="json"),
-)
-```
-
-#### Haystack
-
-Haystack integration allows you to build Retrieval-Augmented Generation (RAG) systems with the [Deepset Haystack](https://github.com/deepset-ai/haystack). 
-
-TODO: Add example
-
-
-<!-- ## Features
-
-- *Multimodal Input Handling:* Aana SDK seamlessly handles various types of multimodal inputs, providing versatility in application development.
-- *Streaming Support:* With streaming support for both input and output, Aana SDK ensures smooth data processing for real-time applications.
-- *Scalability:* Leveraging the capabilities of Ray serve, Aana SDK allows the deployment of multimodal models and applications across clusters, ensuring scalability and efficient resource utilization.
-- *Rapid Development:* Aana SDK enables developers to swiftly create robust multimodal applications in a Pythonic manner, utilizing its underlying components for fast configurations and RAG setups. -->
-
-## Usage
+## Installation
 
 ### Installing via PyPI
 
@@ -239,7 +158,7 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-### Run Example Application
+## Running Example Applications
 
 Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
 
@@ -276,7 +195,7 @@ aana deploy aana.projects.whisper.app:aana_app
 > - `whisper` requires at least 4GB.
 
 
-### Creating Application
+## Creating New Applications
 
 You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components.
 
@@ -369,90 +288,19 @@ This will return the full transcription of the video, transcription for each seg
 
 ## Serve Config Files
 
-The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications.
+The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications. See the [Serve Config Files documentation](docs/serve_config_files.md) on how to build and deploy the applications using the Serve Config Files.
 
-### Building Serve Config Files
-
-To build the Serve config file, run the following command:
-
-```bash
-aana build <app_module>:<app_name>
-```
-
-For example:
-
-```bash
-aana build aana.projects.chat_with_video.app:aana_app
-```
-
-The command will generate the Serve Config file and App Config file and save them in the project directory. You can then use these files to deploy the application using the Ray Serve CLI.
-
-### Deploying with Serve Config Files
-
-When you are running the Aana application using the Serve config files, you need to run the migrations to create the database tables for the application. To run the migrations, use the following command:
-
-```bash
-aana migrate <app_module>:<app_name>
-```
-
-For example:
-
-```bash
-aana migrate aana.projects.chat_with_video.app:aana_app
-```
-
-Before deploying the application, make sure you have the Ray cluster running. If you want to start a new Ray cluster on a single machine, you can use the following command:
-
-```bash
-ray start --head
-```
-
-For more info on how to start a Ray cluster, see the [Ray documentation](https://docs.ray.io/en/latest/ray-core/starting-ray.html#starting-ray-via-the-cli-ray-start).
-
-To deploy the application using the Serve config files, use [`serve deploy`](https://docs.ray.io/en/latest/serve/advanced-guides/deploy-vm.html#serve-in-production-deploying) command provided by Ray Serve. For example:
-
-```bash
-serve deploy config.yaml
-```
 
 ## Run with Docker
 
-You can deploy example applications using Docker. 
-
-1. Clone the repository.
-
-2. Build the Docker image.
-
-```bash
-docker build -t aana:latest .
-```
-
-3. Run the Docker container.
-
-```bash
-docker run --rm --init -p 8000:8000 --gpus all -e TARGET="llama2" -v aana_cache:/root/.aana -v aana_hf_cache:/root/.cache/huggingface --name aana_instance aana:latest
-```
-
-Use the environment variable TARGET to specify the application you want to run. The available applications are `chat_with_video`, `whisper`, and `llama2`.
-
-The first run might take a while because the models will be downloaded from the Internet and cached. The models will be stored in the `aana_cache` volume. The HuggingFace models will be stored in the `aana_hf_cache` volume. If you want to remove the cached models, remove the volume.
-
-Once you see `Deployed successfully.` in the logs, the server is ready to accept requests.
-
-You can change the port and gpus parameters to your needs.
-
-The server will be available at http://localhost:8000.
-
-The app documentation available as a [Swagger UI](http://localhost:8000/docs) and [ReDoc](http://localhost:8000/redoc).
-
-5. Send a request to the server.
-
-You can find examples in the [demo notebook](notebooks/demo.ipynb).
+You can deploy example applications using Docker. See the [documentation on how to run Aana SDK with Docker](docs/docker.md).
 
 ## License
+
 Aana SDK is licensed under the [Apache License 2.0](./LICENSE.md). Commercial licensing options are also available.
 
 ## Contributing
+
 We welcome contributions from the community to enhance Aana SDK's functionality and usability. Feel free to open issues for bug reports, feature requests, or submit pull requests to contribute code improvements.
 
 Before contributing, please read our [Code Standards](docs/code_standards.md) and [Development Documentation](docs/development.md).

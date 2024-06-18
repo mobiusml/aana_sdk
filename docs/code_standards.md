@@ -1,4 +1,4 @@
-## Code Standards
+# Code Standards
 
 This project uses Ruff for linting and formatting. If you want to 
 manually run Ruff on the codebase, using poetry it's
@@ -24,7 +24,7 @@ that Ruff problems appear while you edit, and formatting is applied
 automatically on save.
 
 
-## Testing
+# Testing
 
 The project uses pytest for testing. To run the tests, use the following command:
 
