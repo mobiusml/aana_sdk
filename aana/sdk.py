@@ -264,9 +264,9 @@ class AanaSDK:
             )
             rprint("[green]Deployed successfully.[/green]")
             rprint(
-                "Documentation is available at "
-                "[link=http://127.0.0.1:8000/docs]http://127.0.0.1:8000/docs[/link] and "
-                "[link=http://127.0.0.1:8000/redoc]http://127.0.0.1:8000/redoc[/link]"
+                f"Documentation is available at "
+                f"[link=http://{self.host}:{self.port}/docs]http://{self.host}:{self.port}/docs[/link] and "
+                f"[link=http://{self.host}:{self.port}/redoc]http://{self.host}:{self.port}/redoc[/link]"
             )
             while blocking:
                 time.sleep(10)
