@@ -43,7 +43,7 @@ class AanaSDK:
         show_logs: bool = False,
         num_cpus: int | None = None,
         num_gpus: int | None = None,
-    ):
+    ) -> "AanaSDK":
         """Connect to a Ray cluster or start a new Ray cluster and Ray Serve.
 
         Args:
@@ -81,6 +81,8 @@ class AanaSDK:
             # TODO: check if the port is already in use if serve is not running yet or
             # check if the port is the same as an existing serve instance if serve is running
             serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
+
+        return self
 
     def migrate(self):
         """Run Alembic migrations."""
