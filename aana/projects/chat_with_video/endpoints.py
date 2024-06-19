@@ -143,6 +143,9 @@ class IndexVideoEndpoint(Endpoint):
             async for frames_dict in run_remote(generate_frames)(
                 video=video_obj, params=video_params
             ):
+                if len(frames_dict["frames"]) == 0:
+                    break
+
                 timestamps.extend(frames_dict["timestamps"])
                 frame_ids.extend(frames_dict["frame_ids"])
 
