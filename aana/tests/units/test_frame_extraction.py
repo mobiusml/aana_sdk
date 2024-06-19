@@ -6,7 +6,11 @@ import pytest
 from aana.core.models.image import Image
 from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
-from aana.integrations.external.decord import extract_frames, generate_frames
+from aana.integrations.external.decord import (
+    extract_frames,
+    generate_frames,
+    get_video_duration,
+)
 
 
 @pytest.mark.parametrize(
@@ -39,6 +43,22 @@ def test_extract_frames_success(
     assert len(result["frames"]) == expected_num_frames
     assert len(result["timestamps"]) == expected_num_frames
 
+@pytest.mark.parametrize(
+    "video_name, expected_duration",
+    [
+        ("squirrel.mp4", 10.0),
+        ("physicsworks_audio.webm", 0),
+    ],
+)
+def test_get_video_duration_success(
+    video_name, expected_duration
+):
+    """Test decord video duration."""
+    video_path = resources.path("aana.tests.files.videos", video_name)
+    video = Video(path=video_path)
+    duration = get_video_duration(video=video)
+    assert isinstance(duration, float)
+    assert duration == expected_duration
 
 @pytest.mark.parametrize(
     "video_name, extract_fps, fast_mode_enabled, expected_duration, expected_num_frames",
