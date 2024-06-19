@@ -16,7 +16,7 @@ from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
 from aana.core.models.whisper import BatchedWhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.exceptions.db import UnfinishedVideoException
+from aana.exceptions.db import MediaIdAlreadyExistsException, UnfinishedVideoException
 from aana.integrations.external.decord import generate_frames, get_video_duration
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
@@ -27,6 +27,7 @@ from aana.projects.chat_with_video.utils import (
 )
 from aana.storage.models.video import Status as VideoStatus
 from aana.storage.services.video import (
+    check_media_id_exist,
     delete_media,
     get_video_status,
     load_video_captions,
@@ -99,16 +100,20 @@ class IndexVideoEndpoint(Endpoint):
         vad_params: VadParams,
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
+        media_id = video.media_id
+        if check_media_id_exist(media_id):
+            raise MediaIdAlreadyExistsException(table_name="media", media_id=video)
+
         video_obj: Video = await run_remote(download_video)(video_input=video)
         video_duration = await run_remote(get_video_duration)(video=video_obj)
         save_video(video=video_obj, duration=video_duration)
-        media_id = video_obj.media_id
         yield {
             "media_id": media_id,
             "metadata": VideoMetadata(
                 title=video_obj.title, description=video_obj.description
             ),
         }
+
         try:
             update_video_status(media_id=media_id, status=VideoStatus.RUNNING)
             audio: Audio = extract_audio(video=video_obj)

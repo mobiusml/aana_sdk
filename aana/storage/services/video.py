@@ -135,6 +135,21 @@ def get_video_status(
         return entity.status
 
 
+def check_media_id_exist(
+    media_id: MediaId,
+) -> bool:
+    """Check if media_id exists in the database.
+
+    Args:
+        media_id (MediaId): The media ID.
+
+    Returns:
+        bool: True if the media_id exists, False otherwise.
+    """
+    with Session(engine) as session:
+        return MediaRepository(session).check_media_exists(media_id)
+
+
 def update_video_status(media_id: MediaId, status: VideoStatus):
     """Update the video status.
 
