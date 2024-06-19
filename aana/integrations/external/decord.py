@@ -83,7 +83,7 @@ def get_video_duration(video: Video) -> float:
 
     Returns:
         float: duration of the video
-    
+
     Raises:
         VideoReadingException: if the file is not readable or a valid multimedia file
     """
