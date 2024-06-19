@@ -131,8 +131,8 @@ def get_video_status(
         VideoStatus: The video status.
     """
     with Session(engine) as session:
-        video_status = VideoRepository(session).get_status(media_id)
-        return video_status
+        entity: VideoEntity = VideoRepository(session).read(media_id)
+        return entity.status
 
 
 def update_video_status(media_id: MediaId, status: VideoStatus):
