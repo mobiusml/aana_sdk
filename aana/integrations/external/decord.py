@@ -83,12 +83,19 @@ def get_video_duration(video: Video) -> float:
 
     Returns:
         float: duration of the video
+    
+    Raises:
+        VideoReadingException: if the file is not readable or a valid multimedia file
     """
     device = decord.cpu(0)
     try:
         video_reader = decord.VideoReader(str(video.path), ctx=device, num_threads=1)
-    except DECORDError:
-        return 0.0
+    except DECORDError as video_reader_exception:
+        try:
+            audio_reader = decord.AudioReader(str(video.path), ctx=device)
+            return audio_reader.duration()
+        except DECORDError:
+            raise VideoReadingException(video) from video_reader_exception
 
     video_fps = video_reader.get_avg_fps()
     num_frames = len(video_reader)
@@ -109,6 +116,8 @@ def generate_frames(
     Yields:
         FramesDict: a dictionary containing the extracted frames, frame ids, timestamps,
                     and duration for each batch
+    Raises:
+        VideoReadingException: if the file is not readable or a valid multimedia file
     """
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
