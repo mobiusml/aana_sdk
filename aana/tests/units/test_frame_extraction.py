@@ -47,7 +47,8 @@ def test_extract_frames_success(
     "video_name, expected_duration",
     [
         ("squirrel.mp4", 10.0),
-        ("physicsworks_audio.webm", 0),
+        ("physicsworks.webm", 203.3),
+        ("physicsworks_audio.webm", 0.0),
     ],
 )
 def test_get_video_duration_success(
@@ -58,7 +59,7 @@ def test_get_video_duration_success(
     video = Video(path=video_path)
     duration = get_video_duration(video=video)
     assert isinstance(duration, float)
-    assert duration == expected_duration
+    assert round(duration, 1) == expected_duration
 
 @pytest.mark.parametrize(
     "video_name, extract_fps, fast_mode_enabled, expected_duration, expected_num_frames",
