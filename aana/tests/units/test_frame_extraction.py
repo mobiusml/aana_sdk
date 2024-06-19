@@ -43,6 +43,7 @@ def test_extract_frames_success(
     assert len(result["frames"]) == expected_num_frames
     assert len(result["timestamps"]) == expected_num_frames
 
+
 @pytest.mark.parametrize(
     "video_name, expected_duration",
     [
@@ -51,15 +52,14 @@ def test_extract_frames_success(
         ("physicsworks_audio.webm", 0.0),
     ],
 )
-def test_get_video_duration_success(
-    video_name, expected_duration
-):
+def test_get_video_duration_success(video_name, expected_duration):
     """Test decord video duration."""
     video_path = resources.path("aana.tests.files.videos", video_name)
     video = Video(path=video_path)
     duration = get_video_duration(video=video)
     assert isinstance(duration, float)
     assert round(duration, 1) == expected_duration
+
 
 @pytest.mark.parametrize(
     "video_name, extract_fps, fast_mode_enabled, expected_duration, expected_num_frames",
