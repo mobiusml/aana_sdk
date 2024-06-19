@@ -1,0 +1,181 @@
+[
+    {
+        "media_id": "physicsworks_audio.webm",
+        "metadata": {
+            "description": "",
+            "title": ""
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall,",
+                "time_interval": {
+                    "end": 27.788,
+                    "start": 0.0
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10 is about 150 joules. If I let it fall,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this,",
+                "time_interval": {
+                    "end": 54.204,
+                    "start": 28.117
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices called a racquetball. They use them to demolish buildings. You lift up a very heavy object, even heavier than this,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit, and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy.",
+                "time_interval": {
+                    "end": 83.18,
+                    "start": 54.362
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " And then you let it go, you swing it, thereby converting gravitational potential energy into kinetic energy, and that way you can demolish a building. You just let it hit, and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height,",
+                "time_interval": {
+                    "end": 113.76,
+                    "start": 83.851
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that bob from a certain height, then that bob can never come back to a point where the height is any larger. If I release it from this height,"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here. I trust",
+                "time_interval": {
+                    "end": 140.945,
+                    "start": 114.175
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " and it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher, provided that I do not give this object an initial speed when I stand here. I trust"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " the conservation of mechanical energy for 100%. I may not trust myself. I'm going to release this object and I hope I will be able to do it at zero speed so that when it comes back it may touch my chin but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed",
+                "time_interval": {
+                    "end": 170.04,
+                    "start": 141.274
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " the conservation of mechanical energy for 100%. I may not trust myself. I'm going to release this object and I hope I will be able to do it at zero speed so that when it comes back it may touch my chin but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " then this will be my last lecture. I will close my eyes. I don't want to see this. So please be very quiet. I almost didn't sleep all night. Three, two, one, zero.",
+                "time_interval": {
+                    "end": 187.89,
+                    "start": 170.199
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " then this will be my last lecture. I will close my eyes. I don't want to see this. So please be very quiet. I almost didn't sleep all night. Three, two, one, zero."
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.98193359375
+        },
+        "segments": [
+            {
+                "confidence": null,
+                "no_speech_confidence": null,
+                "text": " Physics works, and I'm still alive.",
+                "time_interval": {
+                    "end": 202.924,
+                    "start": 200.728
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Physics works, and I'm still alive."
+        }
+    },
+    {
+        "caption_ids": [],
+        "transcription_id": 1
+    }
+]

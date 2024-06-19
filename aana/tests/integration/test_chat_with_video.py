@@ -41,6 +41,15 @@ VIDEO_DELETE_ENDPOINT = "/video/delete"
         ),
         (
             {
+                "path": str(
+                    resources.path("aana.tests.files.videos", "physicsworks_audio.webm")
+                ),
+                "media_id": "physicsworks_audio.webm",
+            },
+            {"temperature": 0.0},
+        ),
+        (
+            {
                 "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 "media_id": "dQw4w9WgXcQ",
             },
