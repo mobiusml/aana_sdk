@@ -171,7 +171,7 @@ class IndexVideoEndpoint(Endpoint):
                 timestamps=timestamps,
                 frame_ids=frame_ids,
             )
-            
+
             yield {
                 "transcription_id": save_video_transcription_output["transcription_id"],
                 "caption_ids": save_video_captions_output["caption_ids"],

@@ -41,7 +41,7 @@ class MediaIdAlreadyExistsException(BaseException):
         return (self.__class__, (self.table_name, self.media_id))
 
 
-class LoadVideoException(BaseException):
+class UnfinishedVideoException(BaseException):
     """Exception raised when try to fetch unfinished video.
 
     Attributes:
