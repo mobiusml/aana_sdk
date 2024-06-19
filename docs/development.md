@@ -38,7 +38,7 @@ aana/                         | top level source code directory for the project
 │   ├── db/                   | tests for database functions
 │   ├── deployments/          | tests for model deployments
 │   ├── files/                | assets for testing
-│   └── unit/                 | unit tests
+│   └── units/                | unit tests
 ├── utils/                    | various utility functionality
 ├── cli.py                    | command-line interface to build and deploy the SDK
 └── sdk.py                    | base class to create an SDK instance
