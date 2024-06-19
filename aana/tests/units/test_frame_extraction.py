@@ -60,6 +60,7 @@ def test_get_video_duration_success(video_name, expected_duration):
     assert isinstance(duration, float)
     assert round(duration, 1) == expected_duration
 
+
 def test_get_video_duration_failure():
     """Test that duration cannot be extracted from a invalid video."""
     # image file instead of video file will create Video object
@@ -68,6 +69,7 @@ def test_get_video_duration_failure():
     with pytest.raises(VideoReadingException):
         invalid_video = Video(path=path)
         get_video_duration(video=invalid_video)
+
 
 @pytest.mark.parametrize(
     "video_name, extract_fps, fast_mode_enabled, expected_duration, expected_num_frames",
