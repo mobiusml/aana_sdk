@@ -13,10 +13,11 @@ from aana.core.models.chat import Question
 from aana.core.models.media import MediaId
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.vad import VadParams
-from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
+from aana.core.models.video import VideoInput, VideoMetadata, VideoParams, VideoStatus
 from aana.core.models.whisper import BatchedWhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.integrations.external.decord import generate_frames
+from aana.exceptions.db import MediaIdAlreadyExistsException, UnfinishedVideoException
+from aana.integrations.external.decord import generate_frames, get_video_duration
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
@@ -24,14 +25,18 @@ from aana.projects.chat_with_video.const import asr_model_name, captioning_model
 from aana.projects.chat_with_video.utils import (
     generate_dialog,
 )
+from aana.storage.models.video import Status
 from aana.storage.services.video import (
+    check_media_id_exist,
     delete_media,
+    get_video_status,
     load_video_captions,
     load_video_metadata,
     load_video_transcription,
     save_video,
     save_video_captions,
     save_video_transcription,
+    update_video_status,
 )
 
 if TYPE_CHECKING:
@@ -42,6 +47,8 @@ if TYPE_CHECKING:
 class IndexVideoOutput(TypedDict):
     """The output of the transcribe video endpoint."""
 
+    media_id: MediaId
+    metadata: VideoMetadata
     transcription: AsrTranscription
     transcription_info: AsrTranscriptionInfo
     segments: AsrSegments
@@ -65,6 +72,12 @@ class LoadVideoMetadataOutput(TypedDict):
     """The output of the load video metadata endpoint."""
 
     metadata: VideoMetadata
+
+
+class VideoStatusOutput(TypedDict):
+    """The output of the video status endpoint."""
+
+    status: VideoStatus
 
 
 class DeleteMediaOutput(TypedDict):
@@ -93,75 +106,95 @@ class IndexVideoEndpoint(Endpoint):
         vad_params: VadParams,
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
+        media_id = video.media_id
+        if check_media_id_exist(media_id):
+            raise MediaIdAlreadyExistsException(table_name="media", media_id=video)
+
         video_obj: Video = await run_remote(download_video)(video_input=video)
-        audio: Audio = extract_audio(video=video_obj)
-
-        vad_output = await self.vad_handle.asr_preprocess_vad(
-            audio=audio, params=vad_params
-        )
-        vad_segments = vad_output["segments"]
-
-        transcription_list = []
-        segments_list = []
-        transcription_info_list = []
-        async for whisper_output in self.asr_handle.transcribe_in_chunks(
-            audio=audio, params=whisper_params, segments=vad_segments
-        ):
-            transcription_list.append(whisper_output["transcription"])
-            segments_list.append(whisper_output["segments"])
-            transcription_info_list.append(whisper_output["transcription_info"])
-            yield {
-                "transcription": whisper_output["transcription"],
-                "segments": whisper_output["segments"],
-                "info": whisper_output["transcription_info"],
-            }
-        transcription = sum(transcription_list, AsrTranscription())
-        segments = sum(segments_list, AsrSegments())
-        transcription_info = sum(transcription_info_list, AsrTranscriptionInfo())
-
-        captions = []
-        timestamps = []
-        frame_ids = []
-        video_duration = 0.0
-        async for frames_dict in run_remote(generate_frames)(
-            video=video_obj, params=video_params
-        ):
-            timestamps.extend(frames_dict["timestamps"])
-            frame_ids.extend(frames_dict["frame_ids"])
-            video_duration = frames_dict["duration"]
-
-            captioning_output = await self.captioning_handle.generate_batch(
-                images=frames_dict["frames"]
-            )
-            captions.extend(captioning_output["captions"])
-
-            yield {
-                "captions": captioning_output["captions"],
-                "timestamps": frames_dict["timestamps"],
-            }
-
+        video_duration = await run_remote(get_video_duration)(video=video_obj)
         save_video(video=video_obj, duration=video_duration)
-
-        save_video_transcription_output = save_video_transcription(
-            model_name=asr_model_name,
-            media_id=video_obj.media_id,
-            transcription=transcription,
-            segments=segments,
-            transcription_info=transcription_info,
-        )
-
-        save_video_captions_output = save_video_captions(
-            model_name=captioning_model_name,
-            media_id=video_obj.media_id,
-            captions=captions,
-            timestamps=timestamps,
-            frame_ids=frame_ids,
-        )
-
         yield {
-            "transcription_id": save_video_transcription_output["transcription_id"],
-            "caption_ids": save_video_captions_output["caption_ids"],
+            "media_id": media_id,
+            "metadata": VideoMetadata(
+                title=video_obj.title, description=video_obj.description
+            ),
         }
+
+        try:
+            update_video_status(media_id=media_id, status=Status.RUNNING)
+            audio: Audio = extract_audio(video=video_obj)
+
+            vad_output = await self.vad_handle.asr_preprocess_vad(
+                audio=audio, params=vad_params
+            )
+            vad_segments = vad_output["segments"]
+
+            transcription_list = []
+            segments_list = []
+            transcription_info_list = []
+            async for whisper_output in self.asr_handle.transcribe_in_chunks(
+                audio=audio, params=whisper_params, segments=vad_segments
+            ):
+                transcription_list.append(whisper_output["transcription"])
+                segments_list.append(whisper_output["segments"])
+                transcription_info_list.append(whisper_output["transcription_info"])
+                yield {
+                    "transcription": whisper_output["transcription"],
+                    "segments": whisper_output["segments"],
+                    "info": whisper_output["transcription_info"],
+                }
+            transcription = sum(transcription_list, AsrTranscription())
+            segments = sum(segments_list, AsrSegments())
+            transcription_info = sum(transcription_info_list, AsrTranscriptionInfo())
+
+            captions = []
+            timestamps = []
+            frame_ids = []
+
+            async for frames_dict in run_remote(generate_frames)(
+                video=video_obj, params=video_params
+            ):
+                if len(frames_dict["frames"]) == 0:
+                    break
+
+                timestamps.extend(frames_dict["timestamps"])
+                frame_ids.extend(frames_dict["frame_ids"])
+
+                captioning_output = await self.captioning_handle.generate_batch(
+                    images=frames_dict["frames"]
+                )
+                captions.extend(captioning_output["captions"])
+
+                yield {
+                    "captions": captioning_output["captions"],
+                    "timestamps": frames_dict["timestamps"],
+                }
+
+            save_video_transcription_output = save_video_transcription(
+                model_name=asr_model_name,
+                media_id=video_obj.media_id,
+                transcription=transcription,
+                segments=segments,
+                transcription_info=transcription_info,
+            )
+
+            save_video_captions_output = save_video_captions(
+                model_name=captioning_model_name,
+                media_id=video_obj.media_id,
+                captions=captions,
+                timestamps=timestamps,
+                frame_ids=frame_ids,
+            )
+
+            yield {
+                "transcription_id": save_video_transcription_output["transcription_id"],
+                "caption_ids": save_video_captions_output["caption_ids"],
+            }
+        except BaseException:
+            update_video_status(media_id=media_id, status=Status.FAILED)
+            raise
+        else:
+            update_video_status(media_id=media_id, status=Status.COMPLETED)
 
 
 class VideoChatEndpoint(Endpoint):
@@ -176,6 +209,15 @@ class VideoChatEndpoint(Endpoint):
         self, media_id: MediaId, question: Question, sampling_params: SamplingParams
     ) -> AsyncGenerator[VideoChatEndpointOutput, None]:
         """Run the video chat endpoint."""
+        # check to see if video already processed
+        video_status = get_video_status(media_id=media_id)
+        if video_status != Status.COMPLETED:
+            raise UnfinishedVideoException(
+                media_id=media_id,
+                status=video_status,
+                message=f"The video data is not available, status: {video_status}",
+            )
+
         load_video_transcription_output = load_video_transcription(
             media_id=media_id, model_name=asr_model_name
         )
@@ -212,6 +254,17 @@ class LoadVideoMetadataEndpoint(Endpoint):
         video_metadata: VideoMetadata = load_video_metadata(media_id=media_id)
         return {
             "metadata": video_metadata,
+        }
+
+
+class GetVideoStatusEndpoint(Endpoint):
+    """Get video status endpoint."""
+
+    async def run(self, media_id: MediaId) -> VideoStatusOutput:
+        """Load video metadata."""
+        video_status: Status = get_video_status(media_id=media_id)
+        return {
+            "status": video_status,
         }
 
 

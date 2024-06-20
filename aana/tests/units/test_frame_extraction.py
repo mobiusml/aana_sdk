@@ -6,7 +6,11 @@ import pytest
 from aana.core.models.image import Image
 from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
-from aana.integrations.external.decord import extract_frames, generate_frames
+from aana.integrations.external.decord import (
+    extract_frames,
+    generate_frames,
+    get_video_duration,
+)
 
 
 @pytest.mark.parametrize(
@@ -38,6 +42,33 @@ def test_extract_frames_success(
     assert result["duration"] == expected_duration
     assert len(result["frames"]) == expected_num_frames
     assert len(result["timestamps"]) == expected_num_frames
+
+
+@pytest.mark.parametrize(
+    "video_name, expected_duration",
+    [
+        ("squirrel.mp4", 10.0),
+        ("physicsworks.webm", 203.3),
+        ("physicsworks_audio.webm", 203.0),
+    ],
+)
+def test_get_video_duration_success(video_name, expected_duration):
+    """Test decord video duration."""
+    video_path = resources.path("aana.tests.files.videos", video_name)
+    video = Video(path=video_path)
+    duration = get_video_duration(video=video)
+    assert isinstance(duration, float)
+    assert round(duration, 1) == expected_duration
+
+
+def test_get_video_duration_failure():
+    """Test that duration cannot be extracted from a invalid video."""
+    # image file instead of video file will create Video object
+    # but will fail in get duration function
+    path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    with pytest.raises(VideoReadingException):
+        invalid_video = Video(path=path)
+        get_video_duration(video=invalid_video)
 
 
 @pytest.mark.parametrize(

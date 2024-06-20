@@ -1,5 +1,12 @@
 [
     {
+        "media_id": "squirrel.mp4",
+        "metadata": {
+            "description": "",
+            "title": "squirrel"
+        }
+    },
+    {
         "info": {
             "language": "silence",
             "language_confidence": 1.0
