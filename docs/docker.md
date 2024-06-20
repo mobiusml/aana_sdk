@@ -26,7 +26,7 @@ You can change the port and gpus parameters to your needs.
 
 The server will be available at http://localhost:8000.
 
-The app documentation available as a [Swagger UI](http://localhost:8000/docs) and [ReDoc](http://localhost:8000/redoc).
+The app documentation is available as a [Swagger UI](http://localhost:8000/docs) and [ReDoc](http://localhost:8000/redoc).
 
 5. Send a request to the server.
 

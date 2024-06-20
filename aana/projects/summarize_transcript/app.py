@@ -103,7 +103,7 @@ class SummarizeVideoEndpoint(Endpoint):
             messages=[
                 ChatMessage(
                     role="system",
-                    content="You are a heplful assistant that can summarize audio transcripts.",
+                    content="You are a helpful assistant that can summarize audio transcripts.",
                 ),
                 ChatMessage(
                     role="user",
@@ -138,7 +138,7 @@ class SummarizeVideoStreamEndpoint(Endpoint):
             messages=[
                 ChatMessage(
                     role="system",
-                    content="You are a heplful assistant that can summarize audio transcripts.",
+                    content="You are a helpful assistant that can summarize audio transcripts.",
                 ),
                 ChatMessage(
                     role="user",
