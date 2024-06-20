@@ -71,10 +71,10 @@ def test_create_caption(mocked_session):
     frame_id = 32767
     timestamp = 327.6
     _ = MediaEntity(id=media_id, media_type=media_type)
-    video = VideoEntity(media_id=media_id, duration=video_duration)
+    _ = VideoEntity(id=media_id, duration=video_duration)
+
     caption = CaptionEntity(
         media_id=media_id,
-        video=video,
         model=model_name,
         frame_id=frame_id,
         caption=caption_text,
@@ -83,9 +83,7 @@ def test_create_caption(mocked_session):
     caption2 = repo.create(caption)
 
     # See above
-    assert caption2.video == video
     assert caption2.media_id == media_id
-    assert caption2.video_id == video.id
     assert caption2.model == model_name
     assert caption2.frame_id == frame_id
     assert caption2.caption == caption_text
@@ -107,10 +105,9 @@ def test_create_transcript(mocked_session):
     language = "en"
     language_confidence = 0.5
     media = MediaEntity(id=media_id, media_type=media_type)
-    video = VideoEntity(media_id=media_id, duration=duration)
+    _ = VideoEntity(id=media_id, duration=duration)
     transcript = TranscriptEntity(
         media_id=media_id,
-        video=video,
         model=model_name,
         transcript=transcript_text,
         segments=segments,
@@ -120,7 +117,6 @@ def test_create_transcript(mocked_session):
     transcript2 = repo.create(transcript)
 
     # See above
-    assert transcript2.video_id == video.id
     assert transcript2.media_id == media.id
     assert transcript2.model == model_name
     assert transcript2.transcript == transcript_text
