@@ -11,7 +11,7 @@ The SDK is designed according to the following principles:
 - **Efficiency**: Aana is designed to be efficient. It is built to be fast and parallel and to use resources efficiently.
 - **Easy to Use**: Aana is designed to be easy to use by developers. It is built to be modular, with a lot of automation and abstraction.
 
-Although we are trying to follow these principles, we are aware that there is always room for improvement. The SDK is still in development, and not all features are fully implemented. We are constantly working on improving the SDK, and we welcome any feedback or suggestions.
+The SDK is still in development, and not all features are fully implemented. We are constantly working on improving the SDK, and we welcome any feedback or suggestions.
 
 ## Why use Aana SDK?
 
@@ -42,10 +42,8 @@ Aana SDK simplifies this process by providing a framework that allows:
 
 - **Task Queue Support**:
   - Run every endpoint you define as a task in the background without any changes to your code.
-
-## Integrations
-
-Aana SDK have integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come. See the [Integrations](docs/integrations.md) documentation for more information.
+- **Integration Support**:  
+   - Aana SDK have integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come ( for more information see [Integrations](docs/integrations.md) ). 
 
 ## Installation
 
@@ -85,44 +83,7 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-## Running Example Applications
-
-Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
-
-The following applications are available:
-- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information.
-- `whisper`: An application that demonstrates the Whisper model for automatic speech recognition (ASR).
-- `llama2`: An application that deploys LLaMa2 7B Chat model.
-
-To run an example application, use the following command:
-
-```bash
-aana deploy aana.projects.<app_name>.app:aana_app
-```
-
-For example, to run the `whisper` application, use the following command:
-
-```bash
-aana deploy aana.projects.whisper.app:aana_app
-```
-
-> **⚠️ Warning**
->
-> The example applications require a GPU to run. 
->
-> The applications will detect the available GPU automatically but you need to make sure that `CUDA_VISIBLE_DEVICES` is set correctly.
-> 
-> Sometimes `CUDA_VISIBLE_DEVICES` is set to an empty string and the application will not be able to detect the GPU. Use `unset CUDA_VISIBLE_DEVICES` to unset the variable.
-> 
-> You can also set the `CUDA_VISIBLE_DEVICES` environment variable to the GPU index you want to use: `export CUDA_VISIBLE_DEVICES=0`.
->
-> Different applications have different requirements for the GPU memory:
-> - `chat_with_video` requires at least 48GB.
-> - `llama2` requires at least 16GB.
-> - `whisper` requires at least 4GB.
-
-
-## Creating New Applications
+## Getting Starting: Creating a New Application
 
 You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components.
 
@@ -212,6 +173,44 @@ curl -X POST http://127.0.0.1:8000/video/transcribe -Fbody='{"video":{"url":"htt
 ```
 
 This will return the full transcription of the video, transcription for each segment, and transcription info like identified language. You can also use the [Swagger UI](http://127.0.0.1:8000/docs) to send the request.
+
+## Running Example Applications
+
+Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
+
+The following applications are available:
+- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information.
+- `whisper`: An application that demonstrates the Whisper model for automatic speech recognition (ASR).
+- `llama2`: An application that deploys LLaMa2 7B Chat model.
+
+To run an example application, use the following command:
+
+```bash
+aana deploy aana.projects.<app_name>.app:aana_app
+```
+
+For example, to run the `whisper` application, use the following command:
+
+```bash
+aana deploy aana.projects.whisper.app:aana_app
+```
+
+> **⚠️ Warning**
+>
+> The example applications require a GPU to run. 
+>
+> The applications will detect the available GPU automatically but you need to make sure that `CUDA_VISIBLE_DEVICES` is set correctly.
+> 
+> Sometimes `CUDA_VISIBLE_DEVICES` is set to an empty string and the application will not be able to detect the GPU. Use `unset CUDA_VISIBLE_DEVICES` to unset the variable.
+> 
+> You can also set the `CUDA_VISIBLE_DEVICES` environment variable to the GPU index you want to use: `export CUDA_VISIBLE_DEVICES=0`.
+>
+> Different applications have different requirements for the GPU memory:
+> - `chat_with_video` requires at least 48GB.
+> - `llama2` requires at least 16GB.
+> - `whisper` requires at least 4GB.
+
+
 
 ## Main components
 
