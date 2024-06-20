@@ -21,77 +21,6 @@ Aana SDK simplifies this process by providing a framework that allows:
 - Deploy and scale machine learning models on a single machine or a cluster.
 - Build multimodal applications that combine multiple different machine learning models.
 
-### Main components
-
-There are three main components in Aana SDK: deployments, endpoints, and AanaSDK.
-
-#### Deployments
-
-Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
-
-Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
-
-For example, we have a predefined deployment for the Whisper model that allows you to transcribe audio. You can define the deployment like this:
-
-```python
-from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
-
-asr_deployment = WhisperDeployment.options(
-    num_replicas=1,
-    ray_actor_options={"num_gpus": 0.25},
-    user_config=WhisperConfig(model_size=WhisperModelSize.MEDIUM, compute_type=WhisperComputeType.FLOAT16).model_dump(mode="json"),
-)
-```
-
-#### Endpoints
-
-Endpoints define the functionality of your application. They allow you to connect multiple deployments (models) to each other and define the input and output of your application.
-
-Each endpoint is defined as a class that inherits from the `Endpoint` class. The class has two main methods: `initialize` and `run`.
-
-For example, you can define an endpoint that transcribes a video like this:
-
-```python
-class TranscribeVideoEndpoint(Endpoint):
-    """Transcribe video endpoint."""
-
-    async def initialize(self):
-        """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
-        await super().initialize()
-
-    async def run(self, video: VideoInput) -> WhisperOutput:
-        """Transcribe video."""
-        video_obj = await run_remote(download_video)(video_input=video)
-        audio = extract_audio(video=video_obj)
-        transcription = await self.asr_handle.transcribe(audio=audio)
-        return transcription
-```
-
-#### AanaSDK
-
-AanaSDK is the main class that you use to build your application. It allows you to deploy the deployments and endpoints you defined and start the application.
-
-For example, you can define an application that transcribes a video like this:
-
-```python
-aana_app = AanaSDK(name="transcribe_video_app")
-
-aana_app.register_deployment(name="asr_deployment", instance=asr_deployment)
-aana_app.register_endpoint(
-    name="transcribe_video",
-    path="/video/transcribe",
-    summary="Transcribe a video",
-    endpoint_cls=TranscribeVideoEndpoint,
-)
-
-aana_app.connect()  # Connects to the Ray cluster or starts a new one.
-aana_app.migrate()  # Runs the migrations to create the database tables.
-aana_app.deploy()   # Deploys the application.
-```
-
-All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
-
 ### Key Features
 
 - **Model Deployment**:
@@ -283,6 +212,77 @@ curl -X POST http://127.0.0.1:8000/video/transcribe -Fbody='{"video":{"url":"htt
 ```
 
 This will return the full transcription of the video, transcription for each segment, and transcription info like identified language. You can also use the [Swagger UI](http://127.0.0.1:8000/docs) to send the request.
+
+## Main components
+
+There are three main components in Aana SDK: deployments, endpoints, and AanaSDK.
+
+### Deployments
+
+Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
+
+Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
+
+For example, we have a predefined deployment for the Whisper model that allows you to transcribe audio. You can define the deployment like this:
+
+```python
+from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
+
+asr_deployment = WhisperDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(model_size=WhisperModelSize.MEDIUM, compute_type=WhisperComputeType.FLOAT16).model_dump(mode="json"),
+)
+```
+
+### Endpoints
+
+Endpoints define the functionality of your application. They allow you to connect multiple deployments (models) to each other and define the input and output of your application.
+
+Each endpoint is defined as a class that inherits from the `Endpoint` class. The class has two main methods: `initialize` and `run`.
+
+For example, you can define an endpoint that transcribes a video like this:
+
+```python
+class TranscribeVideoEndpoint(Endpoint):
+    """Transcribe video endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+        await super().initialize()
+
+    async def run(self, video: VideoInput) -> WhisperOutput:
+        """Transcribe video."""
+        video_obj = await run_remote(download_video)(video_input=video)
+        audio = extract_audio(video=video_obj)
+        transcription = await self.asr_handle.transcribe(audio=audio)
+        return transcription
+```
+
+### AanaSDK
+
+AanaSDK is the main class that you use to build your application. It allows you to deploy the deployments and endpoints you defined and start the application.
+
+For example, you can define an application that transcribes a video like this:
+
+```python
+aana_app = AanaSDK(name="transcribe_video_app")
+
+aana_app.register_deployment(name="asr_deployment", instance=asr_deployment)
+aana_app.register_endpoint(
+    name="transcribe_video",
+    path="/video/transcribe",
+    summary="Transcribe a video",
+    endpoint_cls=TranscribeVideoEndpoint,
+)
+
+aana_app.connect()  # Connects to the Ray cluster or starts a new one.
+aana_app.migrate()  # Runs the migrations to create the database tables.
+aana_app.deploy()   # Deploys the application.
+```
+
+All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
 
 ## Serve Config Files
 
