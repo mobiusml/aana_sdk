@@ -43,7 +43,7 @@ Aana SDK simplifies this process by providing a framework that allows:
 - **Task Queue Support**:
   - Run every endpoint you define as a task in the background without any changes to your code.
 - **Integrations**:  
-   - Aana SDK have integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/integrations.md)). 
+   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/integrations.md)). 
 
 ## Installation
 
