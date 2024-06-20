@@ -17,18 +17,22 @@ class TaskRepository(BaseRepository[TaskEntity]):
         """Constructor."""
         super().__init__(session, TaskEntity)
 
-    def read(self, task_id: str | UUID) -> TaskEntity:
+    def read(self, task_id: str | UUID, check: bool = True) -> TaskEntity:
         """Reads a single task by id from the database.
 
         Args:
             task_id (str | UUID): ID of the task to retrieve
+            check (bool): whether to raise if the entity is not found (defaults to True).
 
         Returns:
             The corresponding task from the database if found.
+
+        Raises:
+            NotFoundException if the entity is not found and `check` is True.
         """
         if isinstance(task_id, str):
             task_id = UUID(task_id)
-        return super().read(task_id)
+        return super().read(task_id, check=check)
 
     def delete(self, task_id: str | UUID, check: bool = False) -> TaskEntity | None:
         """Deletes a single task by id from the database.
