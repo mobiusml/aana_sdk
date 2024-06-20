@@ -89,7 +89,7 @@ You can quickly develop multimodal applications using Aana SDK's intuitive APIs 
 
 Let's create a simple application that transcribes a video. The application will download a video from YouTube, extract the audio, and transcribe it using an ASR model.
 
-Aana SDK already provides a deployment for ASR (Automatic Speech Recognition) based on the Whisper model. We will use this deployment in the example.
+Aana SDK already provides a deployment for ASR (Automatic Speech Recognition) based on the Whisper model. We will use this [deployment](#Deployments) in the example.
 
 ```python
 from aana.api.api_generation import Endpoint
