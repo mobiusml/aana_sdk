@@ -40,7 +40,7 @@ The server will be available at http://localhost:8000.
 
 The documentation will be available at http://localhost:8000/docs and http://localhost:8000/redoc.
 
-For HuggingFace Transformers, you need to specify HF_AUTH environment variable with your HuggingFace API token.
+For HuggingFace Transformers, you need to specify HUGGING_FACE_HUB_TOKEN environment variable with your HuggingFace API token.
 
 5. Send a request to the server.
 
