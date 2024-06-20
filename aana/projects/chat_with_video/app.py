@@ -6,6 +6,7 @@ from aana.configs.deployments import (
 )
 from aana.projects.chat_with_video.endpoints import (
     DeleteMediaEndpoint,
+    GetVideoStatusEndpoint,
     IndexVideoEndpoint,
     LoadVideoMetadataEndpoint,
     VideoChatEndpoint,
@@ -49,6 +50,12 @@ endpoints = [
         "path": "/video/chat_stream",
         "summary": "Chat with video using LLaMa2 7B Chat (streaming)",
         "endpoint_cls": VideoChatEndpoint,
+    },
+    {
+        "name": "video_status",
+        "path": "/video/status",
+        "summary": "Get video status",
+        "endpoint_cls": GetVideoStatusEndpoint,
     },
     {
         "name": "delete_media",

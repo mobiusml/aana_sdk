@@ -12,6 +12,7 @@ TARGET = "chat_with_video"
 VIDEO_INDEX_ENDPOINT = "/video/index_stream"
 VIDEO_METADATA_ENDPOINT = "/video/metadata"
 VIDEO_CHAT_ENDPOINT = "/video/chat_stream"
+VIDEO_STATUS_ENDPOINT = "/video/status"
 VIDEO_DELETE_ENDPOINT = "/video/delete"
 
 
@@ -36,6 +37,15 @@ VIDEO_DELETE_ENDPOINT = "/video/delete"
                     resources.path("aana.tests.files.videos", "physicsworks.webm")
                 ),
                 "media_id": "physicsworks.webm",
+            },
+            {"temperature": 0.0},
+        ),
+        (
+            {
+                "path": str(
+                    resources.path("aana.tests.files.videos", "physicsworks_audio.webm")
+                ),
+                "media_id": "physicsworks_audio.webm",
             },
             {"temperature": 0.0},
         ),
@@ -70,11 +80,24 @@ def test_chat_with_video(call_endpoint, video, whisper_params):
         {"media_id": media_id},
     )
 
+    # get video status
+    call_endpoint(
+        VIDEO_STATUS_ENDPOINT,
+        {"media_id": media_id},
+    )
+
     # delete video
     call_endpoint(
         VIDEO_DELETE_ENDPOINT,
         {"media_id": media_id},
         ignore_expected_output=True,
+    )
+
+    # get video status
+    call_endpoint(
+        VIDEO_STATUS_ENDPOINT,
+        {"media_id": media_id},
+        expected_error="NotFoundException",
     )
 
     # after deleting the video video metadata should not be available

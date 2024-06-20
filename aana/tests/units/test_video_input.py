@@ -35,8 +35,10 @@ def test_videoinput_invalid_media_id():
     with pytest.raises(ValidationError):
         VideoInput(path="video.mp4", media_id="")
 
+
 @pytest.mark.parametrize(
-    "url", [
+    "url",
+    [
         "domain",
         "domain.com",
         "http://",
