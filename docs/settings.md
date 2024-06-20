@@ -7,4 +7,4 @@ Here are the environment variables that can be used to configure the Aaana SDK:
 - USE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will use the deployment cache to avoid downloading the models and running the deployments. Default: `false`.
 - SAVE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will save the deployment cache after running the deployments. Default: `false`.
 - HF_HUB_ENABLE_HF_TRANSFER: If set to `1`, the HuggingFace Transformers will use the HF Transfer library to download the models from HuggingFace Hub to speed up the process. Recommended to always set to it `1`. Default: `0`.
-
+- HF_TOKEN: The HuggingFace API token to download the models from HuggingFace Hub, required for private or gated models.
