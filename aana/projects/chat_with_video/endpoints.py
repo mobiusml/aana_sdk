@@ -208,7 +208,7 @@ class VideoChatEndpoint(Endpoint):
         if video_status != VideoStatus.COMPLETED:
             raise UnfinishedVideoException(
                 media_id=media_id,
-                status= video_status,
+                status=video_status,
                 message=f"The video data is not available, status: {video_status}",
             )
 
