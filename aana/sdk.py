@@ -267,7 +267,7 @@ class AanaSDK:
             serve.shutdown()
             sys.exit()
         except RuntimeError:
-            self.show_status("RequestHandler")
+            self.show_status(self.name)
         except Exception:
             traceback.print_exc()
             print(
