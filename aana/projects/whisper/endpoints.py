@@ -53,6 +53,43 @@ class DeleteMediaOutput(TypedDict):
     media_id: MediaId
 
 
+class SimpleTranscribeVideoOutput(TypedDict):
+    """The output of the simple transcribe video endpoint."""
+
+    transcription: AsrTranscription
+    transcription_info: AsrTranscriptionInfo
+    segments: AsrSegments
+
+class SimpleTranscribeVideoEndpoint(Endpoint):
+    """Simple video transcription (no saving)."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+
+    async def run(
+        self, video: VideoInput, whisper_params: WhisperParams
+    ) -> AsyncGenerator[SimpleTranscribeVideoOutput, None]:
+        """Transcribe video."""
+        video_obj: Video = await run_remote(download_video)(video_input=video)
+        audio: Audio = extract_audio(video=video_obj)
+
+        transcription_list = []
+        segments_list = []
+        transcription_info_list = []
+        async for whisper_output in self.asr_handle.transcribe_stream(
+            audio=audio, params=whisper_params
+        ):
+            transcription_list.append(whisper_output["transcription"])
+            segments_list.append(whisper_output["segments"])
+            transcription_info_list.append(whisper_output["transcription_info"])
+            yield {
+                "transcription": whisper_output["transcription"],
+                "segments": whisper_output["segments"],
+                "info": whisper_output["transcription_info"],
+            }
+
+
 class TranscribeVideoEndpoint(Endpoint):
     """Transcribe video endpoint."""
 
