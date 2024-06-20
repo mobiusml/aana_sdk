@@ -13,7 +13,7 @@ from aana.core.models.chat import Question
 from aana.core.models.media import MediaId
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.vad import VadParams
-from aana.core.models.video import VideoInput, VideoMetadata, VideoParams
+from aana.core.models.video import VideoInput, VideoMetadata, VideoParams, VideoStatus
 from aana.core.models.whisper import BatchedWhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.exceptions.db import MediaIdAlreadyExistsException, UnfinishedVideoException
@@ -25,7 +25,7 @@ from aana.projects.chat_with_video.const import asr_model_name, captioning_model
 from aana.projects.chat_with_video.utils import (
     generate_dialog,
 )
-from aana.storage.models.video import Status as VideoStatus
+from aana.storage.models.video import Status
 from aana.storage.services.video import (
     check_media_id_exist,
     delete_media,
@@ -74,6 +74,12 @@ class LoadVideoMetadataOutput(TypedDict):
     metadata: VideoMetadata
 
 
+class VideoStatusOutput(TypedDict):
+    """The output of the video status endpoint."""
+
+    status: VideoStatus
+
+
 class DeleteMediaOutput(TypedDict):
     """The output of the delete media endpoint."""
 
@@ -115,7 +121,7 @@ class IndexVideoEndpoint(Endpoint):
         }
 
         try:
-            update_video_status(media_id=media_id, status=VideoStatus.RUNNING)
+            update_video_status(media_id=media_id, status=Status.RUNNING)
             audio: Audio = extract_audio(video=video_obj)
 
             vad_output = await self.vad_handle.asr_preprocess_vad(
@@ -185,10 +191,10 @@ class IndexVideoEndpoint(Endpoint):
                 "caption_ids": save_video_captions_output["caption_ids"],
             }
         except BaseException:
-            update_video_status(media_id=media_id, status=VideoStatus.FAILED)
+            update_video_status(media_id=media_id, status=Status.FAILED)
             raise
         else:
-            update_video_status(media_id=media_id, status=VideoStatus.COMPLETED)
+            update_video_status(media_id=media_id, status=Status.COMPLETED)
 
 
 class VideoChatEndpoint(Endpoint):
@@ -205,7 +211,7 @@ class VideoChatEndpoint(Endpoint):
         """Run the video chat endpoint."""
         # check to see if video already processed
         video_status = get_video_status(media_id=media_id)
-        if video_status != VideoStatus.COMPLETED:
+        if video_status != Status.COMPLETED:
             raise UnfinishedVideoException(
                 media_id=media_id,
                 status=video_status,
@@ -248,6 +254,17 @@ class LoadVideoMetadataEndpoint(Endpoint):
         video_metadata: VideoMetadata = load_video_metadata(media_id=media_id)
         return {
             "metadata": video_metadata,
+        }
+
+
+class GetVideoStatusEndpoint(Endpoint):
+    """Get video status endpoint."""
+
+    async def run(self, media_id: MediaId) -> VideoStatusOutput:
+        """Load video metadata."""
+        video_status: Status = get_video_status(media_id=media_id)
+        return {
+            "status": video_status,
         }
 
 
