@@ -42,8 +42,8 @@ Aana SDK simplifies this process by providing a framework that allows:
 
 - **Task Queue Support**:
   - Run every endpoint you define as a task in the background without any changes to your code.
-- **Integration Support**:  
-   - Aana SDK have integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come ( for more information see [Integrations](docs/integrations.md) ). 
+- **Integrations**:  
+   - Aana SDK have integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/integrations.md)). 
 
 ## Installation
 
@@ -83,7 +83,9 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-## Getting Starting: Creating a New Application
+## Getting Started
+
+### Creating a New Application
 
 You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components.
 
@@ -174,7 +176,7 @@ curl -X POST http://127.0.0.1:8000/video/transcribe -Fbody='{"video":{"url":"htt
 
 This will return the full transcription of the video, transcription for each segment, and transcription info like identified language. You can also use the [Swagger UI](http://127.0.0.1:8000/docs) to send the request.
 
-## Running Example Applications
+### Running Example Applications
 
 Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
 
@@ -212,11 +214,11 @@ aana deploy aana.projects.whisper.app:aana_app
 
 
 
-## Main components
+### Main components
 
 There are three main components in Aana SDK: deployments, endpoints, and AanaSDK.
 
-### Deployments
+#### Deployments
 
 Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
 
@@ -234,7 +236,7 @@ asr_deployment = WhisperDeployment.options(
 )
 ```
 
-### Endpoints
+#### Endpoints
 
 Endpoints define the functionality of your application. They allow you to connect multiple deployments (models) to each other and define the input and output of your application.
 
@@ -259,7 +261,7 @@ class TranscribeVideoEndpoint(Endpoint):
         return transcription
 ```
 
-### AanaSDK
+#### AanaSDK
 
 AanaSDK is the main class that you use to build your application. It allows you to deploy the deployments and endpoints you defined and start the application.
 
