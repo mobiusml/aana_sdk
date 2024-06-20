@@ -83,3 +83,43 @@ class ChatDialog(BaseModel):
             ChatDialog: the chat dialog
         """
         return ChatDialog(messages=[ChatMessage(**message) for message in messages])
+
+
+class ChatCompletionRequest(BaseModel):
+    """A chat completion request for OpenAI compatible API."""
+
+    model: str = Field(..., description="The model name (name of the LLM deployment).")
+    messages: list[ChatMessage] = Field(
+        ..., description="A list of messages comprising the conversation so far."
+    )
+    temperature: float | None = Field(
+        default=None,
+        ge=0.0,
+        description=(
+            "Float that controls the randomness of the sampling. "
+            "Lower values make the model more deterministic, "
+            "while higher values make the model more random. "
+            "Zero means greedy sampling."
+        ),
+    )
+    top_p: float | None = Field(
+        default=None,
+        gt=0.0,
+        le=1.0,
+        description=(
+            "Float that controls the cumulative probability of the top tokens to consider. "
+            "Must be in (0, 1]. Set to 1 to consider all tokens."
+        ),
+    )
+    max_tokens: int | None = Field(
+        default=None, ge=1, description="The maximum number of tokens to generate."
+    )
+
+    stream: bool | None = Field(
+        default=False,
+        description=(
+            "If set, partial message deltas will be sent, like in ChatGPT. "
+            "Tokens will be sent as data-only server-sent events as they become available, "
+            "with the stream terminated by a data: [DONE] message."
+        ),
+    )
