@@ -100,8 +100,7 @@ All you need to do is define the deployments and endpoints you want to use in yo
 - **API Generation**:
   - Automatically generate an API for your application based on the endpoints you define.
   - Input and output of the endpoints will be automatically validated.
-  - Simply annotate the types of the input and output of the endpoint functions.
-
+  - Simply annotate the types of input and output of the endpoint functions.
 - **Predefined Types**:
   - Comes with a set of predefined types for various data such as images, videos, etc.
 
@@ -145,7 +144,7 @@ git clone https://github.com/mobiusml/aana_sdk.git
 apt update && apt install -y libgl1
 ```
 
-You should also install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal se of your system's resources, for example a GPU  or even some SIMD operations. Therefore we recommend installing choosing your PyTorch package carefully and installing it manually.
+You should also install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU  or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
 
 3. Install the package with poetry.
 
@@ -304,4 +303,4 @@ We welcome contributions from the community to enhance Aana SDK's functionality 
 
 Before contributing, please read our [Code Standards](docs/code_standards.md) and [Development Documentation](docs/development.md).
 
-We have adopted the [Contributor Convenant](https://www.contributor-covenant.org/) as our code of conduct.
+We have adopted the [Contributor Covenant](https://www.contributor-covenant.org/) as our code of conduct.
