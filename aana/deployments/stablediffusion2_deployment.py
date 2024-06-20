@@ -40,7 +40,7 @@ class StableDiffusion2Deployment(BaseDeployment):
 
         It loads the model and scheduler from HuggingFace.
 
-        The configuration should conform to the StableDiffusion2Confgi schema.
+        The configuration should conform to the StableDiffusion2Config schema.
         """
         config_obj = StableDiffusion2Config(**config)
 

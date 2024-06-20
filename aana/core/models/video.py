@@ -140,6 +140,20 @@ class VideoMetadata(BaseModel):
         }
     )
 
+class VideoStatus(BaseModel):
+    """Metadata of a video.
+
+    Attributes:
+        status (str): the title of the video
+        description (str): the description of the video
+    """
+
+    status: str = Field(None, description="Current processing status of video.")
+    model_config = ConfigDict(
+        json_schema_extra={
+            "status": "Current processing status of video.",
+        }
+    )
 
 class VideoParams(BaseModel):
     """A pydantic model for video parameters.
