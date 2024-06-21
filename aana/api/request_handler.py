@@ -165,13 +165,19 @@ class RequestHandler:
             handle = await AanaDeploymentHandle.create(request.model)
         except ray.serve.exceptions.RayServeException:
             return AanaJSONResponse(
-                content={"error": "Model not found"}, status_code=404
+                content={
+                    "error": {"message": f"The model `{request.model}` does not exist."}
+                },
+                status_code=404,
             )
 
         # Check if the deployment is a chat model
         if not hasattr(handle, "chat") or not hasattr(handle, "chat_stream"):
             return AanaJSONResponse(
-                content={"error": "Model not found"}, status_code=404
+                content={
+                    "error": {"message": f"The model `{request.model}` does not exist."}
+                },
+                status_code=404,
             )
 
         dialog = ChatDialog(
