@@ -1,6 +1,11 @@
+import json
+import time
 from typing import Any
+from uuid import uuid4
 
+import ray
 from fastapi.openapi.utils import get_openapi
+from fastapi.responses import StreamingResponse
 from ray import serve
 
 from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
@@ -8,7 +13,10 @@ from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
+from aana.core.models.chat import ChatCompletetion, ChatCompletionRequest, ChatDialog
+from aana.core.models.sampling import SamplingParams
 from aana.core.models.task import TaskId
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.storage.services.task import TaskInfo, delete_task, get_task_info
 
 
@@ -124,3 +132,75 @@ class RequestHandler:
         """
         task = delete_task(task_id)
         return TaskId(task_id=str(task.id))
+
+    @app.post("/chat/completions", response_model=ChatCompletetion)
+    async def chat_completions(self, request: ChatCompletionRequest):
+        """Handle chat completions requests for OpenAI compatible API."""
+
+        async def _async_chat_completions(
+            handle: AanaDeploymentHandle,
+            dialog: ChatDialog,
+            sampling_params: SamplingParams,
+        ):
+            async for response in handle.chat_stream(
+                dialog=dialog, sampling_params=sampling_params
+            ):
+                chunk = {
+                    "id": f"chatcmpl-{uuid4().hex}",
+                    "object": "chat.completion.chunk",
+                    "model": request.model,
+                    "created": int(time.time()),
+                    "choices": [
+                        {
+                            "index": 0,
+                            "delta": {"content": response["text"], "role": "assistant"},
+                        }
+                    ],
+                }
+                yield f"data: {json.dumps(chunk)}\n\n"
+            yield "data: [DONE]\n\n"
+
+        # Check if the deployment exists
+        try:
+            handle = await AanaDeploymentHandle.create(request.model)
+        except ray.serve.exceptions.RayServeException:
+            return AanaJSONResponse(
+                content={
+                    "error": {"message": f"The model `{request.model}` does not exist."}
+                },
+                status_code=404,
+            )
+
+        # Check if the deployment is a chat model
+        if not hasattr(handle, "chat") or not hasattr(handle, "chat_stream"):
+            return AanaJSONResponse(
+                content={
+                    "error": {"message": f"The model `{request.model}` does not exist."}
+                },
+                status_code=404,
+            )
+
+        dialog = ChatDialog(
+            messages=request.messages,
+        )
+
+        sampling_params = SamplingParams(
+            temperature=request.temperature,
+            max_tokens=request.max_tokens,
+            top_p=request.top_p,
+        )
+
+        if request.stream:
+            return StreamingResponse(
+                _async_chat_completions(handle, dialog, sampling_params),
+                media_type="application/x-ndjson",
+            )
+        else:
+            response = await handle.chat(dialog=dialog, sampling_params=sampling_params)
+            return {
+                "id": f"chatcmpl-{uuid4().hex}",
+                "object": "chat.completion",
+                "model": request.model,
+                "created": int(time.time()),
+                "choices": [{"index": 0, "message": response["message"]}],
+            }
