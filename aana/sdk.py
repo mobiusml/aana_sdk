@@ -9,6 +9,7 @@ import yaml
 from ray import serve
 from ray.serve.config import HTTPOptions
 from ray.serve.deployment import Application, Deployment
+from rich import print as rprint
 
 from aana.api.api_generation import Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
@@ -42,7 +43,7 @@ class AanaSDK:
         show_logs: bool = False,
         num_cpus: int | None = None,
         num_gpus: int | None = None,
-    ):
+    ) -> "AanaSDK":
         """Connect to a Ray cluster or start a new Ray cluster and Ray Serve.
 
         Args:
@@ -80,6 +81,8 @@ class AanaSDK:
             # TODO: check if the port is already in use if serve is not running yet or
             # check if the port is the same as an existing serve instance if serve is running
             serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
+
+        return self
 
     def migrate(self):
         """Run Alembic migrations."""
@@ -259,7 +262,12 @@ class AanaSDK:
                 route_prefix="/",
                 blocking=False,  # blocking manually after to display the message "Deployed successfully."
             )
-            print("Deployed successfully.")
+            rprint("[green]Deployed successfully.[/green]")
+            rprint(
+                f"Documentation is available at "
+                f"[link=http://{self.host}:{self.port}/docs]http://{self.host}:{self.port}/docs[/link] and "
+                f"[link=http://{self.host}:{self.port}/redoc]http://{self.host}:{self.port}/redoc[/link]"
+            )
             while blocking:
                 time.sleep(10)
         except KeyboardInterrupt:
@@ -267,7 +275,7 @@ class AanaSDK:
             serve.shutdown()
             sys.exit()
         except RuntimeError:
-            self.show_status("RequestHandler")
+            self.show_status(self.name)
         except Exception:
             traceback.print_exc()
             print(
