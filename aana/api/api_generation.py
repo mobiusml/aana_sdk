@@ -141,6 +141,11 @@ class Endpoint:
         # to see if any of the fields are required
         try:
             data_model_instance = arg_type()
+        except TypeError as e:
+            raise ValueError(  # noqa: TRY003
+                f"Invalid type for argument {arg_name}: {arg_type}. "
+                "Consider using Annotated[..., Field(...)] or Pydantic models."
+            ) from e
         except ValidationError:
             # if we can't instantiate the data model
             # it means that it has required fields
