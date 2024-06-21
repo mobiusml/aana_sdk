@@ -13,7 +13,7 @@ from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
-from aana.core.models.chat import ChatCompletionRequest, ChatDialog
+from aana.core.models.chat import ChatCompletetion, ChatCompletionRequest, ChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.task import TaskId
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
@@ -133,7 +133,7 @@ class RequestHandler:
         task = delete_task(task_id)
         return TaskId(task_id=str(task.id))
 
-    @app.post("/chat/completions")
+    @app.post("/chat/completions", response_model=ChatCompletetion)
     async def chat_completions(self, request: ChatCompletionRequest):
         """Handle chat completions requests for OpenAI compatible API."""
 
