@@ -64,3 +64,7 @@ HfPipelineDeployment.options(
 Haystack integration allows you to build Retrieval-Augmented Generation (RAG) systems with the [Deepset Haystack](https://github.com/deepset-ai/haystack). 
 
 TODO: Add example
+
+## OpenAI-compatible Chat Completions API
+
+The OpenAI-compatible Chat Completions API allows you to access the Aana applications with any OpenAI-compatible client. See [OpenAI-compatible API docs](/docs/openai_api.md) for more details.
