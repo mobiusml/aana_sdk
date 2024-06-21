@@ -2,11 +2,68 @@
 
 # Aana
 
-Aana is a multi-model SDK for deploying and serving machine learning models.
+Aana SDK is a powerful framework for building multimodal applications. It facilitates the large-scale deployment of machine learning models, including those for vision, audio, and language, and supports Retrieval-Augmented Generation (RAG) systems. This enables the development of advanced applications such as search engines, recommendation systems, and data insights platforms.
+
+The SDK is designed according to the following principles:
+
+- **Reliability**: Aana is designed to be reliable and robust. It is built to be fault-tolerant and to handle failures gracefully.
+- **Scalability**: Aana is designed to be scalable. It is built on top of Ray, a distributed computing framework, and can be easily scaled to multiple servers.
+- **Efficiency**: Aana is designed to be efficient. It is built to be fast and parallel and to use resources efficiently.
+- **Easy to Use**: Aana is designed to be easy to use by developers. It is built to be modular, with a lot of automation and abstraction.
+
+The SDK is still in development, and not all features are fully implemented. We are constantly working on improving the SDK, and we welcome any feedback or suggestions.
+
+## Why use Aana SDK?
+
+Nowadays, it is getting easier to experiment with machine learning models and build prototypes. However, deploying these models at scale and integrating them into real-world applications is still a challenge. 
+
+Aana SDK simplifies this process by providing a framework that allows:
+- Deploy and scale machine learning models on a single machine or a cluster.
+- Build multimodal applications that combine multiple different machine learning models.
+
+### Key Features
+
+- **Model Deployment**:
+  - Deploy models on a single machine or scale them across a cluster.
+
+- **API Generation**:
+  - Automatically generate an API for your application based on the endpoints you define.
+  - Input and output of the endpoints will be automatically validated.
+  - Simply annotate the types of input and output of the endpoint functions.
+- **Predefined Types**:
+  - Comes with a set of predefined types for various data such as images, videos, etc.
+
+- **Documentation Generation**:
+  - Automatically generate documentation for your application based on the defined endpoints.
+
+- **Streaming Support**:
+  - Stream the output of the endpoint to the client as it is generated.
+  - Ideal for real-time applications and Large Language Models (LLMs).
+
+- **Task Queue Support**:
+  - Run every endpoint you define as a task in the background without any changes to your code.
+- **Integrations**:  
+   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/integrations.md)). 
 
 ## Installation
 
-1. Clone this repository.
+### Installing via PyPI
+
+To install Aana SDK via PyPI, you can use the following command:
+
+```bash
+pip install aana
+```
+
+Make sure you have the necessary dependencies installed, such as `libgl1` for OpenCV.
+
+### Installing from GitHub
+
+1. Clone the repository.
+
+```bash
+git clone https://github.com/mobiusml/aana_sdk.git
+```
 
 2. Install additional libraries.
 
@@ -14,7 +71,11 @@ Aana is a multi-model SDK for deploying and serving machine learning models.
 apt update && apt install -y libgl1
 ```
 
+You should also install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU  or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
+
 3. Install the package with poetry.
+
+The project is managed with [Poetry](https://python-poetry.org/docs/). See the [Poetry installation instructions](https://python-poetry.org/docs/#installation) on how to install it on your system.
 
 It will install the package and all dependencies in a virtual environment.
 
@@ -22,213 +83,225 @@ It will install the package and all dependencies in a virtual environment.
 sh install.sh
 ```
 
-4. Run the SDK.
+## Getting Started
 
-```bash
-HF_HUB_ENABLE_HF_TRANSFER=1 CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana.projects.chat_with_video.app:aana_app --port 8000 --host 0.0.0.0
+### Creating a New Application
+
+You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components.
+
+Let's create a simple application that transcribes a video. The application will download a video from YouTube, extract the audio, and transcribe it using an ASR model.
+
+Aana SDK already provides a deployment for ASR (Automatic Speech Recognition) based on the Whisper model. We will use this [deployment](#Deployments) in the example.
+
+```python
+from aana.api.api_generation import Endpoint
+from aana.core.models.video import VideoInput
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.deployments.whisper_deployment import (
+    WhisperComputeType,
+    WhisperConfig,
+    WhisperDeployment,
+    WhisperModelSize,
+    WhisperOutput,
+)
+from aana.integrations.external.yt_dlp import download_video
+from aana.processors.remote import run_remote
+from aana.processors.video import extract_audio
+from aana.sdk import AanaSDK
+
+
+# Define the model deployments.
+asr_deployment = WhisperDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25}, # Remove this line if you want to run Whisper on a CPU.
+    user_config=WhisperConfig(
+        model_size=WhisperModelSize.MEDIUM,
+        compute_type=WhisperComputeType.FLOAT16,
+    ).model_dump(mode="json"),
+)
+deployments = [{"name": "asr_deployment", "instance": asr_deployment}]
+
+
+# Define the endpoint to transcribe the video.
+class TranscribeVideoEndpoint(Endpoint):
+    """Transcribe video endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+        await super().initialize()
+
+    async def run(self, video: VideoInput) -> WhisperOutput:
+        """Transcribe video."""
+        video_obj = await run_remote(download_video)(video_input=video)
+        audio = extract_audio(video=video_obj)
+        transcription = await self.asr_handle.transcribe(audio=audio)
+        return transcription
+
+endpoints = [
+    {
+        "name": "transcribe_video",
+        "path": "/video/transcribe",
+        "summary": "Transcribe a video",
+        "endpoint_cls": TranscribeVideoEndpoint,
+    },
+]
+
+aana_app = AanaSDK(name="transcribe_video_app")
+
+for deployment in deployments:
+    aana_app.register_deployment(**deployment)
+
+for endpoint in endpoints:
+    aana_app.register_endpoint(**endpoint)
+
+if __name__ == "__main__":
+    aana_app.connect(host="127.0.0.1", port=8000, show_logs=False)  # Connects to the Ray cluster or starts a new one.
+    aana_app.migrate()                                              # Runs the migrations to create the database tables.
+    aana_app.deploy(blocking=True)                                  # Deploys the application.
 ```
 
-The target parameter specifies the set of endpoints to deploy.
+You have a few options to run the application:
+- Copy the code above and run it in a Jupyter notebook.
+- Save the code to a Python file, for example `app.py`, and run it as a Python script: `python app.py`.
+- Save the code to a Python file, for example `app.py`, and run it using the Aana CLI: `aana deploy app:aana_app --host 127.0.0.1 --port 8000 --hide-logs`.
 
-The first run might take a while because the models will be downloaded from the Internet and cached. 
+Once the application is running, you will see the message `Deployed successfully.` in the logs. You can now send a request to the application to transcribe a video.
 
-Once you see `Deployed Serve app successfully.` in the logs, the server is ready to accept requests.
-
-You can change the port and CUDA_VISIBLE_DEVICES environment variable to your needs.
-
-The server will be available at http://localhost:8000.
-
-The documentation will be available at http://localhost:8000/docs and http://localhost:8000/redoc.
-
-For HuggingFace Transformers, you need to specify HUGGING_FACE_HUB_TOKEN environment variable with your HuggingFace API token.
-
-5. Send a request to the server.
-
-You can find examples in the [demo notebook](notebooks/demo.ipynb).
-
-## Build Serve Config Files
-
-The Serve config is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve config files for the Aana applications.
-
-To build the Serve config files, run the following command:
+Let's transcribe [Gordon Ramsay's perfect scrambled eggs tutorial](https://www.youtube.com/watch?v=VhJFyyukAzA) using the application.
 
 ```bash
-poetry run aana build aana.projects.chat_with_video.app:aana_app
+curl -X POST http://127.0.0.1:8000/video/transcribe -Fbody='{"video":{"url":"https://www.youtube.com/watch?v=VhJFyyukAzA"}}'
 ```
 
-The command will generate the Serve config file and app config file and save them in the `aana.projects.chat_with_video.app` directory.
+This will return the full transcription of the video, transcription for each segment, and transcription info like identified language. You can also use the [Swagger UI](http://127.0.0.1:8000/docs) to send the request.
 
-Use --help to see the available options.
+### Running Example Applications
+
+Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
+
+The following applications are available:
+- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information.
+- `whisper`: An application that demonstrates the Whisper model for automatic speech recognition (ASR).
+- `llama2`: An application that deploys LLaMa2 7B Chat model.
+
+To run an example application, use the following command:
 
 ```bash
-poetry run aana build --help
+aana deploy aana.projects.<app_name>.app:aana_app
 ```
 
-When you are running the Aana application using the Serve config files, you need to run the migrations to create the database tables for the application. To run the migrations, use the following command:
+For example, to run the `whisper` application, use the following command:
 
 ```bash
-poetry run aana migrate aana.projects.chat_with_video.app:aana_app
+aana deploy aana.projects.whisper.app:aana_app
 ```
+
+> **⚠️ Warning**
+>
+> The example applications require a GPU to run. 
+>
+> The applications will detect the available GPU automatically but you need to make sure that `CUDA_VISIBLE_DEVICES` is set correctly.
+> 
+> Sometimes `CUDA_VISIBLE_DEVICES` is set to an empty string and the application will not be able to detect the GPU. Use `unset CUDA_VISIBLE_DEVICES` to unset the variable.
+> 
+> You can also set the `CUDA_VISIBLE_DEVICES` environment variable to the GPU index you want to use: `export CUDA_VISIBLE_DEVICES=0`.
+>
+> Different applications have different requirements for the GPU memory:
+> - `chat_with_video` requires at least 48GB.
+> - `llama2` requires at least 16GB.
+> - `whisper` requires at least 4GB.
+
+
+
+### Main components
+
+There are three main components in Aana SDK: deployments, endpoints, and AanaSDK.
+
+#### Deployments
+
+Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
+
+Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
+
+For example, we have a predefined deployment for the Whisper model that allows you to transcribe audio. You can define the deployment like this:
+
+```python
+from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
+
+asr_deployment = WhisperDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(model_size=WhisperModelSize.MEDIUM, compute_type=WhisperComputeType.FLOAT16).model_dump(mode="json"),
+)
+```
+
+#### Endpoints
+
+Endpoints define the functionality of your application. They allow you to connect multiple deployments (models) to each other and define the input and output of your application.
+
+Each endpoint is defined as a class that inherits from the `Endpoint` class. The class has two main methods: `initialize` and `run`.
+
+For example, you can define an endpoint that transcribes a video like this:
+
+```python
+class TranscribeVideoEndpoint(Endpoint):
+    """Transcribe video endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+        await super().initialize()
+
+    async def run(self, video: VideoInput) -> WhisperOutput:
+        """Transcribe video."""
+        video_obj = await run_remote(download_video)(video_input=video)
+        audio = extract_audio(video=video_obj)
+        transcription = await self.asr_handle.transcribe(audio=audio)
+        return transcription
+```
+
+#### AanaSDK
+
+AanaSDK is the main class that you use to build your application. It allows you to deploy the deployments and endpoints you defined and start the application.
+
+For example, you can define an application that transcribes a video like this:
+
+```python
+aana_app = AanaSDK(name="transcribe_video_app")
+
+aana_app.register_deployment(name="asr_deployment", instance=asr_deployment)
+aana_app.register_endpoint(
+    name="transcribe_video",
+    path="/video/transcribe",
+    summary="Transcribe a video",
+    endpoint_cls=TranscribeVideoEndpoint,
+)
+
+aana_app.connect()  # Connects to the Ray cluster or starts a new one.
+aana_app.migrate()  # Runs the migrations to create the database tables.
+aana_app.deploy()   # Deploys the application.
+```
+
+All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
+
+## Serve Config Files
+
+The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications. See the [Serve Config Files documentation](docs/serve_config_files.md) on how to build and deploy the applications using the Serve Config Files.
+
 
 ## Run with Docker
 
-1. Clone this repository.
+You can deploy example applications using Docker. See the [documentation on how to run Aana SDK with Docker](docs/docker.md).
 
-2. Update submodules.
+## License
 
-```bash
-git submodule update --init --recursive
-```
+Aana SDK is licensed under the [Apache License 2.0](./LICENSE). Commercial licensing options are also available.
 
-3. Build the Docker image.
+## Contributing
 
-```bash
-docker build -t aana:0.2.0 .
-```
+We welcome contributions from the community to enhance Aana SDK's functionality and usability. Feel free to open issues for bug reports, feature requests, or submit pull requests to contribute code improvements.
 
-4. Run the Docker container.
+Before contributing, please read our [Code Standards](docs/code_standards.md) and [Development Documentation](docs/development.md).
 
-```bash
-docker run --rm --init -p 8000:8000 --gpus all -e TARGET="llama2" -e CUDA_VISIBLE_DEVICES=0 -v aana_cache:/root/.aana -v aana_hf_cache:/root/.cache/huggingface --name aana_instance aana:0.2.0
-```
-
-Use the environment variable TARGET to specify the set of endpoints to deploy.
-
-The first run might take a while because the models will be downloaded from the Internet and cached. The models will be stored in the `aana_cache` volume. The HuggingFace models will be stored in the `aana_hf_cache` volume. If you want to remove the cached models, remove the volume.
-
-Once you see `Deployed Serve app successfully.` in the logs, the server is ready to accept requests.
-
-You can change the port and gpus parameters to your needs.
-
-The server will be available at http://localhost:8000.
-
-The documentation will be available at http://localhost:8000/docs and http://localhost:8000/redoc.
-
-5. Send a request to the server.
-
-You can find examples in the [demo notebook](notebooks/demo.ipynb).
-
-## Developing in a Dev Container
-
-If you are using Visual Studio Code, you can run this repository in a 
-[dev container](https://code.visualstudio.com/docs/devcontainers/containers). This lets you install and 
-run everything you need for the repo in an isolated environment via docker on a host system. 
-Running it somewhere other than a Mobius dev server may cause issues due to the mounts of `/nas` and
-`/nas2` inside the container, but you can specify the environment variables for VS Code `PATH_NAS` and
-`PATH_NAS2` which will override the default locations used for these mount points (otherwise they default 
-to look for `/nas` and `/nas2`). You can read more about environment variables for dev containers 
-[here](https://containers.dev/implementors/json_reference/).
-
-## Code Standards
-This project uses Ruff for linting and formatting. If you want to 
-manually run Ruff on the codebase, using poetry it's
-
-```sh
-poetry run ruff check aana
-```
-
-You can automatically fix some issues with the `--fix`
- and `--unsafe-fixes` options. (Be sure to install the dev 
- dependencies: `poetry install --with=dev`. )
-
-To run the auto-formatter, it's
-
-```sh
-poetry run ruff format aana
-```
-
-(If you are running code in a non-poetry environment, just leave off `poetry run`.)
-If you want to enable this as a local pre-commit hook, additionally
-run the following:
-
-```sh
-git config core.hooksPath .githooks
-```
-
-Depending on your workflow, you may need to ensure that the `ruff` 
-command is available in your default shell. You can also simply run
-`.githooks/pre-commit` manually if you prefer.
-
-For users of VS Code, the included `settings.json` should ensure
-that Ruff problems appear while you edit, and formatting is applied
-automatically on save.
-
-
-## Testing
-
-The project uses pytest for testing. To run the tests, use the following command:
-
-```bash
-poetry run pytest
-```
-
-If you are using VS Code, you can run the tests using the Test Explorer that is installed with the [Python extension](https://code.visualstudio.com/docs/python/testing).
-
-There are a few environment variables that can be set to control the behavior of the tests:
-- `USE_DEPLOYMENT_CACHE`: If set to `true`, the tests will use the deployment cache to avoid downloading the models and running the deployments. This is useful for running integration tests faster and in the environment where GPU is not available.
-- `SAVE_DEPLOYMENT_CACHE`: If set to `true`, the tests will save the deployment cache after running the deployments. This is useful for updating the deployment cache if new deployments or tests are added.
-
-### How to use the deployment cache environment variables
-
-Here are some examples of how to use the deployment cache environment variables.
-
-#### Do you want to run the tests normally using GPU?
-    
-```bash
-USE_DEPLOYMENT_CACHE=false
-SAVE_DEPLOYMENT_CACHE=false
-```
-
-This is the default behavior. The tests will run normally using GPU and the deployment cache will be completely ignored.
-
-#### Do you want to run the tests faster without GPU?
-
-```bash
-USE_DEPLOYMENT_CACHE=true
-SAVE_DEPLOYMENT_CACHE=false
-```
-
-This will run the tests using the deployment cache to avoid downloading the models and running the deployments. The deployment cache will not be updated after running the deployments. Only use it if you are sure that the deployment cache is up to date.
-
-#### Do you want to update the deployment cache?
-
-```bash
-USE_DEPLOYMENT_CACHE=false
-SAVE_DEPLOYMENT_CACHE=true
-```
-
-This will run the tests normally using GPU and save the deployment cache after running the deployments. Use it if you have added new deployments or tests and want to update the deployment cache.
-
-
-## Databases
-The project uses two databases: a vector database as well as a traditional SQL database,
-referred to internally as vectorstore and datastore, respectively.
-
-### Vectorstore
-TBD
-
-### Datastore
-The datastore uses SQLAlchemy as an ORM layer and Alembic for migrations. The migrations are run 
-automatically at startup. If changes are made to the SQLAlchemy models, it is necessary to also 
-create an alembic migration that can be run to upgrade the database. 
-The easiest way to do so is as follows:
-
-```bash
-poetry run alembic revision --autogenerate -m "<Short description of changes in sentence form.>"
-```
-
-ORM models referenced in the rest of the code should be imported from `aana.models.db` directly,
-not from that model's file for reasons explained in `aana/models/db/__init__.py`. This also means that 
-if you add a new model class, it should be imported by `__init__.py` in addition to creating a migration.
-
-Higher level code for interacting with the ORM is available in `aana.repository.data`.
-
-## Settings
-
-Here are the environment variables that can be used to configure the Aana SDK:
-- TMP_DATA_DIR: The directory to store temporary data. Default: `/tmp/aana`.
-- NUM_WORKERS: The number of request workers. Default: `2`.
-- DB_CONFIG: The database configuration in the format `{"datastore_type": "sqlite", "datastore_config": {"path": "/path/to/sqlite.db"}}`. Currently only SQLite and PostgreSQL are supported. Default: `{"datastore_type": "sqlite", "datastore_config": {"path": "/var/lib/aana_data"}}`.
-- USE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will use the deployment cache to avoid downloading the models and running the deployments. Default: `false`.
-- SAVE_DEPLOYMENT_CACHE (testing only): If set to `true`, the tests will save the deployment cache after running the deployments. Default: `false`.
-- HF_HUB_ENABLE_HF_TRANSFER: If set to `1`, the HuggingFace Transformers will use the HF Transfer library to download the models from HuggingFace Hub to speed up the process. Recommended to always set to it `1`. Default: `0`.
+We have adopted the [Contributor Covenant](https://www.contributor-covenant.org/) as our code of conduct.
