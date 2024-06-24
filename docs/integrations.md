@@ -63,7 +63,7 @@ HfPipelineDeployment.options(
 
 Haystack integration allows you to build Retrieval-Augmented Generation (RAG) systems with the [Deepset Haystack](https://github.com/deepset-ai/haystack). 
 
-TODO: Add example
+See [Haystack integration notebook](/notebooks/haystack_integration.ipynb) for a detailed example.
 
 ## OpenAI-compatible Chat Completions API
 
