@@ -59,6 +59,10 @@ HfPipelineDeployment.options(
 )
 ```
 
+There are a few notebooks that demonstrate how to use the Hugging Face Transformers deployments:
+- [HF Pipeline deployment notebook](/notebooks/hf_pipeline_deployment.ipynb)
+- [HF Text Generation deployment notebook](/notebooks/hf_text_gen_deployment.ipynb)
+
 ## Haystack
 
 Haystack integration allows you to build Retrieval-Augmented Generation (RAG) systems with the [Deepset Haystack](https://github.com/deepset-ai/haystack). 
