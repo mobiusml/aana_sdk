@@ -181,7 +181,7 @@ This will return the full transcription of the video, transcription for each seg
 Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
 
 The following applications are available:
-- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information.
+- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. This example requires `HF_TOKEN` to access [Llama 3 8B model from Meta](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct). See [Chat with Video Demo notebook](/notebooks/chat_with_video_demo.ipynb) for more information.
 - `whisper`: An application that demonstrates the Whisper model for automatic speech recognition (ASR).
 - `llama2`: An application that deploys LLaMa2 7B Chat model.
 
