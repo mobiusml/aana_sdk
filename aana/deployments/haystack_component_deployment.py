@@ -35,6 +35,8 @@ class RemoteHaystackComponent:
         This will properly initialize the component by creating a handle to the deployment
         and setting the input and output types.
         """
+        if hasattr(self, "handle"):
+            return
         self.handle = run_async(AanaDeploymentHandle.create(self.deployment_name))
         sockets = run_async(self.handle.get_sockets())
         component.set_input_types(

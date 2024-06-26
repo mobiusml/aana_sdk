@@ -84,6 +84,18 @@ class ChatDialog(BaseModel):
         """
         return ChatDialog(messages=[ChatMessage(**message) for message in messages])
 
+    @classmethod
+    def from_prompt(cls, prompt: str) -> "ChatDialog":
+        """Create a ChatDialog from a prompt.
+
+        Args:
+            prompt (str): the prompt
+
+        Returns:
+            ChatDialog: the chat dialog
+        """
+        return ChatDialog(messages=[ChatMessage(content=prompt, role="user")])
+
 
 class ChatCompletionRequest(BaseModel):
     """A chat completion request for OpenAI compatible API."""
