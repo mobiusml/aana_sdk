@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     video_dir: Path = tmp_data_dir / "videos"
     audio_dir: Path = tmp_data_dir / "audios"
     model_dir: Path = tmp_data_dir / "models"
+    artifacts_dir: Path = tmp_data_dir / "artifacts"
     num_workers: int = 2
 
     db_config: DbSettings = DbSettings()

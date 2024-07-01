@@ -2,6 +2,14 @@ from transformers import BitsAndBytesConfig
 
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
+from aana.deployments.face_detection_deployment import (
+    FaceDetectorConfig,
+    FaceDetectorDeployment,
+)
+from aana.deployments.face_featureextraction_deployment import (
+    FacefeatureExtractorConfig,
+    FacefeatureExtractorDeployment,
+)
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
 from aana.deployments.hf_pipeline_deployment import (
     HfPipelineConfig,
@@ -148,3 +156,29 @@ hf_phi3_mini_4k_instruct_text_gen_deployment = HfTextGenerationDeployment.option
 available_deployments[
     "hf_phi3_mini_4k_instruct_text_gen_deployment"
 ] = hf_phi3_mini_4k_instruct_text_gen_deployment
+
+
+face_detector_deployment = FaceDetectorDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.5},
+    user_config=FaceDetectorConfig(
+        model_url="/nas/dominic/Production/FaceModel_REST/InsightFace-REST/models/onnx/scrfd_10g_gnkps/scrfd_10g_gnkps.onnx",
+        nms_thresh=0.4,
+        batch_size=4,
+        input_size=640,
+    ).model_dump(mode="json"),
+)
+
+available_deployments["face_detector_deployment"] = face_detector_deployment
+
+
+facefeat_extractor_deployment = FacefeatureExtractorDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.5},
+    user_config=FacefeatureExtractorConfig(
+        model_url="/nas/dominic/AdaFace/pretrained/adaface_ir50_webface4m.ckpt",
+        min_face_norm=19.0,
+    ).model_dump(mode="json"),
+)
+
+available_deployments["facefeat_extractor_deployment"] = facefeat_extractor_deployment
