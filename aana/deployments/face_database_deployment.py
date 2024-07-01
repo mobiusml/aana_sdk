@@ -1,6 +1,7 @@
 import os
 import uuid
 from pathlib import Path
+import glob
 from typing import Any
 
 import faiss
@@ -26,7 +27,8 @@ class FaceDatabaseConfig(BaseModel):
     """
 
     face_threshold: float
-    faces_dict_file: str
+    face_features_directory: str
+    feature_extractor_name: str
 
 
 @serve.deployment
@@ -42,25 +44,23 @@ class FaceDatabaseDeployment(BaseDeployment):
         config_obj = FaceDatabaseConfig(**config)
 
         self.face_threshold = config_obj.face_threshold
-
-        reference_face_dict_file = Path(
-            settings.artifacts_dir / config_obj.faces_dict_file
+        self.facefeat_directory = (
+            Path(config_obj.face_features_directory) / config_obj.feature_extractor_name
         )
-
-        if reference_face_dict_file.exists():
-            self.ref_faces_dict = np.load(reference_face_dict_file)
-        else:
-            self.ref_faces_dict = {}
+        # list(directory_path.glob("*.npy"))
+        feature_files = self.facefeat_directory.glob("*.npy")
 
         # load features and build index
-        self.image_ids = list(self.ref_faces_dict.keys())
-        self.person_ids = [
-            self.ref_faces_dict[id_]["person_id"] for id_ in self.ref_faces_dict
-        ]
-        self.features = [
-            self.ref_faces_dict[id_]["face_feature"] for id_ in self.ref_faces_dict
-        ]
-
+        self.person_ids = []
+        self.image_ids = []
+        self.features = []
+        for feature_file in feature_files:
+            feat = np.load(feature_file)
+            feat_name = os.path.basename(feature_file)
+            image_id, person_id = feat_name.split("|||")
+            self.person_ids.append(person_id)
+            self.image_ids.append(image_id)
+            self.features.append(feat)
         self.features = np.array(self.features)
         self.index = faiss.IndexFlatL2(self.features.shape[1])
         self.index.add(self.features)
@@ -80,33 +80,37 @@ class FaceDatabaseDeployment(BaseDeployment):
         if image_id is None:
             image_id = uuid.uuid4()
 
-        if image_id not in self.ref_faces_dict:
-            self.ref_faces_dict[image_id] = {
-                "face_feature": face_feature,
-                "person_name": person_name,
-            }
+        if image_id not in self.image_ids:
+            # self.ref_faces_dict[image_id] = {
+            #     "face_feature": face_feature,
+            #     "person_name": person_name,
+            # }
+            np.save(
+                Path(self.facefeat_directory) / f"{person_name}|||{image_id}.npy",
+                face_feature,
+            )
             self.index.add(face_feature)
 
             return "success"
         else:
-            return "failed: ID exists"
+            return "ID already exists"
 
-    @test_cache
-    async def get_all_identities(self) -> list[list[str]]:
-        """Get all person names in database.
+    # @test_cache
+    # async def get_all_identities(self) -> list[list[str]]:
+    #     """Get all person names in database.
 
-        Args:
-            None
+    #     Args:
+    #         None
 
-        Returns:
-            list[str]:
-        """
-        all_persons = [
-            [id_, self.ref_faces_dict[id_]["person_name"]]
-            for id_ in self.ref_faces_dict
-        ]
+    #     Returns:
+    #         list[str]:
+    #     """
+    #     all_persons = [
+    #         [id_, self.ref_faces_dict[id_]["person_name"]]
+    #         for id_ in self.ref_faces_dict
+    #     ]
 
-        return all_persons
+    #     return all_persons
 
     @test_cache
     async def search(self, face_features: list) -> dict:
