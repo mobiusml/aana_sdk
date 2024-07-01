@@ -1,34 +1,32 @@
-from aana.api.event_handlers.rate_limit_handler import RateLimitHandler
 from aana.configs.deployments import (
-    stablediffusion2_deployment,
+    face_detector_deployment,
+    facefeat_extractor_deployment,
 )
-from aana.projects.stablediffusion2.endpoints import ImageGenerationEndpoint
+from aana.projects.face_recognition.endpoints import FaceRecognitionEndpoint
 from aana.sdk import AanaSDK
 
 deployments = [
     {
-        "name": "image_generation_deployment",
-        "instance": stablediffusion2_deployment,
+        "name": "face_detector_deployment",
+        "instance": face_detector_deployment,
+    },
+    {
+        "name": "facefeat_extractor_deployment",
+        "instance": facefeat_extractor_deployment,
     },
 ]
 
 endpoints = [
     {
-        "name": "generate_image",
-        "path": "/generate_image",
-        "summary": "Generates an image from a text prompt",
-        "endpoint_cls": ImageGenerationEndpoint,
-    },
-    {
-        "name": "generate_image_rate_limited",
-        "path": "/generate_image_rate_limited",
-        "summary": "Generates an image from a text prompt",
-        "endpoint_cls": ImageGenerationEndpoint,
-        "event_handlers": [RateLimitHandler(1, 30)],
+        "name": "recognize_faces",
+        "path": "/recognize_faces",
+        "summary": "Detect faces and extract their face features",
+        "endpoint_cls": FaceRecognitionEndpoint,
     },
 ]
 
-aana_app = AanaSDK(name="stablediffusion2")
+aana_app = AanaSDK(name="face_recognition")
+
 
 for deployment in deployments:
     aana_app.register_deployment(
@@ -44,6 +42,7 @@ for endpoint in endpoints:
         endpoint_cls=endpoint["endpoint_cls"],
         event_handlers=endpoint.get("event_handlers", []),
     )
+
 
 if __name__ == "__main__":
     aana_app.connect(
