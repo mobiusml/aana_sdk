@@ -38,7 +38,6 @@ class VLLMConfig(BaseModel):
         max_model_len (int): the maximum generated text length in tokens (optional, default: None)
         chat_template (str): the name of the chat template, if not provided, the chat template from the model will be used
                              but some models may not have a chat template (optional, default: None)
-        enforce_eager (bool): whether to enforce eager execution (optional, default: False)
     """
 
     model: str
@@ -72,6 +71,8 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         - default_sampling_params: the default sampling parameters.
         - max_model_len: the maximum generated text length in tokens (optional, default: None)
         - chat_template: the name of the chat template (optional, default: None)
+        - enforce_eager: whether to enforce eager execution (optional, default: False)
+        - engine_args: extra engine arguments (optional, default: {})
 
         Args:
             config (dict): the configuration of the deployment

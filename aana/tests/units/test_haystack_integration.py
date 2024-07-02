@@ -4,6 +4,7 @@ from typing import TypedDict
 
 import requests
 from haystack import Document, Pipeline
+from haystack.components.preprocessors import DocumentCleaner
 from haystack.components.retrievers.in_memory import InMemoryEmbeddingRetriever
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 
@@ -34,11 +35,20 @@ class HaystackTestEndpoint(Endpoint):
             Document(content="Germany has many big cities"),
         ]
 
+        cleaner = DocumentCleaner()
         document_embedder = RemoteHaystackComponent("document_embedder_deployment")
         document_embedder.warm_up()
-        documents_with_embeddings = document_embedder.run(documents=documents)[
-            "documents"
-        ]
+
+        self.indexing_pipeline = Pipeline()
+        self.indexing_pipeline.add_component("cleaner", cleaner)
+        self.indexing_pipeline.add_component("document_embedder", document_embedder)
+        self.indexing_pipeline.connect(
+            "cleaner.documents", "document_embedder.documents"
+        )
+
+        documents_with_embeddings = self.indexing_pipeline.run(
+            {"cleaner": {"documents": documents}}
+        )["document_embedder"]["documents"]
         document_store.write_documents(documents_with_embeddings)
 
         text_embedder = RemoteHaystackComponent("text_embedder_deployment")
