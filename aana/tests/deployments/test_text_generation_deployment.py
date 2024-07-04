@@ -32,7 +32,7 @@ def get_expected_output(name):
         )
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
-            "Elon Musk is a business magnate, industrial designer, and engineer. He was born on June 2, 1quantum_computing_"
+            "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
         )
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
@@ -51,7 +51,7 @@ def get_expected_chat_output(name):
         return " Elon Musk is a business magnate, industrial designer, and engineer. He is the founder, CEO, CTO, and chief designer of Space"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
-            "Elon Musk is a business magnate, industrial designer, and engineer. He was born on June 2, 1quantum_computing"
+            "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
         )
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
