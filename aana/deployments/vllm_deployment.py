@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
+from vllm.inputs import TokensPrompt
 
 from aana.core.models.base import merged_options
 from aana.core.models.custom_config import CustomConfig
@@ -92,6 +93,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             config_obj.default_sampling_params
         )
         self.chat_template_name = config_obj.chat_template
+
         args = AsyncEngineArgs(
             model=config_obj.model,
             dtype=config_obj.dtype,
@@ -130,7 +132,6 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
 
         request_id = None
-
         # tokenize the prompt
         prompt_token_ids = self.tokenizer.encode(prompt)
 
@@ -150,10 +151,9 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             # set the random seed for reproducibility
             set_random_seed(42)
             results_generator = self.engine.generate(
-                prompt=None,
                 sampling_params=sampling_params_vllm,
                 request_id=request_id,
-                prompt_token_ids=prompt_token_ids,
+                inputs=TokensPrompt(prompt_token_ids=prompt_token_ids)
             )
 
             num_returned = 0

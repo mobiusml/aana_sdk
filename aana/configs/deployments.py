@@ -71,7 +71,7 @@ microsoft_phi_3_mini_instruct_deployment = VLLMDeployment.options(
     user_config=VLLMConfig(
         model="microsoft/Phi-3-mini-4k-instruct",
         dtype=Dtype.AUTO,
-        gpu_memory_reserved=13000,
+        gpu_memory_reserved=10000,
         enforce_eager=True,
         default_sampling_params=SamplingParams(
             temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
