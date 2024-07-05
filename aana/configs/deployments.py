@@ -64,6 +64,28 @@ available_deployments[
     "meta_llama3_8b_instruct_deployment"
 ] = meta_llama3_8b_instruct_deployment
 
+microsoft_phi_3_mini_instruct_deployment = VLLMDeployment.options(
+    num_replicas=1,
+    max_ongoing_requests=1000,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=VLLMConfig(
+        model="microsoft/Phi-3-mini-4k-instruct",
+        dtype=Dtype.AUTO,
+        gpu_memory_reserved=10000,
+        enforce_eager=True,
+        default_sampling_params=SamplingParams(
+            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+        ),
+        engine_args={
+            "trust_remote_code": True,
+        }
+    ).model_dump(mode="json"),
+)
+
+available_deployments[
+    "microsoft_phi_3_mini_instruct_deployment"
+] = microsoft_phi_3_mini_instruct_deployment
+
 hf_blip2_opt_2_7b_deployment = HFBlip2Deployment.options(
     num_replicas=1,
     max_ongoing_requests=1000,
