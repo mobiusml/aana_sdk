@@ -26,10 +26,13 @@ def get_expected_output(name):
             "and business magnate. He is the CEO and CTO of SpaceX, "
             "CEO and product architect of Tesla"
         )
+    elif name == "microsoft_phi_3_mini_instruct_deployment":
+        return (
+            " Elon Musk is a business magnate, industrial designer, and engineer. He is the founder, CEO, CTO, and chief designer of Space"
+        )
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
-            "Elon Musk is a prominent entrepreneur and business magnate known for "
-            "his significant contributions to the technology and automotive industries. He was born"
+            "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
         )
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
@@ -44,10 +47,11 @@ def get_expected_chat_output(name):
         )
     elif name == "meta_llama3_8b_instruct_deployment":
         return "Elon Musk is a South African-born entrepreneur, inventor, and business magnate. He is best known for his ambitious goals to revolutionize the transportation, energy"
+    elif name == "microsoft_phi_3_mini_instruct_deployment":
+        return " Elon Musk is a business magnate, industrial designer, and engineer. He is the founder, CEO, CTO, and chief designer of Space"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return (
-            "Elon Musk is a prominent entrepreneur and business magnate known for "
-            "his significant contributions to the technology and automotive industries. He was born"
+            "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
         )
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
@@ -60,6 +64,8 @@ def get_prompt(name):
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return "<|user|>\ Who is Elon Musk? <|end|>\n<|assistant|>"
     elif name == "meta_llama3_8b_instruct_deployment":
+        return "[INST] Who is Elon Musk? [/INST]"
+    elif name == "microsoft_phi_3_mini_instruct_deployment":
         return "[INST] Who is Elon Musk? [/INST]"
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
