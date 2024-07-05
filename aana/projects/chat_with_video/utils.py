@@ -1,25 +1,18 @@
-import json
-
 from aana.core.models.chat import ChatDialog, ChatMessage, Question
 from aana.core.models.video import VideoMetadata
 
 
 def generate_dialog(
     metadata: VideoMetadata,
-    timeline: list[dict],
+    timeline: str,
     question: Question,
-    max_timeline_len: int | None = 1024,
 ) -> ChatDialog:
     """Generates a dialog from the metadata and timeline of a video.
 
     Args:
         metadata (VideoMetadata): the metadata of the video
-        timeline (list[dict]): the timeline of the video
+        timeline (str): the timeline of the video
         question (Question): the question to ask
-        max_timeline_len (int, optional): the maximum length of the timeline in tokens.
-                                          Defaults to 1024.
-                                          If the timeline is longer than this, it will be truncated.
-                                          If None, the timeline will not be truncated.
 
     Returns:
         ChatDialog: the generated dialog
@@ -53,18 +46,10 @@ def generate_dialog(
         "Given the timeline of audio and visual activities in the video below "
         "I want to find out the following: {question}"
         "The timeline is: "
-        "{timeline_json}"
+        "{timeline}"
         "\n"
         "The title of the video is {video_title}"
     )
-
-    timeline_json = json.dumps(timeline, indent=4, separators=(",", ": "))
-    # truncate the timeline if it is too long
-    timeline_tokens = (
-        timeline_json.split()
-    )  # not an accurate count of tokens, but good enough
-    if max_timeline_len is not None and len(timeline_tokens) > max_timeline_len:
-        timeline_json = " ".join(timeline_tokens[:max_timeline_len])
 
     messages = []
     messages.append(ChatMessage(content=system_prompt_preamble, role="system"))
@@ -73,7 +58,7 @@ def generate_dialog(
             content=user_prompt_template.format(
                 instruction=instruction,
                 question=question,
-                timeline_json=timeline_json,
+                timeline=timeline,
                 video_title=metadata.title,
             ),
             role="user",

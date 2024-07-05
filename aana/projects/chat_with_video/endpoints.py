@@ -1,3 +1,4 @@
+import json
 from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING, Annotated, TypedDict
 
@@ -17,6 +18,7 @@ from aana.core.models.video import VideoInput, VideoMetadata, VideoParams, Video
 from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.exceptions.db import MediaIdAlreadyExistsException, UnfinishedVideoException
+from aana.exceptions.runtime import PromptTooLongException
 from aana.integrations.external.decord import generate_frames, get_video_duration
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
@@ -162,16 +164,16 @@ class IndexVideoEndpoint(Endpoint):
             update_video_status(media_id=media_id, status=Status.RUNNING)
             audio: Audio = extract_audio(video=video_obj)
 
-            vad_output = await self.vad_handle.asr_preprocess_vad(
-                audio=audio, params=vad_params
-            )
-            vad_segments = vad_output["segments"]
+            # vad_output = await self.vad_handle.asr_preprocess_vad(
+            #     audio=audio, params=vad_params
+            # )
+            # vad_segments = vad_output["segments"]
 
             transcription_list = []
             segments_list = []
             transcription_info_list = []
-            async for whisper_output in self.asr_handle.transcribe_in_chunks(
-                audio=audio, params=whisper_params, segments=vad_segments
+            async for whisper_output in self.asr_handle.transcribe_stream(
+                audio=audio, params=whisper_params
             ):
                 transcription_list.append(whisper_output["transcription"])
                 segments_list.append(whisper_output["segments"])
@@ -271,17 +273,41 @@ class VideoChatEndpoint(Endpoint):
             captions=loaded_video_captions_output["captions"],
             caption_timestamps=loaded_video_captions_output["timestamps"],
         )
-
-        dialog = generate_dialog(
-            metadata=video_metadata,
-            timeline=timeline_output["timeline"],
-            question=question,
+        timeline_json = json.dumps(
+            timeline_output["timeline"], indent=4, separators=(",", ": ")
         )
 
-        async for item in self.llm_handle.chat_stream(
-            dialog=dialog, sampling_params=sampling_params
-        ):
-            yield {"completion": item["text"]}
+        num_attempts = 2
+        for attempt in range(num_attempts):  # Try twice: initial attempt + one retry
+            try:
+                dialog = generate_dialog(
+                    metadata=video_metadata,
+                    timeline=timeline_json,
+                    question=question,
+                )
+                async for item in self.llm_handle.chat_stream(
+                    dialog=dialog, sampling_params=sampling_params
+                ):
+                    yield {"completion": item["text"]}
+            except PromptTooLongException as e:  # noqa: PERF203
+                if attempt == num_attempts - 1:
+                    raise
+                # If the prompt is too long, we truncate the timeline to fit the context length
+                # reserve 2000 tokens for response
+                max_available_len = e.max_len - 2000
+                # calculate the average token per char
+                prompt_char_len = sum(len(msg.content) for msg in dialog.messages)
+                avg_token_per_char = e.prompt_len / prompt_char_len
+                # calculate how many characters we need to remove
+                timeline_char_excess = (
+                    e.prompt_len - max_available_len
+                ) / avg_token_per_char
+                # calculate the max timeline length
+                max_timeline_len = int(len(timeline_json) - timeline_char_excess)
+                # truncate the timeline
+                timeline_json = timeline_json[:max_timeline_len]
+            else:
+                break
 
 
 class LoadVideoMetadataEndpoint(Endpoint):
