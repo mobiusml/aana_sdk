@@ -27,13 +27,11 @@ def get_expected_output(name):
             "CEO and product architect of Tesla"
         )
     elif name == "microsoft_phi_3_mini_instruct_deployment":
-        return (
-            " Elon Musk is a business magnate, industrial designer, and engineer. He is the founder, CEO, CTO, and chief designer of Space"
-        )
+        return " Elon Musk is a business magnate, industrial designer, and engineer. He is the founder, CEO, CTO, and chief designer of Space"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
-        return (
-            "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
-        )
+        return "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
+    elif name == "internlm2_5_7b_chat_deployment":
+        return "\nElon Musk is a prominent entrepreneur, inventor, and business magnate known for his contributions to a variety of high-tech industries. He is the founder"
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
 
@@ -50,9 +48,9 @@ def get_expected_chat_output(name):
     elif name == "microsoft_phi_3_mini_instruct_deployment":
         return " Elon Musk is a business magnate, industrial designer, and engineer. He is the founder, CEO, CTO, and chief designer of Space"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
-        return (
-            "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
-        )
+        return "Elon Musk is a prominent entrepreneur and business magnate known for his significant contributions to the technology and automotive industries. He was born"
+    elif name == "internlm2_5_7b_chat_deployment":
+        return "Elon Musk is a prominent entrepreneur, inventor, and business magnate known for his contributions to the fields of technology, space exploration, and sustainable energy."
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
 
@@ -67,8 +65,13 @@ def get_prompt(name):
         return "[INST] Who is Elon Musk? [/INST]"
     elif name == "microsoft_phi_3_mini_instruct_deployment":
         return "[INST] Who is Elon Musk? [/INST]"
+    elif name == "internlm2_5_7b_chat_deployment":
+        return "<s><|im_start|>user\nWho is Elon Musk?<|im_end|>\n<|im_start|>assistant"
     else:
         raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
+
+
+long_context_models = ["internlm2_5_7b_chat_deployment"]
 
 
 @pytest.fixture(
@@ -167,9 +170,10 @@ async def test_text_generation_deployments(setup_text_generation_deployment):
 
     compare_texts(expected_text, text)
 
-    # test generate method with too long prompt
-    with pytest.raises(PromptTooLongException):
-        output = await handle.generate.remote(
-            prompt=prompt * 1000,
-            sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
-        )
+    if name not in long_context_models:
+        # test generate method with too long prompt
+        with pytest.raises(PromptTooLongException):
+            output = await handle.generate.remote(
+                prompt=prompt * 1000,
+                sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
+            )
