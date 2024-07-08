@@ -25,12 +25,12 @@ endpoints = [
         "summary": "Transcribe a video",
         "endpoint_cls": TranscribeVideoEndpoint,
     },
-    {
-        "name": "whisper_transcribe_in_chunks",
-        "path": "/video/transcribe_in_chunks",
-        "summary": "Transcribe a video using Whisper by segmenting it into chunks",
-        "endpoint_cls": TranscribeVideoInChunksEndpoint,
-    },
+    # {
+    #     "name": "whisper_transcribe_in_chunks",
+    #     "path": "/video/transcribe_in_chunks",
+    #     "summary": "Transcribe a video using Whisper by segmenting it into chunks",
+    #     "endpoint_cls": TranscribeVideoInChunksEndpoint,
+    # },
     {
         "name": "load_transcription",
         "path": "/video/get_transcription",
