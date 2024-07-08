@@ -3,7 +3,6 @@ from aana.projects.whisper.endpoints import (
     DeleteMediaEndpoint,
     LoadTranscriptionEndpoint,
     TranscribeVideoEndpoint,
-    TranscribeVideoInChunksEndpoint,
 )
 from aana.sdk import AanaSDK
 
