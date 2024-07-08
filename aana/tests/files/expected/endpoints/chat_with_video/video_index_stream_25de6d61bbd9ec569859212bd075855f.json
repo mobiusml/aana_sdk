@@ -9,139 +9,664 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60302734375
+            "language_confidence": 0.60546875
         },
         "segments": [
             {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry",
+                "confidence": 0.6239854156762731,
+                "no_speech_confidence": 0.4189453125,
+                "text": " We're no strangers to love You know the rules, and so do I",
                 "time_interval": {
-                    "end": 53.607,
-                    "start": 35.932
+                    "end": 26.88,
+                    "start": 0.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " I just wanna tell you how I'm feeling Gotta make you understand Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry"
+            "text": " We're no strangers to love You know the rules, and so do I"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60302734375
+            "language_confidence": 0.60546875
         },
         "segments": [
             {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you",
+                "confidence": 0.8495449356404748,
+                "no_speech_confidence": 0.72900390625,
+                "text": " I feel commitments while I'm thinking of You wouldn't get this from any other guy",
                 "time_interval": {
-                    "end": 95.006,
-                    "start": 82.246
+                    "end": 34.879999999999995,
+                    "start": 26.88
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " Don't tell me you're too blind to see Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you"
+            "text": " I feel commitments while I'm thinking of You wouldn't get this from any other guy"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60302734375
+            "language_confidence": 0.60546875
         },
         "segments": [
             {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " You're gonna say goodbye",
+                "confidence": 0.8495449356404748,
+                "no_speech_confidence": 0.72900390625,
+                "text": " I just wanna tell you how I'm feeling Gotta make you understand",
                 "time_interval": {
-                    "end": 114.443,
-                    "start": 107.827
+                    "end": 42.879999999999995,
+                    "start": 34.879999999999995
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " You're gonna say goodbye"
+            "text": " I just wanna tell you how I'm feeling Gotta make you understand"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60302734375
+            "language_confidence": 0.60546875
         },
         "segments": [
             {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " You're too shy to say it It's time we both know what's been",
+                "confidence": 0.8495449356404748,
+                "no_speech_confidence": 0.72900390625,
+                "text": " Never gonna give you up Never gonna let you down",
                 "time_interval": {
-                    "end": 147.208,
-                    "start": 142.263
+                    "end": 46.879999999999995,
+                    "start": 42.879999999999995
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " You're too shy to say it It's time we both know what's been"
+            "text": " Never gonna give you up Never gonna let you down"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60302734375
+            "language_confidence": 0.60546875
         },
         "segments": [
             {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " I'm gonna let you down I'm gonna run around and desert you I'm gonna make you cry I'm gonna say",
+                "confidence": 0.8495449356404748,
+                "no_speech_confidence": 0.72900390625,
+                "text": " Never gonna run around and desert you Never gonna make you cry",
                 "time_interval": {
-                    "end": 172.89,
-                    "start": 163.731
+                    "end": 52.879999999999995,
+                    "start": 46.879999999999995
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " I'm gonna let you down I'm gonna run around and desert you I'm gonna make you cry I'm gonna say"
+            "text": " Never gonna run around and desert you Never gonna make you cry"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60302734375
+            "language_confidence": 0.60546875
         },
         "segments": [
             {
-                "confidence": null,
-                "no_speech_confidence": null,
-                "text": " you",
+                "confidence": 0.9057417808939775,
+                "no_speech_confidence": 0.6240234375,
+                "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
                 "time_interval": {
-                    "end": 210.143,
-                    "start": 207.792
+                    "end": 58.88,
+                    "start": 52.88
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " you"
+            "text": " Never gonna say goodbye Never gonna tell a lie and hurt you"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9057417808939775,
+                "no_speech_confidence": 0.6240234375,
+                "text": " We've known each other for so long Your heart's been aching but you're too shy to say it",
+                "time_interval": {
+                    "end": 68.88,
+                    "start": 58.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " We've known each other for so long Your heart's been aching but you're too shy to say it"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9057417808939775,
+                "no_speech_confidence": 0.6240234375,
+                "text": " Inside we both know what's been going on We know the game and we're gonna play it",
+                "time_interval": {
+                    "end": 76.88,
+                    "start": 68.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Inside we both know what's been going on We know the game and we're gonna play it"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9672220991112651,
+                "no_speech_confidence": 0.845703125,
+                "text": " And if you ask me how I'm feeling Don't tell me you're too blind to see",
+                "time_interval": {
+                    "end": 84.88,
+                    "start": 76.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " And if you ask me how I'm feeling Don't tell me you're too blind to see"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9672220991112651,
+                "no_speech_confidence": 0.845703125,
+                "text": " Never gonna give you up Never gonna let you down",
+                "time_interval": {
+                    "end": 88.88,
+                    "start": 84.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna give you up Never gonna let you down"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9672220991112651,
+                "no_speech_confidence": 0.845703125,
+                "text": " Never gonna run around and desert you Never gonna make you cry",
+                "time_interval": {
+                    "end": 94.88,
+                    "start": 88.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna run around and desert you Never gonna make you cry"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9672220991112651,
+                "no_speech_confidence": 0.845703125,
+                "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
+                "time_interval": {
+                    "end": 100.88,
+                    "start": 94.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna say goodbye Never gonna tell a lie and hurt you"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9205151652477742,
+                "no_speech_confidence": 0.94921875,
+                "text": " Never gonna give you up Never gonna let you down",
+                "time_interval": {
+                    "end": 104.88,
+                    "start": 100.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna give you up Never gonna let you down"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9205151652477742,
+                "no_speech_confidence": 0.94921875,
+                "text": " Never gonna run around and desert you Never gonna make you cry",
+                "time_interval": {
+                    "end": 110.88,
+                    "start": 104.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna run around and desert you Never gonna make you cry"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9205151652477742,
+                "no_speech_confidence": 0.94921875,
+                "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
+                "time_interval": {
+                    "end": 116.88,
+                    "start": 110.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna say goodbye Never gonna tell a lie and hurt you"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.8909856705276408,
+                "no_speech_confidence": 0.6396484375,
+                "text": " Never gonna give you up Never gonna give you up",
+                "time_interval": {
+                    "end": 120.88,
+                    "start": 116.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna give you up Never gonna give you up"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.8909856705276408,
+                "no_speech_confidence": 0.6396484375,
+                "text": " Never gonna give you up Never gonna give you up",
+                "time_interval": {
+                    "end": 124.88,
+                    "start": 120.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna give you up Never gonna give you up"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.8909856705276408,
+                "no_speech_confidence": 0.6396484375,
+                "text": " We've known each other for so long Your heart's been aching but you're too shy to say it",
+                "time_interval": {
+                    "end": 132.88,
+                    "start": 124.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " We've known each other for so long Your heart's been aching but you're too shy to say it"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.8909856705276408,
+                "no_speech_confidence": 0.6396484375,
+                "text": " Inside we both know what's been going on We know the game and we're gonna play it",
+                "time_interval": {
+                    "end": 140.88,
+                    "start": 132.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Inside we both know what's been going on We know the game and we're gonna play it"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9689177808139993,
+                "no_speech_confidence": 0.72998046875,
+                "text": " Your heart's been aching but you're too shy to say it",
+                "time_interval": {
+                    "end": 144.88,
+                    "start": 140.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Your heart's been aching but you're too shy to say it"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9689177808139993,
+                "no_speech_confidence": 0.72998046875,
+                "text": " Inside we both know what's been going on We know the game and we're gonna play it",
+                "time_interval": {
+                    "end": 152.88,
+                    "start": 144.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Inside we both know what's been going on We know the game and we're gonna play it"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9689177808139993,
+                "no_speech_confidence": 0.72998046875,
+                "text": " I just wanna tell you how I'm feeling Gotta make you understand",
+                "time_interval": {
+                    "end": 160.88,
+                    "start": 152.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " I just wanna tell you how I'm feeling Gotta make you understand"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9689177808139993,
+                "no_speech_confidence": 0.72998046875,
+                "text": " Never gonna give you up Never gonna let you down",
+                "time_interval": {
+                    "end": 164.88,
+                    "start": 160.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna give you up Never gonna let you down"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9628316751972309,
+                "no_speech_confidence": 0.8984375,
+                "text": " Never gonna run around and desert you Never gonna make you cry",
+                "time_interval": {
+                    "end": 170.88,
+                    "start": 164.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna run around and desert you Never gonna make you cry"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9628316751972309,
+                "no_speech_confidence": 0.8984375,
+                "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
+                "time_interval": {
+                    "end": 176.88,
+                    "start": 170.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna say goodbye Never gonna tell a lie and hurt you"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9628316751972309,
+                "no_speech_confidence": 0.8984375,
+                "text": " Never gonna give you up Never gonna let you down",
+                "time_interval": {
+                    "end": 181.88,
+                    "start": 176.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna give you up Never gonna let you down"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9628316751972309,
+                "no_speech_confidence": 0.8984375,
+                "text": " Never gonna run around and desert you Never gonna make you cry",
+                "time_interval": {
+                    "end": 187.88,
+                    "start": 181.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna run around and desert you Never gonna make you cry"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9266240156885811,
+                "no_speech_confidence": 0.8447265625,
+                "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
+                "time_interval": {
+                    "end": 193.88,
+                    "start": 187.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna say goodbye Never gonna tell a lie and hurt you"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9266240156885811,
+                "no_speech_confidence": 0.8447265625,
+                "text": " Never gonna give you up Never gonna let you down",
+                "time_interval": {
+                    "end": 198.88,
+                    "start": 193.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna give you up Never gonna let you down"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9266240156885811,
+                "no_speech_confidence": 0.8447265625,
+                "text": " Never gonna run around and desert you Never gonna make you cry",
+                "time_interval": {
+                    "end": 204.88,
+                    "start": 198.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna run around and desert you Never gonna make you cry"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.60546875
+        },
+        "segments": [
+            {
+                "confidence": 0.9266240156885811,
+                "no_speech_confidence": 0.8447265625,
+                "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
+                "time_interval": {
+                    "end": 210.88,
+                    "start": 204.88
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Never gonna say goodbye Never gonna tell a lie and hurt you"
         }
     },
     {
         "captions": [
-            "a black background with a white background and a black background with a white background and a black background with a white background and a black background with a white background and a black background with a white background and a black background with a white background and a black background with a white background and a black background with a white background and",
-            "a man in a suit is singing into a microphone in front of a window with a church in the background. the man is looking down at his face with his eyes closed",
-            "a man in a suit is singing into a microphone in front of a window with a tree in the background and a wall behind him with a window in it and a tree in the background",
-            "a person is holding a black jacket and a white shirt on their arm in a room with a white wall and a door in the background. the person is wearing a black suit and a striped shirt",
-            "a man in a suit is singing into a microphone in front of a window with a stained glass window in the background. the man is wearing a striped shirt and black jacket",
-            "a man is smiling and wearing a white jacket and black shirt and tie and black pants and black shoes and black socks and black socks and black shoes and black socks and black shoes and black socks and black shoes and black socks and black shoes and black socks and black shoes and black socks and black shoes and black socks and black",
-            "a man in a white coat is standing in front of a brick wall with arches in the background and a man in a black suit is standing next to him",
-            "a man in a white coat is standing in front of a brick wall with a brick wall behind him and a brick wall in front of him and a brick wall in front of him"
+            "a black background with a white background",
+            "a man in a suit is singing into a microphone",
+            "a man in a suit is singing into a microphone",
+            "a person is holding a black jacket and a white shirt",
+            "a man in a suit is singing into a microphone",
+            "a man is smiling and wearing a white jacket",
+            "a man in a white coat is standing in front of a brick wall",
+            "a man in a white coat is standing in front of a brick wall"
         ],
         "timestamps": [
             0.0,
@@ -156,14 +681,14 @@
     },
     {
         "captions": [
-            "a blonde woman with a yellow bow in her hair standing in front of a window with a large window in the background and a large white wall behind her. the woman is looking at something",
-            "a woman with blonde hair standing in front of a window with a large window behind her and a large window in front of her and a large window in front of her",
-            "a man wearing sunglasses standing in front of a chain link fence with a smile on his face and a woman standing next to him with a smile on her face in the background",
-            "a man in a blue shirt and sunglasses is walking by a fence in front of a wall and a wall with a fence in the background. He is holding a frisbee",
-            "a woman in a white dress and sunglasses is standing in front of a white brick wall with her hand outstretched to the side of her body. the woman is looking at something",
-            "a woman with blonde hair standing in front of a white wall with her back to the camera and her head turned to the side. the woman is wearing a blue and white striped dress",
-            "a woman with long blonde hair standing in front of a white wall with her hair blowing in the wind - hair stock videos & royalty-free footageI'm not sure if this is a good thing or a bad thing.",
-            "a man in a trench coat is standing in front of a brick wall with a brick wall behind him and a brick wall in front of him and a brick wall in front of him"
+            "a blonde woman with a yellow bow in her hair",
+            "a woman with blonde hair standing in front of a window",
+            "a man wearing sunglasses standing in front of a chain link fence",
+            "a man in a blue shirt and sunglasses is walking",
+            "a woman in a white dress and sunglasses is standing in front of a white brick wall",
+            "a woman with blonde hair standing in front of a white wall",
+            "a woman with long blonde hair standing in front of a white wall",
+            "a man in a trench coat is standing in front of a brick wall"
         ],
         "timestamps": [
             9.4399995803833,
@@ -178,14 +703,14 @@
     },
     {
         "captions": [
-            "a man in sunglasses and a blue shirt is walking by a fence and a wall with a chain link fence in the background. He is wearing a blue shirt and jeans",
-            "a young man wearing sunglasses and a blue shirt standing in front of a fence with a chain link fence behind him and a chain link fence in the background with a chain link fence in the background",
-            "a man wearing sunglasses and a blue shirt standing in front of a fence with a chain link fence behind him and a chain link fence in front of him with a chain link fence in front of him",
-            "a man in a blue jumpsuit and sunglasses walking by a fence in front of a wall and a tree in the background - 1980s stock videos & royalty-free footage",
-            "a young man wearing sunglasses and a blue shirt is standing in front of a fence with a fence in the background and a chain link fence in the foreground with a man in sunglasses standing next to him",
-            "the shadow of a person standing on the ground with their hands up in the air and their shadow is on the ground behind them. stock footage & royalty-free footage",
-            "a shadow of a person standing on a sidewalk with a skateboard in their hand and a skateboard in the air in front of them. the shadow is of a person standing on the sidewalk",
-            "a man in a blue jumpsuit standing next to a fence with his hands up in the air and pointing at something behind him. He is wearing sunglasses and a hat"
+            "a man in sunglasses and a blue shirt is walking",
+            "a young man wearing sunglasses and a blue shirt",
+            "a man wearing sunglasses and a blue shirt",
+            "a man in a blue jumpsuit and sunglasses walking by a fence",
+            "a young man wearing sunglasses and a blue shirt",
+            "the shadow of a person standing on the ground",
+            "a shadow of a person standing on a sidewalk",
+            "a man in a blue jumpsuit standing next to a fence"
         ],
         "timestamps": [
             24.200000762939453,
@@ -200,14 +725,14 @@
     },
     {
         "captions": [
-            "a man in a white jacket is making a face with his hands outstretched and his mouth open in a smiley face gesture. he is wearing a black shirt and white jacket",
-            "a man standing in an alleyway with a brick wall behind him and a blue sky in the background at night time. the man is wearing a white coat and a tie",
-            "a man in a white jacket is singing into a microphone in a video clip from the 1980s television show 'the simpsons' [video] [video]",
-            "a young man wearing sunglasses and a blue shirt standing in front of a chain link fence with a fence in the background and a fence in the background and a fence in the background",
-            "a woman in a dress and sunglasses walking by a brick wall in front of a white building in a scene from the movie 'the man who loved women' - 1980 stock videos & royalty-free footage",
-            "a woman in a white dress and sunglasses is standing in front of a brick wall and a white building with a sign that says \"the wall\" on it.",
-            "a woman with long blonde hair and sunglasses standing in front of a brick wall and a white wall behind her - 1980s stock videos & royalty-free footage & footage",
-            "a man in sunglasses is standing next to a fence in front of a tree and a wall with a fence in the background. He is wearing a blue shirt and jeans"
+            "a man in a white jacket is making a face",
+            "a man standing in an alleyway with a brick wall behind him",
+            "a man in a white jacket is singing",
+            "a young man wearing sunglasses and a blue shirt",
+            "a woman in a dress and sunglasses walking by a brick wall",
+            "a woman in a white dress and sunglasses is standing in front of a brick wall",
+            "a woman with long blonde hair and sunglasses standing in front of a brick wall",
+            "a man in sunglasses is standing next to a fence"
         ],
         "timestamps": [
             33.20000076293945,
@@ -222,14 +747,14 @@
     },
     {
         "captions": [
-            "a large room with tables and chairs in front of a large window with sun shining through it. The room is empty except for the people standing in front of the window",
-            "a man in a suit is singing into a microphone in front of a window with a purple background behind him. the man is wearing a black shirt and tie and has a white beard",
-            "a man with a microphone in front of a window with a man in a suit and tie looking at the camera with a smile on his face. the man is wearing a black shirt and tie",
-            "david bowie - starman - video - stock videos & royalty-free footage | royalty-free stock videos & footage | royalty-free stock videos & footage",
-            "a man in a white shirt and tie standing behind a bar with a glass of alcohol in front of him and a bottle of water next to him on the counter",
-            "a man in a white shirt and suspenders sitting at a bar with glasses on the table in front of him and a glass in his hand with a red tie",
-            "a man in a suit singing into a microphone in front of a window with a stained glass window behind him and a stained glass window in the background behind him and a stained glass window in the background behind him",
-            "a woman with blonde hair standing in front of a wall with a blue background and a white background behind her. the woman is wearing a black dress and has her hair blowing in the wind"
+            "a large room with tables and chairs in front of a large window",
+            "a man in a suit is singing into a microphone",
+            "a man with a microphone in front of a window",
+            "david bowie - starman",
+            "a man in a white shirt and tie standing behind a bar",
+            "a man in a white shirt and suspenders sitting at a bar",
+            "a man in a suit singing into a microphone",
+            "a woman with blonde hair standing in front of a wall"
         ],
         "timestamps": [
             42.31999969482422,
@@ -244,14 +769,14 @@
     },
     {
         "captions": [
-            "a man in a trench coat standing in front of a brick wall with a brick wall behind him and a brick wall in front of him with a brick wall in front of him",
-            "a man with his eyes closed singing in front of a brick wall with a brick wall in the background and a brick wall in the background and a brick wall in the background",
-            "a man with a white shirt and black jacket standing in front of a brick wall with his mouth open and a smile on his face. he is wearing a white shirt and black jacket",
-            "a man in a white jacket standing in front of a brick wall with his mouth open and a white shirt on his back and a black tie on his head and a black jacket on his back",
-            "a man in a trench coat standing in front of a brick wall with arches in the background and a light in the middle of the wall. the man is holding a microphone",
-            "a man in a trench coat is walking in the street with his hands in his pockets and his head down in the air while wearing a white shirt and black pants",
-            "a man in a white jacket is talking into the camera with his mouth open and a blue brick wall behind him. he is wearing a black turtle neck sweater and a white shirt",
-            "a man in a white shirt and black jacket standing in front of a brick wall with a brick wall in the background and a brick wall in the background and a brick wall in the background"
+            "a man in a trench coat standing in front of a brick wall",
+            "a man with his eyes closed singing in front of a brick wall",
+            "a man with a white shirt and black jacket",
+            "a man in a white jacket standing in front of a brick wall",
+            "a man in a trench coat standing in front of a brick wall",
+            "a man in a trench coat is walking in the street",
+            "a man in a white jacket is talking into the camera",
+            "a man in a white shirt and black jacket"
         ],
         "timestamps": [
             60.7599983215332,
@@ -266,14 +791,14 @@
     },
     {
         "captions": [
-            "three women are standing on chairs in front of a large window with a large table in the background and a large table in the middle of the room with chairs on it",
-            "a man in suspenders holding a glass of wine in his hand while standing next to a table with a glass of wine and a bottle of wine next to it",
-            "three women stand in front of a large window in a church room with a large table in the middle of the room and chairs on the floor behind them. the sun is shining through the window",
-            "david bowie - starman - video stock videos & royalty-free footage - 1 min - david bowie - starman - david bowie - starman",
-            "a man in a white shirt is holding a glass of wine in his hand and looking at the camera with a smile on his face. He is standing in front of a bar",
-            "a man standing in front of a wall with wine glasses on it and a bottle of wine in the background - wine glasses stock videos & royalty-free footageI'm not sure if this is a good thing or a bad thing.",
-            "a man in a suit is singing into a microphone in front of a window with a church in the background and a church bell in the background and a church in the background",
-            "a man in a suit is singing into a microphone in front of a window with a church in the background. the man is wearing a white shirt and black jacket"
+            "three women are standing on chairs in front of a large window",
+            "a man in suspenders holding a glass",
+            "three women stand in front of a large window",
+            "david bowie - starman",
+            "a man in a white shirt is holding a glass",
+            "a man standing in front of a wall with wine glasses",
+            "a man in a suit is singing into a microphone",
+            "a man in a suit is singing into a microphone"
         ],
         "timestamps": [
             72.5999984741211,
@@ -288,14 +813,14 @@
     },
     {
         "captions": [
-            "a man in a white coat standing in front of a brick wall with his hands outstretched and his mouth open in a smiley face gesture. he is wearing a black shirt and black pants",
-            "a man in a white coat is standing in front of a brick wall with a brick wall behind him and a brick wall in front of him and a brick wall in front of him",
-            "a man in a trench coat standing in front of a brick wall with arches in the background and a light in the background behind him. he is holding a black bag",
-            "a man in a white jacket standing in front of a brick wall with a brick wall behind him and a brick wall in front of him and a brick wall in front of him",
-            "a man in a white jacket is singing into a microphone in front of a brick wall and a brick wall behind him. he is wearing a black shirt and a white jacket",
-            "a group of people standing in front of chairs in a large room with windows and a large window in the middle of the room. The chairs are on the floor",
-            "a man singing into a microphone while wearing a suit and tie and a white shirt and tie and a white shirt and tie and a white shirt and tie and a white shirt and tie",
-            "a man singing into a microphone in front of a window with a white background behind him and a white background in front of him with a white background in front of him"
+            "a man in a white coat standing in front of a brick wall",
+            "a man in a white coat is standing in front of a brick wall",
+            "a man in a trench coat standing in front of a brick wall",
+            "a man in a white jacket standing in front of a brick wall",
+            "a man in a white jacket is singing",
+            "a group of people standing in front of chairs",
+            "a man singing into a microphone while wearing a suit",
+            "a man singing into a microphone in front of a window"
         ],
         "timestamps": [
             82.4000015258789,
@@ -310,14 +835,14 @@
     },
     {
         "captions": [
-            "a man and woman dancing in front of a large window with chairs and tables in the background - dance video stock videos and b-roll footageI'm not sure if this is a good thing or a bad thing.",
-            "a man is standing behind a bar with a glass in his hand and a clock on the wall behind him in the background. the man is wearing a white shirt and a tie",
-            "two people are standing on stage in front of tables and chairs with windows in the background and a large window in the middle of the room with a large table in the middle",
-            "a man in a suit is singing into a microphone in front of a large window with people in the background watching him perform on stage. he is wearing a striped shirt and black tie",
-            "a man singing into a microphone with his eyes closed and his mouth open wide open in the air, with his mouth open wide open and his eyes closed, with his mouth open wide open and his eyes closed",
-            "a man in a striped shirt and jacket singing into a microphone in front of a window with a stained glass window behind him. the man is smiling and holding his hands up",
-            "a man in a white shirt and suspenders standing behind a bar with a bottle of wine in his hand and a glass in front of him with a red tie",
-            "a man is standing behind a bar with a glass in his hand and a bottle of water next to him on the countertop. He is pouring the water into the glass"
+            "a man and woman dancing in front of a large window",
+            "a man is standing behind a bar with a glass",
+            "two people are standing on stage in front of tables",
+            "a man in a suit is singing into a microphone",
+            "a man singing into a microphone with his eyes closed",
+            "a man in a striped shirt and jacket singing into a microphone",
+            "a man in a white shirt and suspenders standing behind a bar",
+            "a man is standing behind a bar with a glass"
         ],
         "timestamps": [
             93.08000183105469,
@@ -332,14 +857,14 @@
     },
     {
         "captions": [
-            "a man with red hair singing into a microphone in front of a window with a large window in the background and a large building in the background behind him. the man is smiling",
-            "a shadow of a person standing on a sidewalk with their arms outstretched and their shadow is on the ground next to them. the shadow is on the ground next to them",
-            "a man with a white shirt and a blue tie is standing in front of a brick wall with a brick wall in the background and a brick wall in the background",
-            "a woman wearing sunglasses stands in front of a white wall with a brick wall in the background and a white building in the background - woman in sunglasses stock videos & royalty-free footage",
-            "a man wearing sunglasses standing in front of a white wall with a white brick wall in the background and a white car in the background - 1990 stock videos & royalty-free footage",
-            "a woman with blonde hair standing in front of a white wall with her hand up in the air and a white handkerchief in her hand - handkerchief stock videos & royalty-free footage",
-            "a man's feet in black shoes standing on a sidewalk with a shadow of his leg on the ground in the background - man's feet stock videos & royalty-free footage",
-            "a man in a white t - shirt and jeans is standing in front of a brick wall with his hands in his pockets and his head tilted to the side."
+            "a man with red hair singing into a microphone",
+            "a shadow of a person standing on a sidewalk",
+            "a man with a white shirt and a blue tie",
+            "a woman wearing sunglasses stands in front of a white wall",
+            "a man wearing sunglasses standing in front of a white wall",
+            "a woman with blonde hair standing in front of a white wall",
+            "a man's feet in black shoes standing on a sidewalk",
+            "a man in a white t - shirt and jeans is standing in front of a brick wall"
         ],
         "timestamps": [
             105.68000030517578,
@@ -354,14 +879,14 @@
     },
     {
         "captions": [
-            "a man in blue jeans and a white shirt is walking by a fence in front of a wall and a fence in the background. He is wearing a blue shirt",
+            "a man in blue jeans and a white shirt is walking",
             "david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie",
-            "a man walking under an arched tunnel at night with a light shining on him from above him and a light shining on the ground below him from below him, and a light shining on the ground from above him",
-            "a man in shorts is jumping over a fence in front of a wall and a fence in the background. He is wearing a white shirt and black shorts. He is jumping over the fence",
-            "a young man wearing sunglasses and a blue shirt standing in front of a chain link fence with a fence in the background and a chain link fence in the background and a fence in the background",
-            "a shadow of a person standing on a concrete floor with their hand in the air and their shadow on the ground behind them. the shadow is long and the person is standing",
-            "a shadow of a person standing on a sidewalk with their shadow on the ground in the background - man shadow stock videos & royalty-free footageI'm not sure if this is a good thing or a bad thing.",
-            "a shadow of a person holding a cell phone in the air and a shadow of the person's shadow on the ground next to it. stock footage and b-roll video"
+            "a man walking under an arched tunnel at night",
+            "a man in shorts is jumping over a fence",
+            "a young man wearing sunglasses and a blue shirt",
+            "a shadow of a person standing on a concrete floor",
+            "a shadow of a person standing on a sidewalk",
+            "a shadow of a person holding a cell phone"
         ],
         "timestamps": [
             120.72000122070312,
@@ -376,14 +901,14 @@
     },
     {
         "captions": [
-            "a shadow of a person holding a cell phone up to their ear in the air, with the shadow of their hand on the ground behind them, and the shadow of their head in the air",
-            "a man standing in front of a large window with a woman and two girls standing behind him on a stage in front of him. The man is wearing a black suit and white shirt",
-            "a man in a striped shirt and jacket singing into a microphone in front of a window with a stained glass window in the background.com/images/thumb/f/f8/thumb_f8_thumb_f8_thumb_f8_thumb_f8_thumb",
-            "a man in a white jacket singing into a microphone while standing in front of a brick wall and a brick wall behind him. the man is wearing a black shirt and white jacket",
-            "a man in a white coat standing in front of a brick wall with his arms outstretched and his hands in the air. he is wearing a black shirt and black pants",
-            "a woman in a black leotard doing a handstand in front of a brick wall at night time in a dark room with a light shining through the arch",
-            "a woman is walking through an archway in a dark room at night time with a light shining on her face and a light shining on the wall behind her.",
-            "a man in a white jacket is singing into a microphone in front of a brick wall and a brick wall behind him. he is wearing a black turtle neck sweater"
+            "a shadow of a person holding a cell phone",
+            "a man standing in front of a large window with a woman and two girls",
+            "a man in a striped shirt and jacket singing",
+            "a man in a white jacket singing into a microphone",
+            "a man in a white coat standing in front of a brick wall",
+            "a woman in a black leotard doing a handstand in front of a brick wall",
+            "a woman is walking through an archway in a dark room",
+            "a man in a white jacket is singing into a microphone"
         ],
         "timestamps": [
             135.1999969482422,
@@ -398,14 +923,14 @@
     },
     {
         "captions": [
-            "david bowie - starman - video - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement - product placement -",
-            "a man in a trench coat is standing in an alleyway with a brick wall behind him and a brick wall in front of him with a brick wall in the background",
-            "a man with a white jacket and a blue shirt is singing into a microphone in a video clip from the 1980s television show, 'the simpsons' - stock footage, video, and video stock",
-            "a man with his mouth open singing in front of a brick wall and a brick wall in the background. the video is from the movie 'the big lebowski'",
-            "a man in a white coat is standing in front of a brick wall with a brick wall behind him and a brick wall in front of him and a brick wall in front of him",
-            "a man in a trench coat standing in front of a brick wall with a woman in a white coat standing next to him in the background. the woman is holding a microphone",
-            "a man standing in front of a brick wall with his shadow on it's backside and a shadow of a woman standing behind him in the background. the shadow is of a woman",
-            "a man in a white shirt is jumping in the air in front of a brick wall with arches in it. the man is wearing a black shirt and black pants"
+            "david bowie - starman",
+            "a man in a trench coat is standing in an alley",
+            "a man with a white jacket and a blue shirt",
+            "a man with his mouth open singing in front of a brick wall",
+            "a man in a white coat is standing in front of a brick wall",
+            "a man in a trench coat standing in front of a brick wall",
+            "a man standing in front of a brick wall",
+            "a man in a white shirt is jumping in the air"
         ],
         "timestamps": [
             150.67999267578125,
@@ -420,14 +945,14 @@
     },
     {
         "captions": [
-            "a man is doing a flip in an old building with arches in it. the man is upside down and doing a flip in the air. the man is upside down and doing a flip in the air",
-            "a man in white shirt doing a handstand in front of a brick wall and a blue wall behind him. the man is doing a handstand and stretching his arms out",
-            "a woman in a white top is smiling and looking at something behind her back in a scene from the movie 'the last dance' - the last dance movie stock videos and b-roll",
-            "david bowie - starman - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie -",
-            "a woman with blonde hair and blue eyes is looking at the camera in a scene from the movie 'the last movie' in the 80s.jpg, image size 640x480",
-            "a woman with a white headband sitting in front of a brick wall with a white background and a white background behind her headband and a white background behind her",
-            "a man is dancing in the street with his arms outstretched and his back to the camera, while a woman is walking by him with her arms outstretched and her back to the camera",
-            "a man in white shirt and pants is dancing in an alleyway with a brick wall behind him and a brick wall in front of him. the man is wearing white pants and white shoes"
+            "a man is doing a flip in an old building",
+            "a man in white shirt doing a handstand in front of a brick wall",
+            "a woman in a white top is smiling",
+            "david bowie - starman",
+            "a woman with blonde hair and blue eyes",
+            "a woman with a white headband sitting in front of a brick wall",
+            "a man is dancing in the street",
+            "a man in white shirt and pants is dancing"
         ],
         "timestamps": [
             166.9199981689453,
@@ -442,14 +967,14 @@
     },
     {
         "captions": [
-            "a man is dancing in front of a brick wall in a video game scene from the game \"the last of us\" - the last of us stock videos & royalty-free footage",
-            "david bowie - the man who sold the world - david bowie stock videos & royalty-free footage - 1980 stock videos & royalty-free footage https://www.youtube.com/watch?v=J9jxr7l3_xo",
-            "a man and woman are dancing on a stage in front of a large window with smoke coming out of it. one of the dancers is wearing a black dress and the other is wearing a white dress",
-            "david bowie - starman - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie -",
-            "a man in a white shirt is standing next to a bar with a glass of wine in his hand and a red candle in the middle of the room. He is leaning over the bar",
-            "three women in black outfits are dancing on a stage in front of a large window with a large window in the background and a large building in the background with a large window in the background",
-            "a man in a striped shirt singing into a microphone in front of a window with a large window behind him and a large window in the background behind him and a large window in the background behind him",
-            "a man in a trench coat standing in an alleyway with a woman standing next to him in the background with a sign that says \"the man in the trench coat\""
+            "a man is dancing in front of a brick wall",
+            "david bowie - the man who sold the world - david bowie stock videos & royalty-free footage",
+            "a man and woman are dancing on a stage",
+            "david bowie - starman",
+            "a man in a white shirt is standing next to a bar",
+            "three women in black outfits are dancing on a stage",
+            "a man in a striped shirt singing into a microphone",
+            "a man in a trench coat standing in an alley"
         ],
         "timestamps": [
             178.47999572753906,
@@ -464,13 +989,13 @@
     },
     {
         "captions": [
-            "a man in a striped shirt singing into a microphone in front of a church window with a stained glass window behind him and a stained glass window in the background behind him",
-            "a man in a suit is singing into a microphone in front of a window with a large window behind him and a large building in the background. the man is looking down at something",
-            "a man in a white coat is standing in front of a brick wall with his hands outstretched and a woman is walking by him in a black dress and white coat",
-            "a man singing into a microphone in front of a window with a white background and a man in a suit and tie singing into the microphone with his eyes closed and his mouth open",
-            "a man in a white jacket and black shirt is standing in front of a brick wall with his arms outstretched and his mouth open wide. he is wearing a white shirt and black pants",
-            "a man in a white shirt and black turtle neck is looking at the camera with a smile on his face. he is wearing a black tie and white shirt.",
-            "a man with a white shirt and black tie standing in front of a brick wall with a blue wall behind him and a blue sky in the background. he is smiling"
+            "a man in a striped shirt singing into a microphone",
+            "a man in a suit is singing into a microphone",
+            "a man in a white coat is standing in front of a brick wall",
+            "a man singing into a microphone in front of a window",
+            "a man in a white jacket and black shirt",
+            "a man in a white shirt and black turtle neck",
+            "a man with a white shirt and black tie"
         ],
         "timestamps": [
             190.75999450683594,

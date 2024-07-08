@@ -50,10 +50,9 @@ meta_llama3_8b_instruct_deployment = VLLMDeployment.options(
     max_ongoing_requests=1000,
     ray_actor_options={"num_gpus": 0.45},
     user_config=VLLMConfig(
-        model="gradientai/Llama-3-8B-Instruct-Gradient-1048k",
+        model="meta-llama/Meta-Llama-3-8B-Instruct",
         dtype=Dtype.AUTO,
         gpu_memory_reserved=30000,
-        max_model_len=32768,
         enforce_eager=True,
         default_sampling_params=SamplingParams(
             temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
