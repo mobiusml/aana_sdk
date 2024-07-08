@@ -67,11 +67,9 @@ git clone https://github.com/mobiusml/aana_sdk.git
 
 2. Install additional libraries.
 
-```bash
-apt update && apt install -y libgl1
-```
+You should install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU  or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
 
-You should also install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU  or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
+Some models use Flash Attention. Install Flash Attention library for better performance. See [flash attention installation instructions](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) for more details and supported GPUs.
 
 3. Install the package with poetry.
 
