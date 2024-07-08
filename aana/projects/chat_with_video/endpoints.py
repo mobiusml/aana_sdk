@@ -18,12 +18,16 @@ from aana.core.models.video import VideoInput, VideoMetadata, VideoParams, Video
 from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.exceptions.db import MediaIdAlreadyExistsException, UnfinishedVideoException
-from aana.exceptions.runtime import PromptTooLongException
+from aana.exceptions.io import VideoTooLongException
 from aana.integrations.external.decord import generate_frames, get_video_duration
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
-from aana.projects.chat_with_video.const import asr_model_name, captioning_model_name
+from aana.projects.chat_with_video.const import (
+    asr_model_name,
+    captioning_model_name,
+    max_video_len,
+)
 from aana.projects.chat_with_video.utils import (
     generate_dialog,
 )
@@ -152,6 +156,14 @@ class IndexVideoEndpoint(Endpoint):
 
         video_obj: Video = await run_remote(download_video)(video_input=video)
         video_duration = await run_remote(get_video_duration)(video=video_obj)
+
+        if video_duration > max_video_len:
+            raise VideoTooLongException(
+                video=video_obj,
+                video_len=video_duration,
+                max_len=max_video_len,
+            )
+
         save_video(video=video_obj, duration=video_duration)
         yield {
             "media_id": media_id,
@@ -277,37 +289,15 @@ class VideoChatEndpoint(Endpoint):
             timeline_output["timeline"], indent=4, separators=(",", ": ")
         )
 
-        num_attempts = 2
-        for attempt in range(num_attempts):  # Try twice: initial attempt + one retry
-            try:
-                dialog = generate_dialog(
-                    metadata=video_metadata,
-                    timeline=timeline_json,
-                    question=question,
-                )
-                async for item in self.llm_handle.chat_stream(
-                    dialog=dialog, sampling_params=sampling_params
-                ):
-                    yield {"completion": item["text"]}
-            except PromptTooLongException as e:  # noqa: PERF203
-                if attempt == num_attempts - 1:
-                    raise
-                # If the prompt is too long, we truncate the timeline to fit the context length
-                # reserve 2000 tokens for response
-                max_available_len = e.max_len - 2000
-                # calculate the average token per char
-                prompt_char_len = sum(len(msg.content) for msg in dialog.messages)
-                avg_token_per_char = e.prompt_len / prompt_char_len
-                # calculate how many characters we need to remove
-                timeline_char_excess = (
-                    e.prompt_len - max_available_len
-                ) / avg_token_per_char
-                # calculate the max timeline length
-                max_timeline_len = int(len(timeline_json) - timeline_char_excess)
-                # truncate the timeline
-                timeline_json = timeline_json[:max_timeline_len]
-            else:
-                break
+        dialog = generate_dialog(
+            metadata=video_metadata,
+            timeline=timeline_json,
+            question=question,
+        )
+        async for item in self.llm_handle.chat_stream(
+            dialog=dialog, sampling_params=sampling_params
+        ):
+            yield {"completion": item["text"]}
 
 
 class LoadVideoMetadataEndpoint(Endpoint):
