@@ -2,7 +2,6 @@
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 [![Website](https://img.shields.io/badge/website-online-brightgreen.svg)](http://www.mobiuslabs.com)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-adopted-orange.svg)](https://www.contributor-covenant.org/version/2/0/code_of_conduct/)
 [![PyPI version](https://img.shields.io/pypi/v/aana.svg)](https://pypi.org/project/aana/)
 [![GitHub release](https://img.shields.io/github/v/release/mobiusml/aana_sdk.svg)](https://github.com/mobiusml/aana_sdk/releases)
 
