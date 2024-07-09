@@ -6,7 +6,10 @@
 [![GitHub release](https://img.shields.io/github/v/release/mobiusml/aana_sdk.svg)](https://github.com/mobiusml/aana_sdk/releases)
 
 <p align="center">
-  <img src="Aanalogo.png" alt="Aana Logo" />
+  <picture>
+    <source srcset="Aana-SDK-whitetext.png" media="(prefers-color-scheme: dark)">
+    <img src="Aanalogo.png" alt="Aana Logo">
+  </picture>
 </p>
 
 # Aana
