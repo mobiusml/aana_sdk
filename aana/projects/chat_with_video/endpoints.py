@@ -176,6 +176,7 @@ class IndexVideoEndpoint(Endpoint):
             update_video_status(media_id=media_id, status=Status.RUNNING)
             audio: Audio = extract_audio(video=video_obj)
 
+            # TODO: Update once batched whisper PR is merged
             # vad_output = await self.vad_handle.asr_preprocess_vad(
             #     audio=audio, params=vad_params
             # )

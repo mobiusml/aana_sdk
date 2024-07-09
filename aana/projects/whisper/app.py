@@ -24,6 +24,7 @@ endpoints = [
         "summary": "Transcribe a video",
         "endpoint_cls": TranscribeVideoEndpoint,
     },
+    # TODO: Update once batched whisper PR is merged
     # {
     #     "name": "whisper_transcribe_in_chunks",
     #     "path": "/video/transcribe_in_chunks",
