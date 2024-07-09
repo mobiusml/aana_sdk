@@ -5,8 +5,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/aana.svg)](https://pypi.org/project/aana/)
 [![GitHub release](https://img.shields.io/github/v/release/mobiusml/aana_sdk.svg)](https://github.com/mobiusml/aana_sdk/releases)
 
-![Aana Logo](Aanalogo.png)
-
+<p align="center">
+  <img src="Aanalogo.png" alt="Aana Logo" />
+</p>
 
 # Aana
 
