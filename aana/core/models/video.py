@@ -120,7 +120,6 @@ class Video(Media):
             f"content={content_hash}, "
             f"media_id={self.media_id}, "
             f"title={self.title}, "
-            f"description={self.description})"
         )
 
 
@@ -140,6 +139,7 @@ class VideoMetadata(BaseModel):
         }
     )
 
+
 class VideoStatus(BaseModel):
     """Metadata of a video.
 
@@ -154,6 +154,7 @@ class VideoStatus(BaseModel):
             "status": "Current processing status of video.",
         }
     )
+
 
 class VideoParams(BaseModel):
     """A pydantic model for video parameters.

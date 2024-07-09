@@ -1,3 +1,4 @@
+import json
 from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING, Annotated, TypedDict
 
@@ -17,11 +18,16 @@ from aana.core.models.video import VideoInput, VideoMetadata, VideoParams, Video
 from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.exceptions.db import MediaIdAlreadyExistsException, UnfinishedVideoException
+from aana.exceptions.io import VideoTooLongException
 from aana.integrations.external.decord import generate_frames, get_video_duration
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
-from aana.projects.chat_with_video.const import asr_model_name, captioning_model_name
+from aana.projects.chat_with_video.const import (
+    asr_model_name,
+    captioning_model_name,
+    max_video_len,
+)
 from aana.projects.chat_with_video.utils import (
     generate_dialog,
 )
@@ -150,6 +156,14 @@ class IndexVideoEndpoint(Endpoint):
 
         video_obj: Video = await run_remote(download_video)(video_input=video)
         video_duration = await run_remote(get_video_duration)(video=video_obj)
+
+        if video_duration > max_video_len:
+            raise VideoTooLongException(
+                video=video_obj,
+                video_len=video_duration,
+                max_len=max_video_len,
+            )
+
         save_video(video=video_obj, duration=video_duration)
         yield {
             "media_id": media_id,
@@ -162,16 +176,17 @@ class IndexVideoEndpoint(Endpoint):
             update_video_status(media_id=media_id, status=Status.RUNNING)
             audio: Audio = extract_audio(video=video_obj)
 
-            vad_output = await self.vad_handle.asr_preprocess_vad(
-                audio=audio, params=vad_params
-            )
-            vad_segments = vad_output["segments"]
+            # TODO: Update once batched whisper PR is merged
+            # vad_output = await self.vad_handle.asr_preprocess_vad(
+            #     audio=audio, params=vad_params
+            # )
+            # vad_segments = vad_output["segments"]
 
             transcription_list = []
             segments_list = []
             transcription_info_list = []
-            async for whisper_output in self.asr_handle.transcribe_in_chunks(
-                audio=audio, params=whisper_params, segments=vad_segments
+            async for whisper_output in self.asr_handle.transcribe_stream(
+                audio=audio, params=whisper_params
             ):
                 transcription_list.append(whisper_output["transcription"])
                 segments_list.append(whisper_output["segments"])
@@ -271,13 +286,15 @@ class VideoChatEndpoint(Endpoint):
             captions=loaded_video_captions_output["captions"],
             caption_timestamps=loaded_video_captions_output["timestamps"],
         )
+        timeline_json = json.dumps(
+            timeline_output["timeline"], indent=4, separators=(",", ": ")
+        )
 
         dialog = generate_dialog(
             metadata=video_metadata,
-            timeline=timeline_output["timeline"],
+            timeline=timeline_json,
             question=question,
         )
-
         async for item in self.llm_handle.chat_stream(
             dialog=dialog, sampling_params=sampling_params
         ):
