@@ -1,4 +1,8 @@
 [![Python package](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml/badge.svg)](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml)
+![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+[![Website](https://img.shields.io/badge/website-online-brightgreen.svg)](http://www.mobiuslabs.com)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-adopted-orange.svg)](https://www.contributor-covenant.org/version/2/0/code_of_conduct/)
 
 # Aana
 
