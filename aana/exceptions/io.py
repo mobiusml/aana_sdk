@@ -102,3 +102,30 @@ class VideoReadingException(VideoException):
     """
 
     pass
+
+
+class VideoTooLongException(BaseException):
+    """Exception raised when the video is too long.
+
+    Attributes:
+        video (Video): the video that caused the exception
+        video_len (float): the length of the video in seconds
+        max_len (float): the maximum allowed length of the video in seconds
+    """
+
+    def __init__(self, video: "Video", video_len: float, max_len: float):
+        """Initialize the exception.
+
+        Args:
+            video (Video): the video that caused the exception
+            video_len (float): the length of the video in seconds
+            max_len (float): the maximum allowed length of the video in seconds
+        """
+        super().__init__(video=video, video_len=video_len, max_len=max_len)
+        self.video = video
+        self.video_len = video_len
+        self.max_len = max_len
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.video, self.video_len, self.max_len))
