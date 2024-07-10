@@ -17,6 +17,19 @@ from torch.nn import (
     Sequential,
     Sigmoid,
 )
+from aana.configs.settings import settings
+
+adaface_models = {
+    "ir_50_msceleb": settings.artifacts_dir
+    / "face_verification_weights/adaface_ir50_ms1mv2.ckpt",
+    "ir_50_webface4M": settings.artifacts_dir
+    / "face_verification_weights/adaface_ir50_webface4m.ckpt",
+    "ir_101_webface4M": settings.artifacts_dir
+    / "face_verification_weights/adaface_ir101_webface4m.ckpt",
+    "ir_101_msceleb": settings.artifacts_dir
+    / "face_verification_weights/adaface_ir101_ms1mv3.ckpt",
+    "ir_101_debug": "/nas/dominic/AdaFace/pretrained/adaface_ir101_webface4m.ckpt",
+}
 
 
 def face_align_landmarks(img, landmarks, image_size=(112, 112), method="similar"):
@@ -77,27 +90,38 @@ def to_input(np_img_list, device):
     return tensor
 
 
-adaface_models = {
-    "ir_50": "pretrained/adaface_ir50_ms1mv2.ckpt",
-    "ir_50_webface4M": "/nas/dominic/AdaFace/pretrained/adaface_ir50_webface4m.ckpt",
-}
-
-
-def load_IR50_model(path_to_weights):
+def load_pretrained_model(architecture):
+    # arch_name = '_'.join(architecture.split('_')[0:-2])
     # load model and pretrained statedict
-    # assert architecture in adaface_models.keys()
-    model = build_model("ir_50")
-    statedict = torch.load(path_to_weights)["state_dict"]
+    assert architecture in adaface_models.keys()
+    model = build_model(architecture)
+    statedict = torch.load(adaface_models[architecture])["state_dict"]
     model_statedict = {
         key[6:]: val for key, val in statedict.items() if key.startswith("model.")
     }
     model.load_state_dict(model_statedict)
 
-    # Move the model to GPU
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     model.eval()
     return model, device
+
+
+# def load_IR50_model(path_to_weights):
+#     # load model and pretrained statedict
+#     # assert architecture in adaface_models.keys()
+#     model = build_model("ir_50")
+#     statedict = torch.load(path_to_weights)["state_dict"]
+#     model_statedict = {
+#         key[6:]: val for key, val in statedict.items() if key.startswith("model.")
+#     }
+#     model.load_state_dict(model_statedict)
+
+#     # Move the model to GPU
+#     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#     model.to(device)
+#     model.eval()
+#     return model, device
 
 
 # def load_pretrained_model(architecture="ir_50"):
@@ -113,17 +137,11 @@ def load_IR50_model(path_to_weights):
 #     return model
 
 
-def build_model(model_name="ir_50"):
-    if model_name == "ir_101":
+def build_model(model_name):
+    if "ir_101" in model_name:
         return IR_101(input_size=(112, 112))
-    elif model_name in ["ir_50", "ir_50_webface4M"]:
+    elif "ir_50" in model_name:
         return IR_50(input_size=(112, 112))
-    elif model_name == "ir_se_50":
-        return IR_SE_50(input_size=(112, 112))
-    elif model_name == "ir_34":
-        return IR_34(input_size=(112, 112))
-    elif model_name == "ir_18":
-        return IR_18(input_size=(112, 112))
     else:
         raise ValueError("not a correct model name", model_name)
 
