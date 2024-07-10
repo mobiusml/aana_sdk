@@ -14,7 +14,9 @@ class FaceDetectorConfig(BaseModel):
 
     Attributes:
         model_url (str): the model URL
+        batch_size (int): size of batch
         nms_thresh (float): threshold used for NMS (default: 0.4)
+        input_size (int): input resolution for detection model (640 or 1280)
     """
 
     model_url: str
@@ -60,8 +62,6 @@ class FaceDetectorDeployment(BaseDeployment):
         Returns:
             dict: the predictions
         """
-        # Preprocess the images
-
         bboxes_per_img = []
         keypoints_per_img = []
         num_batches = len(images) // self.batch_size
@@ -138,7 +138,7 @@ class FaceDetectorDeployment(BaseDeployment):
 
         return {"bounding_boxes": bboxes_batch, "keypoints": keypoints_batch}
 
-
+#Rescale box coordinates back to original resolution
 def rescale_boxes_scale(boxes, scale_factor):
     for box in boxes:
         box[0] /= scale_factor
@@ -148,7 +148,7 @@ def rescale_boxes_scale(boxes, scale_factor):
 
     return boxes
 
-
+#Rescale face landmark coordinates back to original resolution
 def rescale_keypoints_scale(kpts, scale_factor):
     for kpt in kpts:
         for k in kpt:

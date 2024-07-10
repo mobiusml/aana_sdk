@@ -8,7 +8,7 @@ from aana.core.models.image import Image
 from aana.deployments.base_deployment import BaseDeployment, test_cache
 from aana.processors.facefeat_extractor import (
     face_align_landmarks,
-    load_IR50_model,
+    load_pretrained_model,
     to_input,
 )
 
@@ -20,7 +20,7 @@ class FacefeatureExtractorConfig(BaseModel):
         model_url (str): the model URL
     """
 
-    model_url: str
+    feature_extractor_name: str
     min_face_norm: float
 
 
@@ -35,11 +35,13 @@ class FacefeatureExtractorDeployment(BaseDeployment):
 
         """
         config_obj = FacefeatureExtractorConfig(**config)
-        self.model_url = config_obj.model_url
+
         self.min_face_norm = config_obj.min_face_norm
 
         # Load the model
-        self.facefeat_extractor, self.device = load_IR50_model(self.model_url)
+        self.facefeat_extractor, self.device = load_pretrained_model(
+            config_obj.feature_extractor_name
+        )
 
     @test_cache
     async def predict(self, images: list[Image], face_landmarks: list[list]) -> dict:
@@ -68,7 +70,6 @@ class FacefeatureExtractorDeployment(BaseDeployment):
 
             norms = norms.detach().cpu().numpy()
 
-            # Filter out faces with low norms (i.e., low quality, see AdaFace paper for reasoning)
             # Filter out faces with low norms (i.e., low quality, see AdaFace paper for reasoning)
             face_ids_above_minnorm = np.where(norms >= self.min_face_norm)[0]
 
