@@ -155,7 +155,9 @@ class IndexVideoEndpoint(Endpoint):
             raise MediaIdAlreadyExistsException(table_name="media", media_id=video)
 
         video_obj: Video = await run_remote(download_video)(video_input=video)
-        video_duration = await run_remote(get_video_duration)(video=video_obj)
+        video_duration = video_obj.duration
+        if not video_duration:
+            video_duration = await run_remote(get_video_duration)(video=video_obj)
 
         if video_duration > max_video_len:
             raise VideoTooLongException(

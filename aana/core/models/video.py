@@ -39,11 +39,13 @@ class Video(Media):
         media_id (MediaId): the ID of the video. If not provided, it will be generated automatically.
         title (str): the title of the video
         description (str): the description of the video
+        duration (float): the duration of video
         media_dir (Path): the directory to save the video in
     """
 
     title: str = ""
     description: str = ""
+    duration: float | None
     media_dir: Path | None = settings.video_dir
 
     def validate(self):
@@ -120,6 +122,7 @@ class Video(Media):
             f"content={content_hash}, "
             f"media_id={self.media_id}, "
             f"title={self.title}, "
+            f"duration={self.duration}, "
         )
 
 

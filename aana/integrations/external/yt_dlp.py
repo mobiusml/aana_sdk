@@ -41,6 +41,7 @@ def download_video(video_input: VideoInput | Video) -> Video:
                 info = ydl.extract_info(video_input.url, download=False)
                 title = info.get("title", "")
                 description = info.get("description", "")
+                duration = info.get("duration")
                 path = Path(ydl.prepare_filename(info))
                 if not path.exists():
                     ydl.download([video_input.url])
@@ -52,6 +53,7 @@ def download_video(video_input: VideoInput | Video) -> Video:
                     media_id=video_input.media_id,
                     title=title,
                     description=description,
+                    duration=duration,
                 )
         except DownloadError as e:
             # removes the yt-dlp request to file an issue
