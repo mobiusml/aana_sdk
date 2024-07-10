@@ -10,7 +10,37 @@ from aana.exceptions.io import (
     DownloadException,
 )
 
+def get_video_metadata(video_url: str) -> dict:
+    """Fetch videos metadata for a url.
 
+    Args:
+        video_url (str): the video input url
+
+    Returns:
+        dict: the video metadata
+    """
+    
+    ydl_options = {
+        "extract_flat": True,
+        "hls_prefer_native": True,
+        "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
+    }
+    try:
+        with yt_dlp.YoutubeDL(ydl_options) as ydl:
+            info = ydl.extract_info(video_url, download=False)
+            title = info.get("title", "")
+            description = info.get("description", "")
+            duration = info.get("duration")
+            return Video(
+                title=title,
+                description=description,
+                duration=duration,
+            )
+    except DownloadError as e:
+        # removes the yt-dlp request to file an issue
+        error_message = e.msg.split(";")[0]
+        raise DownloadException(url=video_url, msg=error_message) from e
+    
 def download_video(video_input: VideoInput | Video) -> Video:
     """Downloads videos for a VideoInput object.
 
@@ -41,7 +71,6 @@ def download_video(video_input: VideoInput | Video) -> Video:
                 info = ydl.extract_info(video_input.url, download=False)
                 title = info.get("title", "")
                 description = info.get("description", "")
-                duration = info.get("duration")
                 path = Path(ydl.prepare_filename(info))
                 if not path.exists():
                     ydl.download([video_input.url])
@@ -53,7 +82,6 @@ def download_video(video_input: VideoInput | Video) -> Video:
                     media_id=video_input.media_id,
                     title=title,
                     description=description,
-                    duration=duration,
                 )
         except DownloadError as e:
             # removes the yt-dlp request to file an issue
