@@ -45,7 +45,7 @@ class Video(Media):
 
     title: str = ""
     description: str = ""
-    duration: float | None
+    duration: float | None = None
     media_dir: Path | None = settings.video_dir
 
     def validate(self):
