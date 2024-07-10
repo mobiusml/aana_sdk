@@ -31,11 +31,11 @@ def get_video_metadata(video_url: str) -> dict:
             title = info.get("title", "")
             description = info.get("description", "")
             duration = info.get("duration")
-            return Video(
-                title=title,
-                description=description,
-                duration=duration,
-            )
+            return {
+                "title": title,
+                "description": description,
+                "duration": duration,
+            }
     except DownloadError as e:
         # removes the yt-dlp request to file an issue
         error_message = e.msg.split(";")[0]
