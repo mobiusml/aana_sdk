@@ -161,7 +161,7 @@ class IndexVideoEndpoint(Endpoint):
         
         if video_duration and video_duration > max_video_len:
             raise VideoTooLongException(
-                video=video.convert_input_to_object(),
+                video=video,
                 video_len=video_duration,
                 max_len=max_video_len,
             )

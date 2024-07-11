@@ -1,5 +1,6 @@
 import hashlib
 from pathlib import Path
+from typing_extensions import TypedDict
 
 import yt_dlp
 from yt_dlp.utils import DownloadError
@@ -10,7 +11,13 @@ from aana.exceptions.io import (
     DownloadException,
 )
 
-def get_video_metadata(video_url: str) -> dict:
+class VideoInfo(TypedDict):
+    """Represents a video title, description and duration."""
+    title: str
+    description: str
+    duration: float
+
+def get_video_metadata(video_url: str) -> VideoInfo:
     """Fetch videos metadata for a url.
 
     Args:
@@ -31,16 +38,16 @@ def get_video_metadata(video_url: str) -> dict:
             title = info.get("title", "")
             description = info.get("description", "")
             duration = info.get("duration")
-            return {
-                "title": title,
-                "description": description,
-                "duration": duration,
-            }
+            return VideoInfo(
+                title=title,
+                description=description,
+                duration= duration,
+            )
     except DownloadError as e:
-        # removes the yt-dlp request to file an issue
         error_message = e.msg.split(";")[0]
         raise DownloadException(url=video_url, msg=error_message) from e
-    
+
+
 def download_video(video_input: VideoInput | Video) -> Video:
     """Downloads videos for a VideoInput object.
 
