@@ -1,14 +1,49 @@
 import hashlib
 from pathlib import Path
+from typing_extensions import TypedDict
 
 import yt_dlp
 from yt_dlp.utils import DownloadError
 
 from aana.configs.settings import settings
-from aana.core.models.video import Video, VideoInput
+from aana.core.models.video import Video, VideoInput, VideoMetadata
 from aana.exceptions.io import (
     DownloadException,
 )
+
+
+def get_video_metadata(video_url: str) -> VideoMetadata:
+    """Fetch video's metadata for a url.
+
+    Args:
+        video_url (str): the video input url
+
+    Returns:
+        metadata (VideoMetadata): the metadata of the video
+
+    Raises:
+        DownloadException: Request does not succeed.
+    """
+
+    ydl_options = {
+        "extract_flat": True,
+        "hls_prefer_native": True,
+        "extractor_args": {"youtube": {"skip": ["hls", "dash"]}},
+    }
+    try:
+        with yt_dlp.YoutubeDL(ydl_options) as ydl:
+            info = ydl.extract_info(video_url, download=False)
+            title = info.get("title", "")
+            description = info.get("description", "")
+            duration = info.get("duration")
+            return VideoMetadata(
+                title=title,
+                description=description,
+                duration=duration,
+            )
+    except DownloadError as e:
+        error_message = e.msg.split(";")[0]
+        raise DownloadException(url=video_url, msg=error_message) from e
 
 
 def download_video(video_input: VideoInput | Video) -> Video:
@@ -19,6 +54,9 @@ def download_video(video_input: VideoInput | Video) -> Video:
 
     Returns:
         Video: the video object
+
+    Raises:
+        DownloadException: Request does not succeed.
     """
     if isinstance(video_input, Video):
         return video_input

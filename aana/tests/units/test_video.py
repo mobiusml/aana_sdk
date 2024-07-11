@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 
 from aana.configs.settings import settings
-from aana.core.models.video import Video, VideoInput
+from aana.core.models.video import Video, VideoInput, VideoMetadata
 from aana.exceptions.io import DownloadException, VideoReadingException
-from aana.integrations.external.yt_dlp import download_video
+from aana.integrations.external.yt_dlp import download_video, get_video_metadata
 
 
 def test_video():
@@ -216,3 +216,34 @@ def test_download_video():
     video = Video(path=path)
     downloaded_video = download_video(video)
     assert downloaded_video == video
+
+
+@pytest.mark.parametrize(
+    "url, title, description, duration",
+    [
+        (
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "Rick Astley - Never Gonna Give You Up (Official Music Video)",
+            "The official video for “Never Gonna Give You Up” by Rick Astley.",
+            212.0,
+        ),
+        (
+            "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4",
+            "squirrel",
+            "",
+            None,
+        ),
+    ],
+)
+def test_get_video_metadata_success(url, title, description, duration):
+    metadata = get_video_metadata(url)
+    assert isinstance(metadata, VideoMetadata)
+    assert metadata.title == title
+    assert metadata.description.startswith(description)
+    assert metadata.duration == duration
+
+
+def test_get_video_metadata_failure():
+    url = "https://www.youtube.com/watch?v=invalid_url"
+    with pytest.raises(DownloadException):
+        get_video_metadata(url)

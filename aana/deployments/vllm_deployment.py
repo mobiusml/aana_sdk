@@ -41,7 +41,7 @@ class VLLMConfig(BaseModel):
         chat_template (str): the name of the chat template, if not provided, the chat template from the model will be used
                              but some models may not have a chat template (optional, default: None)
         enforce_eager: whether to enforce eager execution (optional, default: False)
-        engine_args: extra engine arguments (optional, default: {})       
+        engine_args: extra engine arguments (optional, default: {})
 
     """
 
@@ -56,6 +56,7 @@ class VLLMConfig(BaseModel):
     chat_template: str | None = Field(default=None)
     enforce_eager: bool | None = Field(default=False)
     engine_args: CustomConfig = {}
+
 
 @serve.deployment
 class VLLMDeployment(BaseTextGenerationDeployment):
@@ -101,7 +102,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             enforce_eager=config_obj.enforce_eager,
             gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
-            **config_obj.engine_args
+            **config_obj.engine_args,
         )
 
         # TODO: check if the model is already loaded.
@@ -153,7 +154,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             results_generator = self.engine.generate(
                 sampling_params=sampling_params_vllm,
                 request_id=request_id,
-                inputs=TokensPrompt(prompt_token_ids=prompt_token_ids)
+                inputs=TokensPrompt(prompt_token_ids=prompt_token_ids),
             )
 
             num_returned = 0
