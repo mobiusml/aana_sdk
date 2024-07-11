@@ -54,10 +54,16 @@
         "completion": " speaker"
     },
     {
-        "completion": " discusses"
+        "completion": " introduces"
     },
     {
         "completion": " the"
+    },
+    {
+        "completion": " concept"
+    },
+    {
+        "completion": " of"
     },
     {
         "completion": " conservation"
@@ -75,7 +81,13 @@
         "completion": " and"
     },
     {
-        "completion": " introduces"
+        "completion": " demonstrates"
+    },
+    {
+        "completion": " it"
+    },
+    {
+        "completion": " with"
     },
     {
         "completion": " a"
@@ -102,7 +114,76 @@
         "completion": " speaker"
     },
     {
-        "completion": " demonstrates"
+        "completion": " discusses"
+    },
+    {
+        "completion": " the"
+    },
+    {
+        "completion": " potential"
+    },
+    {
+        "completion": " danger"
+    },
+    {
+        "completion": " of"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " pend"
+    },
+    {
+        "completion": "ulum"
+    },
+    {
+        "completion": " swinging"
+    },
+    {
+        "completion": " from"
+    },
+    {
+        "completion": " a"
+    },
+    {
+        "completion": " height"
+    },
+    {
+        "completion": " that"
+    },
+    {
+        "completion": " could"
+    },
+    {
+        "completion": " cause"
+    },
+    {
+        "completion": " injury"
+    },
+    {
+        "completion": " or"
+    },
+    {
+        "completion": " death"
+    },
+    {
+        "completion": ".\n"
+    },
+    {
+        "completion": "3"
+    },
+    {
+        "completion": "."
+    },
+    {
+        "completion": " The"
+    },
+    {
+        "completion": " speaker"
+    },
+    {
+        "completion": " explains"
     },
     {
         "completion": " the"
@@ -138,133 +219,19 @@
         "completion": " energy"
     },
     {
-        "completion": " by"
-    },
-    {
-        "completion": " lifting"
-    },
-    {
         "completion": " and"
     },
     {
-        "completion": " dropping"
+        "completion": " its"
     },
     {
-        "completion": " a"
+        "completion": " application"
     },
     {
-        "completion": " "
+        "completion": " in"
     },
     {
-        "completion": "15"
-    },
-    {
-        "completion": " kg"
-    },
-    {
-        "completion": " object"
-    },
-    {
-        "completion": " from"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " height"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " one"
-    },
-    {
-        "completion": " meter"
-    },
-    {
-        "completion": ".\n"
-    },
-    {
-        "completion": "3"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " explains"
-    },
-    {
-        "completion": " the"
-    },
-    {
-        "completion": " potential"
-    },
-    {
-        "completion": " danger"
-    },
-    {
-        "completion": " of"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " pend"
-    },
-    {
-        "completion": "ulum"
-    },
-    {
-        "completion": " swinging"
-    },
-    {
-        "completion": " from"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " one"
-    },
-    {
-        "completion": "-m"
-    },
-    {
-        "completion": "eter"
-    },
-    {
-        "completion": " height"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " which"
-    },
-    {
-        "completion": " could"
-    },
-    {
-        "completion": " cause"
-    },
-    {
-        "completion": " serious"
-    },
-    {
-        "completion": " injury"
-    },
-    {
-        "completion": " or"
-    },
-    {
-        "completion": " death"
+        "completion": " demolition"
     },
     {
         "completion": ".\n"
@@ -282,76 +249,19 @@
         "completion": " speaker"
     },
     {
-        "completion": " discusses"
+        "completion": " emphas"
+    },
+    {
+        "completion": "izes"
     },
     {
         "completion": " the"
     },
     {
-        "completion": " use"
+        "completion": " importance"
     },
     {
         "completion": " of"
-    },
-    {
-        "completion": " grav"
-    },
-    {
-        "completion": "itational"
-    },
-    {
-        "completion": " potential"
-    },
-    {
-        "completion": " energy"
-    },
-    {
-        "completion": " to"
-    },
-    {
-        "completion": " convert"
-    },
-    {
-        "completion": " into"
-    },
-    {
-        "completion": " kin"
-    },
-    {
-        "completion": "etic"
-    },
-    {
-        "completion": " energy"
-    },
-    {
-        "completion": " for"
-    },
-    {
-        "completion": " demolition"
-    },
-    {
-        "completion": " purposes"
-    },
-    {
-        "completion": ".\n"
-    },
-    {
-        "completion": "5"
-    },
-    {
-        "completion": "."
-    },
-    {
-        "completion": " The"
-    },
-    {
-        "completion": " speaker"
-    },
-    {
-        "completion": " emphas"
-    },
-    {
-        "completion": "izes"
     },
     {
         "completion": " the"
@@ -375,19 +285,25 @@
         "completion": " the"
     },
     {
-        "completion": " principle"
+        "completion": " potential"
     },
     {
-        "completion": " that"
+        "completion": " risk"
     },
     {
-        "completion": " an"
+        "completion": " of"
     },
     {
-        "completion": " object"
+        "completion": " releasing"
     },
     {
-        "completion": " released"
+        "completion": " a"
+    },
+    {
+        "completion": " pend"
+    },
+    {
+        "completion": "ulum"
     },
     {
         "completion": " from"
@@ -396,43 +312,13 @@
         "completion": " a"
     },
     {
-        "completion": " certain"
-    },
-    {
         "completion": " height"
-    },
-    {
-        "completion": " cannot"
-    },
-    {
-        "completion": " reach"
-    },
-    {
-        "completion": " a"
-    },
-    {
-        "completion": " higher"
-    },
-    {
-        "completion": " point"
-    },
-    {
-        "completion": " without"
-    },
-    {
-        "completion": " additional"
-    },
-    {
-        "completion": " initial"
-    },
-    {
-        "completion": " speed"
     },
     {
         "completion": ".\n"
     },
     {
-        "completion": "6"
+        "completion": "5"
     },
     {
         "completion": "."
@@ -477,34 +363,10 @@
         "completion": " height"
     },
     {
-        "completion": " and"
+        "completion": " to"
     },
     {
-        "completion": " ensuring"
-    },
-    {
-        "completion": " it"
-    },
-    {
-        "completion": " does"
-    },
-    {
-        "completion": " not"
-    },
-    {
-        "completion": " crush"
-    },
-    {
-        "completion": " their"
-    },
-    {
-        "completion": " chin"
-    },
-    {
-        "completion": ","
-    },
-    {
-        "completion": " demonstrating"
+        "completion": " illustrate"
     },
     {
         "completion": " the"
@@ -513,19 +375,7 @@
         "completion": " principles"
     },
     {
-        "completion": " of"
-    },
-    {
-        "completion": " energy"
-    },
-    {
-        "completion": " conservation"
-    },
-    {
-        "completion": " and"
-    },
-    {
-        "completion": " safety"
+        "completion": " discussed"
     },
     {
         "completion": "."
