@@ -13,7 +13,7 @@ from aana.exceptions.io import (
 
 
 def get_video_metadata(video_url: str) -> VideoMetadata:
-    """Fetch videos metadata for a url.
+    """Fetch video's metadata for a url.
 
     Args:
         video_url (str): the video input url
