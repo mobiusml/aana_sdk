@@ -20,7 +20,7 @@ from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.exceptions.db import MediaIdAlreadyExistsException, UnfinishedVideoException
 from aana.exceptions.io import VideoTooLongException
 from aana.integrations.external.decord import generate_frames, get_video_duration
-from aana.integrations.external.yt_dlp import download_video
+from aana.integrations.external.yt_dlp import download_video, get_video_metadata
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio, generate_combined_timeline
 from aana.projects.chat_with_video.const import (
@@ -154,8 +154,22 @@ class IndexVideoEndpoint(Endpoint):
         if check_media_id_exist(media_id):
             raise MediaIdAlreadyExistsException(table_name="media", media_id=video)
 
+        video_duration = None
+        if video.url is not None:
+            video_metadata = get_video_metadata(video.url)
+            video_duration = video_metadata.duration
+
+        # precheck for max video length before actually download the video if possible
+        if video_duration and video_duration > max_video_len:
+            raise VideoTooLongException(
+                video=video,
+                video_len=video_duration,
+                max_len=max_video_len,
+            )
+
         video_obj: Video = await run_remote(download_video)(video_input=video)
-        video_duration = await run_remote(get_video_duration)(video=video_obj)
+        if video_duration is None:
+            video_duration = await run_remote(get_video_duration)(video=video_obj)
 
         if video_duration > max_video_len:
             raise VideoTooLongException(
@@ -168,7 +182,9 @@ class IndexVideoEndpoint(Endpoint):
         yield {
             "media_id": media_id,
             "metadata": VideoMetadata(
-                title=video_obj.title, description=video_obj.description
+                title=video_obj.title,
+                description=video_obj.description,
+                duration=video_duration,
             ),
         }
 
