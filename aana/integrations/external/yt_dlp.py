@@ -20,6 +20,9 @@ def get_video_metadata(video_url: str) -> VideoMetadata:
 
     Returns:
         metadata (VideoMetadata): the metadata of the video
+
+    Raises:
+        DownloadException: Request does not succeed.
     """
 
     ydl_options = {
@@ -51,6 +54,9 @@ def download_video(video_input: VideoInput | Video) -> Video:
 
     Returns:
         Video: the video object
+
+    Raises:
+        DownloadException: Request does not succeed.
     """
     if isinstance(video_input, Video):
         return video_input
