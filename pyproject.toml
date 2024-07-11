@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aana"
-version = "0.2.0"
+version = "0.2.1"
 description = "Multimodal SDK"
 authors = ["Mobius Labs GmbH <dev@mobiuslabs.com>"]
 homepage = "https://www.mobiuslabs.com"
