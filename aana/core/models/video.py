@@ -133,7 +133,9 @@ class VideoMetadata(BaseModel):
 
     title: str = Field(None, description="The title of the video.")
     description: str = Field(None, description="The description of the video.")
-    duration: float | None = Field(None, description="The duration of the video in seconds.")
+    duration: float | None = Field(
+        None, description="The duration of the video in seconds."
+    )
     model_config = ConfigDict(
         json_schema_extra={
             "description": "Metadata of a video.",
