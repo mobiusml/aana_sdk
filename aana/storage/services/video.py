@@ -392,5 +392,5 @@ def load_video_metadata(
         return VideoMetadata(
             title=video_entity.title,
             description=video_entity.description,
-            duration=video_entity.duration
+            duration=video_entity.duration,
         )
