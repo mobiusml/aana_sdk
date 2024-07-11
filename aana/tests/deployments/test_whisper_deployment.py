@@ -115,29 +115,30 @@ async def test_whisper_deployment(setup_whisper_deployment, audio_file):
     # Test transcribe_batch method
 
     # Test transcribe_in_chunks method: Note that the expected asr output is different
-    expected_batched_output_path = resources.path(
-        f"aana.tests.files.expected.whisper.{model_size}",
-        f"{audio_file_name}_batched.json",
-    )
-    assert (
-        expected_batched_output_path.exists()
-    ), f"Expected output not found: {expected_batched_output_path}"
-    with Path(expected_batched_output_path) as path, path.open() as f:
-        expected_output_batched = json.load(f)
+    # TODO: Update once batched whisper PR is merged
+    # expected_batched_output_path = resources.path(
+    #     f"aana.tests.files.expected.whisper.{model_size}",
+    #     f"{audio_file_name}_batched.json",
+    # )
+    # assert (
+    #     expected_batched_output_path.exists()
+    # ), f"Expected output not found: {expected_batched_output_path}"
+    # with Path(expected_batched_output_path) as path, path.open() as f:
+    #     expected_output_batched = json.load(f)
 
-    # Get expected vad segments
-    vad_path = resources.path(
-        "aana.tests.files.expected.vad", f"{audio_file_name}_vad.json"
-    )
-    assert vad_path.exists(), f"vad expected predictions not found: {vad_path}"
+    # # Get expected vad segments
+    # vad_path = resources.path(
+    #     "aana.tests.files.expected.vad", f"{audio_file_name}_vad.json"
+    # )
+    # assert vad_path.exists(), f"vad expected predictions not found: {vad_path}"
 
-    with Path(vad_path) as path, path.open() as f:
-        expected_output_vad = json.load(f)
+    # with Path(vad_path) as path, path.open() as f:
+    #     expected_output_vad = json.load(f)
 
-    final_input = [
-        VadSegment(time_interval=seg["time_interval"], segments=seg["segments"])
-        for seg in expected_output_vad["segments"]
-    ]
+    # final_input = [
+    #     VadSegment(time_interval=seg["time_interval"], segments=seg["segments"])
+    #     for seg in expected_output_vad["segments"]
+    # ]
 
     # batched_stream = handle.options(stream=True).transcribe_in_chunks.remote(
     #     audio=audio,

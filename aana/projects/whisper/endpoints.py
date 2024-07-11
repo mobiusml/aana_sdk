@@ -138,6 +138,7 @@ class TranscribeVideoEndpoint(Endpoint):
         yield {"transcription_id": transcription_record["transcription_id"]}
 
 
+# TODO: Update once batched whisper PR is merged
 # class TranscribeVideoInChunksEndpoint(Endpoint):
 #     """Transcribe video in chunks endpoint."""
 

@@ -3,21 +3,22 @@
         "media_id": "dQw4w9WgXcQ",
         "metadata": {
             "description": "The official video for \u201cNever Gonna Give You Up\u201d by Rick Astley. \n\nThe new album 'Are We There Yet?' is out now: Download here: https://RickAstley.lnk.to/AreWeThereYetFA/itunes\n\n\u201cNever Gonna Give You Up\u201d was a global smash on its release in July 1987, topping the charts in 25 countries including Rick\u2019s native UK and the US Billboard Hot 100.  It also won the Brit Award for Best single in 1988. Stock Aitken and Waterman wrote and produced the track which was the lead-off single and lead track from Rick\u2019s debut LP \u201cWhenever You Need Somebody\u201d.  The album was itself a UK number one and would go on to sell over 15 million copies worldwide.\n\nThe legendary video was directed by Simon West \u2013 who later went on to make Hollywood blockbusters such as Con Air, Lara Croft \u2013 Tomb Raider and The Expendables 2.  The video passed the 1bn YouTube views milestone on 28 July 2021.\n\nSubscribe to the official Rick Astley YouTube channel: https://RickAstley.lnk.to/YTSubID\n\nFollow Rick Astley:\nFacebook: https://RickAstley.lnk.to/FBFollowID \nTwitter: https://RickAstley.lnk.to/TwitterID \nInstagram: https://RickAstley.lnk.to/InstagramID \nWebsite: https://RickAstley.lnk.to/storeID \nTikTok: https://RickAstley.lnk.to/TikTokID\n\nListen to Rick Astley:\nSpotify: https://RickAstley.lnk.to/SpotifyID \nApple Music: https://RickAstley.lnk.to/AppleMusicID \nAmazon Music: https://RickAstley.lnk.to/AmazonMusicID \nDeezer: https://RickAstley.lnk.to/DeezerID \n\nLyrics:\nWe\u2019re no strangers to love\nYou know the rules and so do I\nA full commitment\u2019s what I\u2019m thinking of\nYou wouldn\u2019t get this from any other guy\n\nI just wanna tell you how I\u2019m feeling\nGotta make you understand\n\nNever gonna give you up\nNever gonna let you down\nNever gonna run around and desert you\nNever gonna make you cry\nNever gonna say goodbye\nNever gonna tell a lie and hurt you\n\nWe\u2019ve known each other for so long\nYour heart\u2019s been aching but you\u2019re too shy to say it\nInside we both know what\u2019s been going on\nWe know the game and we\u2019re gonna play it\n\nAnd if you ask me how I\u2019m feeling\nDon\u2019t tell me you\u2019re too blind to see\n\nNever gonna give you up\nNever gonna let you down\nNever gonna run around and desert you\nNever gonna make you cry\nNever gonna say goodbye\nNever gonna tell a lie and hurt you\n\n#RickAstley #NeverGonnaGiveYouUp #WheneverYouNeedSomebody #OfficialMusicVideo",
+            "duration": 212.0,
             "title": "Rick Astley - Never Gonna Give You Up (Official Music Video)"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.6239854156762731,
-                "no_speech_confidence": 0.4189453125,
+                "confidence": 0.6330303900837307,
+                "no_speech_confidence": 0.400634765625,
                 "text": " We're no strangers to love You know the rules, and so do I",
                 "time_interval": {
-                    "end": 26.88,
+                    "end": 27.0,
                     "start": 0.0
                 },
                 "words": []
@@ -30,16 +31,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8495449356404748,
-                "no_speech_confidence": 0.72900390625,
+                "confidence": 0.9189823096128727,
+                "no_speech_confidence": 0.79052734375,
                 "text": " I feel commitments while I'm thinking of You wouldn't get this from any other guy",
                 "time_interval": {
-                    "end": 34.879999999999995,
-                    "start": 26.88
+                    "end": 35.0,
+                    "start": 27.0
                 },
                 "words": []
             }
@@ -51,16 +52,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8495449356404748,
-                "no_speech_confidence": 0.72900390625,
+                "confidence": 0.9189823096128727,
+                "no_speech_confidence": 0.79052734375,
                 "text": " I just wanna tell you how I'm feeling Gotta make you understand",
                 "time_interval": {
-                    "end": 42.879999999999995,
-                    "start": 34.879999999999995
+                    "end": 43.0,
+                    "start": 35.0
                 },
                 "words": []
             }
@@ -72,16 +73,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8495449356404748,
-                "no_speech_confidence": 0.72900390625,
+                "confidence": 0.9189823096128727,
+                "no_speech_confidence": 0.79052734375,
                 "text": " Never gonna give you up Never gonna let you down",
                 "time_interval": {
-                    "end": 46.879999999999995,
-                    "start": 42.879999999999995
+                    "end": 47.0,
+                    "start": 43.0
                 },
                 "words": []
             }
@@ -93,16 +94,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8495449356404748,
-                "no_speech_confidence": 0.72900390625,
+                "confidence": 0.9189823096128727,
+                "no_speech_confidence": 0.79052734375,
                 "text": " Never gonna run around and desert you Never gonna make you cry",
                 "time_interval": {
-                    "end": 52.879999999999995,
-                    "start": 46.879999999999995
+                    "end": 53.0,
+                    "start": 47.0
                 },
                 "words": []
             }
@@ -114,16 +115,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9057417808939775,
-                "no_speech_confidence": 0.6240234375,
+                "confidence": 0.9144708182643342,
+                "no_speech_confidence": 0.7314453125,
                 "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
                 "time_interval": {
-                    "end": 58.88,
-                    "start": 52.88
+                    "end": 60.0,
+                    "start": 53.0
                 },
                 "words": []
             }
@@ -135,79 +136,100 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9057417808939775,
-                "no_speech_confidence": 0.6240234375,
-                "text": " We've known each other for so long Your heart's been aching but you're too shy to say it",
+                "confidence": 0.9144708182643342,
+                "no_speech_confidence": 0.7314453125,
+                "text": " We've known each other for so long Your heart's been aching but",
                 "time_interval": {
-                    "end": 68.88,
-                    "start": 58.88
+                    "end": 67.0,
+                    "start": 60.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " We've known each other for so long Your heart's been aching but you're too shy to say it"
+            "text": " We've known each other for so long Your heart's been aching but"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9057417808939775,
-                "no_speech_confidence": 0.6240234375,
-                "text": " Inside we both know what's been going on We know the game and we're gonna play it",
+                "confidence": 0.9144708182643342,
+                "no_speech_confidence": 0.7314453125,
+                "text": " You're too shy to say it Inside we both know what's been going on",
                 "time_interval": {
-                    "end": 76.88,
-                    "start": 68.88
+                    "end": 73.0,
+                    "start": 67.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " Inside we both know what's been going on We know the game and we're gonna play it"
+            "text": " You're too shy to say it Inside we both know what's been going on"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9672220991112651,
-                "no_speech_confidence": 0.845703125,
-                "text": " And if you ask me how I'm feeling Don't tell me you're too blind to see",
+                "confidence": 0.9144708182643342,
+                "no_speech_confidence": 0.7314453125,
+                "text": " We know the game and we're gonna play it And if you ask me how I'm feeling",
                 "time_interval": {
-                    "end": 84.88,
-                    "start": 76.88
+                    "end": 82.0,
+                    "start": 73.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " And if you ask me how I'm feeling Don't tell me you're too blind to see"
+            "text": " We know the game and we're gonna play it And if you ask me how I'm feeling"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9672220991112651,
-                "no_speech_confidence": 0.845703125,
+                "confidence": 0.9631716150382285,
+                "no_speech_confidence": 0.57763671875,
+                "text": " Don't tell me you're too blind to see",
+                "time_interval": {
+                    "end": 85.0,
+                    "start": 82.0
+                },
+                "words": []
+            }
+        ],
+        "transcription": {
+            "text": " Don't tell me you're too blind to see"
+        }
+    },
+    {
+        "info": {
+            "language": "en",
+            "language_confidence": 0.64453125
+        },
+        "segments": [
+            {
+                "confidence": 0.9631716150382285,
+                "no_speech_confidence": 0.57763671875,
                 "text": " Never gonna give you up Never gonna let you down",
                 "time_interval": {
-                    "end": 88.88,
-                    "start": 84.88
+                    "end": 89.0,
+                    "start": 85.0
                 },
                 "words": []
             }
@@ -219,16 +241,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9672220991112651,
-                "no_speech_confidence": 0.845703125,
+                "confidence": 0.9631716150382285,
+                "no_speech_confidence": 0.57763671875,
                 "text": " Never gonna run around and desert you Never gonna make you cry",
                 "time_interval": {
-                    "end": 94.88,
-                    "start": 88.88
+                    "end": 95.0,
+                    "start": 89.0
                 },
                 "words": []
             }
@@ -240,16 +262,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9672220991112651,
-                "no_speech_confidence": 0.845703125,
+                "confidence": 0.9631716150382285,
+                "no_speech_confidence": 0.57763671875,
                 "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
                 "time_interval": {
-                    "end": 100.88,
-                    "start": 94.88
+                    "end": 102.0,
+                    "start": 95.0
                 },
                 "words": []
             }
@@ -261,16 +283,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9205151652477742,
-                "no_speech_confidence": 0.94921875,
+                "confidence": 0.9631716150382285,
+                "no_speech_confidence": 0.57763671875,
                 "text": " Never gonna give you up Never gonna let you down",
                 "time_interval": {
-                    "end": 104.88,
-                    "start": 100.88
+                    "end": 106.0,
+                    "start": 102.0
                 },
                 "words": []
             }
@@ -282,16 +304,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9205151652477742,
-                "no_speech_confidence": 0.94921875,
+                "confidence": 0.9389239121041585,
+                "no_speech_confidence": 0.92138671875,
                 "text": " Never gonna run around and desert you Never gonna make you cry",
                 "time_interval": {
-                    "end": 110.88,
-                    "start": 104.88
+                    "end": 112.0,
+                    "start": 106.0
                 },
                 "words": []
             }
@@ -303,16 +325,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9205151652477742,
-                "no_speech_confidence": 0.94921875,
+                "confidence": 0.9389239121041585,
+                "no_speech_confidence": 0.92138671875,
                 "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
                 "time_interval": {
-                    "end": 116.88,
-                    "start": 110.88
+                    "end": 119.0,
+                    "start": 112.0
                 },
                 "words": []
             }
@@ -324,16 +346,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8909856705276408,
-                "no_speech_confidence": 0.6396484375,
+                "confidence": 0.8698545987420119,
+                "no_speech_confidence": 0.2310791015625,
                 "text": " Never gonna give you up Never gonna give you up",
                 "time_interval": {
-                    "end": 120.88,
-                    "start": 116.88
+                    "end": 136.0,
+                    "start": 119.0
                 },
                 "words": []
             }
@@ -345,142 +367,100 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8909856705276408,
-                "no_speech_confidence": 0.6396484375,
-                "text": " Never gonna give you up Never gonna give you up",
+                "confidence": 0.8698545987420119,
+                "no_speech_confidence": 0.2310791015625,
+                "text": " We've known each other for so long Your heart's been aching but",
                 "time_interval": {
-                    "end": 124.88,
-                    "start": 120.88
+                    "end": 142.0,
+                    "start": 136.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " Never gonna give you up Never gonna give you up"
+            "text": " We've known each other for so long Your heart's been aching but"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8909856705276408,
-                "no_speech_confidence": 0.6396484375,
-                "text": " We've known each other for so long Your heart's been aching but you're too shy to say it",
+                "confidence": 0.8698545987420119,
+                "no_speech_confidence": 0.2310791015625,
+                "text": " You're too shy to say it Inside we both know what's been going on",
                 "time_interval": {
-                    "end": 132.88,
-                    "start": 124.88
+                    "end": 148.0,
+                    "start": 142.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " We've known each other for so long Your heart's been aching but you're too shy to say it"
+            "text": " You're too shy to say it Inside we both know what's been going on"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.8909856705276408,
-                "no_speech_confidence": 0.6396484375,
-                "text": " Inside we both know what's been going on We know the game and we're gonna play it",
+                "confidence": 0.9351859056075252,
+                "no_speech_confidence": 0.233154296875,
+                "text": " We know the game and we're gonna play it I just wanna tell you how I'm feeling",
                 "time_interval": {
-                    "end": 140.88,
-                    "start": 132.88
+                    "end": 158.0,
+                    "start": 149.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " Inside we both know what's been going on We know the game and we're gonna play it"
+            "text": " We know the game and we're gonna play it I just wanna tell you how I'm feeling"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9689177808139993,
-                "no_speech_confidence": 0.72998046875,
-                "text": " Your heart's been aching but you're too shy to say it",
+                "confidence": 0.9351859056075252,
+                "no_speech_confidence": 0.233154296875,
+                "text": " Gotta make you understand",
                 "time_interval": {
-                    "end": 144.88,
-                    "start": 140.88
+                    "end": 161.0,
+                    "start": 158.0
                 },
                 "words": []
             }
         ],
         "transcription": {
-            "text": " Your heart's been aching but you're too shy to say it"
+            "text": " Gotta make you understand"
         }
     },
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9689177808139993,
-                "no_speech_confidence": 0.72998046875,
-                "text": " Inside we both know what's been going on We know the game and we're gonna play it",
-                "time_interval": {
-                    "end": 152.88,
-                    "start": 144.88
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " Inside we both know what's been going on We know the game and we're gonna play it"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60546875
-        },
-        "segments": [
-            {
-                "confidence": 0.9689177808139993,
-                "no_speech_confidence": 0.72998046875,
-                "text": " I just wanna tell you how I'm feeling Gotta make you understand",
-                "time_interval": {
-                    "end": 160.88,
-                    "start": 152.88
-                },
-                "words": []
-            }
-        ],
-        "transcription": {
-            "text": " I just wanna tell you how I'm feeling Gotta make you understand"
-        }
-    },
-    {
-        "info": {
-            "language": "en",
-            "language_confidence": 0.60546875
-        },
-        "segments": [
-            {
-                "confidence": 0.9689177808139993,
-                "no_speech_confidence": 0.72998046875,
+                "confidence": 0.9351859056075252,
+                "no_speech_confidence": 0.233154296875,
                 "text": " Never gonna give you up Never gonna let you down",
                 "time_interval": {
-                    "end": 164.88,
-                    "start": 160.88
+                    "end": 165.0,
+                    "start": 161.0
                 },
                 "words": []
             }
@@ -492,16 +472,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9628316751972309,
-                "no_speech_confidence": 0.8984375,
+                "confidence": 0.9351859056075252,
+                "no_speech_confidence": 0.233154296875,
                 "text": " Never gonna run around and desert you Never gonna make you cry",
                 "time_interval": {
-                    "end": 170.88,
-                    "start": 164.88
+                    "end": 171.0,
+                    "start": 165.0
                 },
                 "words": []
             }
@@ -513,16 +493,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9628316751972309,
-                "no_speech_confidence": 0.8984375,
+                "confidence": 0.951216154220053,
+                "no_speech_confidence": 0.83154296875,
                 "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
                 "time_interval": {
-                    "end": 176.88,
-                    "start": 170.88
+                    "end": 177.0,
+                    "start": 171.0
                 },
                 "words": []
             }
@@ -534,16 +514,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9628316751972309,
-                "no_speech_confidence": 0.8984375,
+                "confidence": 0.951216154220053,
+                "no_speech_confidence": 0.83154296875,
                 "text": " Never gonna give you up Never gonna let you down",
                 "time_interval": {
-                    "end": 181.88,
-                    "start": 176.88
+                    "end": 182.0,
+                    "start": 177.0
                 },
                 "words": []
             }
@@ -555,16 +535,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9628316751972309,
-                "no_speech_confidence": 0.8984375,
+                "confidence": 0.951216154220053,
+                "no_speech_confidence": 0.83154296875,
                 "text": " Never gonna run around and desert you Never gonna make you cry",
                 "time_interval": {
-                    "end": 187.88,
-                    "start": 181.88
+                    "end": 188.0,
+                    "start": 182.0
                 },
                 "words": []
             }
@@ -576,16 +556,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9266240156885811,
-                "no_speech_confidence": 0.8447265625,
+                "confidence": 0.951216154220053,
+                "no_speech_confidence": 0.83154296875,
                 "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
                 "time_interval": {
-                    "end": 193.88,
-                    "start": 187.88
+                    "end": 194.0,
+                    "start": 188.0
                 },
                 "words": []
             }
@@ -597,16 +577,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9266240156885811,
-                "no_speech_confidence": 0.8447265625,
+                "confidence": 0.9367764578362818,
+                "no_speech_confidence": 0.8935546875,
                 "text": " Never gonna give you up Never gonna let you down",
                 "time_interval": {
-                    "end": 198.88,
-                    "start": 193.88
+                    "end": 199.0,
+                    "start": 194.0
                 },
                 "words": []
             }
@@ -618,16 +598,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9266240156885811,
-                "no_speech_confidence": 0.8447265625,
+                "confidence": 0.9367764578362818,
+                "no_speech_confidence": 0.8935546875,
                 "text": " Never gonna run around and desert you Never gonna make you cry",
                 "time_interval": {
-                    "end": 204.88,
-                    "start": 198.88
+                    "end": 205.0,
+                    "start": 199.0
                 },
                 "words": []
             }
@@ -639,16 +619,16 @@
     {
         "info": {
             "language": "en",
-            "language_confidence": 0.60546875
+            "language_confidence": 0.64453125
         },
         "segments": [
             {
-                "confidence": 0.9266240156885811,
-                "no_speech_confidence": 0.8447265625,
+                "confidence": 0.9367764578362818,
+                "no_speech_confidence": 0.8935546875,
                 "text": " Never gonna say goodbye Never gonna tell a lie and hurt you",
                 "time_interval": {
-                    "end": 210.88,
-                    "start": 204.88
+                    "end": 211.0,
+                    "start": 205.0
                 },
                 "words": []
             }
@@ -660,351 +640,195 @@
     {
         "captions": [
             "a black background with a white background",
+            "a man in a suit singing into a microphone",
             "a man in a suit is singing into a microphone",
-            "a man in a suit is singing into a microphone",
-            "a person is holding a black jacket and a white shirt",
-            "a man in a suit is singing into a microphone",
-            "a man is smiling and wearing a white jacket",
-            "a man in a white coat is standing in front of a brick wall",
-            "a man in a white coat is standing in front of a brick wall"
+            "a woman in a black dress standing in front of a window",
+            "a man wearing sunglasses standing in front of a chain link fence",
+            "a woman in sunglasses is standing in front of a brick wall",
+            "a woman in a white dress and sunglasses is standing in front of a brick wall",
+            "a woman with blonde hair standing in front of a white wall"
         ],
         "timestamps": [
             0.0,
-            0.07999999821186066,
-            0.6800000071525574,
-            2.0,
+            2.440000057220459,
             5.320000171661377,
-            7.440000057220459,
-            7.960000038146973,
-            8.760000228881836
-        ]
-    },
-    {
-        "captions": [
-            "a blonde woman with a yellow bow in her hair",
-            "a woman with blonde hair standing in front of a window",
-            "a man wearing sunglasses standing in front of a chain link fence",
-            "a man in a blue shirt and sunglasses is walking",
-            "a woman in a white dress and sunglasses is standing in front of a white brick wall",
-            "a woman with blonde hair standing in front of a white wall",
-            "a woman with long blonde hair standing in front of a white wall",
-            "a man in a trench coat is standing in front of a brick wall"
-        ],
-        "timestamps": [
-            9.4399995803833,
             10.079999923706055,
             11.279999732971191,
-            12.039999961853027,
+            14.84000015258789,
             15.0,
-            17.399999618530273,
-            18.040000915527344,
-            18.239999771118164
+            17.399999618530273
         ]
     },
     {
         "captions": [
+            "a woman with long blonde hair standing in front of a white wall",
             "a man in sunglasses and a blue shirt is walking",
-            "a young man wearing sunglasses and a blue shirt",
             "a man wearing sunglasses and a blue shirt",
-            "a man in a blue jumpsuit and sunglasses walking by a fence",
-            "a young man wearing sunglasses and a blue shirt",
-            "the shadow of a person standing on the ground",
+            "a man in a blue jumpsuit and sunglasses is walking by a fence",
             "a shadow of a person standing on a sidewalk",
-            "a man in a blue jumpsuit standing next to a fence"
+            "a man standing in an alleyway with a brick wall behind him",
+            "a woman in a dress and sunglasses walking by a brick wall",
+            "a woman in a white dress and sunglasses is walking by a brick wall"
         ],
         "timestamps": [
+            18.040000915527344,
             24.200000762939453,
-            24.520000457763672,
             26.600000381469727,
             27.799999237060547,
-            28.959999084472656,
-            30.440000534057617,
             31.040000915527344,
-            32.0
-        ]
-    },
-    {
-        "captions": [
-            "a man in a white jacket is making a face",
-            "a man standing in an alleyway with a brick wall behind him",
-            "a man in a white jacket is singing",
-            "a young man wearing sunglasses and a blue shirt",
-            "a woman in a dress and sunglasses walking by a brick wall",
-            "a woman in a white dress and sunglasses is standing in front of a brick wall",
-            "a woman with long blonde hair and sunglasses standing in front of a brick wall",
-            "a man in sunglasses is standing next to a fence"
-        ],
-        "timestamps": [
-            33.20000076293945,
             34.7599983215332,
-            36.31999969482422,
-            37.720001220703125,
             38.439998626708984,
-            38.68000030517578,
-            39.599998474121094,
-            42.119998931884766
+            38.68000030517578
         ]
     },
     {
         "captions": [
-            "a large room with tables and chairs in front of a large window",
-            "a man in a suit is singing into a microphone",
+            "a man in sunglasses is standing next to a fence",
             "a man with a microphone in front of a window",
-            "david bowie - starman",
             "a man in a white shirt and tie standing behind a bar",
             "a man in a white shirt and suspenders sitting at a bar",
-            "a man in a suit singing into a microphone",
-            "a woman with blonde hair standing in front of a wall"
+            "a man in suspenders holding a glass of wine",
+            "a woman in a black dress is dancing",
+            "a man in a white coat standing in front of a brick wall",
+            "a man with a white shirt and black jacket"
         ],
         "timestamps": [
-            42.31999969482422,
-            43.68000030517578,
+            42.119998931884766,
             47.84000015258789,
-            48.040000915527344,
             51.15999984741211,
             53.439998626708984,
-            57.08000183105469,
-            59.720001220703125
-        ]
-    },
-    {
-        "captions": [
-            "a man in a trench coat standing in front of a brick wall",
-            "a man with his eyes closed singing in front of a brick wall",
-            "a man with a white shirt and black jacket",
-            "a man in a white jacket standing in front of a brick wall",
-            "a man in a trench coat standing in front of a brick wall",
-            "a man in a trench coat is walking in the street",
-            "a man in a white jacket is talking into the camera",
-            "a man in a white shirt and black jacket"
-        ],
-        "timestamps": [
+            55.560001373291016,
+            59.720001220703125,
             60.7599983215332,
-            62.15999984741211,
-            63.15999984741211,
-            64.31999969482422,
-            66.80000305175781,
-            68.04000091552734,
-            69.12000274658203,
-            70.04000091552734
+            63.15999984741211
         ]
     },
     {
         "captions": [
+            "a man in a white shirt and black jacket",
             "three women are standing on chairs in front of a large window",
-            "a man in suspenders holding a glass",
+            "a man in suspenders is standing in front of a counter",
             "three women stand in front of a large window",
-            "david bowie - starman",
-            "a man in a white shirt is holding a glass",
-            "a man standing in front of a wall with wine glasses",
             "a man in a suit is singing into a microphone",
-            "a man in a suit is singing into a microphone"
+            "a man in a trench coat standing in front of a brick wall",
+            "a man standing in an alleyway with a light on",
+            "a group of people standing in front of chairs"
         ],
         "timestamps": [
+            70.04000091552734,
             72.5999984741211,
             74.55999755859375,
             76.23999786376953,
-            77.23999786376953,
-            78.31999969482422,
-            79.72000122070312,
-            80.23999786376953,
-            80.87999725341797
-        ]
-    },
-    {
-        "captions": [
-            "a man in a white coat standing in front of a brick wall",
-            "a man in a white coat is standing in front of a brick wall",
-            "a man in a trench coat standing in front of a brick wall",
-            "a man in a white jacket standing in front of a brick wall",
-            "a man in a white jacket is singing",
-            "a group of people standing in front of chairs",
-            "a man singing into a microphone while wearing a suit",
-            "a man singing into a microphone in front of a window"
-        ],
-        "timestamps": [
-            82.4000015258789,
-            84.55999755859375,
+            80.87999725341797,
             86.08000183105469,
-            86.16000366210938,
-            88.08000183105469,
-            90.08000183105469,
-            91.4800033569336,
-            92.44000244140625
+            87.36000061035156,
+            90.08000183105469
         ]
     },
     {
         "captions": [
-            "a man and woman dancing in front of a large window",
-            "a man is standing behind a bar with a glass",
+            "a man singing into a microphone in front of a window",
+            "a man is standing behind a bar with a large mirror",
             "two people are standing on stage in front of tables",
-            "a man in a suit is singing into a microphone",
             "a man singing into a microphone with his eyes closed",
             "a man in a striped shirt and jacket singing into a microphone",
             "a man in a white shirt and suspenders standing behind a bar",
-            "a man is standing behind a bar with a glass"
+            "a man is standing behind a bar with a glass",
+            "a man with red hair is smiling while holding a microphone"
         ],
         "timestamps": [
-            93.08000183105469,
+            92.44000244140625,
             93.95999908447266,
             95.72000122070312,
-            96.55999755859375,
             98.87999725341797,
             100.08000183105469,
             101.4000015258789,
-            102.68000030517578
+            102.68000030517578,
+            104.23999786376953
         ]
     },
     {
         "captions": [
             "a man with red hair singing into a microphone",
             "a shadow of a person standing on a sidewalk",
-            "a man with a white shirt and a blue tie",
-            "a woman wearing sunglasses stands in front of a white wall",
+            "a woman wearing sunglasses standing in front of a white wall",
             "a man wearing sunglasses standing in front of a white wall",
-            "a woman with blonde hair standing in front of a white wall",
-            "a man's feet in black shoes standing on a sidewalk",
-            "a man in a white t - shirt and jeans is standing in front of a brick wall"
+            "a blonde woman is standing in front of a white wall",
+            "a man in a white t - shirt and jeans is standing in front of a brick wall",
+            "david bowie - the man in the mirror - david bowie stock videos & royalty-free footage",
+            "a man walking under an arched tunnel at night"
         ],
         "timestamps": [
             105.68000030517578,
             110.27999877929688,
-            112.76000213623047,
             114.76000213623047,
             116.63999938964844,
             118.19999694824219,
-            118.83999633789062,
-            119.83999633789062
-        ]
-    },
-    {
-        "captions": [
-            "a man in blue jeans and a white shirt is walking",
-            "david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie",
-            "a man walking under an arched tunnel at night",
-            "a man in shorts is jumping over a fence",
-            "a young man wearing sunglasses and a blue shirt",
-            "a shadow of a person standing on a concrete floor",
-            "a shadow of a person standing on a sidewalk",
-            "a shadow of a person holding a cell phone"
-        ],
-        "timestamps": [
-            120.72000122070312,
+            119.83999633789062,
             121.72000122070312,
-            123.08000183105469,
-            128.36000061035156,
-            128.44000244140625,
-            130.1999969482422,
-            132.1999969482422,
-            134.27999877929688
+            123.08000183105469
         ]
     },
     {
         "captions": [
+            "a man in shorts is jumping over a fence",
+            "a shadow of a person standing on a concrete floor",
             "a shadow of a person holding a cell phone",
-            "a man standing in front of a large window with a woman and two girls",
-            "a man in a striped shirt and jacket singing",
-            "a man in a white jacket singing into a microphone",
-            "a man in a white coat standing in front of a brick wall",
-            "a woman in a black leotard doing a handstand in front of a brick wall",
-            "a woman is walking through an archway in a dark room",
-            "a man in a white jacket is singing into a microphone"
-        ],
-        "timestamps": [
-            135.1999969482422,
-            140.1999969482422,
-            141.16000366210938,
-            144.0,
-            144.8000030517578,
-            145.55999755859375,
-            147.0,
-            147.1199951171875
-        ]
-    },
-    {
-        "captions": [
-            "david bowie - starman",
+            "a man with red hair singing into a microphone",
+            "a man standing in front of a large window with a woman and two men",
+            "a man is walking through an archway at night",
             "a man in a trench coat is standing in an alley",
-            "a man with a white jacket and a blue shirt",
-            "a man with his mouth open singing in front of a brick wall",
-            "a man in a white coat is standing in front of a brick wall",
-            "a man in a trench coat standing in front of a brick wall",
-            "a man standing in front of a brick wall",
-            "a man in a white shirt is jumping in the air"
+            "a man in a trench coat standing in front of a brick wall"
         ],
         "timestamps": [
-            150.67999267578125,
+            128.36000061035156,
+            132.1999969482422,
+            135.1999969482422,
+            139.0399932861328,
+            140.1999969482422,
+            147.0,
             153.24000549316406,
-            154.55999755859375,
-            158.8000030517578,
-            159.60000610351562,
-            159.9199981689453,
-            161.36000061035156,
-            165.72000122070312
+            159.9199981689453
         ]
     },
     {
         "captions": [
             "a man is doing a flip in an old building",
-            "a man in white shirt doing a handstand in front of a brick wall",
-            "a woman in a white top is smiling",
             "david bowie - starman",
-            "a woman with blonde hair and blue eyes",
-            "a woman with a white headband sitting in front of a brick wall",
-            "a man is dancing in the street",
-            "a man in white shirt and pants is dancing"
+            "a woman with blonde hair and a white top",
+            "david bowie - the man who sold the world - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie - david bowie -",
+            "a man and woman are dancing on a stage",
+            "david bowie - starman",
+            "three women in black outfits are dancing on a stage",
+            "a man in a suit singing into a microphone"
         ],
         "timestamps": [
             166.9199981689453,
-            171.67999267578125,
-            172.44000244140625,
             173.1999969482422,
-            174.67999267578125,
-            175.24000549316406,
-            175.32000732421875,
-            176.52000427246094
-        ]
-    },
-    {
-        "captions": [
-            "a man is dancing in front of a brick wall",
-            "david bowie - the man who sold the world - david bowie stock videos & royalty-free footage",
-            "a man and woman are dancing on a stage",
-            "david bowie - starman",
-            "a man in a white shirt is standing next to a bar",
-            "three women in black outfits are dancing on a stage",
-            "a man in a striped shirt singing into a microphone",
-            "a man in a trench coat standing in an alley"
-        ],
-        "timestamps": [
-            178.47999572753906,
+            174.75999450683594,
             178.8800048828125,
             180.63999938964844,
             182.55999755859375,
-            182.67999267578125,
             183.9600067138672,
-            186.67999267578125,
-            189.55999755859375
+            186.72000122070312
         ]
     },
     {
         "captions": [
-            "a man in a striped shirt singing into a microphone",
+            "a man in a trench coat standing in an alley",
+            "a man in striped shirt singing into a microphone",
             "a man in a suit is singing into a microphone",
-            "a man in a white coat is standing in front of a brick wall",
-            "a man singing into a microphone in front of a window",
-            "a man in a white jacket and black shirt",
-            "a man in a white shirt and black turtle neck",
-            "a man with a white shirt and black tie"
+            "a man in a white jacket is standing in front of a brick wall",
+            "a man with a white shirt and black tie",
+            "a black background with a white light on it"
         ],
         "timestamps": [
+            189.55999755859375,
             190.75999450683594,
             195.16000366210938,
-            195.24000549316406,
-            197.16000366210938,
             200.63999938964844,
-            203.1999969482422,
-            205.75999450683594
+            205.75999450683594,
+            211.60000610351562
         ]
     },
     {
@@ -1078,64 +902,7 @@
             67,
             68,
             69,
-            70,
-            71,
-            72,
-            73,
-            74,
-            75,
-            76,
-            77,
-            78,
-            79,
-            80,
-            81,
-            82,
-            83,
-            84,
-            85,
-            86,
-            87,
-            88,
-            89,
-            90,
-            91,
-            92,
-            93,
-            94,
-            95,
-            96,
-            97,
-            98,
-            99,
-            100,
-            101,
-            102,
-            103,
-            104,
-            105,
-            106,
-            107,
-            108,
-            109,
-            110,
-            111,
-            112,
-            113,
-            114,
-            115,
-            116,
-            117,
-            118,
-            119,
-            120,
-            121,
-            122,
-            123,
-            124,
-            125,
-            126,
-            127
+            70
         ],
         "transcription_id": 1
     }

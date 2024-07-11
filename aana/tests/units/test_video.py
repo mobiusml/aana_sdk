@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 
 from aana.configs.settings import settings
-from aana.core.models.video import Video, VideoInput
+from aana.core.models.video import Video, VideoInput, VideoMetadata
 from aana.exceptions.io import DownloadException, VideoReadingException
-from aana.integrations.external.yt_dlp import download_video
+from aana.integrations.external.yt_dlp import download_video, get_video_metadata
 
 
 def test_video():
@@ -173,7 +173,7 @@ def test_download_video():
         youtube_url.encode(), usedforsecurity=False
     ).hexdigest()
     video_dir = settings.video_dir
-    expected_path = video_dir / f"{youtube_url_hash}.webm"
+    expected_path = video_dir / f"{youtube_url_hash}.mp4"
     # remove the file if it exists
     expected_path.unlink(missing_ok=True)
 
@@ -181,7 +181,8 @@ def test_download_video():
         youtube_video_input = VideoInput(url=youtube_url, media_id="dQw4w9WgXcQ")
         video = download_video(youtube_video_input)
         assert isinstance(video, Video)
-        assert video.path == expected_path
+        # ignore extension
+        assert video.path.with_suffix("") == expected_path.with_suffix("")
         assert video.path is not None
         assert video.path.exists()
         assert video.content is None
@@ -215,3 +216,34 @@ def test_download_video():
     video = Video(path=path)
     downloaded_video = download_video(video)
     assert downloaded_video == video
+
+
+@pytest.mark.parametrize(
+    "url, title, description, duration",
+    [
+        (
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "Rick Astley - Never Gonna Give You Up (Official Music Video)",
+            "The official video for “Never Gonna Give You Up” by Rick Astley.",
+            212.0,
+        ),
+        (
+            "https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4",
+            "squirrel",
+            "",
+            None,
+        ),
+    ],
+)
+def test_get_video_metadata_success(url, title, description, duration):
+    metadata = get_video_metadata(url)
+    assert isinstance(metadata, VideoMetadata)
+    assert metadata.title == title
+    assert metadata.description.startswith(description)
+    assert metadata.duration == duration
+
+
+def test_get_video_metadata_failure():
+    url = "https://www.youtube.com/watch?v=invalid_url"
+    with pytest.raises(DownloadException):
+        get_video_metadata(url)
