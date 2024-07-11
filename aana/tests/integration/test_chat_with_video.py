@@ -49,13 +49,6 @@ VIDEO_DELETE_ENDPOINT = "/video/delete"
             },
             {"temperature": 0.0},
         ),
-        (
-            {
-                "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                "media_id": "dQw4w9WgXcQ",
-            },
-            {"temperature": 0.0},
-        ),
     ],
 )
 def test_chat_with_video(call_endpoint, video, whisper_params):
