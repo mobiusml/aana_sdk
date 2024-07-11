@@ -182,7 +182,9 @@ class IndexVideoEndpoint(Endpoint):
         yield {
             "media_id": media_id,
             "metadata": VideoMetadata(
-                title=video_obj.title, description=video_obj.description, duration=video_duration
+                title=video_obj.title,
+                description=video_obj.description,
+                duration=video_duration,
             ),
         }
 

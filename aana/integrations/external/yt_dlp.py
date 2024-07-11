@@ -21,7 +21,7 @@ def get_video_metadata(video_url: str) -> VideoMetadata:
     Returns:
         metadata (VideoMetadata): the metadata of the video
     """
-    
+
     ydl_options = {
         "extract_flat": True,
         "hls_prefer_native": True,
@@ -36,7 +36,7 @@ def get_video_metadata(video_url: str) -> VideoMetadata:
             return VideoMetadata(
                 title=title,
                 description=description,
-                duration= duration,
+                duration=duration,
             )
     except DownloadError as e:
         error_message = e.msg.split(";")[0]
