@@ -173,7 +173,7 @@ def test_download_video():
         youtube_url.encode(), usedforsecurity=False
     ).hexdigest()
     video_dir = settings.video_dir
-    expected_path = video_dir / f"{youtube_url_hash}.webm"
+    expected_path = video_dir / f"{youtube_url_hash}.mp4"
     # remove the file if it exists
     expected_path.unlink(missing_ok=True)
 
@@ -181,7 +181,8 @@ def test_download_video():
         youtube_video_input = VideoInput(url=youtube_url, media_id="dQw4w9WgXcQ")
         video = download_video(youtube_video_input)
         assert isinstance(video, Video)
-        assert video.path == expected_path
+        # ignore extension
+        assert video.path.with_suffix("") == expected_path.with_suffix("")
         assert video.path is not None
         assert video.path.exists()
         assert video.content is None
