@@ -6,25 +6,20 @@ import yt_dlp
 from yt_dlp.utils import DownloadError
 
 from aana.configs.settings import settings
-from aana.core.models.video import Video, VideoInput
+from aana.core.models.video import Video, VideoInput, VideoMetadata
 from aana.exceptions.io import (
     DownloadException,
 )
 
-class VideoInfo(TypedDict):
-    """Represents a video title, description and duration."""
-    title: str
-    description: str
-    duration: float
 
-def get_video_metadata(video_url: str) -> VideoInfo:
+def get_video_metadata(video_url: str) -> VideoMetadata:
     """Fetch videos metadata for a url.
 
     Args:
         video_url (str): the video input url
 
     Returns:
-        dict: the video metadata
+        metadata (VideoMetadata): the metadata of the video
     """
     
     ydl_options = {
@@ -38,7 +33,7 @@ def get_video_metadata(video_url: str) -> VideoInfo:
             title = info.get("title", "")
             description = info.get("description", "")
             duration = info.get("duration")
-            return VideoInfo(
+            return VideoMetadata(
                 title=title,
                 description=description,
                 duration= duration,

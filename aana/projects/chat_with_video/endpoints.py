@@ -156,9 +156,10 @@ class IndexVideoEndpoint(Endpoint):
 
         video_duration = None
         if video.url is not None:
-            video_info = get_video_metadata(video.url)
-            video_duration = video_info.get("duration")
-        
+            video_metadata = get_video_metadata(video.url)
+            video_duration = video_metadata.duration
+
+        # precheck for max video length before actually download the video if possible
         if video_duration and video_duration > max_video_len:
             raise VideoTooLongException(
                 video=video,
@@ -167,7 +168,8 @@ class IndexVideoEndpoint(Endpoint):
             )
 
         video_obj: Video = await run_remote(download_video)(video_input=video)
-        video_duration = await run_remote(get_video_duration)(video=video_obj)
+        if video_duration is None:
+            video_duration = await run_remote(get_video_duration)(video=video_obj)
 
         if video_duration > max_video_len:
             raise VideoTooLongException(
@@ -180,7 +182,7 @@ class IndexVideoEndpoint(Endpoint):
         yield {
             "media_id": media_id,
             "metadata": VideoMetadata(
-                title=video_obj.title, description=video_obj.description
+                title=video_obj.title, description=video_obj.description, duration=video_duration
             ),
         }
 
