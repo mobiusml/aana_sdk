@@ -4,6 +4,8 @@ Aana SDK is a powerful framework for building multimodal applications. It facili
 
 Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. These applications can be used as a reference to build your own applications. See the [projects](/aana/projects/) directory for the example applications.
 
+If you want to start building a new application, you can use the following GitHub template: [Aana App Template](https://github.com/mobiusml/aana_app_template). It will help you get started with the Aana SDK and provide you with a basic structure for your application and its dependencies.
+
 In this tutorial, we will walk you through the process of creating a new project with Aana SDK. By the end of this tutorial, you will have a runnable application that transcribes a video and summarizes the transcript using a Language Model (LLM). We will use the video transcription application from the [README](/README.md) as a starting point and extend it to include the LLM model for summarization and a new endpoints.
 
 
