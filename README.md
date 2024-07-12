@@ -181,6 +181,8 @@ You have a few options to run the application:
 
 Once the application is running, you will see the message `Deployed successfully.` in the logs. You can now send a request to the application to transcribe a video.
 
+To get an overview of the Ray cluster, you can use the Ray Dashboard. The Ray Dashboard is available at `http://127.0.0.1:8265` by default. You can see the status of the Ray cluster, the resources used, running applications and deployments, logs, and more. It is a useful tool for monitoring and debugging your applications. See [Ray Dashboard documentation](https://docs.ray.io/en/latest/ray-observability/getting-started.html) for more information.
+
 Let's transcribe [Gordon Ramsay's perfect scrambled eggs tutorial](https://www.youtube.com/watch?v=VhJFyyukAzA) using the application.
 
 ```bash
