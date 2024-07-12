@@ -49,7 +49,7 @@ for chunk in stream:
     print(chunk.choices[0].delta.content or "", end="")
 ```
 
-The API requires an LLM deployment. Aana SDK provides support for [vLLM](/docs/integrations.md#vllm) and [Hugging Face Transformers](/docs/integrations.md#hugging-face-transformers).
+The API requires an LLM deployment. Aana SDK provides support for [vLLM](integrations.md#vllm) and [Hugging Face Transformers](integrations.md#hugging-face-transformers).
 
 The name of the model matches the name of the deployment. For example, if you registered a vLLM deployment with the name `llm_deployment`, you can use it with the OpenAI API as `model="llm_deployment"`.
 

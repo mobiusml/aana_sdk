@@ -2,7 +2,7 @@
 
 The deployment test cache is a feature of integration tests that allows you to simulate running the model endpoints without having to go to the effort of downloading the model, loading it, and running on a GPU. This is useful to save time as well as to be able to run the integration tests without needing a GPU (for example if you are on your laptop without internet access).
 
-To mark a function as cacheable so its output can be stored in the deployment cache, annotate it with @test_cache imported from `[aana.utils.test](../aana/utils/test.py)`. Here's our StableDiffusion 2 deployment from above with the generate method annotated:
+To mark a function as cacheable so its output can be stored in the deployment cache, annotate it with `@test_cache` imported from [aana.deployments.base_deployment](/aana/deployments/base_deployment.py). Here's our StableDiffusion 2 deployment from above with the generate method annotated:
 
 ```python
 class StableDiffusion2Deployment(BaseDeployment):
