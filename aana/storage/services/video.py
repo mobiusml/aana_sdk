@@ -22,6 +22,7 @@ from aana.storage.models import (
     TranscriptEntity,
     VideoEntity,
 )
+from aana.storage.models.video import Status as VideoStatus
 from aana.storage.repository.caption import CaptionRepository
 from aana.storage.repository.media import MediaRepository
 from aana.storage.repository.transcript import TranscriptRepository
@@ -74,13 +75,8 @@ def save_video_batch(
         m_repo = MediaRepository(session)
         v_repo = VideoRepository(session)
         media_entities = m_repo.create_multiple(media_entities)
-        for media, video_entity in zip(media_entities, video_entities, strict=True):
-            video_entity.media_id = media.id
         video_entities = v_repo.create_multiple(video_entities)
-        return {
-            "media_ids": [m.id for m in media_entities],  # type: ignore
-            "video_ids": [v.id for v in video_entities],  # type: ignore
-        }
+        return {"media_ids": [m.id for m in media_entities]}
 
 
 def save_video(video: Video, duration: float) -> dict:
@@ -106,25 +102,66 @@ def save_video(video: Video, duration: float) -> dict:
         orig_filename = None
     media_entity = MediaEntity(id=video.media_id, media_type=MediaType.VIDEO)
     video_entity = VideoEntity(
-        media_id=video.media_id,
+        id=video.media_id,
         orig_filename=orig_filename,
         orig_url=orig_url,
         title=video.title,
         duration=duration,
         description=video.description,
     )
-    media_entity.video = video_entity
     with Session(engine) as session:
         media_repo = MediaRepository(session)
         _ = media_repo.create(media_entity)
         video_repo = VideoRepository(session)
-        video_entity.media_id = media_entity.id
         _ = video_repo.create(video_entity)
-        media_entity.video_id = video_entity.id
         return {
-            "media_id": media_entity.id,  # type: ignore
-            "video_id": video_entity.id,
+            "media_id": media_entity.id,
         }
+
+
+def get_video_status(
+    media_id: MediaId,
+) -> VideoStatus:
+    """Load video status from database.
+
+    Args:
+        media_id (MediaId): The media ID.
+
+    Returns:
+        VideoStatus: The video status.
+    """
+    with Session(engine) as session:
+        entity: VideoEntity = VideoRepository(session).read(media_id)
+        return entity.status
+
+
+def check_media_id_exist(
+    media_id: MediaId,
+) -> bool:
+    """Check if media_id exists in the database.
+
+    Args:
+        media_id (MediaId): The media ID.
+
+    Returns:
+        bool: True if the media_id exists, False otherwise.
+    """
+    with Session(engine) as session:
+        return MediaRepository(session).check_media_exists(media_id)
+
+
+def update_video_status(media_id: MediaId, status: VideoStatus):
+    """Update the video status.
+
+    Args:
+        media_id (str): The media ID.
+        status (VideoStatus): The new status.
+    """
+    with Session(engine) as session:
+        video_repo = VideoRepository(session)
+        media_entity = video_repo.read(media_id)
+        media_entity.status = status
+        session.commit()
 
 
 def delete_media(media_id: MediaId) -> dict:
@@ -139,10 +176,7 @@ def delete_media(media_id: MediaId) -> dict:
     with Session(engine) as session:
         media_repo = MediaRepository(session)
         media_entity = media_repo.delete(media_id, check=True)
-    return {
-        "media_id": media_entity.id,
-        "video_id": media_entity.video_id,
-    }
+    return {"media_id": media_entity.id}
 
 
 class SaveVideoCaptionOutput(TypedDict):
@@ -171,13 +205,9 @@ def save_video_captions(
         SaveVideoCaptionOutput: The dictionary with the IDs of the saved entities.
     """
     with Session(engine) as session:
-        video_repo = VideoRepository(session)
-
-        video_entity = video_repo.get_by_media_id(media_id)
-        video_id = video_entity.id
         entities = [
             CaptionEntity.from_caption_output(
-                model_name, media_id, video_id, frame_id, timestamp, caption
+                model_name, media_id, frame_id, timestamp, caption
             )
             for caption, timestamp, frame_id in zip(
                 captions, timestamps, frame_ids, strict=True
@@ -210,15 +240,10 @@ def save_video_transcription(
         dict: The dictionary with the IDs of the saved entities.
     """
     with Session(engine) as session:
-        video_repo = VideoRepository(session)
-        video_entity = video_repo.get_by_media_id(media_id)
-        video_id = video_entity.id
-
         entities = [
             TranscriptEntity.from_asr_output(
                 model_name=model_name,
                 media_id=media_id,
-                video_id=video_id,
                 transcription=transcription,
                 segments=segments,
                 info=transcription_info,
@@ -254,12 +279,10 @@ def save_transcripts_batch(
         dict with key "transcription_ids"
     """
     with Session(engine) as session:
-        video_repo = VideoRepository(session)
         entities = [
             TranscriptEntity.from_asr_output(
                 model_name,
                 media_id,
-                video_repo.get_by_media_id(media_id).id,
                 transcript_info,
                 transcript,
                 segments,
@@ -365,7 +388,7 @@ def load_video_metadata(
         VideoMetadata: The video metadata.
     """
     with Session(engine) as session:
-        video_entity = VideoRepository(session).get_by_media_id(media_id)
+        video_entity = VideoRepository(session).read(media_id)
         return VideoMetadata(
             title=video_entity.title,
             description=video_entity.description,

@@ -6,8 +6,10 @@ from pydantic import BaseModel, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
+from vllm.inputs import TokensPrompt
 
 from aana.core.models.base import merged_options
+from aana.core.models.custom_config import CustomConfig
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
@@ -38,7 +40,9 @@ class VLLMConfig(BaseModel):
         max_model_len (int): the maximum generated text length in tokens (optional, default: None)
         chat_template (str): the name of the chat template, if not provided, the chat template from the model will be used
                              but some models may not have a chat template (optional, default: None)
-        enforce_eager (bool): whether to enforce eager execution (optional, default: False)
+        enforce_eager: whether to enforce eager execution (optional, default: False)
+        engine_args: extra engine arguments (optional, default: {})       
+
     """
 
     model: str
@@ -51,7 +55,7 @@ class VLLMConfig(BaseModel):
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
     enforce_eager: bool | None = Field(default=False)
-
+    engine_args: CustomConfig = {}
 
 @serve.deployment
 class VLLMDeployment(BaseTextGenerationDeployment):
@@ -72,6 +76,8 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         - default_sampling_params: the default sampling parameters.
         - max_model_len: the maximum generated text length in tokens (optional, default: None)
         - chat_template: the name of the chat template (optional, default: None)
+        - enforce_eager: whether to enforce eager execution (optional, default: False)
+        - engine_args: extra engine arguments (optional, default: {})
 
         Args:
             config (dict): the configuration of the deployment
@@ -87,6 +93,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             config_obj.default_sampling_params
         )
         self.chat_template_name = config_obj.chat_template
+
         args = AsyncEngineArgs(
             model=config_obj.model,
             dtype=config_obj.dtype,
@@ -94,6 +101,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             enforce_eager=config_obj.enforce_eager,
             gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
+            **config_obj.engine_args
         )
 
         # TODO: check if the model is already loaded.
@@ -124,7 +132,6 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
 
         request_id = None
-
         # tokenize the prompt
         prompt_token_ids = self.tokenizer.encode(prompt)
 
@@ -144,10 +151,9 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             # set the random seed for reproducibility
             set_random_seed(42)
             results_generator = self.engine.generate(
-                prompt=None,
                 sampling_params=sampling_params_vllm,
                 request_id=request_id,
-                prompt_token_ids=prompt_token_ids,
+                inputs=TokensPrompt(prompt_token_ids=prompt_token_ids)
             )
 
             num_returned = 0
