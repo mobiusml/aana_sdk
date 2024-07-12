@@ -71,4 +71,4 @@ See [Haystack integration notebook](/notebooks/haystack_integration.ipynb) for a
 
 ## OpenAI-compatible Chat Completions API
 
-The OpenAI-compatible Chat Completions API allows you to access the Aana applications with any OpenAI-compatible client. See [OpenAI-compatible API docs](/docs/openai_api.md) for more details.
+The OpenAI-compatible Chat Completions API allows you to access the Aana applications with any OpenAI-compatible client. See [OpenAI-compatible API docs](openai_api.md) for more details.

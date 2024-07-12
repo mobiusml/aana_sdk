@@ -119,7 +119,7 @@ The application consists of 3 main components: the deployment, the endpoint, and
 
 ### Deployments
 
-Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
+Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](integrations.md) for more information about predefined deployments.
 
 Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
 
