@@ -6,8 +6,8 @@
 
 <p align="center">
   <picture>
-    <source srcset="Aana-SDK-whitetext.png" media="(prefers-color-scheme: dark)">
-    <img src="Aanalogo.png" alt="Aana Logo">
+    <source srcset="https://raw.githubusercontent.com/mobiusml/aana_sdk/main/docs/images/AanaSDK_logo_dark_theme.png" media="(prefers-color-scheme: dark)">
+    <img src="https://raw.githubusercontent.com/mobiusml/aana_sdk/main/docs/images/AanaSDK_logo_light_theme.png" alt="Aana Logo">
   </picture>
 </p>
 
