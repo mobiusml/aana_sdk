@@ -14,31 +14,31 @@ Welcome to the documentation for Aana SDK.
 ## Documentation Files
 
 ### Getting Started
-- [Tutorial](tutorial): A step-by-step tutorial to help you get started with using Aana SDK.
+- [Tutorial](tutorial.md): A step-by-step tutorial to help you get started with using Aana SDK.
 
 ### Development
-- [Development Guide](development): A guide for developers working on the project, including code structure, dev container setup, and database management.
-- [Testing](testing): This document covers the testing procedures and guidelines for our project.
-- [Deployment Test Cache](deployment_test_cache): Information on how deployment test caching works and its configuration.
+- [Development Guide](development.md): A guide for developers working on the project, including code structure, dev container setup, and database management.
+- [Testing](testing.md): This document covers the testing procedures and guidelines for our project.
+- [Deployment Test Cache](deployment_test_cache.md): Information on how deployment test caching works and its configuration.
 
 ### Deployment
-- [Docker](docker): Instructions for using Docker with Aana SDK.
-- [Serve Config Files](serve_config_files): Information about [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) for production deployment, how to build them, and deploy applications using them.
+- [Docker](docker.md): Instructions for using Docker with Aana SDK.
+- [Serve Config Files](serve_config_files.md): Information about [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) for production deployment, how to build them, and deploy applications using them.
 
 ### Integrations
-- [Integrations](integrations): Overview of the available predefined deployments like Whisper, vLLM, Hugging Face Transformers, Haystack etc.
-- [OpenAI API](openai_api): Overview of the OpenAI-compatible Chat Completions API.
+- [Integrations](integrations.md): Overview of the available predefined deployments like Whisper, vLLM, Hugging Face Transformers, Haystack etc.
+- [OpenAI API](openai_api.md): Overview of the OpenAI-compatible Chat Completions API.
 
 ### Configuration
-- [Settings](settings): Documentation on the available settings and configuration options for the project.
+- [Settings](settings.md): Documentation on the available settings and configuration options for the project.
 
 ### Best Practices
-- [Code Standards](code_standards): Learn about our coding standards and best practices for contributing to the project.
+- [Code Standards](code_standards.md): Learn about our coding standards and best practices for contributing to the project.
 
 ## Getting Started
 
-If you're new to the project, we recommend starting with the [Tutorial](tutorial) to get a hands-on introduction. From there, you can explore the other documentation files based on your specific needs or interests.
+If you're new to the project, we recommend starting with the [Tutorial](tutorial.md) to get a hands-on introduction. From there, you can explore the other documentation files based on your specific needs or interests.
 
-For developers looking to contribute, make sure to review the [Code Standards](code_standards) and [Development Guide](development).
+For developers looking to contribute, make sure to review the [Code Standards](code_standards.md) and [Development Guide](development.md).
 
 If you have any questions or need further assistance, please don't hesitate to reach out to our support team or community forums.
