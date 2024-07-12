@@ -1,11 +1,12 @@
 from aana.configs.deployments import (
-    meta_llama3_8b_instruct_deployment,
     hf_blip2_opt_2_7b_deployment,
+    internlm2_5_7b_chat_deployment,
     vad_deployment,
     whisper_medium_deployment,
 )
 from aana.projects.chat_with_video.endpoints import (
     DeleteMediaEndpoint,
+    GetVideoStatusEndpoint,
     IndexVideoEndpoint,
     LoadVideoMetadataEndpoint,
     VideoChatEndpoint,
@@ -27,7 +28,7 @@ deployments = [
     },
     {
         "name": "llm_deployment",
-        "instance": meta_llama3_8b_instruct_deployment,
+        "instance": internlm2_5_7b_chat_deployment,
     },
 ]
 
@@ -49,6 +50,12 @@ endpoints = [
         "path": "/video/chat_stream",
         "summary": "Chat with video using LLaMa2 7B Chat (streaming)",
         "endpoint_cls": VideoChatEndpoint,
+    },
+    {
+        "name": "video_status",
+        "path": "/video/status",
+        "summary": "Get video status",
+        "endpoint_cls": GetVideoStatusEndpoint,
     },
     {
         "name": "delete_media",

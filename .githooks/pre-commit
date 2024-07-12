@@ -1,7 +1,0 @@
-#!/bin/sh
-
-set -e  # exit on error
-
-poetry run ruff check aana 
-poetry run ruff format aana
-

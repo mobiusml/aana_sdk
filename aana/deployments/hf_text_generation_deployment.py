@@ -1,13 +1,12 @@
 import asyncio
-import pickle
 from collections.abc import AsyncGenerator
 from queue import Empty
 from threading import Thread
-from typing import Annotated, Any
+from typing import Any
 
 import torch
 import transformers
-from pydantic import BaseModel, BeforeValidator, PlainSerializer
+from pydantic import BaseModel
 from ray import serve
 from transformers import (
     AutoModelForCausalLM,
@@ -22,15 +21,8 @@ from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
 )
+from aana.deployments.hf_pipeline_deployment import CustomConfig
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
-
-CustomConfig = Annotated[
-    dict,
-    PlainSerializer(lambda x: pickle.dumps(x).decode("latin1"), return_type=str),
-    BeforeValidator(
-        lambda x: x if isinstance(x, dict) else pickle.loads(x.encode("latin1"))  # noqa: S301
-    ),
-]
 
 
 class HfTextGenerationConfig(BaseModel):
