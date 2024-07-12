@@ -24,6 +24,7 @@ Welcome to the documentation for Aana SDK.
 ### Deployment
 - [Docker](pages/docker.md): Instructions for using Docker with Aana SDK.
 - [Serve Config Files](pages/serve_config_files.md): Information about [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) for production deployment, how to build them, and deploy applications using them.
+- [Cluster Setup](pages/cluster_setup.md): Instructions for setting up a Ray cluster for deployment.
 
 ### Integrations
 - [Integrations](pages/integrations.md): Overview of the available predefined deployments like Whisper, vLLM, Hugging Face Transformers, Haystack etc.
