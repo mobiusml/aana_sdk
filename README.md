@@ -6,8 +6,8 @@
 
 <p align="center">
   <picture>
-    <source srcset="Aana-SDK-whitetext.png" media="(prefers-color-scheme: dark)">
-    <img src="Aanalogo.png" alt="Aana Logo">
+    <source srcset="https://raw.githubusercontent.com/mobiusml/aana_sdk/main/docs/images/AanaSDK_logo_dark_theme.png" media="(prefers-color-scheme: dark)">
+    <img src="https://raw.githubusercontent.com/mobiusml/aana_sdk/main/docs/images/AanaSDK_logo_light_theme.png" alt="Aana Logo">
   </picture>
 </p>
 
@@ -54,7 +54,7 @@ Aana SDK simplifies this process by providing a framework that allows:
 - **Task Queue Support**:
   - Run every endpoint you define as a task in the background without any changes to your code.
 - **Integrations**:  
-   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/integrations.md)). 
+   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/pages/integrations.md)).
 
 ## Installation
 
@@ -66,7 +66,9 @@ To install Aana SDK via PyPI, you can use the following command:
 pip install aana
 ```
 
-Make sure you have the necessary dependencies installed, such as `libgl1` for OpenCV.
+For optimal performance install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can skip it, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
+
+Some models use Flash Attention. Install Flash Attention library for better performance. See [flash attention installation instructions](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) for more details and supported GPUs.
 
 ### Installing from GitHub
 
@@ -78,7 +80,7 @@ git clone https://github.com/mobiusml/aana_sdk.git
 
 2. Install additional libraries.
 
-You should install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU  or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
+For optimal performance install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can continue directly to the next step, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
 
 Some models use Flash Attention. Install Flash Attention library for better performance. See [flash attention installation instructions](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) for more details and supported GPUs.
 
@@ -97,6 +99,8 @@ sh install.sh
 ### Creating a New Application
 
 You can quickly develop multimodal applications using Aana SDK's intuitive APIs and components.
+
+If you want to start building a new application, you can use the following GitHub template: [Aana App Template](https://github.com/mobiusml/aana_app_template). It will help you get started with the Aana SDK and provide you with a basic structure for your application and its dependencies.
 
 Let's create a simple application that transcribes a video. The application will download a video from YouTube, extract the audio, and transcribe it using an ASR model.
 
@@ -177,6 +181,8 @@ You have a few options to run the application:
 
 Once the application is running, you will see the message `Deployed successfully.` in the logs. You can now send a request to the application to transcribe a video.
 
+To get an overview of the Ray cluster, you can use the Ray Dashboard. The Ray Dashboard is available at `http://127.0.0.1:8265` by default. You can see the status of the Ray cluster, the resources used, running applications and deployments, logs, and more. It is a useful tool for monitoring and debugging your applications. See [Ray Dashboard documentation](https://docs.ray.io/en/latest/ray-observability/getting-started.html) for more information.
+
 Let's transcribe [Gordon Ramsay's perfect scrambled eggs tutorial](https://www.youtube.com/watch?v=VhJFyyukAzA) using the application.
 
 ```bash
@@ -190,7 +196,7 @@ This will return the full transcription of the video, transcription for each seg
 Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
 
 The following applications are available:
-- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. This example requires `HF_TOKEN` to access [Llama 3 8B model from Meta](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct). See [Chat with Video Demo notebook](/notebooks/chat_with_video_demo.ipynb) for more information.
+- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. See [Chat with Video Demo notebook](/notebooks/chat_with_video_demo.ipynb) for more information.
 - `whisper`: An application that demonstrates the Whisper model for automatic speech recognition (ASR).
 - `llama2`: An application that deploys LLaMa2 7B Chat model.
 
@@ -220,8 +226,6 @@ aana deploy aana.projects.whisper.app:aana_app
 > - `chat_with_video` requires at least 48GB.
 > - `llama2` requires at least 16GB.
 > - `whisper` requires at least 4GB.
-
-
 
 ### Main components
 
@@ -296,12 +300,16 @@ All you need to do is define the deployments and endpoints you want to use in yo
 
 ## Serve Config Files
 
-The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications. See the [Serve Config Files documentation](docs/serve_config_files.md) on how to build and deploy the applications using the Serve Config Files.
+The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications. See the [Serve Config Files documentation](docs/pages/serve_config_files.md) on how to build and deploy the applications using the Serve Config Files.
 
 
 ## Run with Docker
 
-You can deploy example applications using Docker. See the [documentation on how to run Aana SDK with Docker](docs/docker.md).
+You can deploy example applications using Docker. See the [documentation on how to run Aana SDK with Docker](docs/pages/docker.md).
+
+## Documentation
+
+For more information on how to use Aana SDK, see the [documentation](docs/README.md).
 
 ## License
 
@@ -311,6 +319,6 @@ Aana SDK is licensed under the [Apache License 2.0](./LICENSE). Commercial licen
 
 We welcome contributions from the community to enhance Aana SDK's functionality and usability. Feel free to open issues for bug reports, feature requests, or submit pull requests to contribute code improvements.
 
-Before contributing, please read our [Code Standards](docs/code_standards.md) and [Development Documentation](docs/development.md).
+Before contributing, please read our [Code Standards](docs/pages/code_standards.md) and [Development Documentation](docs/pages/development.md).
 
 We have adopted the [Contributor Covenant](https://www.contributor-covenant.org/) as our code of conduct.

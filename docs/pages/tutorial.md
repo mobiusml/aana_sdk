@@ -4,6 +4,8 @@ Aana SDK is a powerful framework for building multimodal applications. It facili
 
 Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. These applications can be used as a reference to build your own applications. See the [projects](/aana/projects/) directory for the example applications.
 
+If you want to start building a new application, you can use the following GitHub template: [Aana App Template](https://github.com/mobiusml/aana_app_template). It will help you get started with the Aana SDK and provide you with a basic structure for your application and its dependencies.
+
 In this tutorial, we will walk you through the process of creating a new project with Aana SDK. By the end of this tutorial, you will have a runnable application that transcribes a video and summarizes the transcript using a Language Model (LLM). We will use the video transcription application from the [README](/README.md) as a starting point and extend it to include the LLM model for summarization and a new endpoints.
 
 
@@ -107,6 +109,8 @@ You have a few options to run the application:
 
 Once the application is running, you will see the message `Deployed successfully.` in the logs. You can now send a request to the application to transcribe a video.
 
+To get an overview of the Ray cluster, you can use the Ray Dashboard. The Ray Dashboard is available at `http://127.0.0.1:8265` by default. You can see the status of the Ray cluster, the resources used, running applications and deployments, logs, and more. It is a useful tool for monitoring and debugging your applications. See [Ray Dashboard documentation](https://docs.ray.io/en/latest/ray-observability/getting-started.html) for more information.
+
 Let's transcribe [Gordon Ramsay's perfect scrambled eggs tutorial](https://www.youtube.com/watch?v=VhJFyyukAzA) using the application.
 
 ```bash
@@ -119,7 +123,7 @@ The application consists of 3 main components: the deployment, the endpoint, and
 
 ### Deployments
 
-Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
+Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](integrations.md) for more information about predefined deployments.
 
 Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
 
