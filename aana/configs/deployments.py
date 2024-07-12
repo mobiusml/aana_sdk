@@ -129,6 +129,19 @@ whisper_medium_deployment = WhisperDeployment.options(
 )
 available_deployments["whisper_medium_deployment"] = whisper_medium_deployment
 
+
+whisper_large_deployment = WhisperDeployment.options(
+    num_replicas=1,
+    max_ongoing_requests=1000,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(
+        model_size=WhisperModelSize.LARGE,
+        compute_type=WhisperComputeType.FLOAT16,
+    ).model_dump(mode="json"),
+)
+available_deployments["whisper_large_deployment"] = whisper_large_deployment
+
+
 stablediffusion2_deployment = StableDiffusion2Deployment.options(
     num_replicas=1,
     max_ongoing_requests=1000,
