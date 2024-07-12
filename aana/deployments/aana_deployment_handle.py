@@ -1,6 +1,6 @@
-from collections.abc import AsyncGenerator
-
 from ray import serve
+
+from aana.utils.typing import is_async_generator
 
 
 class AanaDeploymentHandle:
@@ -32,17 +32,11 @@ class AanaDeploymentHandle:
         Args:
             name (str): The name of the method.
         """
-        is_async_generator = False
         method_info = self.methods[name]
         annotations = method_info.get("annotations", {})
         return_type = annotations.get("return", None)
 
-        if hasattr(return_type, "__origin__") and issubclass(
-            return_type.__origin__, AsyncGenerator
-        ):
-            is_async_generator = True
-
-        if is_async_generator:
+        if is_async_generator(return_type):
 
             async def method(*args, **kwargs):
                 async for item in self.handle.options(

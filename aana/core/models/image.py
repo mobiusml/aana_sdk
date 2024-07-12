@@ -3,15 +3,17 @@ import io
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Annotated
 
 import numpy as np
 import PIL.Image
 from pydantic import (
+    AfterValidator,
+    AnyUrl,
     BaseModel,
     ConfigDict,
     Field,
     ValidationError,
-    field_validator,
     model_validator,
 )
 from pydantic_core import InitErrorDetails
@@ -255,15 +257,17 @@ class ImageInput(BaseModel):
 
     Attributes:
         path (str): the file path of the image
-        url (str): the URL of the image
+        url (AnyUrl): the URL of the image
         content (bytes): the content of the image in bytes
         numpy (bytes): the image as a numpy array
     """
 
     path: str | None = Field(None, description="The file path of the image.")
-    url: str | None = Field(
-        None, description="The URL of the image."
-    )  # TODO: validate url
+    url: Annotated[
+        AnyUrl | None,
+        AfterValidator(lambda x: str(x) if x else None),
+        Field(None, description="The URL of the image."),
+    ]
     content: bytes | None = Field(
         None,
         description=(
@@ -282,24 +286,6 @@ class ImageInput(BaseModel):
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
-
-    @field_validator("media_id")
-    @classmethod
-    def media_id_must_not_be_empty(cls, media_id):
-        """Validates that the media_id is not an empty string.
-
-        Args:
-            media_id (MediaId): The value of the media_id field.
-
-        Raises:
-            ValueError: If the media_id is an empty string.
-
-        Returns:
-            str: The non-empty media_id value.
-        """
-        if media_id == "":
-            raise ValueError("media_id cannot be an empty string")  # noqa: TRY003
-        return media_id
 
     def set_file(self, file: bytes):
         """Sets the instance internal file data.

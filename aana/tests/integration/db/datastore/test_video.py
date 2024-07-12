@@ -43,25 +43,19 @@ def test_save_video():
             video = Video(path=path, media_id=media_id)
             result = save_video(video, duration)
 
-            assert result["video_id"]
             assert result["media_id"] == media_id
 
-            video_id = result["video_id"]
             # Check that saved video is now available from repo
             with Session(settings.db_config.get_engine()) as session:
                 video_repo = VideoRepository(session)
-                video_by_media_id = video_repo.get_by_media_id(media_id)
-                video_by_video_id = video_repo.read(video_id)
+                video_entity = video_repo.read(media_id)
 
-                assert video_by_media_id
-                assert video_by_video_id
-                assert video_by_media_id == video_by_video_id
+                assert video_entity
                 # Check that video has a media, that media exists
                 # and that media has a video set
                 media_repo = MediaRepository(session)
-                media_by_media_id = media_repo.read(media_id)
-                assert video_by_video_id.media == media_by_media_id
-                assert media_by_media_id.video == video_by_video_id
+                media_entity = media_repo.read(media_id)
+                assert media_entity.video == video_entity
 
             # Use a second session here because deleted objects sometimes linger
             # as long as a session persists.
@@ -71,6 +65,4 @@ def test_save_video():
                 with pytest.raises(NotFoundException):
                     _ = media_repo.read(media_id)
                 with pytest.raises(NotFoundException):
-                    _ = video_repo.get_by_media_id(media_id)
-                with pytest.raises(NotFoundException):
-                    _ = video_repo.read(video_id)
+                    _ = video_repo.read(media_id)

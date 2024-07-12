@@ -79,7 +79,6 @@ def test_cache(func):  # noqa: C901
 
         def get_args(path):
             cache = pickle.loads(path.open("rb").read())  # noqa: S301
-            print(cache)
             return cache["args"]
 
         args_str = jsonify({"args": args[1:], "kwargs": kwargs})
@@ -106,7 +105,6 @@ def test_cache(func):  # noqa: C901
         if settings.test.use_deployment_cache:
             # load from cache
             if not cache_path.exists():
-                print(args, kwargs)
                 # raise FileNotFoundError(cache_path)
                 cache_path = find_matching_cache(cache_path, args, kwargs)
             cache = pickle.loads(cache_path.open("rb").read())  # noqa: S301

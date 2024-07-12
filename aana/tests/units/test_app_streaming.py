@@ -44,6 +44,7 @@ class LowercaseEndpoint(Endpoint):
         self.lowercase_handle = await AanaDeploymentHandle.create(
             "lowercase_deployment"
         )
+        await super().initialize()
 
     async def run(self, text: str) -> AsyncGenerator[LowercaseEndpointOutput, None]:
         """Lowercase the text.

@@ -3,7 +3,6 @@ from aana.projects.whisper.endpoints import (
     DeleteMediaEndpoint,
     LoadTranscriptionEndpoint,
     TranscribeVideoEndpoint,
-    TranscribeVideoInChunksEndpoint,
 )
 from aana.sdk import AanaSDK
 
@@ -25,12 +24,13 @@ endpoints = [
         "summary": "Transcribe a video",
         "endpoint_cls": TranscribeVideoEndpoint,
     },
-    {
-        "name": "whisper_transcribe_in_chunks",
-        "path": "/video/transcribe_in_chunks",
-        "summary": "Transcribe a video using Whisper by segmenting it into chunks",
-        "endpoint_cls": TranscribeVideoInChunksEndpoint,
-    },
+    # TODO: Update once batched whisper PR is merged
+    # {
+    #     "name": "whisper_transcribe_in_chunks",
+    #     "path": "/video/transcribe_in_chunks",
+    #     "summary": "Transcribe a video using Whisper by segmenting it into chunks",
+    #     "endpoint_cls": TranscribeVideoInChunksEndpoint,
+    # },
     {
         "name": "load_transcription",
         "path": "/video/get_transcription",

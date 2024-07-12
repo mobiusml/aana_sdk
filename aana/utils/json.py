@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import orjson
 from pydantic import BaseModel
 from sqlalchemy import Engine
 
@@ -49,3 +50,18 @@ def jsonify(data: Any) -> str:
         str: the JSON string
     """
     return json.dumps(data, default=json_serializer_default)
+
+
+def orjson_serializer(
+    content: Any, option: int | None = orjson.OPT_SERIALIZE_NUMPY
+) -> bytes:
+    """Serialize content using orjson.
+
+    Args:
+        content (Any): The content to serialize.
+        option (int | None): The option for orjson.dumps.
+
+    Returns:
+        bytes: The serialized content.
+    """
+    return orjson.dumps(content, option=option, default=json_serializer_default)

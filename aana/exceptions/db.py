@@ -1,5 +1,6 @@
 from aana.core.models.media import MediaId
 from aana.exceptions.core import BaseException
+from aana.storage.models.video import Status as VideoStatus
 
 
 class NotFoundException(BaseException):
@@ -39,3 +40,30 @@ class MediaIdAlreadyExistsException(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.table_name, self.media_id))
+
+
+class UnfinishedVideoException(BaseException):
+    """Exception raised when try to fetch unfinished video.
+
+    Attributes:
+        media_id (int | MediaId): The id of video.
+        status (VideoStatus): The current video status.
+        message (str): The error message.
+    """
+
+    def __init__(self, media_id: int | MediaId, status: VideoStatus, message: str):
+        """Constructor.
+
+        Args:
+            media_id (int | MediaId): The id of video.
+            status (VideoStatus): The current video status.
+            message (str): The error message.
+        """
+        super().__init__(media_id=media_id, status=status, message=message)
+        self.media_id = media_id
+        self.status = status
+        self.message = message
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.media_id, self.status, self.message))

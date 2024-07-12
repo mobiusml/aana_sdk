@@ -60,4 +60,7 @@ class RateLimitHandler(EventHandler):
         Raises:
             TooManyRequestsException: if the rate limit has been reached
         """
-        self._acquire()
+        # if the endpoint execution is deferred, we don't want to rate limit it
+        defer = kwargs.get("defer", False)
+        if not defer:
+            self._acquire()

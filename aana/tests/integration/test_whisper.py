@@ -12,7 +12,8 @@ TARGET = "whisper"
 VIDEO_TRANSCRIBE_ENDPOINT = "/video/transcribe"
 VIDEO_GET_TRANSCRIPTION_ENDPOINT = "/video/get_transcription"
 VIDEO_DELETE_ENDPOINT = "/video/delete"
-VIDEO_TRANSCRIBE_BATCH_ENDPOINT = "/video/transcribe_in_chunks"
+# TODO: Update once batched whisper PR is merged
+# VIDEO_TRANSCRIBE_BATCH_ENDPOINT = "/video/transcribe_in_chunks"
 
 
 @pytest.mark.skipif(
@@ -33,26 +34,27 @@ VIDEO_TRANSCRIBE_BATCH_ENDPOINT = "/video/transcribe_in_chunks"
             {"temperature": 0.0},
             VIDEO_TRANSCRIBE_ENDPOINT,
         ),
-        (
-            {
-                "path": str(
-                    resources.path("aana.tests.files.videos", "physicsworks.webm")
-                ),
-                "media_id": "physicsworks.webm_batched",
-            },
-            {"temperature": 0.0},
-            VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
-        ),
-        (
-            {
-                "path": str(
-                    resources.path("aana.tests.files.audios", "physicsworks.wav")
-                ),
-                "media_id": "physicsworks.wav_batched",
-            },
-            {"temperature": 0.0},
-            VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
-        ),
+        # TODO: Update once batched whisper PR is merged
+        # (
+        #     {
+        #         "path": str(
+        #             resources.path("aana.tests.files.videos", "physicsworks.webm")
+        #         ),
+        #         "media_id": "physicsworks.webm_batched",
+        #     },
+        #     {"temperature": 0.0},
+        #     VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
+        # ),
+        # (
+        #     {
+        #         "path": str(
+        #             resources.path("aana.tests.files.audios", "physicsworks.wav")
+        #         ),
+        #         "media_id": "physicsworks.wav_batched",
+        #     },
+        #     {"temperature": 0.0},
+        #     VIDEO_TRANSCRIBE_BATCH_ENDPOINT,
+        # ),
         (
             {
                 "path": str(

@@ -1,22 +1,14 @@
-import pickle
 from copy import copy, deepcopy
-from typing import Annotated, Any
+from typing import Any
 
 import torch
-from pydantic import BaseModel, BeforeValidator, PlainSerializer
+from pydantic import BaseModel
 from ray import serve
 from transformers import pipeline
 
+from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
 from aana.deployments.base_deployment import BaseDeployment, test_cache
-
-CustomConfig = Annotated[
-    dict,
-    PlainSerializer(lambda x: pickle.dumps(x).decode("latin1"), return_type=str),
-    BeforeValidator(
-        lambda x: x if isinstance(x, dict) else pickle.loads(x.encode("latin1"))  # noqa: S301
-    ),
-]
 
 
 class HfPipelineConfig(BaseModel):

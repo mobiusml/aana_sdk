@@ -18,10 +18,27 @@ def verify_media_id_must_not_be_empty(
     return v
 
 
+def verify_media_id_length(
+    v: Any, handler: ValidatorFunctionWrapHandler, info: ValidationInfo
+) -> str:
+    """Validates that the media_id is maximum 36 characters long."""
+    assert len(v) <= 36, "media_id must be at most 36 characters long"  # noqa: S101
+    return v
+
+
+def verify_media_id(
+    v: Any, handler: ValidatorFunctionWrapHandler, info: ValidationInfo
+) -> str:
+    """Validates the media_id."""
+    v = verify_media_id_must_not_be_empty(v, handler, info)
+    v = verify_media_id_length(v, handler, info)
+    return v
+
+
 MediaId = Annotated[
     str,
-    Field(description="The media ID."),
-    WrapValidator(verify_media_id_must_not_be_empty),
+    Field(description="The media ID.", max_length=36),
+    WrapValidator(verify_media_id),
 ]
 
 

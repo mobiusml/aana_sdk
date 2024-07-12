@@ -1,9 +1,12 @@
 from enum import Enum
 from pathlib import Path
 
+import orjson
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine
+
+from aana.utils.json import orjson_serializer
 
 
 class DbType(str, Enum):
@@ -23,7 +26,11 @@ def create_postgresql_engine(config):
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
     """
     connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}"
-    return create_engine(connection_string)
+    return create_engine(
+        connection_string,
+        json_serializer=lambda obj: orjson_serializer(obj).decode(),
+        json_deserializer=orjson.loads,
+    )
 
 
 def create_sqlite_engine(config):
@@ -36,7 +43,11 @@ def create_sqlite_engine(config):
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
     """
     connection_string = f"sqlite:///{config['path']}"
-    return create_engine(connection_string)
+    return create_engine(
+        connection_string,
+        json_serializer=lambda obj: orjson_serializer(obj).decode(),
+        json_deserializer=orjson.loads,
+    )
 
 
 def create_database_engine(db_config):

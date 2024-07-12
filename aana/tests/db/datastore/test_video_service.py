@@ -49,7 +49,6 @@ def test_save_video(mock_session):
     result = save_video(video, duration)
 
     assert result["media_id"] == media_id
-    assert result["video_id"] is None
     # once each for MediaEntity and VideoEntity
     assert mock_session.context_var.add.call_count == 2
     assert mock_session.context_var.commit.call_count == 2
@@ -65,8 +64,6 @@ def test_save_videos_batch(mock_session):
     result = save_video_batch(videos, durations)
 
     assert result["media_ids"] == media_ids
-    assert result["video_ids"] == [None, None]
-    assert len(result["media_ids"]) == len(result["video_ids"])
     # once each for MediaEntities and VideoEntities
     assert mock_session.context_var.add_all.call_count == 2
     assert mock_session.context_var.commit.call_count == 2
