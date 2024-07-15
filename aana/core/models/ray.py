@@ -35,19 +35,19 @@ class Resources(BaseModel):
         )
 
     @classmethod
-    def from_dict(self, resources: dict) -> "Resources":
+    def from_dict(self, resources: dict, num_replicas: int = 1) -> "Resources":
         """Create a Resources instance from a dict.
 
         Args:
             resources (dict): the resources as dict
+            num_replicas (int): the number of replicas
 
         Returns:
             Resources: the resources as class
         """
-
         return Resources(
-            CPU=resources.get("num_cpus", 0),
-            GPU=resources.get("num_gpus", 0),
-            memory=resources.get("memory", 0),
-            object_store_memory=resources.get("object_store_memory", 0)
+            CPU=resources.get("num_cpus", 0) * num_replicas,
+            GPU=resources.get("num_gpus", 0) * num_replicas,
+            memory=resources.get("memory", 0) * num_replicas,
+            object_store_memory=resources.get("object_store_memory", 0) * num_replicas
         )

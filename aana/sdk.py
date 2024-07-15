@@ -91,15 +91,18 @@ class AanaSDK:
 
         Args:
             interrupt (bool): Whether to stop deploying the app. Defaults to True.
-        
+
+        Returns:
+            bool: Whether enough resources are available or not to deploy the app.
+
         Raises:
             NotEnoughResources: The unavailable resource.
         """
         available_resources = Resources(**ray.available_resources())
+        required_resources = Resources.from_dict(RequestHandler.ray_actor_options, aana_settings.num_workers)
 
-        required_resources = Resources()
         for instance in self.deployments.values():
-            required_resources += Resources.from_dict(instance.ray_actor_options)
+            required_resources += Resources.from_dict(instance.ray_actor_options, instance.num_replicas)
 
         exceptions: list[NotEnoughResources] = []
         if required_resources.CPU > available_resources.CPU:
