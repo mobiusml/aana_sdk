@@ -172,4 +172,3 @@ class NotEnoughResources(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.resource_type, self.available, self.required, self.message))
-   

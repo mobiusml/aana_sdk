@@ -4,7 +4,6 @@ from aana.core.models.ray import Resources
 
 def test_resources_initiation():
     """Test resources initiation."""
-
     resources  = Resources()
     assert resources.CPU == 0
     assert resources.GPU == 0
@@ -27,7 +26,6 @@ def test_resources_initiation():
 
 def test_resources_operations():
     """Test resources operation."""
-
     resources_1  = Resources(CPU=5, GPU=3, memory=20_000)
     assert resources_1.CPU == 5
     assert resources_1.GPU == 3
