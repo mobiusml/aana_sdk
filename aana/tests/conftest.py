@@ -72,6 +72,7 @@ def app_setup():
                 event_handlers=endpoint.get("event_handlers", []),
             )
 
+        app.check_enough_resources()
         app.deploy(blocking=False)
 
         return app

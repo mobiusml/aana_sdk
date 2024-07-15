@@ -114,9 +114,6 @@ class AanaSDK:
         if required_resources.memory > available_resources.memory:
             e = NotEnoughResources("memory", available_resources.memory, required_resources.memory)
             exceptions.append(e)
-        if required_resources.object_store_memory > available_resources.object_store_memory:
-            e = NotEnoughResources("object_store_memory", available_resources.object_store_memory, required_resources.object_store_memory)
-            exceptions.append(e)
 
         if interrupt:
             for e in exceptions:

@@ -2,6 +2,7 @@
 import json
 from typing import Annotated, TypedDict
 
+import pytest
 import requests
 from pydantic import Field
 from ray import serve
@@ -9,6 +10,7 @@ from ray import serve
 from aana.api.api_generation import Endpoint
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.base_deployment import BaseDeployment
+from aana.exceptions.runtime import NotEnoughResources
 
 
 @serve.deployment
@@ -98,3 +100,40 @@ def test_app(app_setup):
     lowercase_text = response.json().get("text")
     print(lowercase_text)
     assert lowercase_text == ["hello world!", "this is a test."]
+
+
+lowercase_deployment_1 = Lowercase.options(
+    num_replicas=1,
+    max_ongoing_requests=1000,
+    ray_actor_options={"num_gpus": 0, "num_cpus": 1, "memory": 1_000_000},
+)
+
+
+lowercase_deployment_2 = Lowercase.options(
+    num_replicas=3,
+    max_ongoing_requests=1000,
+    ray_actor_options={"num_gpus": 1, "num_cpus": 10, "memory": 40_000_000},
+)
+
+def test_app_resource_success(app_setup):
+    """Test the Ray Serve app."""
+    low_resource_deployments = [
+        {
+            "name": "lowercase_deployment_1",
+            "instance": lowercase_deployment_1,
+        }
+    ]
+    app_setup(low_resource_deployments, endpoints)
+
+
+
+def test_app_resource_failure(app_setup):
+    """Test the Ray Serve app."""
+    high_resource_deployments = [
+        {
+            "name": "lowercase_deployment_2",
+            "instance": lowercase_deployment_2,
+        }
+    ]
+    with pytest.raises(NotEnoughResources):
+        app_setup(high_resource_deployments, endpoints)

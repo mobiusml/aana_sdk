@@ -8,21 +8,18 @@ class Resources(BaseModel):
         CPU (float): Available CPU.
         GPU (float): Available GPU.
         memory (float): Available Ram.
-        object_store_memory (float): Available object_store_memory.
     """
 
     CPU: float = Field(0, description="Available CPU.")
     GPU: float = Field(0, description="Available GPU.")
     memory: float = Field(0, description="Available Ram.")
-    object_store_memory: float = Field(0, description="Available object store memory.")
 
     def __add__(self, other: "Resources") -> "Resources":
         """Sum two Resources."""
         return Resources(
             CPU=self.CPU + other.CPU,
             GPU=self.GPU + other.GPU,
-            memory=self.memory + other.memory,
-            object_store_memory=self.object_store_memory + other.object_store_memory,
+            memory=self.memory + other.memory
         )
 
     def __sub__(self, other: "Resources") -> "Resources":
@@ -31,7 +28,6 @@ class Resources(BaseModel):
             CPU=self.CPU - other.CPU,
             GPU=self.GPU - other.GPU,
             memory=self.memory - other.memory,
-            object_store_memory=self.object_store_memory - other.object_store_memory,
         )
 
     @classmethod
@@ -49,5 +45,4 @@ class Resources(BaseModel):
             CPU=resources.get("num_cpus", 0) * num_replicas,
             GPU=resources.get("num_gpus", 0) * num_replicas,
             memory=resources.get("memory", 0) * num_replicas,
-            object_store_memory=resources.get("object_store_memory", 0) * num_replicas
         )
