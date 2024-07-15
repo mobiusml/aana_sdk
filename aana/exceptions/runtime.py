@@ -142,3 +142,34 @@ class HandlerNotRegisteredException(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, ())
+
+class NotEnoughResources(BaseException):
+    """Exception raised when not enough resources are available for launching new deployments
+
+    Attributes:
+        resource_type (str): The limited resource.
+        message (str): The exception message.
+        available (float): The amount of resource that is available.
+        required (float): The amount of resource that is required.
+    """
+
+    def __init__(self, resource_type: str, available: float, required: float):
+        """Constructor.
+
+        Args:
+            resource_type (str): The unavailable resource type.
+            message (str): The exception message.
+            available (float): The amount of resource that is available.
+            required (float): The amount of resource that is required.
+        """
+        message = f"Not enough {resource_type} resource is available in ray cluster. Available: {available} Required: {required}"
+        super().__init__(resource_type=resource_type, available=available, required=required, message=message)
+        self.resource_type = resource_type
+        self.available = available
+        self.required = required
+        self.message = message
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.resource_type, self.available, self.required, self.message))
+   

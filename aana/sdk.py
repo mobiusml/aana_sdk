@@ -15,6 +15,8 @@ from aana.api.api_generation import Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
 from aana.configs.settings import settings as aana_settings
+from aana.core.models.ray import Resources
+from aana.exceptions.runtime import NotEnoughResources
 from aana.storage.op import run_alembic_migrations
 from aana.utils.core import import_from_path
 
@@ -83,6 +85,44 @@ class AanaSDK:
             serve.start(http_options=HTTPOptions(port=self.port, host=self.host))
 
         return self
+
+    def check_enough_resources(self, interrupt: bool = True) -> bool:
+        """Checking availability of enough resources for deploying app's deployments
+
+        Args:
+            interrupt (bool): Whether to stop deploying the app. Defaults to True.
+        
+        Raises:
+            NotEnoughResources: The unavailable resource.
+        """
+        available_resources = Resources(**ray.available_resources())
+
+        required_resources = Resources()
+        for instance in self.deployments.values():
+            required_resources += Resources.from_dict(instance.ray_actor_options)
+
+        exceptions: list[NotEnoughResources] = []
+        if required_resources.CPU > available_resources.CPU:
+            e = NotEnoughResources("CPU", available_resources.CPU, required_resources.CPU)
+            exceptions.append(e)
+        if required_resources.GPU > available_resources.GPU:
+            e = NotEnoughResources("GPU", available_resources.GPU, required_resources.GPU)
+            exceptions.append(e)
+        if required_resources.memory > available_resources.memory:
+            e = NotEnoughResources("memory", available_resources.memory, required_resources.memory)
+            exceptions.append(e)
+        if required_resources.object_store_memory > available_resources.object_store_memory:
+            e = NotEnoughResources("object_store_memory", available_resources.object_store_memory, required_resources.object_store_memory)
+            exceptions.append(e)
+
+        if interrupt:
+            for e in exceptions:
+                raise e
+        else:
+            for e in exceptions:
+                rprint(f"[red]{e.message}[/red]")
+
+        return len(exceptions) == 0
 
     def migrate(self):
         """Run Alembic migrations."""

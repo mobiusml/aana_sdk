@@ -70,6 +70,7 @@ def deploy(
         aana_app.migrate()
     show_logs = not hide_logs
     aana_app.connect(port=port, host=host, show_logs=show_logs, address=ray_address)
+    aana_app.check_enough_resources()
     aana_app.deploy(blocking=True)
 
 
