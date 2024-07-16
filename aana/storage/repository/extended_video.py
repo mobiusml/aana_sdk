@@ -34,9 +34,7 @@ class ExtendedVideoRepository(VideoRepository[ExtendedVideoEntity]):
         )
         self.session.add(video_entity)
         self.session.commit()
-        return {
-            "media_id": video_entity.id,
-        }
+        return video_entity
 
     def get_status(self, media_id: MediaId) -> VideoProcessingStatus:
         """Get the status of a video.

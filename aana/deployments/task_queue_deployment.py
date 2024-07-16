@@ -6,16 +6,13 @@ import orjson
 import ray
 from pydantic import BaseModel, Field
 from ray import serve
+from sqlalchemy.orm import Session
 
 from aana.api.exception_handler import custom_exception_handler
 from aana.configs.settings import settings as aana_settings
 from aana.deployments.base_deployment import BaseDeployment
 from aana.storage.models.task import Status as TaskStatus
-from aana.storage.services.task import (
-    get_task,
-    get_unprocessed_tasks,
-    update_task_status,
-)
+from aana.storage.repository.task import TaskRepository
 from aana.utils.asyncio import run_async
 
 
@@ -39,6 +36,11 @@ class TaskQueueDeployment(BaseDeployment):
             lambda fut: fut.result() if not fut.cancelled() else None
         )
 
+        from aana.storage import engine
+
+        self.session = Session(engine)
+        self.task_repo = TaskRepository()
+
     def check_health(self):
         """Check the health of the deployment."""
         # if the loop is not running, the deployment is unhealthy
@@ -52,7 +54,7 @@ class TaskQueueDeployment(BaseDeployment):
         # Set all non-completed tasks to NOT_FINISHED
         for task_id, future in self.futures.items():
             if not future.done():
-                update_task_status(task_id, TaskStatus.NOT_FINISHED, 0)
+                self.task_repo.update_status(task_id, TaskStatus.NOT_FINISHED, 0)
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
@@ -77,19 +79,19 @@ class TaskQueueDeployment(BaseDeployment):
         async def handle_task(task_id: str):
             """Process a task."""
             # Fetch the task details
-            task = get_task(task_id)
+            task = self.task_repo.read(task_id)
             # Initially set the task status to RUNNING
-            update_task_status(task_id, TaskStatus.RUNNING, 0)
+            self.task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
             try:
                 # Call the endpoint asynchronously
                 out = await self.handle.call_endpoint.remote(task.endpoint, **task.data)
                 # Update the task status to COMPLETED
-                update_task_status(task_id, TaskStatus.COMPLETED, 100, out)
+                self.task_repo.update_status(task_id, TaskStatus.COMPLETED, 100, out)
             except Exception as e:
                 # Handle the exception and update the task status to FAILED
                 error_response = custom_exception_handler(None, e)
                 error = orjson.loads(error_response.body)
-                update_task_status(task_id, TaskStatus.FAILED, 0, error)
+                self.task_repo.update_status(task_id, TaskStatus.FAILED, 0, error)
 
         def run_handle_task(task_id):
             """Wrapper to run the handle_task function."""
@@ -123,7 +125,7 @@ class TaskQueueDeployment(BaseDeployment):
                 await asyncio.sleep(0.1)
                 continue
 
-            tasks = get_unprocessed_tasks(
+            tasks = self.task_repo.get_unprocessed_tasks(
                 limit=aana_settings.task_queue.num_workers * 2
             )
 
@@ -154,6 +156,6 @@ class TaskQueueDeployment(BaseDeployment):
                     # wait a bit to give the thread pool time to process tasks
                     await asyncio.sleep(0.1)
                     break
-                update_task_status(task.id, TaskStatus.ASSIGNED, 0)
+                self.task_repo.update_status(task.id, TaskStatus.ASSIGNED, 0)
                 future = self.thread_pool.submit(run_handle_task, task.id)
                 self.futures[task.id] = future
