@@ -10,20 +10,16 @@ from aana.core.models.asr import (
     AsrTranscriptionInfo,
 )
 from aana.core.models.media import MediaId
-from aana.core.models.vad import VadParams
 from aana.core.models.video import VideoInput
-from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
+from aana.core.models.whisper import WhisperParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio
 from aana.projects.whisper.const import asr_model_name
-from aana.storage.services.video import (
-    delete_media,
-    load_video_transcription,
-    save_video,
-    save_video_transcription,
-)
+from aana.storage.repository.media import MediaRepository
+from aana.storage.repository.transcript import TranscriptRepository
+from aana.storage.repository.video import VideoRepository
 
 if TYPE_CHECKING:
     from aana.core.models.audio import Audio
@@ -96,8 +92,10 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         await super().initialize()
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
+        self.transcript_repo = TranscriptRepository(self.session)
+        self.video_repo = VideoRepository(self.session)
 
     async def run(
         self, video: VideoInput, whisper_params: WhisperParams
@@ -124,18 +122,16 @@ class TranscribeVideoEndpoint(Endpoint):
         segments = sum(segments_list, AsrSegments())
         transcription_info = sum(transcription_info_list, AsrTranscriptionInfo())
 
-        save_video(
-            video=video_obj, duration=0.0
-        )  # set duration to 0.0 as we don't have the actual duration
+        self.video_repo.save(video_obj)
 
-        transcription_record = save_video_transcription(
+        transcription_entity = self.transcript_repo.save(
             model_name=asr_model_name,
             media_id=video_obj.media_id,
             transcription=transcription,
             segments=segments,
             transcription_info=transcription_info,
         )
-        yield {"transcription_id": transcription_record["transcription_id"]}
+        yield {"transcription_id": transcription_entity.id}
 
 
 # TODO: Update once batched whisper PR is merged
@@ -198,9 +194,14 @@ class TranscribeVideoEndpoint(Endpoint):
 class LoadTranscriptionEndpoint(Endpoint):
     """Load transcription endpoint."""
 
+    async def initialize(self):
+        """Initialize the endpoint."""
+        await super().initialize()
+        self.transcript_repo = TranscriptRepository(self.session)
+
     async def run(self, media_id: MediaId) -> TranscriptionOutput:
         """Load transcription."""
-        transcription_record = load_video_transcription(
+        transcription_record = self.transcript_repo.get_transcript(
             model_name=asr_model_name, media_id=media_id
         )
         return {
@@ -213,7 +214,12 @@ class LoadTranscriptionEndpoint(Endpoint):
 class DeleteMediaEndpoint(Endpoint):
     """Delete media endpoint."""
 
+    async def initialize(self):
+        """Initialize the endpoint."""
+        await super().initialize()
+        self.media_repo = MediaRepository(self.session)
+
     async def run(self, media_id: MediaId) -> DeleteMediaOutput:
         """Delete media."""
-        delete_media(media_id=media_id)
+        self.media_repo.delete(media_id)
         return {"media_id": media_id}

@@ -77,11 +77,11 @@ class TaskRepository(BaseRepository[TaskEntity]):
                         TaskEntity.status.in_(
                             [TaskStatus.RUNNING, TaskStatus.ASSIGNED]
                         ),
-                        TaskEntity.update_ts <= cutoff_time,
+                        TaskEntity.updated_at <= cutoff_time,
                     ),
                 )
             )
-            .order_by(desc(TaskEntity.priority), TaskEntity.create_ts)
+            .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
             .limit(limit)
             .all()
         )

@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from sqlalchemy.orm import Session
 
 from aana.core.models.media import MediaId
@@ -5,13 +7,15 @@ from aana.exceptions.db import MediaIdAlreadyExistsException, NotFoundException
 from aana.storage.models.media import MediaEntity
 from aana.storage.repository.base import BaseRepository
 
+M = TypeVar("M", bound=MediaEntity)
 
-class MediaRepository(BaseRepository[MediaEntity]):
+
+class MediaRepository(BaseRepository[M]):
     """Repository for media files."""
 
-    def __init__(self, session: Session):
+    def __init__(self, session: Session, model_class: type[M] = MediaEntity):
         """Constructor."""
-        super().__init__(session, MediaEntity)
+        super().__init__(session, model_class)
 
     def check_media_exists(self, media_id: MediaId) -> bool:
         """Checks if a media file exists in the database.

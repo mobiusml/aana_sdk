@@ -4,16 +4,11 @@ from enum import Enum
 from sqlalchemy import (
     JSON,
     UUID,
-    Column,
-    DateTime,
-    Float,
-    Integer,
     PickleType,
-    String,
 )
-from sqlalchemy import Enum as SqlEnum
+from sqlalchemy.orm import Mapped, mapped_column
 
-from aana.storage.models.base import BaseEntity, TimeStampEntity
+from aana.storage.models.base import BaseEntity, TimeStampEntity, timestamp
 
 
 class Status(str, Enum):
@@ -31,38 +26,34 @@ class TaskEntity(BaseEntity, TimeStampEntity):
     """Table for task items."""
 
     __tablename__ = "tasks"
-    id = Column(UUID, primary_key=True, default=uuid.uuid4, comment="Task ID")
-    endpoint = Column(
-        String, nullable=False, comment="The endpoint to which the task is assigned"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID, primary_key=True, default=uuid.uuid4, comment="Task ID"
     )
-    data = Column(PickleType, nullable=False, comment="Data for the task")
-    status = Column(
-        SqlEnum(Status),
-        nullable=False,
+    endpoint: Mapped[str] = mapped_column(
+        nullable=False, comment="The endpoint to which the task is assigned"
+    )
+    data = mapped_column(PickleType, nullable=False, comment="Data for the task")
+    status: Mapped[Status] = mapped_column(
         default=Status.CREATED,
         comment="Status of the task",
     )
-    priority = Column(
-        Integer,
-        nullable=False,
-        default=0,
-        comment="Priority of the task (0 is the lowest)",
+    priority: Mapped[int] = mapped_column(
+        nullable=False, default=0, comment="Priority of the task (0 is the lowest)"
     )
-    assigned_at = Column(
-        DateTime(timezone=True),
-        nullable=True,
+    assigned_at: Mapped[timestamp | None] = mapped_column(
         comment="Timestamp when the task was assigned",
     )
-    completed_at = Column(
-        DateTime(timezone=True),
-        nullable=True,
+    completed_at: Mapped[timestamp | None] = mapped_column(
         comment="Timestamp when the task was completed",
     )
-    progress = Column(
-        Float, nullable=False, default=0.0, comment="Progress of the task in percentage"
+    progress: Mapped[float] = mapped_column(
+        nullable=False, default=0.0, comment="Progress of the task in percentage"
     )
-    result = Column(JSON, nullable=True, comment="Result of the task in JSON format")
+    result: Mapped[dict | None] = mapped_column(
+        JSON, comment="Result of the task in JSON format"
+    )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation of the task."""
         return f"<TaskEntity(id={self.id}, endpoint={self.endpoint}, status={self.status}, priority={self.priority}, progress={self.progress})>"
