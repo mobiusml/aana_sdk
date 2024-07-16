@@ -1,6 +1,5 @@
 import hashlib
 from pathlib import Path
-from typing_extensions import TypedDict
 
 import yt_dlp
 from yt_dlp.utils import DownloadError
@@ -24,7 +23,6 @@ def get_video_metadata(video_url: str) -> VideoMetadata:
     Raises:
         DownloadException: Request does not succeed.
     """
-
     ydl_options = {
         "extract_flat": True,
         "hls_prefer_native": True,

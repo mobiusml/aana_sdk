@@ -1,8 +1,8 @@
-"""Initialize.
+"""init
 
-Revision ID: 6d95f693a277
+Revision ID: b77fb9a2c1f4
 Revises: 
-Create Date: 2024-06-12 14:06:40.486683
+Create Date: 2024-07-16 10:14:08.164000
 
 """
 from collections.abc import Sequence
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "6d95f693a277"
+revision: str = "b77fb9a2c1f4"
 down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -29,19 +29,20 @@ def upgrade() -> None:
             comment="Unique identifier for the media",
         ),
         sa.Column(
-            "media_type", sa.String(), nullable=True, comment="The type of media"
+            "media_type", sa.String(), nullable=False, comment="The type of media"
         ),
         sa.Column(
-            "create_ts",
+            "created_at",
             sa.DateTime(timezone=True),
             server_default=sa.text("(CURRENT_TIMESTAMP)"),
-            nullable=True,
+            nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
-            "update_ts",
+            "updated_at",
             sa.DateTime(timezone=True),
-            nullable=True,
+            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            nullable=False,
             comment="Timestamp when row is updated",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_media")),
@@ -79,12 +80,14 @@ def upgrade() -> None:
         sa.Column(
             "assigned_at",
             sa.DateTime(timezone=True),
+            server_default=sa.text("(CURRENT_TIMESTAMP)"),
             nullable=True,
             comment="Timestamp when the task was assigned",
         ),
         sa.Column(
             "completed_at",
             sa.DateTime(timezone=True),
+            server_default=sa.text("(CURRENT_TIMESTAMP)"),
             nullable=True,
             comment="Timestamp when the task was completed",
         ),
@@ -101,16 +104,17 @@ def upgrade() -> None:
             comment="Result of the task in JSON format",
         ),
         sa.Column(
-            "create_ts",
+            "created_at",
             sa.DateTime(timezone=True),
             server_default=sa.text("(CURRENT_TIMESTAMP)"),
-            nullable=True,
+            nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
-            "update_ts",
+            "updated_at",
             sa.DateTime(timezone=True),
-            nullable=True,
+            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            nullable=False,
             comment="Timestamp when row is updated",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_tasks")),
@@ -118,41 +122,35 @@ def upgrade() -> None:
     op.create_table(
         "video",
         sa.Column("id", sa.String(length=36), nullable=False),
+        sa.Column("path", sa.String(), nullable=True, comment="Path"),
+        sa.Column("url", sa.String(), nullable=True, comment="URL"),
+        sa.Column("title", sa.String(), nullable=True, comment="Title"),
+        sa.Column("description", sa.String(), nullable=True, comment="Description"),
+        sa.ForeignKeyConstraint(["id"], ["media.id"], name=op.f("fk_video_id_media")),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_video")),
+    )
+    op.create_table(
+        "extended_video",
+        sa.Column("id", sa.String(length=36), nullable=False),
         sa.Column(
-            "duration", sa.Float(), nullable=True, comment="Media duration in seconds"
-        ),
-        sa.Column(
-            "orig_filename", sa.String(), nullable=True, comment="Original filename"
-        ),
-        sa.Column("orig_url", sa.String(), nullable=True, comment="Original URL"),
-        sa.Column("title", sa.String(), nullable=True, comment="Title of the video"),
-        sa.Column(
-            "description",
-            sa.String(),
-            nullable=True,
-            comment="Description of the video",
+            "duration", sa.Float(), nullable=False, comment="Video duration in seconds"
         ),
         sa.Column(
             "status",
-            sa.Enum("CREATED", "RUNNING", "COMPLETED", "FAILED", name="status"),
+            sa.Enum(
+                "CREATED",
+                "RUNNING",
+                "COMPLETED",
+                "FAILED",
+                name="videoprocessingstatus",
+            ),
             nullable=False,
-            comment="Status of the video",
+            comment="Processing status",
         ),
-        sa.Column(
-            "create_ts",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
-            nullable=True,
-            comment="Timestamp when row is inserted",
+        sa.ForeignKeyConstraint(
+            ["id"], ["video.id"], name=op.f("fk_extended_video_id_video")
         ),
-        sa.Column(
-            "update_ts",
-            sa.DateTime(timezone=True),
-            nullable=True,
-            comment="Timestamp when row is updated",
-        ),
-        sa.ForeignKeyConstraint(["id"], ["media.id"], name=op.f("fk_video_id_media")),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_video")),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_extended_video")),
     )
     op.create_table(
         "captions",
@@ -172,28 +170,34 @@ def upgrade() -> None:
         sa.Column(
             "frame_id",
             sa.Integer(),
-            nullable=True,
+            nullable=False,
             comment="The 0-based frame id of video for caption",
         ),
-        sa.Column("caption", sa.String(), nullable=True, comment="Frame caption"),
+        sa.Column("caption", sa.String(), nullable=False, comment="Frame caption"),
         sa.Column(
-            "timestamp", sa.Float(), nullable=True, comment="Frame timestamp in seconds"
+            "timestamp",
+            sa.Float(),
+            nullable=False,
+            comment="Frame timestamp in seconds",
         ),
         sa.Column(
-            "create_ts",
+            "created_at",
             sa.DateTime(timezone=True),
             server_default=sa.text("(CURRENT_TIMESTAMP)"),
-            nullable=True,
+            nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
-            "update_ts",
+            "updated_at",
             sa.DateTime(timezone=True),
-            nullable=True,
+            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            nullable=False,
             comment="Timestamp when row is updated",
         ),
         sa.ForeignKeyConstraint(
-            ["media_id"], ["video.id"], name=op.f("fk_captions_media_id_video")
+            ["media_id"],
+            ["extended_video.id"],
+            name=op.f("fk_captions_media_id_extended_video"),
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_captions")),
     )
@@ -215,39 +219,42 @@ def upgrade() -> None:
         sa.Column(
             "transcript",
             sa.String(),
-            nullable=True,
+            nullable=False,
             comment="Full text transcript of media",
         ),
         sa.Column(
-            "segments", sa.JSON(), nullable=True, comment="Segments of the transcript"
+            "segments", sa.JSON(), nullable=False, comment="Segments of the transcript"
         ),
         sa.Column(
             "language",
             sa.String(),
-            nullable=True,
+            nullable=False,
             comment="Language of the transcript as predicted by model",
         ),
         sa.Column(
             "language_confidence",
             sa.Float(),
-            nullable=True,
+            nullable=False,
             comment="Confidence score of language prediction",
         ),
         sa.Column(
-            "create_ts",
+            "created_at",
             sa.DateTime(timezone=True),
             server_default=sa.text("(CURRENT_TIMESTAMP)"),
-            nullable=True,
+            nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
-            "update_ts",
+            "updated_at",
             sa.DateTime(timezone=True),
-            nullable=True,
+            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            nullable=False,
             comment="Timestamp when row is updated",
         ),
         sa.ForeignKeyConstraint(
-            ["media_id"], ["video.id"], name=op.f("fk_transcripts_media_id_video")
+            ["media_id"],
+            ["extended_video.id"],
+            name=op.f("fk_transcripts_media_id_extended_video"),
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_transcripts")),
     )
@@ -259,6 +266,7 @@ def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table("transcripts")
     op.drop_table("captions")
+    op.drop_table("extended_video")
     op.drop_table("video")
     op.drop_table("tasks")
     op.drop_table("media")

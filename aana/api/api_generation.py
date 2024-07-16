@@ -8,6 +8,7 @@ from fastapi import FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import Field, ValidationError, create_model
 from pydantic.main import BaseModel
+from sqlalchemy.orm import Session
 
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
@@ -18,6 +19,7 @@ from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
 )
+from aana.storage.engine import engine
 from aana.storage.services.task import create_task
 
 
@@ -60,9 +62,11 @@ class Endpoint:
     summary: str
     initialized: bool = False
     event_handlers: list[EventHandler] | None = None
+    session: Session | None = None
 
     async def initialize(self):
         """Initialize the endpoint."""
+        self.session = Session(engine)
         self.initialized = True
 
     async def run(self, *args, **kwargs):

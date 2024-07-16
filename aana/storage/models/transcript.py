@@ -2,11 +2,11 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import JSON, CheckConstraint, Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import JSON, CheckConstraint, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from aana.core.models.media import MediaId  # noqa: TCH001
 from aana.storage.models.base import BaseEntity, TimeStampEntity
-from aana.storage.types import MediaIdSqlType
 
 if TYPE_CHECKING:
     from aana.core.models.asr import (
@@ -14,7 +14,6 @@ if TYPE_CHECKING:
         AsrTranscription,
         AsrTranscriptionInfo,
     )
-    from aana.core.models.media import MediaId
 
 
 class TranscriptEntity(BaseEntity, TimeStampEntity):
@@ -22,30 +21,30 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "transcripts"
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    model = Column(
-        String, nullable=False, comment="Name of model used to generate transcript"
+    id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
+    model: Mapped[str] = mapped_column(
+        nullable=False, comment="Name of model used to generate transcript"
     )
-    media_id = Column(
-        MediaIdSqlType,
-        ForeignKey("video.id"),
+    media_id: Mapped[MediaId] = mapped_column(
+        ForeignKey("extended_video.id"),
         nullable=False,
         comment="Foreign key to video table",
     )
-    transcript = Column(String, comment="Full text transcript of media")
-    segments = Column(JSON, comment="Segments of the transcript")
-    language = Column(
-        String, comment="Language of the transcript as predicted by model"
+    transcript: Mapped[str] = mapped_column(comment="Full text transcript of media")
+    segments: Mapped[dict] = mapped_column(JSON, comment="Segments of the transcript")
+    language: Mapped[str] = mapped_column(
+        comment="Language of the transcript as predicted by model"
     )
-    language_confidence = Column(
-        Float,
+    language_confidence: Mapped[float] = mapped_column(
         CheckConstraint(
             "0 <= language_confidence <= 1", name="language_confidence_value_range"
         ),
         comment="Confidence score of language prediction",
     )
 
-    video = relationship("VideoEntity", back_populates="transcripts", uselist=False)
+    video = relationship(
+        "ExtendedVideoEntity", back_populates="transcripts", uselist=False
+    )
 
     @classmethod
     def from_asr_output(

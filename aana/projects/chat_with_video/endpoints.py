@@ -31,19 +31,11 @@ from aana.projects.chat_with_video.const import (
 from aana.projects.chat_with_video.utils import (
     generate_dialog,
 )
+from aana.storage.models.extended_video import VideoProcessingStatus
 from aana.storage.models.video import Status
-from aana.storage.services.video import (
-    check_media_id_exist,
-    delete_media,
-    get_video_status,
-    load_video_captions,
-    load_video_metadata,
-    load_video_transcription,
-    save_video,
-    save_video_captions,
-    save_video_transcription,
-    update_video_status,
-)
+from aana.storage.repository.caption import CaptionRepository
+from aana.storage.repository.extended_video import ExtendedVideoRepository
+from aana.storage.repository.transcript import TranscriptRepository
 
 if TYPE_CHECKING:
     from aana.core.models.audio import Audio
@@ -105,6 +97,7 @@ class SimpleTranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
+        await super().initialize()
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(
@@ -135,14 +128,17 @@ class IndexVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
+        await super().initialize()
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         self.vad_handle = await AanaDeploymentHandle.create("vad_deployment")
         self.captioning_handle = await AanaDeploymentHandle.create(
             "captioning_deployment"
         )
-        await super().initialize()
+        self.extended_video_repo = ExtendedVideoRepository(self.session)
+        self.transcript_repo = TranscriptRepository(self.session)
+        self.caption_repo = CaptionRepository(self.session)
 
-    async def run(
+    async def run(  # noqa: C901
         self,
         video: VideoInput,
         video_params: VideoParams,
@@ -151,7 +147,7 @@ class IndexVideoEndpoint(Endpoint):
     ) -> AsyncGenerator[IndexVideoOutput, None]:
         """Transcribe video in chunks."""
         media_id = video.media_id
-        if check_media_id_exist(media_id):
+        if self.extended_video_repo.check_media_exists(media_id):
             raise MediaIdAlreadyExistsException(table_name="media", media_id=video)
 
         video_duration = None
@@ -178,7 +174,7 @@ class IndexVideoEndpoint(Endpoint):
                 max_len=max_video_len,
             )
 
-        save_video(video=video_obj, duration=video_duration)
+        self.extended_video_repo.save(video=video_obj, duration=video_duration)
         yield {
             "media_id": media_id,
             "metadata": VideoMetadata(
@@ -189,7 +185,9 @@ class IndexVideoEndpoint(Endpoint):
         }
 
         try:
-            update_video_status(media_id=media_id, status=Status.RUNNING)
+            self.extended_video_repo.update_status(
+                media_id, VideoProcessingStatus.RUNNING
+            )
             audio: Audio = extract_audio(video=video_obj)
 
             # TODO: Update once batched whisper PR is merged
@@ -239,7 +237,7 @@ class IndexVideoEndpoint(Endpoint):
                     "timestamps": frames_dict["timestamps"],
                 }
 
-            save_video_transcription_output = save_video_transcription(
+            transcription_entity = self.transcript_repo.save(
                 model_name=asr_model_name,
                 media_id=video_obj.media_id,
                 transcription=transcription,
@@ -247,7 +245,7 @@ class IndexVideoEndpoint(Endpoint):
                 transcription_info=transcription_info,
             )
 
-            save_video_captions_output = save_video_captions(
+            caption_entities = self.caption_repo.save(
                 model_name=captioning_model_name,
                 media_id=video_obj.media_id,
                 captions=captions,
@@ -256,14 +254,18 @@ class IndexVideoEndpoint(Endpoint):
             )
 
             yield {
-                "transcription_id": save_video_transcription_output["transcription_id"],
-                "caption_ids": save_video_captions_output["caption_ids"],
+                "transcription_id": transcription_entity.id,
+                "caption_ids": [c.id for c in caption_entities],
             }
         except BaseException:
-            update_video_status(media_id=media_id, status=Status.FAILED)
+            self.extended_video_repo.update_status(
+                media_id, VideoProcessingStatus.FAILED
+            )
             raise
         else:
-            update_video_status(media_id=media_id, status=Status.COMPLETED)
+            self.extended_video_repo.update_status(
+                media_id, VideoProcessingStatus.COMPLETED
+            )
 
 
 class VideoChatEndpoint(Endpoint):
@@ -271,15 +273,18 @@ class VideoChatEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
         await super().initialize()
+        self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
+        self.transcript_repo = TranscriptRepository(self.session)
+        self.caption_repo = CaptionRepository(self.session)
+        self.video_repo = ExtendedVideoRepository(self.session)
 
     async def run(
         self, media_id: MediaId, question: Question, sampling_params: SamplingParams
     ) -> AsyncGenerator[VideoChatEndpointOutput, None]:
         """Run the video chat endpoint."""
         # check to see if video already processed
-        video_status = get_video_status(media_id=media_id)
+        video_status = self.video_repo.get_status(media_id)
         if video_status != Status.COMPLETED:
             raise UnfinishedVideoException(
                 media_id=media_id,
@@ -287,20 +292,20 @@ class VideoChatEndpoint(Endpoint):
                 message=f"The video data is not available, status: {video_status}",
             )
 
-        load_video_transcription_output = load_video_transcription(
-            media_id=media_id, model_name=asr_model_name
+        transcription_output = self.transcript_repo.get_transcript(
+            model_name=asr_model_name, media_id=media_id
         )
 
-        loaded_video_captions_output = load_video_captions(
-            media_id=media_id, model_name=captioning_model_name
+        captions_output = self.caption_repo.get_captions(
+            model_name=captioning_model_name, media_id=media_id
         )
 
-        video_metadata = load_video_metadata(media_id=media_id)
+        video_metadata = self.video_repo.get_metadata(media_id)
 
         timeline_output = generate_combined_timeline(
-            transcription_segments=load_video_transcription_output["segments"],
-            captions=loaded_video_captions_output["captions"],
-            caption_timestamps=loaded_video_captions_output["timestamps"],
+            transcription_segments=transcription_output["segments"],
+            captions=captions_output["captions"],
+            caption_timestamps=captions_output["timestamps"],
         )
         timeline_json = json.dumps(
             timeline_output["timeline"], indent=4, separators=(",", ": ")
@@ -320,9 +325,14 @@ class VideoChatEndpoint(Endpoint):
 class LoadVideoMetadataEndpoint(Endpoint):
     """Load video metadata endpoint."""
 
+    async def initialize(self):
+        """Initialize the endpoint."""
+        await super().initialize()
+        self.video_repo = ExtendedVideoRepository(self.session)
+
     async def run(self, media_id: MediaId) -> LoadVideoMetadataOutput:
         """Load video metadata."""
-        video_metadata: VideoMetadata = load_video_metadata(media_id=media_id)
+        video_metadata = self.video_repo.get_metadata(media_id)
         return {
             "metadata": video_metadata,
         }
@@ -331,9 +341,14 @@ class LoadVideoMetadataEndpoint(Endpoint):
 class GetVideoStatusEndpoint(Endpoint):
     """Get video status endpoint."""
 
+    async def initialize(self):
+        """Initialize the endpoint."""
+        await super().initialize()
+        self.video_repo = ExtendedVideoRepository(self.session)
+
     async def run(self, media_id: MediaId) -> VideoStatusOutput:
         """Load video metadata."""
-        video_status: Status = get_video_status(media_id=media_id)
+        video_status = self.video_repo.get_status(media_id)
         return {
             "status": video_status,
         }
@@ -342,7 +357,12 @@ class GetVideoStatusEndpoint(Endpoint):
 class DeleteMediaEndpoint(Endpoint):
     """Delete media endpoint."""
 
+    async def initialize(self):
+        """Initialize the endpoint."""
+        await super().initialize()
+        self.video_repo = ExtendedVideoRepository(self.session)
+
     async def run(self, media_id: MediaId) -> DeleteMediaOutput:
         """Delete media."""
-        delete_media(media_id=media_id)
+        self.video_repo.delete(media_id)
         return {"media_id": media_id}
