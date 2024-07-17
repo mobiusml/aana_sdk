@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from aana.core.models.media import MediaId
 from aana.storage.models.caption import CaptionEntity
+from aana.storage.models.extended_video_caption import ExtendedVideoCaptionEntity
 from aana.storage.models.transcript import TranscriptEntity
 from aana.storage.models.video import VideoEntity
 
@@ -31,8 +32,8 @@ class ExtendedVideoEntity(VideoEntity):
         comment="Processing status",
     )
 
-    captions: Mapped[list[CaptionEntity]] = relationship(
-        "CaptionEntity",
+    captions: Mapped[list[ExtendedVideoCaptionEntity]] = relationship(
+        "ExtendedVideoCaptionEntity",
         back_populates="video",
         cascade="all, delete",
         uselist=True,

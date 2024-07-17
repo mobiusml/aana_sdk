@@ -17,8 +17,10 @@ from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio
 from aana.projects.whisper.const import asr_model_name
+from aana.storage.repository.extended_video_transcript import (
+    ExtendedVideoTranscriptRepository,
+)
 from aana.storage.repository.media import MediaRepository
-from aana.storage.repository.transcript import TranscriptRepository
 from aana.storage.repository.video import VideoRepository
 
 if TYPE_CHECKING:
@@ -94,7 +96,7 @@ class TranscribeVideoEndpoint(Endpoint):
         """Initialize the endpoint."""
         await super().initialize()
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
-        self.transcript_repo = TranscriptRepository(self.session)
+        self.transcript_repo = ExtendedVideoTranscriptRepository(self.session)
         self.video_repo = VideoRepository(self.session)
 
     async def run(
@@ -197,7 +199,7 @@ class LoadTranscriptionEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         await super().initialize()
-        self.transcript_repo = TranscriptRepository(self.session)
+        self.transcript_repo = ExtendedVideoTranscriptRepository(self.session)
 
     async def run(self, media_id: MediaId) -> TranscriptionOutput:
         """Load transcription."""

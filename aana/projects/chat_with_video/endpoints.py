@@ -33,9 +33,13 @@ from aana.projects.chat_with_video.utils import (
 )
 from aana.storage.models.extended_video import VideoProcessingStatus
 from aana.storage.models.video import Status
-from aana.storage.repository.caption import CaptionRepository
 from aana.storage.repository.extended_video import ExtendedVideoRepository
-from aana.storage.repository.transcript import TranscriptRepository
+from aana.storage.repository.extended_video_caption import (
+    ExtendedVideoCaptionRepository,
+)
+from aana.storage.repository.extended_video_transcript import (
+    ExtendedVideoTranscriptRepository,
+)
 
 if TYPE_CHECKING:
     from aana.core.models.audio import Audio
@@ -135,8 +139,8 @@ class IndexVideoEndpoint(Endpoint):
             "captioning_deployment"
         )
         self.extended_video_repo = ExtendedVideoRepository(self.session)
-        self.transcript_repo = TranscriptRepository(self.session)
-        self.caption_repo = CaptionRepository(self.session)
+        self.transcript_repo = ExtendedVideoTranscriptRepository(self.session)
+        self.caption_repo = ExtendedVideoCaptionRepository(self.session)
 
     async def run(  # noqa: C901
         self,
@@ -245,7 +249,7 @@ class IndexVideoEndpoint(Endpoint):
                 transcription_info=transcription_info,
             )
 
-            caption_entities = self.caption_repo.save(
+            caption_entities = self.caption_repo.save_all(
                 model_name=captioning_model_name,
                 media_id=video_obj.media_id,
                 captions=captions,
@@ -275,8 +279,8 @@ class VideoChatEndpoint(Endpoint):
         """Initialize the endpoint."""
         await super().initialize()
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
-        self.transcript_repo = TranscriptRepository(self.session)
-        self.caption_repo = CaptionRepository(self.session)
+        self.transcript_repo = ExtendedVideoTranscriptRepository(self.session)
+        self.caption_repo = ExtendedVideoCaptionRepository(self.session)
         self.video_repo = ExtendedVideoRepository(self.session)
 
     async def run(
