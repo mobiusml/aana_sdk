@@ -36,11 +36,10 @@ class FaceRecognitionEndpoint(Endpoint):
         self.face_featextractor_handle = await AanaDeploymentHandle.create(
             "facefeat_extractor_deployment"
         )
-        # await AanaDeploymentHandle.create("face_detector")
+        
 
     async def run(self, images: ImageInputList) -> FaceRecognitionEndpointOutput:
         """Run the face detection endpoint."""
-
         images = images.convert_input_to_object()
         face_detection_output = await self.face_detector_handle.predict(images)
 
@@ -51,14 +50,12 @@ class FaceRecognitionEndpoint(Endpoint):
         return FaceRecognitionEndpointOutput(
             face_features_per_image=face_featextract_output["facefeats_per_image"]
         )
+    
 
 
 class AddReferenceFaceEndpointOutput(TypedDict):
     """Add reference face endpoint output."""
-
     status: str
-    # feature_extractor_name: str
-    # norms: list
 
 
 class AddReferenceFaceEndpoint(Endpoint):
@@ -72,18 +69,67 @@ class AddReferenceFaceEndpoint(Endpoint):
         self.face_featextractor_handle = await AanaDeploymentHandle.create(
             "facefeat_extractor_deployment"
         )
-
         self.face_database_handle = await AanaDeploymentHandle.create(
             "facedatabase_deployment"
         )
 
-        # Load reference face database
 
     async def run(
         self, image: ImageInput, person_name: str, image_id: str
     ) -> AddReferenceFaceEndpointOutput:
         """Add a reference face to the face database."""
 
+        image = image.convert_input_to_object()
+        face_detection_output = await self.face_detector_handle.predict([image])
+
+        face_featextract_output = await self.face_featextractor_handle.predict(
+            [image], face_detection_output["keypoints"]
+        )
+
+        face_featextract_output = face_featextract_output["facefeats_per_image"][0]
+        if (
+            len(face_featextract_output["face_feats"]) == 1
+        ):  # Only one face detected. Add to database
+            face_feat = face_featextract_output["face_feats"][0]
+            # face_norm = face_featextract_output["norms"][0]
+
+            add_face_status = await self.face_database_handle.add_reference_face(
+                face_feat, person_name, image_id
+            )
+
+            return AddReferenceFaceEndpointOutput(status=add_face_status)
+
+        else:
+            return AddReferenceFaceEndpointOutput(status="failed")
+        
+
+class RecognizeFacesEndpointOutput(TypedDict):
+    """Face recognition endpoint output."""
+
+    identified_faces: str
+    # feature_extractor_name: str
+    # norms: list
+
+
+class RecognizeFacesEndpoint(Endpoint):
+    """Face recognition endpoint endpoint."""
+
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.face_detector_handle = await AanaDeploymentHandle.create(
+            "face_detector_deployment"
+        )
+        self.face_featextractor_handle = await AanaDeploymentHandle.create(
+            "facefeat_extractor_deployment"
+        )
+        self.face_database_handle = await AanaDeploymentHandle.create(
+            "facedatabase_deployment"
+        )
+
+    async def run(
+        self, image: ImageInput
+    ) -> RecognizeFacesEndpointOutput:
+        """Recognize faces in images endpoint."""
         image = image.convert_input_to_object()
         face_detection_output = await self.face_detector_handle.predict([image])
 
@@ -170,7 +216,7 @@ class AddReferenceFaceEndpoint(Endpoint):
 #             frame_ids=frame_ids,
 #         )
 
-        yield {
-            "transcription_id": save_video_transcription_output["transcription_id"],
-            "caption_ids": save_video_captions_output["caption_ids"],
-        }
+        # yield {
+        #     "transcription_id": save_video_transcription_output["transcription_id"],
+        #     "caption_ids": save_video_captions_output["caption_ids"],
+        # }

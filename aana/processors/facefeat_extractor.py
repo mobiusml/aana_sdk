@@ -3,6 +3,7 @@ from collections import namedtuple
 import numpy as np
 import torch
 import torch.nn as nn
+from huggingface_hub import hf_hub_download
 from skimage import transform
 from torch.nn import (
     BatchNorm1d,
@@ -17,18 +18,26 @@ from torch.nn import (
     Sequential,
     Sigmoid,
 )
+
 from aana.configs.settings import settings
 
 adaface_models = {
-    "ir_50_msceleb": settings.artifacts_dir
-    / "face_verification_weights/adaface_ir50_ms1mv2.ckpt",
-    "ir_50_webface4M": settings.artifacts_dir
-    / "face_verification_weights/adaface_ir50_webface4m.ckpt",
-    "ir_101_webface4M": settings.artifacts_dir
-    / "face_verification_weights/adaface_ir101_webface4m.ckpt",
-    "ir_101_msceleb": settings.artifacts_dir
-    / "face_verification_weights/adaface_ir101_ms1mv3.ckpt",
-    "ir_101_debug": "/nas/dominic/AdaFace/pretrained/adaface_ir101_webface4m.ckpt",
+    "ir_50_msceleb": {
+        "repo_id": "mobiuslabsgmbh/aana_facerecognition",
+        "filename": "face_verification/adaface_ir50_ms1mv2.ckpt",
+    },
+    "ir_50_webface4M": {
+        "repo_id": "mobiuslabsgmbh/aana_facerecognition",
+        "filename": "face_verification/adaface_ir50_webface4m.ckpt",
+    },
+    "ir_101_webface4M": {
+        "repo_id": "mobiuslabsgmbh/aana_facerecognition",
+        "filename": "face_verification/adaface_ir101_webface4m.ckpt",
+    },
+    "ir_101_msceleb": {
+        "repo_id": "mobiuslabsgmbh/aana_facerecognition",
+        "filename": "face_verification/adaface_ir101_ms1mv3.ckpt",
+    },
 }
 
 
@@ -95,7 +104,12 @@ def load_pretrained_model(architecture):
     # load model and pretrained statedict
     assert architecture in adaface_models.keys()
     model = build_model(architecture)
-    statedict = torch.load(adaface_models[architecture])["state_dict"]
+    model_weights_path = hf_hub_download(
+        repo_id=adaface_models[architecture]["repo_id"],
+        filename=adaface_models[architecture]["filename"],
+        local_dir=settings.model_dir,
+    )
+    statedict = torch.load(model_weights_path)["state_dict"]
     model_statedict = {
         key[6:]: val for key, val in statedict.items() if key.startswith("model.")
     }
