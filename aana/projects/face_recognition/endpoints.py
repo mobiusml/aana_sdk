@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from aana.core.models.video import Video
 
 
-class FaceRecognitionEndpointOutput(TypedDict):
+class FaceFeatureExtractionEndpointOutput(TypedDict):
     """Face Recognition endpoint output."""
 
     # image: Annotated[
@@ -25,7 +25,7 @@ class FaceRecognitionEndpointOutput(TypedDict):
     # norms: list
 
 
-class FaceRecognitionEndpoint(Endpoint):
+class FaceFeatureExtractionEndpoint(Endpoint):
     """Face Detection endpoint."""
 
     async def initialize(self):
@@ -38,7 +38,7 @@ class FaceRecognitionEndpoint(Endpoint):
         )
         
 
-    async def run(self, images: ImageInputList) -> FaceRecognitionEndpointOutput:
+    async def run(self, images: ImageInputList) -> FaceFeatureExtractionEndpointOutput:
         """Run the face detection endpoint."""
         images = images.convert_input_to_object()
         face_detection_output = await self.face_detector_handle.predict(images)
@@ -47,7 +47,7 @@ class FaceRecognitionEndpoint(Endpoint):
             images, face_detection_output["keypoints"]
         )
 
-        return FaceRecognitionEndpointOutput(
+        return FaceFeatureExtractionEndpointOutput(
             face_features_per_image=face_featextract_output["facefeats_per_image"]
         )
     
@@ -127,31 +127,21 @@ class RecognizeFacesEndpoint(Endpoint):
         )
 
     async def run(
-        self, image: ImageInput
+        self, images: ImageInputList
     ) -> RecognizeFacesEndpointOutput:
         """Recognize faces in images endpoint."""
-        image = image.convert_input_to_object()
-        face_detection_output = await self.face_detector_handle.predict([image])
+        images = images.convert_input_to_object()
+        face_detection_output = await self.face_detector_handle.predict(images)
 
         face_featextract_output = await self.face_featextractor_handle.predict(
-            [image], face_detection_output["keypoints"]
+            images, face_detection_output["keypoints"]
         )
 
-        face_featextract_output = face_featextract_output["facefeats_per_image"][0]
-        if (
-            len(face_featextract_output["face_feats"]) == 1
-        ):  # Only one face detected. Add to database
-            face_feat = face_featextract_output["face_feats"][0]
-            # face_norm = face_featextract_output["norms"][0]
+        identified_faces = await self.face_database_handle.identify_faces(
+            face_featextract_output["facefeats_per_image"]
+        )
 
-            add_face_status = await self.face_database_handle.add_reference_face(
-                face_feat, person_name, image_id
-            )
-
-            return AddReferenceFaceEndpointOutput(status=add_face_status)
-
-        else:
-            return AddReferenceFaceEndpointOutput(status="failed")
+        return RecognizeFacesEndpointOutput(identified_faces=identified_faces)
 
 
 # class RecognizeFacesVideo(Endpoint):

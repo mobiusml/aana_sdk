@@ -6,7 +6,8 @@ from deployments import (
 
 from aana.projects.face_recognition.endpoints import (
     AddReferenceFaceEndpoint,
-    FaceRecognitionEndpoint,
+    FaceFeatureExtractionEndpoint,
+    RecognizeFacesEndpoint
 )
 from aana.sdk import AanaSDK
 
@@ -27,11 +28,18 @@ deployments = [
 
 endpoints = [
     {
+        "name": "extract_face_features",
+        "path": "/extract_face_features",
+        "summary": "Detect faces and extract their face features",
+        "endpoint_cls": FaceFeatureExtractionEndpoint,
+    },
+    {
         "name": "recognize_faces",
         "path": "/recognize_faces",
-        "summary": "Detect faces and extract their face features",
-        "endpoint_cls": FaceRecognitionEndpoint,
+        "summary": "Detect and identify faces",
+        "endpoint_cls": RecognizeFacesEndpoint,
     },
+    # {
     {
         "name": "add_reference_face",
         "path": "/add_reference_face",
