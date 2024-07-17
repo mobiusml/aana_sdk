@@ -4,6 +4,7 @@ from typing import Any
 import faiss
 import numpy as np
 from pydantic import BaseModel
+from ray import serve
 
 from aana.deployments.base_deployment import BaseDeployment, test_cache
 
@@ -22,7 +23,7 @@ class FaceDatabaseConfig(BaseModel):
     feature_extractor_name: str
 
 
-# @serve.deployment
+@serve.deployment  # Comment
 class FaceDatabaseDeployment(BaseDeployment):
     """Deployment to serve face detector."""
 
