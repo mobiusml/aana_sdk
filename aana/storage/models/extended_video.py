@@ -37,8 +37,8 @@ class ExtendedVideoEntity(VideoEntity):
         cascade="all, delete",
         uselist=True,
     )
-    transcripts: Mapped[list[TranscriptEntity]] = relationship(
-        "TranscriptEntity",
+    transcript: Mapped[list[TranscriptEntity]] = relationship(
+        "ExtendedVideoTranscriptEntity",
         back_populates="video",
         cascade="all, delete",
         uselist=True,

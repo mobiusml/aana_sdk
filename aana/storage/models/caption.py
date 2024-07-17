@@ -15,7 +15,7 @@ if typing.TYPE_CHECKING:
 class CaptionEntity(BaseEntity, TimeStampEntity):
     """ORM model for video captions."""
 
-    __tablename__ = "captions"
+    __tablename__ = "caption"
 
     id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
     model: Mapped[str] = mapped_column(
