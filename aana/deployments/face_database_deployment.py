@@ -14,11 +14,13 @@ class FaceDatabaseConfig(BaseModel):
 
     Attributes:
         face_threshold (float): max distance between query face feature and reference face feature to be considered a match. (Do not go above 1.20)
+        facenorm_threshold (float): min norm of query face feature and reference face feature to be considered a match. (Do not go below 16.0)
         face_features_directory (Path): Path to where the face features will be stored
         feature_extractor_name (str): Name of the face feature extractor model. This name will be used as folder name in face_features_directory to store the features in.
     """
 
     face_threshold: float
+    facenorm_threshold: float
     face_features_directory: Path
     feature_extractor_name: str
 
@@ -38,6 +40,7 @@ class FaceDatabaseDeployment(BaseDeployment):
         self.feat_dim = 512
 
         self.face_threshold = config_obj.face_threshold
+        self.facenorm_threshold = config_obj.facenorm_threshold
         self.facefeat_directory = (
             Path(config_obj.face_features_directory) / config_obj.feature_extractor_name
         )
@@ -76,7 +79,7 @@ class FaceDatabaseDeployment(BaseDeployment):
 
     @test_cache
     async def add_reference_face(
-        self, face_feature: list, person_name: str, image_id: str
+        self, face_feature: list, face_norm: float, person_name: str, image_id: str
     ) -> str:
         """Add face to reference database.
 
@@ -89,24 +92,27 @@ class FaceDatabaseDeployment(BaseDeployment):
             str: success
         """
         if image_id not in self.image_ids:
-            self.person_ids.append(person_name)
-            self.image_ids.append(image_id)
+            if face_norm < self.facenorm_threshold:
+                return "facenorm_too_low"
+            else:
+                self.person_ids.append(person_name)
+                self.image_ids.append(image_id)
 
-            face_feature = np.expand_dims(face_feature, axis=0).astype("float32")
+                face_feature = np.expand_dims(face_feature, axis=0).astype("float32")
 
-            if len(self.features) == 0:
-                self.index = faiss.IndexFlatL2(self.feat_dim)
+                if len(self.features) == 0:
+                    self.index = faiss.IndexFlatL2(self.feat_dim)
 
-            self.index.add(face_feature)
+                self.index.add(face_feature)
 
-            self.features = np.append(self.features, face_feature, axis=0)
+                self.features = np.append(self.features, face_feature, axis=0)
 
-            np.save(
-                Path(self.facefeat_directory) / f"{person_name}|||{image_id}.npy",
-                face_feature,
-            )
+                np.save(
+                    Path(self.facefeat_directory) / f"{person_name}|||{image_id}.npy",
+                    face_feature,
+                )
 
-            return "success"
+                return "success"
         else:
             return "already_exists"
 
@@ -122,45 +128,110 @@ class FaceDatabaseDeployment(BaseDeployment):
         """
         return self.person_ids
 
-    @test_cache
-    async def search(self, face_features: list) -> dict:
-        """Extract face features for all faces.
+    # @test_cache
+    # async def search(self, face_features: list) -> dict:
+    #     """Extract face features for all faces. This is the main method for identifying faces.
 
-        Args:
-            face_features (list[np.array]): list of face_features
+    #     Args:
+    #         face_features (list[np.array]): list of face_features
+
+    #     Returns:
+    #         dict: dict with matched identities.
+    #     """
+    #     query_features = np.array(face_features)
+    #     distances, indices = self.index.search(query_features, 1)
+    #     results = []
+    #     for i, (distances_i, indices_i) in enumerate(
+    #         zip(distances, indices, strict=False)
+    #     ):
+    #         distance = distances_i[0]
+    #         index = indices_i[0]
+
+    #         if index == -1:
+    #             results.append(
+    #                 {"person_id": "unknown", "image_id": "unknown", "distance": 0.0}
+    #             )
+    #         elif distance > self.face_threshold:
+    #             results.append(
+    #                 {
+    #                     "person_id": "unknown",
+    #                     "image_id": "unknown",
+    #                     "distance": float(distance),
+    #                 }
+    #             )
+    #         else:
+    #             results.append(
+    #                 {
+    #                     "person_id": self.person_ids[index],
+    #                     "image_id": self.image_ids[index],
+    #                     "distance": float(distance),
+    #                 }
+    #             )
+    #     return {
+    #         "identities": results,
+    #    }
+    
+    # facefeat_output["facefeats_per_image"][0]["face_feats"]
+    @test_cache
+    async def identify_faces(self, face_features_per_image: list[dict]) -> dict:
+        """Extract face features for all faces in multiple images. This is the main method for identifying faces.
+
+        Args
+            face_features_per_image: list of dicts with face features and norms per image 
 
         Returns:
-            dict: dict with matched identities.
+            dict: dict with matched identities, per image.
         """
-        query_features = np.array(face_features)
-        distances, indices = self.index.search(query_features, 1)
-        results = []
-        for i, (distances_i, indices_i) in enumerate(
-            zip(distances, indices, strict=False)
-        ):
-            distance = distances_i[0]
-            index = indices_i[0]
+        results_per_image = []
+        for face_features in face_features_per_image:
+            query_features = np.array(face_features["face_feats"])
+            distances, indices = self.index.search(query_features, 1)
+            results = []
+            for i, (distances_i, indices_i) in enumerate(
+                zip(distances, indices, strict=False)
+            ):
+                distance = distances_i[0]
+                index = indices_i[0]
+                face_norm = face_features["norms"][i][0]
 
-            if index == -1:
-                results.append(
-                    {"person_id": "unknown", "image_id": "unknown", "distance": 0.0}
-                )
-            elif distance > self.face_threshold:
-                results.append(
-                    {
-                        "person_id": "unknown",
-                        "image_id": "unknown",
-                        "distance": float(distance),
-                    }
-                )
-            else:
-                results.append(
-                    {
-                        "person_id": self.person_ids[index],
-                        "image_id": self.image_ids[index],
-                        "distance": float(distance),
-                    }
-                )
+                if index == -1:
+                    results.append(
+                        {"person_id": "unknown", "image_id": "unknown", "distance": 0.0}
+                    )
+                elif distance > self.face_threshold:
+                    results.append(
+                        {
+                            "person_id": "unknown",
+                            "image_id": "unknown",
+                            "distance": float(distance),
+                            "norm": face_norm,
+                            "quality": "bad",
+                        }
+                    )
+                else:
+                    if face_norm >= self.facenorm_threshold:
+                        results.append(
+                            {
+                                "person_id": self.person_ids[index],
+                                "image_id": self.image_ids[index],
+                                "distance": float(distance),
+                                "norm": face_norm,
+                                "quality": "good",
+                            }
+                        )
+                    else:
+                        results.append(
+                            {
+                                "person_id": self.person_ids[index],
+                                "image_id": self.image_ids[index],
+                                "distance": float(distance),
+                                "norm": face_norm,
+                                "quality": "bad",
+                            }
+                        )
+
+            results_per_image.append(results)
+
         return {
-            "identities": results,
+            "identities_per_image": results_per_image,
         }
