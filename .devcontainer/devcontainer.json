@@ -19,6 +19,10 @@
 	"hostRequirements": {
 		"gpu": "optional"
 	},
+	"mounts": [
+		"source=${localEnv:PATH_NAS:/nas},target=/nas,type=bind",
+		"source=${localEnv:PATH_NAS2:/nas2},target=/nas2,type=bind"
+	],
 	"securityOpt": [ "seccomp=unconfined" ],
 	"postCreateCommand": "sh ${containerWorkspaceFolder}/install.sh  --with=dev",
 	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
@@ -32,6 +36,4 @@
 			]
 		}
 	}
-	
-
 }

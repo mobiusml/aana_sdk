@@ -70,6 +70,7 @@ class FaceDetectorDeployment(BaseDeployment):
         """
         bboxes_per_img = []
         keypoints_per_img = []
+        
         num_batches = len(images) // self.batch_size
         num_imgs_last_batch = len(images) - self.batch_size * num_batches
 
@@ -105,6 +106,7 @@ class FaceDetectorDeployment(BaseDeployment):
             bboxes_per_img.extend(bboxes_batch)
             keypoints_per_img.extend(keypoints_batch)
 
+
         # Process potential last batch, which contains fewer than self.batch_size images
         if num_imgs_last_batch > 0:
             image_batch = []
@@ -130,6 +132,7 @@ class FaceDetectorDeployment(BaseDeployment):
 
             bboxes_batch = bboxes_batch[0:num_imgs_last_batch]
             keypoints_batch = keypoints_batch[0:num_imgs_last_batch]
+
             # Map the points to original image resolution
             for k in range(num_imgs_last_batch):
                 bboxes_batch[k] = rescale_boxes_scale(
@@ -142,7 +145,56 @@ class FaceDetectorDeployment(BaseDeployment):
             bboxes_per_img.extend(bboxes_batch)
             keypoints_per_img.extend(keypoints_batch)
 
-        return {"bounding_boxes": bboxes_batch, "keypoints": keypoints_batch}
+        return {"bounding_boxes": bboxes_per_img, "keypoints": keypoints_per_img}
+    
+
+
+# async def predict(self, images: list[Image]) -> dict:
+#     """Detect faces in the images.
+
+#     Args:
+#         images (list[Image]): the images
+
+#     Returns:
+#         dict: the predictions
+#     """
+#     bboxes_per_img = []
+#     keypoints_per_img = []
+    
+#     num_batches = (len(images) + self.batch_size - 1) // self.batch_size
+
+#     for k in range(num_batches):
+#         batch_start = k * self.batch_size
+#         batch_end = min((k + 1) * self.batch_size, len(images))
+
+#         image_batch = []
+#         resize_scales_batch = []
+#         for image in images[batch_start:batch_end]:
+#             image_np = image.get_numpy()
+#             image_np_resized, resize_scale = resize_image(
+#                 image_np, max_size=[self.input_size, self.input_size]
+#             )
+#             image_batch.append(image_np_resized)
+#             resize_scales_batch.append(resize_scale)
+
+#         # If it's the last batch and it's not full, pad the batch with the last image
+#         if batch_end - batch_start < self.batch_size:
+#             for _ in range(self.batch_size - (batch_end - batch_start)):
+#                 image_batch.append(image_np_resized)
+#                 resize_scales_batch.append(resize_scale)
+
+#         # Predict batch
+#         bboxes_batch, keypoints_batch = self.face_detector.detect(image_batch)
+
+#         # Map the points to original image resolution
+#         for i in range(batch_end - batch_start):
+#             bboxes_batch[i] = rescale_boxes_scale(bboxes_batch[i], resize_scales_batch[i])
+#             keypoints_batch[i] = rescale_keypoints_scale(keypoints_batch[i], resize_scales_batch[i])
+
+#         bboxes_per_img.extend(bboxes_batch[:batch_end - batch_start])
+#         keypoints_per_img.extend(keypoints_batch[:batch_end - batch_start])
+
+#     return {"bounding_boxes": bboxes_per_img, "keypoints": keypoints_per_img}
 
 
 # Rescale box coordinates back to original resolution
