@@ -34,8 +34,7 @@ class VideoRepository(MediaRepository[V]):
             description=video.description,
         )
 
-        self.session.add(video_entity)
-        self.session.commit()
+        self.create(video_entity)
         return {
             "media_id": video_entity.id,
         }

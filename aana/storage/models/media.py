@@ -1,16 +1,9 @@
-from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy.orm import Mapped, mapped_column
 
 from aana.core.models.media import MediaId
 from aana.storage.models.base import BaseEntity, TimeStampEntity
-
-
-class MediaType(str, Enum):
-    """Enum for types of media file."""
-
-    VIDEO = "video"
 
 
 class MediaEntity(BaseEntity, TimeStampEntity):

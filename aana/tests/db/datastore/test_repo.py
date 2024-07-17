@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 
 from aana.storage.models import (
     CaptionEntity,
+    ExtendedVideoEntity,
     MediaEntity,
     TranscriptEntity,
-    VideoEntity,
 )
 from aana.storage.repository.caption import CaptionRepository
 from aana.storage.repository.media import MediaRepository
@@ -49,7 +49,7 @@ def test_create_media_with_video(mocked_session):
     media_type = "video"
     media_id = "foo"
     media = MediaEntity(id=media_id, media_type=media_type)
-    video = VideoEntity(media=media)
+    video = ExtendedVideoEntity(media=media)
     media.video = video
     media2 = media_repo.create(media)
     mocked_session.add.assert_called_with(media2)
@@ -71,7 +71,7 @@ def test_create_caption(mocked_session):
     frame_id = 32767
     timestamp = 327.6
     _ = MediaEntity(id=media_id, media_type=media_type)
-    _ = VideoEntity(id=media_id, duration=video_duration)
+    _ = ExtendedVideoEntity(id=media_id, duration=video_duration)
 
     caption = CaptionEntity(
         media_id=media_id,
@@ -105,7 +105,7 @@ def test_create_transcript(mocked_session):
     language = "en"
     language_confidence = 0.5
     media = MediaEntity(id=media_id, media_type=media_type)
-    _ = VideoEntity(id=media_id, duration=duration)
+    _ = ExtendedVideoEntity(id=media_id, duration=duration)
     transcript = TranscriptEntity(
         media_id=media_id,
         model=model_name,
