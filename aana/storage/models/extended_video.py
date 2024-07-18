@@ -4,9 +4,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from aana.core.models.media import MediaId
-from aana.storage.models.caption import CaptionEntity
 from aana.storage.models.extended_video_caption import ExtendedVideoCaptionEntity
-from aana.storage.models.transcript import TranscriptEntity
+from aana.storage.models.extended_video_transcript import ExtendedVideoTranscriptEntity
 from aana.storage.models.video import VideoEntity
 
 
@@ -25,7 +24,7 @@ class ExtendedVideoEntity(VideoEntity):
     __tablename__ = "extended_video"
 
     id: Mapped[MediaId] = mapped_column(ForeignKey("video.id"), primary_key=True)
-    duration: Mapped[float] = mapped_column(comment="Video duration in seconds")
+    duration: Mapped[float | None] = mapped_column(comment="Video duration in seconds")
     status: Mapped[VideoProcessingStatus] = mapped_column(
         nullable=False,
         default=VideoProcessingStatus.CREATED,
@@ -38,7 +37,7 @@ class ExtendedVideoEntity(VideoEntity):
         cascade="all, delete",
         uselist=True,
     )
-    transcript: Mapped[list[TranscriptEntity]] = relationship(
+    transcript: Mapped[list[ExtendedVideoTranscriptEntity]] = relationship(
         "ExtendedVideoTranscriptEntity",
         back_populates="video",
         cascade="all, delete",

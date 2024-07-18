@@ -46,10 +46,19 @@ class ExtendedVideoTranscriptEntity(TranscriptEntity):
         segments: AsrSegments,
     ) -> ExtendedVideoTranscriptEntity:
         """Converts an AsrTranscriptionInfo and AsrTranscription to a single Transcript entity."""
-        transcript_entity = super().from_asr_output(
-            model_name=model_name,
-            info=info,
-            transcription=transcription,
-            segments=segments,
+        # transcript_entity = super().from_asr_output(
+        #     model_name=model_name,
+        #     info=info,
+        #     transcription=transcription,
+        #     segments=segments,
+        # )
+        # return cls.from_parent(transcript_entity, media_id=media_id)
+
+        return ExtendedVideoTranscriptEntity(
+            model=model_name,
+            language=info.language,
+            language_confidence=info.language_confidence,
+            transcript=transcription.text,
+            segments=[s.model_dump() for s in segments],
+            media_id=media_id,
         )
-        return cls.from_parent(transcript_entity, media_id=media_id)

@@ -1,19 +1,7 @@
-# from aana.core.models.captions import Caption
+# ruff: noqa: S101
 
-
-# caption_repo.save_all(
-#     model_name="whisper",
-#     captions=[
-#         Caption("This is a caption"),
-#         Caption("This is another caption"),
-#         Caption("This is a third caption"),
-#     ],
-#     timestamps=[0.1, 0.2, 0.3],
-#     frame_ids=[0, 1, 2],
-# )
-
+import random
 import uuid
-from random import random
 
 import pytest
 
@@ -26,8 +14,8 @@ from aana.storage.repository.caption import CaptionRepository
 def dummy_caption():
     """Creates a dummy caption for testing."""
     caption = Caption(f"This is a caption {uuid.uuid4()}")
-    frame_id = random.randint(0, 100)
-    timestamp = random.random()
+    frame_id = random.randint(0, 100)  # noqa: S311
+    timestamp = random.random()  # noqa: S311
     return caption, frame_id, timestamp
 
 
