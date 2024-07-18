@@ -5,6 +5,8 @@ import faiss
 import numpy as np
 from pydantic import BaseModel
 from ray import serve
+from huggingface_hub import hf_hub_download
+import tarfile
 
 from aana.deployments.base_deployment import BaseDeployment, test_cache
 
@@ -17,12 +19,15 @@ class FaceDatabaseConfig(BaseModel):
         facenorm_threshold (float): min norm of query face feature and reference face feature to be considered a match. (Do not go below 16.0)
         face_features_directory (Path): Path to where the face features will be stored
         feature_extractor_name (str): Name of the face feature extractor model. This name will be used as folder name in face_features_directory to store the features in.
+        hugging_face_token (str): Hugging Face token to access face database
     """
 
     face_threshold: float
     facenorm_threshold: float
     face_features_directory: Path
     feature_extractor_name: str
+    hugging_face_token: str
+    face_group_name: str = "default"
 
 
 @serve.deployment  # Comment
@@ -47,6 +52,23 @@ class FaceDatabaseDeployment(BaseDeployment):
 
         if not Path.exists(self.facefeat_directory):
             Path.mkdir(self.facefeat_directory, parents=True)
+            try:
+                path_to_tarfile = hf_hub_download(
+                    repo_id="mobiuslabsgmbh/aana_facedb",
+                    repo_type='dataset',
+                    filename="AdaFace/{}32K_{}.tar".format(
+                        config_obj.face_group_name, config_obj.feature_extractor_name
+                    ),
+                    local_dir=self.facefeat_directory,
+                    token=config_obj.hugging_face_token,
+                )
+                # Open the tar file and extract its contents
+                with tarfile.open(path_to_tarfile, "r:*") as tar:
+                    tar.extractall(path=self.facefeat_directory)
+            except:
+                print(
+                    "Could not download face features from hugging face hub. Initializing empty database."
+                )
 
         feature_files = list(self.facefeat_directory.glob("*.npy"))
         num_feats = len(feature_files)
@@ -170,14 +192,14 @@ class FaceDatabaseDeployment(BaseDeployment):
     #     return {
     #         "identities": results,
     #    }
-    
+
     # facefeat_output["facefeats_per_image"][0]["face_feats"]
     @test_cache
     async def identify_faces(self, face_features_per_image: list[dict]) -> dict:
         """Extract face features for all faces in multiple images. This is the main method for identifying faces.
 
         Args
-            face_features_per_image: list of dicts with face features and norms per image 
+            face_features_per_image: list of dicts with face features and norms per image
 
         Returns:
             dict: dict with matched identities, per image.

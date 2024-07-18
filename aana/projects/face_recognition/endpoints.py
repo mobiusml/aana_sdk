@@ -144,69 +144,64 @@ class RecognizeFacesEndpoint(Endpoint):
         return RecognizeFacesEndpointOutput(identified_faces=identified_faces)
 
 
-# class RecognizeFacesVideo(Endpoint):
-#     """Recognize faces in video endpoint."""
+class RecognizeFacesVideoEndpointOutput(TypedDict):
+    """Face recognition endpoint output."""
 
-#     async def initialize(self):
-#         """Initialize the endpoint."""
-#         self.face_detector_handle = await AanaDeploymentHandle.create(
-#             "face_detector_deployment"
-#         )
-#         self.face_featextractor_handle = await AanaDeploymentHandle.create(
-#             "facefeat_extractor_deployment"
-#         )
-#         self.face_database_handle = await AanaDeploymentHandle.create(
-#             "facedatabase_deployment"
-#         )
+    identified_faces_per_frame: list
+    timestamps: list
+    frame_ids: list
+    video_duration: float
 
-#     async def run(
-#         self,
-#         video: VideoInput,
-#         video_params: VideoParams,
-#     ) -> AsyncGenerator[IndexVideoOutput, None]:
-#         """Transcribe video in chunks."""
-#         video_obj: Video = await run_remote(download_video)(video_input=video)
 
-#         captions = []
-#         timestamps = []
-#         frame_ids = []
-#         video_duration = 0.0
-#         async for frames_dict in run_remote(generate_frames)(
-#             video=video_obj, params=video_params
-#         ):
-#             timestamps.extend(frames_dict["timestamps"])
-#             frame_ids.extend(frames_dict["frame_ids"])
-#             video_duration = frames_dict["duration"]
 
-#             captioning_output = await self.captioning_handle.generate_batch(
-#                 images=frames_dict["frames"]
-#             )
-#             captions.extend(captioning_output["captions"])
+class RecognizeFacesVideoEndpoint(Endpoint):
+    """Recognize faces in video endpoint."""
 
-#             yield {
-#                 "captions": captioning_output["captions"],
-#                 "timestamps": frames_dict["timestamps"],
-#             }
+    async def initialize(self):
+        """Initialize the endpoint."""
+        self.face_detector_handle = await AanaDeploymentHandle.create(
+            "face_detector_deployment"
+        )
+        self.face_featextractor_handle = await AanaDeploymentHandle.create(
+            "facefeat_extractor_deployment"
+        )
+        self.face_database_handle = await AanaDeploymentHandle.create(
+            "facedatabase_deployment"
+        )
 
-#         save_video(video=video_obj, duration=video_duration)
+    async def run(
+        self,
+        video: VideoInput,
+        video_params: VideoParams,
+    ) -> RecognizeFacesVideoEndpointOutput:
+        """Transcribe video in chunks."""
+        video_obj: Video = await run_remote(download_video)(video_input=video)
 
-#         save_video_transcription_output = save_video_transcription(
-#             model_name=asr_model_name,
-#             media_id=video_obj.media_id,
-#             transcription=transcription,
-#             segments=segments,
-#             transcription_info=transcription_info,
-#         )
+        timestamps = []
+        frame_ids = []
+        identified_faces_per_frame = []
+        video_duration = 0.0
+        async for frames_dict in run_remote(generate_frames)(
+            video=video_obj, params=video_params
+        ):
+            timestamps.extend(frames_dict["timestamps"])
+            frame_ids.extend(frames_dict["frame_ids"])
+            video_duration = frames_dict["duration"]
 
-#         save_video_captions_output = save_video_captions(
-#             model_name=captioning_model_name,
-#             media_id=video_obj.media_id,
-#             captions=captions,
-#             timestamps=timestamps,
-#             frame_ids=frame_ids,
-#         )
 
-        # yield {
-        #     "transcription_id": save_video_transcription_output["transcription_id"],
-        #     "caption_ids": save_video_captions_output["caption_ids"],
-        # }
+            face_detection_output = await self.face_detector_handle.predict(frames_dict["frames"])
+
+            face_featextract_output = await self.face_featextractor_handle.predict(
+                frames_dict["frames"], face_detection_output["keypoints"]
+            )
+
+            identified_faces = await self.face_database_handle.identify_faces(
+                face_featextract_output["facefeats_per_image"]
+            )
+
+            identified_faces_per_frame.append(identified_faces)
+
+        return RecognizeFacesVideoEndpointOutput(identified_faces_per_frame=identified_faces_per_frame,
+                                                 timestamps=timestamps,
+                                                frame_ids=frame_ids,
+                                                video_duration=video_duration)

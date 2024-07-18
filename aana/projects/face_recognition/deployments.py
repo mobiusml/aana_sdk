@@ -1,3 +1,5 @@
+import os
+
 from aana.configs.settings import settings
 from aana.deployments.face_database_deployment import (
     FaceDatabaseConfig,
@@ -13,6 +15,7 @@ from aana.deployments.face_featureextraction_deployment import (
 )
 
 FACEFEATURE_MODEL = "ir_101_webface4M"
+HF_TOKEN = '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'
 
 deployments = {}
 
@@ -49,6 +52,7 @@ facedatabase_deployment = FaceDatabaseDeployment.options(
         facenorm_threshold=19.0,
         face_features_directory=settings.artifacts_dir / "face_features_database",
         feature_extractor_name=FACEFEATURE_MODEL,
+        hugging_face_token=HF_TOKEN,
     ).model_dump(mode="json"),
 )
 
