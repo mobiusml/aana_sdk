@@ -46,7 +46,7 @@ class Settings(BaseSettings):
 
     test: TestSettings = TestSettings()
 
-    @field_validator("tmp_data_dir", mode="before")
+    @field_validator("tmp_data_dir", mode="after")
     def create_tmp_data_dir(cls, path: Path) -> Path:
         """Create the tmp_data_dir if it doesn't exist."""
         path.mkdir(parents=True, exist_ok=True)
