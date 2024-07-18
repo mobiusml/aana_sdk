@@ -57,27 +57,37 @@ class FacefeatureExtractorDeployment(BaseDeployment):
         facefeats_per_image = []
 
         for k, image in enumerate(images):
+
             image_np = image.get_numpy()
 
             face_crops = face_align_landmarks(
                 image_np, face_landmarks[k], image_size=(112, 112), method="similar"
             )
 
-            prep_crops = to_input(face_crops, self.device)
+            if(len(face_crops)>0):
 
-            face_feats, norms = self.facefeat_extractor(prep_crops)
-            face_feats = face_feats.detach().cpu().numpy()
+                prep_crops = to_input(face_crops, self.device)
 
-            norms = norms.detach().cpu().numpy()
+                face_feats, norms = self.facefeat_extractor(prep_crops)
+                face_feats = face_feats.detach().cpu().numpy()
 
-            # Filter out faces with low norms (i.e., low quality, see AdaFace paper for reasoning)
-            face_ids_above_minnorm = np.where(norms >= self.min_face_norm)[0]
+                norms = norms.detach().cpu().numpy()
 
-            facefeats_per_image.append(
-                {
-                    "face_feats": face_feats[face_ids_above_minnorm],
-                    "norms": norms[face_ids_above_minnorm],
-                }
-            )
+                # Filter out faces with low norms (i.e., low quality, see AdaFace paper for reasoning)
+                face_ids_above_minnorm = np.where(norms >= self.min_face_norm)[0]
+
+                facefeats_per_image.append(
+                    {
+                        "face_feats": face_feats[face_ids_above_minnorm],
+                        "norms": norms[face_ids_above_minnorm],
+                    }
+                )
+            else:
+                facefeats_per_image.append(
+                    {
+                        "face_feats": [],
+                        "norms": [],
+                    }
+                )
 
         return {"facefeats_per_image": facefeats_per_image}

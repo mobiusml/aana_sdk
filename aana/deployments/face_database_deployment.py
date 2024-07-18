@@ -206,53 +206,56 @@ class FaceDatabaseDeployment(BaseDeployment):
         """
         results_per_image = []
         for face_features in face_features_per_image:
-            query_features = np.array(face_features["face_feats"])
-            distances, indices = self.index.search(query_features, 1)
-            results = []
-            for i, (distances_i, indices_i) in enumerate(
-                zip(distances, indices, strict=False)
-            ):
-                distance = distances_i[0]
-                index = indices_i[0]
-                face_norm = face_features["norms"][i][0]
+            if(len(face_features["face_feats"])>0):
+                query_features = np.array(face_features["face_feats"])
+                distances, indices = self.index.search(query_features, 1)
+                results = []
+                for i, (distances_i, indices_i) in enumerate(
+                    zip(distances, indices, strict=False)
+                ):
+                    distance = distances_i[0]
+                    index = indices_i[0]
+                    face_norm = face_features["norms"][i][0]
 
-                if index == -1:
-                    results.append(
-                        {"person_id": "unknown", "image_id": "unknown", "distance": 0.0}
-                    )
-                elif distance > self.face_threshold:
-                    results.append(
-                        {
-                            "person_id": "unknown",
-                            "image_id": "unknown",
-                            "distance": float(distance),
-                            "norm": face_norm,
-                            "quality": "bad",
-                        }
-                    )
-                else:
-                    if face_norm >= self.facenorm_threshold:
+                    if index == -1:
                         results.append(
-                            {
-                                "person_id": self.person_ids[index],
-                                "image_id": self.image_ids[index],
-                                "distance": float(distance),
-                                "norm": face_norm,
-                                "quality": "good",
-                            }
+                            {"person_id": "unknown", "image_id": "unknown", "distance": 0.0}
                         )
-                    else:
+                    elif distance > self.face_threshold:
                         results.append(
                             {
-                                "person_id": self.person_ids[index],
-                                "image_id": self.image_ids[index],
+                                "person_id": "unknown",
+                                "image_id": "unknown",
                                 "distance": float(distance),
                                 "norm": face_norm,
                                 "quality": "bad",
                             }
                         )
+                    else:
+                        if face_norm >= self.facenorm_threshold:
+                            results.append(
+                                {
+                                    "person_id": self.person_ids[index],
+                                    "image_id": self.image_ids[index],
+                                    "distance": float(distance),
+                                    "norm": face_norm,
+                                    "quality": "good",
+                                }
+                            )
+                        else:
+                            results.append(
+                                {
+                                    "person_id": self.person_ids[index],
+                                    "image_id": self.image_ids[index],
+                                    "distance": float(distance),
+                                    "norm": face_norm,
+                                    "quality": "bad",
+                                }
+                            )
 
-            results_per_image.append(results)
+                results_per_image.append(results)
+            else:
+                results_per_image.append('No faces identified')
 
         return {
             "identities_per_image": results_per_image,
