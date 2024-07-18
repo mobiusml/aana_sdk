@@ -14,7 +14,7 @@ class ExtendedVideoRepository(VideoRepository[ExtendedVideoEntity]):
         """Constructor."""
         super().__init__(session, ExtendedVideoEntity)
 
-    def save(self, video: Video, duration: float) -> dict:
+    def save(self, video: Video, duration: float | None = None) -> dict:
         """Saves a video to datastore.
 
         Args:

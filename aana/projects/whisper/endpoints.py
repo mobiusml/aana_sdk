@@ -17,11 +17,10 @@ from aana.integrations.external.yt_dlp import download_video
 from aana.processors.remote import run_remote
 from aana.processors.video import extract_audio
 from aana.projects.whisper.const import asr_model_name
+from aana.storage.repository.extended_video import ExtendedVideoRepository
 from aana.storage.repository.extended_video_transcript import (
     ExtendedVideoTranscriptRepository,
 )
-from aana.storage.repository.media import MediaRepository
-from aana.storage.repository.video import VideoRepository
 
 if TYPE_CHECKING:
     from aana.core.models.audio import Audio
@@ -97,7 +96,7 @@ class TranscribeVideoEndpoint(Endpoint):
         await super().initialize()
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         self.transcript_repo = ExtendedVideoTranscriptRepository(self.session)
-        self.video_repo = VideoRepository(self.session)
+        self.video_repo = ExtendedVideoRepository(self.session)
 
     async def run(
         self, video: VideoInput, whisper_params: WhisperParams
@@ -219,9 +218,9 @@ class DeleteMediaEndpoint(Endpoint):
     async def initialize(self):
         """Initialize the endpoint."""
         await super().initialize()
-        self.media_repo = MediaRepository(self.session)
+        self.video_repo = ExtendedVideoRepository(self.session)
 
     async def run(self, media_id: MediaId) -> DeleteMediaOutput:
         """Delete media."""
-        self.media_repo.delete(media_id)
+        self.video_repo.delete(media_id)
         return {"media_id": media_id}

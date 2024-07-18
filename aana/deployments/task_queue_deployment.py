@@ -36,10 +36,10 @@ class TaskQueueDeployment(BaseDeployment):
             lambda fut: fut.result() if not fut.cancelled() else None
         )
 
-        from aana.storage import engine
+        from aana.storage.engine import engine
 
         self.session = Session(engine)
-        self.task_repo = TaskRepository()
+        self.task_repo = TaskRepository(self.session)
 
     def check_health(self):
         """Check the health of the deployment."""

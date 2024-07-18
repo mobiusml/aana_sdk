@@ -78,5 +78,5 @@ class ExtendedVideoTranscriptRepository(
         return {
             "transcription": transcription,
             "segments": segments,
-            "info": info,
+            "transcription_info": info,
         }

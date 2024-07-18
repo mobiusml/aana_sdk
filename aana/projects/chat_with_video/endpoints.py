@@ -32,7 +32,6 @@ from aana.projects.chat_with_video.utils import (
     generate_dialog,
 )
 from aana.storage.models.extended_video import VideoProcessingStatus
-from aana.storage.models.video import Status
 from aana.storage.repository.extended_video import ExtendedVideoRepository
 from aana.storage.repository.extended_video_caption import (
     ExtendedVideoCaptionRepository,
@@ -289,7 +288,7 @@ class VideoChatEndpoint(Endpoint):
         """Run the video chat endpoint."""
         # check to see if video already processed
         video_status = self.video_repo.get_status(media_id)
-        if video_status != Status.COMPLETED:
+        if video_status != VideoProcessingStatus.COMPLETED:
             raise UnfinishedVideoException(
                 media_id=media_id,
                 status=video_status,

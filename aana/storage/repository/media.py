@@ -1,6 +1,5 @@
 from typing import TypeVar
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from aana.core.models.media import MediaId
@@ -43,8 +42,13 @@ class MediaRepository(BaseRepository[M]):
         Returns:
             MediaEntity: The inserted entity.
         """
-        try:
-            return super().create(entity)
-        except IntegrityError as e:
-            self.session.rollback()
-            raise MediaIdAlreadyExistsException(self.table_name, entity.id) from e
+        # try:
+        #     return super().create(entity)
+        # except IntegrityError as e:
+        #     self.session.rollback()
+        #     raise MediaIdAlreadyExistsException(self.table_name, entity.id) from e
+
+        if self.check_media_exists(entity.id):
+            raise MediaIdAlreadyExistsException(self.table_name, entity.id)
+
+        return super().create(entity)
