@@ -140,3 +140,25 @@ def test_sum_asr_transcription():
     transcription = sum([transcription1, transcription2], AsrTranscription())
 
     assert transcription.text == "Hello world\nAnother transcription"
+
+
+def test_asr_segment():
+    """Test function for the AsrSegment class."""
+    segment = AsrSegment(
+        text="Hello world",
+        time_interval=TimeInterval(start=0.0, end=1.0),
+        confidence=0.5,
+        no_speech_confidence=0.1,
+    )
+    assert segment.text == "Hello world"
+    assert segment.time_interval == TimeInterval(start=0.0, end=1.0)
+    assert segment.confidence == 0.5
+    assert segment.no_speech_confidence == 0.1
+
+    # Test that the segment can be created without confidence and no_speech_confidence
+    segment = AsrSegment(
+        text="Hello world", time_interval=TimeInterval(start=0.0, end=1.0)
+    )
+
+    assert segment.text == "Hello world"
+    assert segment.time_interval == TimeInterval(start=0.0, end=1.0)

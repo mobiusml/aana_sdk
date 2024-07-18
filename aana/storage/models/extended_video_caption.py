@@ -43,18 +43,10 @@ class ExtendedVideoCaptionEntity(CaptionEntity):
         timestamp: float,
     ) -> ExtendedVideoCaptionEntity:
         """Converts a Caption pydantic model to a ExtendedVideoCaptionEntity."""
-        # caption_entity = CaptionEntity.from_caption_output(
-        #     model_name=model_name,
-        #     frame_id=frame_id,
-        #     timestamp=timestamp,
-        #     caption=caption,
-        # )
-        # return cls.from_parent(caption_entity, media_id=media_id)
-
-        return ExtendedVideoCaptionEntity(
-            model=model_name,
+        caption_entity = CaptionEntity.from_caption_output(
+            model_name=model_name,
             frame_id=frame_id,
-            caption=str(caption),
             timestamp=timestamp,
-            media_id=media_id,
+            caption=caption,
         )
+        return cls.from_parent(caption_entity, media_id=media_id)
