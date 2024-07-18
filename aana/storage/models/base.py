@@ -40,6 +40,8 @@ class InheritanceReuseMixin:
             prop.key: getattr(parent_instance, prop.key)
             for prop in mapper.iterate_properties
             if hasattr(parent_instance, prop.key)
+            and prop.key
+            != mapper.polymorphic_on.name  # don't copy the polymorphic_on attribute from the parent
         }
 
         # Update attributes with any additional kwargs

@@ -161,6 +161,7 @@ def db_session():
             yield session
 
 
+# TODO: add support for postgresql using pytest-postgresql
 # @pytest.fixture(scope="function")
 # def db_session(postgresql):
 #     """Creates a new database file and session for each test."""

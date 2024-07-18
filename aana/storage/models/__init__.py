@@ -12,6 +12,7 @@
 from aana.storage.models.base import BaseEntity
 from aana.storage.models.caption import CaptionEntity
 from aana.storage.models.extended_video import ExtendedVideoEntity
+from aana.storage.models.extended_video_caption import ExtendedVideoCaptionEntity
 from aana.storage.models.extended_video_transcript import ExtendedVideoTranscriptEntity
 from aana.storage.models.media import MediaEntity
 from aana.storage.models.task import TaskEntity
