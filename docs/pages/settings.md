@@ -1,6 +1,7 @@
 # Settings
 
 Here are the environment variables that can be used to configure the Aaana SDK:
+
 - TMP_DATA_DIR: The directory to store temporary data. Default: `/tmp/aana`.
 - NUM_WORKERS: The number of request workers. Default: `2`.
 - DB_CONFIG: The database configuration in the format `{"datastore_type": "sqlite", "datastore_config": {"path": "/path/to/sqlite.db"}}`. Currently only SQLite and PostgreSQL are supported. Default: `{"datastore_type": "sqlite", "datastore_config": {"path": "/var/lib/aana_data"}}`.

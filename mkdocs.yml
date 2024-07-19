@@ -86,6 +86,23 @@ extra:
 # Page tree
 nav:
   - Home: index.md
+  - Getting Started:
+    - Tutorial: pages/tutorial.md
+  - Integrations:
+    - Overview: pages/integrations.md
+    - OpenAI API: pages/openai_api.md
+  - Deployment:
+    - Docker: pages/docker.md
+    - Serve Config Files: pages/serve_config_files.md
+    - Cluster Setup: pages/cluster_setup.md
+  - Configuration:
+    - Settings: pages/settings.md
+  - Best Practices:
+    - Code Standards: pages/code_standards.md
+  - Development:
+    - Development Guide: pages/development.md
+    - Testing: pages/testing.md
+    - Deployment Test Cache: pages/deployment_test_cache.md
   - Reference (Code API):
     - reference/aana_api.md
     - reference/aana_deployments.md
