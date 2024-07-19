@@ -1,0 +1,89 @@
+site_name: Aana SDK
+
+
+# Repository
+repo_name: mobiusml/aana_sdk
+repo_url: https://github.com/mobiusml/aana_sdk
+
+# Configuration
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - toc.follow
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline 
+        name: Switch to dark mode
+      primary: teal
+      accent: purple 
+    - scheme: slate 
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode    
+      primary: teal
+      accent: lime
+
+# Extensions
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - toc:
+      toc_depth: 3
+
+# Plugins
+plugins:
+  mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_root_heading: true
+          show_if_no_docstring: true
+          show_root_toc_entry: false
+          inherited_members: true 
+          members_order: source
+          separate_signature: true
+          unwrap_annotated: true
+          filters: ["!^_",  "!^__all__$"]
+          merge_init_into_class: true
+          docstring_section_style: spacy
+          signature_crossrefs: true
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+# Customization
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/mobiusml/aana_sdk
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/Mobius_Labs
+
+# Page tree
+nav:
+  - Home: index.md
+  - Reference (Code API):
+    - reference/aana_api.md
+    - reference/aana_deployments.md

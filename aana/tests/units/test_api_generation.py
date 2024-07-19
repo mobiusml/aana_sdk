@@ -51,7 +51,7 @@ class TestEndpoint(Endpoint):
 
 
 class TestFileUploadEndpoint(Endpoint):
-    """Test endpoint for get_file_upload_field."""
+    """Test endpoint for __get_file_upload_field."""
 
     async def run(self, input_data: FileUploadModel) -> TestEndpointOutput:
         """Run the endpoint."""
@@ -59,7 +59,7 @@ class TestFileUploadEndpoint(Endpoint):
 
 
 class TestMultipleFileUploadEndpoint(Endpoint):
-    """Test endpoint for get_file_upload_field with multiple file uploads."""
+    """Test endpoint for __get_file_upload_field with multiple file uploads."""
 
     async def run(
         self, input_data: FileUploadModel, input_data2: FileUploadModel
@@ -124,14 +124,14 @@ def test_get_response_model():
 
 
 def test_get_file_upload_field():
-    """Test the get_file_upload_field function."""
+    """Test the __get_file_upload_field function."""
     endpoint = TestFileUploadEndpoint(
         name="test_endpoint",
         summary="Test endpoint",
         path="/test_endpoint",
     )
 
-    file_upload_field = endpoint.get_file_upload_field()
+    file_upload_field = endpoint._Endpoint__get_file_upload_field()
 
     # Check that the file upload field named correctly
     assert file_upload_field.name == "input_data"
@@ -141,7 +141,7 @@ def test_get_file_upload_field():
 
 
 def test_get_file_upload_field_multiple_file_uploads():
-    """Test the get_file_upload_field function with multiple file uploads."""
+    """Test the __get_file_upload_field function with multiple file uploads."""
     endpoint = TestMultipleFileUploadEndpoint(
         name="test_endpoint",
         summary="Test endpoint",
@@ -149,7 +149,7 @@ def test_get_file_upload_field_multiple_file_uploads():
     )
 
     with pytest.raises(MultipleFileUploadNotAllowed):
-        endpoint.get_file_upload_field()
+        endpoint._Endpoint__get_file_upload_field()
 
 
 def test_get_response_model_missing_return():
