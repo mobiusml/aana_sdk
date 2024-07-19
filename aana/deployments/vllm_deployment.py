@@ -32,17 +32,22 @@ class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
 
     Attributes:
-        model (str): the model name
-        dtype (str): the data type (optional, default: "auto")
-        quantization (str): the quantization method (optional, default: None)
-        gpu_memory_reserved (float): the GPU memory reserved for the model in mb
-        default_sampling_params (SamplingParams): the default sampling parameters.
-        max_model_len (int): the maximum generated text length in tokens (optional, default: None)
-        chat_template (str): the name of the chat template, if not provided, the chat template from the model will be used
-                             but some models may not have a chat template (optional, default: None)
-        enforce_eager: whether to enforce eager execution (optional, default: False)
-        engine_args: extra engine arguments (optional, default: {})
-
+        model: The model name.
+        dtype: The data type.
+            Defaults to "auto".
+        quantization: The quantization method.
+            Defaults to None.
+        gpu_memory_reserved: The GPU memory reserved for the model in MB.
+        default_sampling_params: The default sampling parameters.
+        max_model_len: The maximum generated text length in tokens.
+            Defaults to None.
+        chat_template: The name of the chat template. If not provided, the chat template
+            from the model will be used. Some models may not have a chat template.
+            Defaults to None.
+        enforce_eager: Whether to enforce eager execution.
+            Defaults to False.
+        engine_args: Extra engine arguments.
+            Defaults to {}.
     """
 
     model: str

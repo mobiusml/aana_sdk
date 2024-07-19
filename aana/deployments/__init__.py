@@ -6,11 +6,20 @@ from aana.deployments.base_text_generation_deployment import (
     LLMBatchOutput,
     LLMOutput,
 )
+from aana.deployments.hf_text_generation_deployment import (
+    HfTextGenerationConfig,
+    HfTextGenerationDeployment,
+)
+from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
 
 __all__ = [
     "AanaDeploymentHandle",
     "BaseDeployment",
     "BaseTextGenerationDeployment",
+    "HfTextGenerationConfig",
+    "HfTextGenerationDeployment",
+    "VLLMConfig",
+    "VLLMDeployment",
     "ChatOutput",
     "LLMBatchOutput",
     "LLMOutput",
