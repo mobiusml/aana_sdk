@@ -57,9 +57,6 @@ yt-dlp = ">=2024.4.9"
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
 matplotlib = "^3.8.2"
-mkdocs-material = "^9.5.29"
-mkdocstrings = {extras = ["python"], version = "^0.25.1"}
-mkdocs = "^1.6.0"
 mypy = "^1.6.1"
 ruff = "^0.1.5"
 portpicker = "^1.6.0"
@@ -70,6 +67,11 @@ pytest-env = "^1.1.3"
 pytest-mock = "^3.12.0"
 pytest-timeout = "^2.2.0"
 sqlalchemy-utils = "^0.41.1"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.5.29"
+mkdocstrings = {extras = ["python"], version = "^0.25.1"}
+mkdocs = "^1.6.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -176,7 +176,7 @@ class BaseDeployment:
 
     def __init__(self):
         """Inits to unconfigured state."""
-        self._config = None
+        self.config = None
         self._configured = False
 
     async def reconfigure(self, config: dict[str, Any]):
@@ -184,7 +184,7 @@ class BaseDeployment:
 
         The method is called when the deployment is updated.
         """
-        self._config = config
+        self.config = config
         if (
             settings.test.test_mode
             and settings.test.use_deployment_cache
