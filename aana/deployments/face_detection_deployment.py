@@ -70,7 +70,7 @@ class FaceDetectorDeployment(BaseDeployment):
         """
         bboxes_per_img = []
         keypoints_per_img = []
-        
+
         num_batches = len(images) // self.batch_size
         num_imgs_last_batch = len(images) - self.batch_size * num_batches
 
@@ -105,7 +105,6 @@ class FaceDetectorDeployment(BaseDeployment):
 
             bboxes_per_img.extend(bboxes_batch)
             keypoints_per_img.extend(keypoints_batch)
-
 
         # Process potential last batch, which contains fewer than self.batch_size images
         if num_imgs_last_batch > 0:
@@ -146,7 +145,6 @@ class FaceDetectorDeployment(BaseDeployment):
             keypoints_per_img.extend(keypoints_batch)
 
         return {"bounding_boxes": bboxes_per_img, "keypoints": keypoints_per_img}
-    
 
 
 # async def predict(self, images: list[Image]) -> dict:
@@ -160,7 +158,7 @@ class FaceDetectorDeployment(BaseDeployment):
 #     """
 #     bboxes_per_img = []
 #     keypoints_per_img = []
-    
+
 #     num_batches = (len(images) + self.batch_size - 1) // self.batch_size
 
 #     for k in range(num_batches):

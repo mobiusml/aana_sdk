@@ -55,7 +55,7 @@ class FaceDatabaseDeployment(BaseDeployment):
             try:
                 path_to_tarfile = hf_hub_download(
                     repo_id="mobiuslabsgmbh/aana_facedb",
-                    repo_type='dataset',
+                    repo_type="dataset",
                     filename="AdaFace/{}32K_{}.tar".format(
                         config_obj.face_group_name, config_obj.feature_extractor_name
                     ),
@@ -206,7 +206,7 @@ class FaceDatabaseDeployment(BaseDeployment):
         """
         results_per_image = []
         for face_features in face_features_per_image:
-            if(len(face_features["face_feats"])>0):
+            if len(face_features["face_feats"]) > 0:
                 query_features = np.array(face_features["face_feats"])
                 distances, indices = self.index.search(query_features, 1)
                 results = []
@@ -219,12 +219,16 @@ class FaceDatabaseDeployment(BaseDeployment):
 
                     if index == -1:
                         results.append(
-                            {"person_id": "unknown", "image_id": "unknown", "distance": 0.0}
+                            {
+                                "person_name": "unknown",
+                                "image_id": "unknown",
+                                "distance": 0.0,
+                            }
                         )
                     elif distance > self.face_threshold:
                         results.append(
                             {
-                                "person_id": "unknown",
+                                "person_name": "unknown",
                                 "image_id": "unknown",
                                 "distance": float(distance),
                                 "norm": face_norm,
@@ -235,7 +239,7 @@ class FaceDatabaseDeployment(BaseDeployment):
                         if face_norm >= self.facenorm_threshold:
                             results.append(
                                 {
-                                    "person_id": self.person_ids[index],
+                                    "person_name": self.person_ids[index],
                                     "image_id": self.image_ids[index],
                                     "distance": float(distance),
                                     "norm": face_norm,
@@ -245,7 +249,7 @@ class FaceDatabaseDeployment(BaseDeployment):
                         else:
                             results.append(
                                 {
-                                    "person_id": self.person_ids[index],
+                                    "person_name": self.person_ids[index],
                                     "image_id": self.image_ids[index],
                                     "distance": float(distance),
                                     "norm": face_norm,
@@ -255,7 +259,7 @@ class FaceDatabaseDeployment(BaseDeployment):
 
                 results_per_image.append(results)
             else:
-                results_per_image.append('No faces identified')
+                results_per_image.append("No faces identified")
 
         return {
             "identities_per_image": results_per_image,
