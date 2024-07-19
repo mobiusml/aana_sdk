@@ -57,6 +57,9 @@ yt-dlp = ">=2024.4.9"
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
 matplotlib = "^3.8.2"
+mkdocs-material = "^9.5.29"
+mkdocstrings = {extras = ["python"], version = "^0.25.1"}
+mkdocs = "^1.6.0"
 mypy = "^1.6.1"
 ruff = "^0.1.5"
 portpicker = "^1.6.0"

@@ -108,7 +108,7 @@ class TaskQueueDeployment(BaseDeployment):
             )
 
         while True:
-            if not self.configured:
+            if not self._configured:
                 # Wait for the deployment to be configured.
                 await asyncio.sleep(1)
                 continue
