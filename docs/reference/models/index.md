@@ -42,3 +42,31 @@ Models for working with captions. These models represent the output of image cap
 ## [Chat Models](./chat.md)
 
 Models for working with chat models. These models represent the input and output of chat models and models for OpenAI-compatible API.
+
+## [Custom Config](./custom_config.md)
+
+Custom Config model can be used to pass arbitrary configuration to the deployment.
+
+## [Sampling Models](./sampling.md)
+
+Contains Sampling Parameters model which can be used to pass sampling parameters to the LLM models.
+
+## [Time Models](./time.md)
+
+Contains time models like TimeInterval.
+
+## [Types Models](./types.md)
+
+Contains types models like Dtype.
+
+## [VAD Models](./vad.md)
+
+Contains Voice Activity Detection (VAD) models like VadParams, VadSegment, and VadSegments.
+
+## [Video Models](./video.md)
+
+Contains video models like VideoMetadata, VideoStatus, and VideoParams.
+
+## [Whisper Models](./whisper.md)
+
+Contains models for working with whisper models like WhisperParams.

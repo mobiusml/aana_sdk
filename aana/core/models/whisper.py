@@ -7,6 +7,9 @@ class MyConfig(ConfigDict, total=False):  # noqa: D101
     json_schema_extra: dict
 
 
+__all__ = ["WhisperParams", "BatchedWhisperParams"]
+
+
 class WhisperParams(BaseModel):
     """A model for the Whisper audio-to-text model parameters.
 
