@@ -6,11 +6,39 @@ from aana.deployments.base_text_generation_deployment import (
     LLMBatchOutput,
     LLMOutput,
 )
+from aana.deployments.haystack_component_deployment import (
+    HaystackComponentDeployment,
+    HaystackComponentDeploymentConfig,
+    RemoteHaystackComponent,
+)
+from aana.deployments.hf_blip2_deployment import (
+    CaptioningBatchOutput,
+    CaptioningOutput,
+    HFBlip2Config,
+    HFBlip2Deployment,
+)
+from aana.deployments.hf_pipeline_deployment import (
+    HfPipelineConfig,
+    HfPipelineDeployment,
+)
 from aana.deployments.hf_text_generation_deployment import (
     HfTextGenerationConfig,
     HfTextGenerationDeployment,
 )
+from aana.deployments.vad_deployment import (
+    VadConfig,
+    VadDeployment,
+    VadOutput,
+)
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+from aana.deployments.whisper_deployment import (
+    WhisperBatchOutput,
+    WhisperComputeType,
+    WhisperConfig,
+    WhisperDeployment,
+    WhisperModelSize,
+    WhisperOutput,
+)
 
 __all__ = [
     "AanaDeploymentHandle",
@@ -20,7 +48,25 @@ __all__ = [
     "HfTextGenerationDeployment",
     "VLLMConfig",
     "VLLMDeployment",
+    "WhisperConfig",
+    "WhisperDeployment",
+    "VadConfig",
+    "VadDeployment",
+    "HfPipelineConfig",
+    "HfPipelineDeployment",
+    "RemoteHaystackComponent",
+    "HaystackComponentDeploymentConfig",
+    "HaystackComponentDeployment",
+    "HFBlip2Config",
+    "HFBlip2Deployment",
     "ChatOutput",
     "LLMBatchOutput",
     "LLMOutput",
+    "WhisperOutput",
+    "WhisperBatchOutput",
+    "WhisperModelSize",
+    "WhisperComputeType",
+    "VadOutput",
+    "CaptioningOutput",
+    "CaptioningBatchOutput",
 ]
