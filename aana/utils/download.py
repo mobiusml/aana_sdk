@@ -9,6 +9,8 @@ from aana.configs.settings import settings
 from aana.exceptions.io import DownloadException
 from aana.utils.file import get_sha256_hash_file
 
+__all__ = ["download_model", "download_file"]
+
 
 # Issue-Enable HF download: https://github.com/mobiusml/aana_sdk/issues/65
 # model download from a url and checking SHA sum of the URL.

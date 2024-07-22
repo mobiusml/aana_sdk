@@ -3,6 +3,8 @@ from collections.abc import Callable
 
 import ray
 
+__all__ = ["run_remote"]
+
 
 def run_remote(func: Callable) -> Callable:
     """Wrap a function to run it remotely on Ray.
