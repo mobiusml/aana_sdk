@@ -115,3 +115,5 @@ nav:
       - reference/models/index.md
       - reference/models/media.md
       - reference/models/asr.md
+      - reference/models/captions.md
+      - reference/models/chat.md
