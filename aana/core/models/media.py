@@ -40,6 +40,9 @@ MediaId = Annotated[
     Field(description="The media ID.", max_length=36),
     WrapValidator(verify_media_id),
 ]
+"""
+The media ID (str, max length 36 characters).
+"""
 
 
 @dataclass

@@ -22,7 +22,7 @@ class Audio(Media):
         path (Path): the path to the audio file
         url (str): the URL of the audio
         content (bytes): the content of the audio in bytes
-        media_id (str): the ID of the audio. If not provided, it will be generated automatically.
+        media_id (MediaId): the ID of the audio. If not provided, it will be generated automatically.
         title (str): the title of the audio
         description (str): the description of the audio
         audio_dir (Path): the directory to save the audio in

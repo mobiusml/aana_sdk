@@ -24,6 +24,8 @@ from typing_extensions import Self
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import MediaId
 
+__all__ = ["VideoMetadata", "VideoStatus", "VideoParams"]
+
 
 @dataclass
 class Video(Media):
@@ -129,6 +131,7 @@ class VideoMetadata(BaseModel):
     Attributes:
         title (str): the title of the video
         description (str): the description of the video
+        duration (float): the duration of the video in seconds
     """
 
     title: str = Field(None, description="The title of the video.")
@@ -144,11 +147,10 @@ class VideoMetadata(BaseModel):
 
 
 class VideoStatus(BaseModel):
-    """Metadata of a video.
+    """Video processing status.
 
     Attributes:
-        status (str): the title of the video
-        description (str): the description of the video
+        status (str): processing status of video
     """
 
     status: str = Field(None, description="Current processing status of video.")
