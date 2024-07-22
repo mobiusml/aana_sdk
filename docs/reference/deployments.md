@@ -1,4 +1,4 @@
-# Aana Deployments
+# Deployments
 
 <!-- ## AanaDeploymentHandle
 

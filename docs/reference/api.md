@@ -1,3 +1,3 @@
-# Aana API
+# API
 
 ::: aana.api.Endpoint

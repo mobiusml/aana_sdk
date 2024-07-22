@@ -38,7 +38,7 @@ class RemoteHaystackComponent:
         if hasattr(self, "handle"):
             return
         self.handle = run_async(AanaDeploymentHandle.create(self.deployment_name))
-        sockets = run_async(self.handle._get_sockets())
+        sockets = run_async(self.handle.get_sockets())
         component.set_input_types(
             self, **{socket.name: socket.type for socket in sockets["input"].values()}
         )
@@ -88,7 +88,7 @@ class HaystackComponentDeployment(BaseDeployment):
         """Run the model on the input data."""
         return self.component.run(**data)
 
-    async def _get_sockets(self):
+    async def get_sockets(self):
         """Get the input and output sockets of the component."""
         return {
             "output": self.component.__haystack_output__._sockets_dict,

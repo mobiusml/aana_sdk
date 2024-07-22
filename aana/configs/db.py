@@ -8,13 +8,25 @@ from aana.storage.op import DbType, create_database_engine
 
 
 class SQLiteConfig(TypedDict):
-    """Config values for SQLite."""
+    """Config values for SQLite.
+
+    Attributes:
+        path (PathLike): The path to the SQLite database file.
+    """
 
     path: PathLike | str
 
 
 class PostgreSQLConfig(TypedDict):
-    """Config values for PostgreSQL."""
+    """Config values for PostgreSQL.
+
+    Attributes:
+        host (str): The host of the PostgreSQL server.
+        port (str): The port of the PostgreSQL server.
+        user (str): The user to connect to the PostgreSQL server.
+        password (str): The password to connect to the PostgreSQL server.
+        database (str): The database name.
+    """
 
     host: str
     port: str
@@ -24,19 +36,26 @@ class PostgreSQLConfig(TypedDict):
 
 
 class DbSettings(BaseSettings):
-    """Database configuration."""
+    """Database configuration.
+
+    Attributes:
+        datastore_type (DbType | str): The type of the datastore. Default is DbType.SQLITE.
+        datastore_config (SQLiteConfig | PostgreSQLConfig): The configuration for the datastore.
+            Default is SQLiteConfig(path="/var/lib/aana_data").
+        engine (Engine | None): The SQLAlchemy engine
+    """
 
     datastore_type: DbType | str = DbType.SQLITE
     datastore_config: SQLiteConfig | PostgreSQLConfig = SQLiteConfig(
         path="/var/lib/aana_data"
     )
-    engine: Engine | None = None
+    _engine: Engine | None = None
 
     def get_engine(self):
         """Gets engine. Each instance of DbSettings will create a max.of 1 engine."""
-        if not self.engine:
-            self.engine = create_database_engine(self)
-        return self.engine
+        if not self._engine:
+            self._engine = create_database_engine(self)
+        return self._engine
 
     def __getstate__(self):
         """Used by pickle to pickle an object."""

@@ -26,8 +26,8 @@ def test_save_video():
     ) as tmp:
         settings.db_config.datastore_config["path"] = tmp.name
         # Reset the engine if it has been created
-        del settings.db_config.engine
-        settings.db_config.engine = None
+        del settings.db_config._engine
+        settings.db_config._engine = None
 
         run_alembic_migrations(settings)
 
