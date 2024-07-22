@@ -46,7 +46,7 @@ MediaId = Annotated[
 class Media:
     """A base class representing a media file.
 
-    It is used to represent images, medias, and audio files.
+    It is used to represent images, videos, and audio files.
 
     At least one of 'path', 'url', or 'content' must be provided.
     If 'save_on_disk' is True, the media will be saved on disk automatically.

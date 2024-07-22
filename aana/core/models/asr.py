@@ -14,14 +14,25 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aana.core.models.time import TimeInterval
 
+__all__ = [
+    "AsrWord",
+    "AsrSegment",
+    "AsrTranscriptionInfo",
+    "AsrTranscription",
+    "AsrSegments",
+    "AsrSegmentsList",
+    "AsrTranscriptionInfoList",
+    "AsrTranscriptionList",
+]
+
 
 class AsrWord(BaseModel):
     """Pydantic schema for Word from ASR model.
 
     Attributes:
-        word (str): The word text
-        time_interval (TimeInterval): Time interval of the word
-        alignment_confidence (float): Alignment confidence of the word
+        word (str): The word text.
+        time_interval (TimeInterval): Time interval of the word.
+        alignment_confidence (float): Alignment confidence of the word, >= 0.0 and <= 1.0.
     """
 
     word: str = Field(description="The word text")
@@ -32,7 +43,14 @@ class AsrWord(BaseModel):
 
     @classmethod
     def from_whisper(cls, whisper_word: WhisperWord) -> "AsrWord":
-        """Convert WhisperWord to AsrWord."""
+        """Convert WhisperWord to AsrWord.
+
+        Args:
+            whisper_word (WhisperWord): The WhisperWord from faster-whisper.
+
+        Returns:
+            AsrWord: The converted AsrWord.
+        """
         return cls(
             word=whisper_word.word,
             time_interval=TimeInterval(start=whisper_word.start, end=whisper_word.end),
@@ -50,11 +68,11 @@ class AsrSegment(BaseModel):
     """Pydantic schema for Segment from ASR model.
 
     Attributes:
-        text (str): The text of the segment (transcript/translation)
-        time_interval (TimeInterval): Time interval of the segment
-        confidence (float): Confidence of the segment (Optional)
-        no_speech_confidence (float): Chance of being a silence segment (Optional)
-        words (list[AsrWord]): List of words in the segment (Optional)
+        text (str): The text of the segment (transcript/translation).
+        time_interval (TimeInterval): Time interval of the segment.
+        confidence (float | None): Confidence of the segment.
+        no_speech_confidence (float | None): Chance of being a silence segment.
+        words (list[AsrWord]): List of words in the segment. Default is [].
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
@@ -108,7 +126,12 @@ class AsrSegment(BaseModel):
 
 
 class AsrTranscriptionInfo(BaseModel):
-    """Pydantic schema for TranscriptionInfo."""
+    """Pydantic schema for TranscriptionInfo.
+
+    Attributes:
+        language (str): Language of the transcription.
+        language_confidence (float): Confidence of the language detection, >= 0.0 and <= 1.0. Default is 0.0.
+    """
 
     language: str = Field(description="Language of the transcription", default="")
     language_confidence: float = Field(
@@ -119,7 +142,14 @@ class AsrTranscriptionInfo(BaseModel):
     def from_whisper(
         cls, transcription_info: WhisperTranscriptionInfo
     ) -> "AsrTranscriptionInfo":
-        """Convert WhisperTranscriptionInfo to AsrTranscriptionInfo."""
+        """Convert WhisperTranscriptionInfo to AsrTranscriptionInfo.
+
+        Args:
+            transcription_info (WhisperTranscriptionInfo): The WhisperTranscriptionInfo from faster-whisper.
+
+        Returns:
+            AsrTranscriptionInfo: The converted AsrTranscriptionInfo.
+        """
         return cls(
             language=transcription_info.language,
             language_confidence=transcription_info.language_probability,
@@ -153,7 +183,11 @@ class AsrTranscriptionInfo(BaseModel):
 
 
 class AsrTranscription(BaseModel):
-    """Pydantic schema for Transcription/Translation."""
+    """Pydantic schema for Transcription/Translation.
+
+    Attributes:
+        text (str): The text of the transcription/translation. Default is "".
+    """
 
     text: str = Field(
         description="The text of the transcription/translation", default=""
