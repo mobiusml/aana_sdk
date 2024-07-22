@@ -65,6 +65,7 @@ class WhisperModelSize(str, Enum):
         - MEDIUM_EN
         - LARGE_V1
         - LARGE_V2
+        - LARGE_V3
         - LARGE
     """
 
@@ -78,11 +79,17 @@ class WhisperModelSize(str, Enum):
     MEDIUM_EN = "medium.en"
     LARGE_V1 = "large-v1"
     LARGE_V2 = "large-v2"
+    LARGE_V3 = "large-v3"
     LARGE = "large"
 
 
 class WhisperConfig(BaseModel):
-    """The configuration for the whisper deployment from faster-whisper."""
+    """The configuration for the whisper deployment from faster-whisper.
+
+    Attributes:
+        model_size (WhisperModelSize): The whisper model size.
+        compute_type (WhisperComputeType): The compute type.
+    """
 
     model_size: WhisperModelSize = Field(
         default=WhisperModelSize.BASE, description="The whisper model size."
@@ -152,9 +159,10 @@ class WhisperDeployment(BaseDeployment):
 
         Returns:
             WhisperOutput: The transcription output as a dictionary:
-                segments (List[AsrSegment]): The ASR segments.
-                transcription_info (AsrTranscriptionInfo): The ASR transcription info.
-                transcription (AsrTranscription): The ASR transcription.
+
+                - segments (List[AsrSegment]): The ASR segments.
+                - transcription_info (AsrTranscriptionInfo): The ASR transcription info.
+                - transcription (AsrTranscription): The ASR transcription.
 
         Raises:
             InferenceException: If the inference fails.
@@ -201,9 +209,10 @@ class WhisperDeployment(BaseDeployment):
 
         Yields:
             WhisperOutput: The transcription output as a dictionary:
-                segments (list[AsrSegment]): The ASR segments.
-                transcription_info (AsrTranscriptionInfo): The ASR transcription info.
-                transcription (AsrTranscription): The ASR transcription.
+
+                - segments (list[AsrSegment]): The ASR segments.
+                - transcription_info (AsrTranscriptionInfo): The ASR transcription info.
+                - transcription (AsrTranscription): The ASR transcription.
         """
         if not params:
             params = WhisperParams()
@@ -248,9 +257,10 @@ class WhisperDeployment(BaseDeployment):
 
         Returns:
             WhisperBatchOutput: The transcription output as a dictionary:
-                segments (list[list[AsrSegment]]): The ASR segments for each audio.
-                transcription_info (list[AsrTranscriptionInfo]): The ASR transcription info for each audio.
-                transcription (list[AsrTranscription]): The ASR transcription for each audio.
+
+                - segments (list[list[AsrSegment]]): The ASR segments for each audio.
+                - transcription_info (list[AsrTranscriptionInfo]): The ASR transcription info for each audio.
+                - transcription (list[AsrTranscription]): The ASR transcription for each audio.
 
         Raises:
             InferenceException: If the inference fails.

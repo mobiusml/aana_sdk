@@ -51,25 +51,26 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
-  - toc:
-      toc_depth: 2
+  # - toc:
+  #     toc_depth: 2
 
 # Plugins
 plugins:
+  search:
   mkdocstrings:
     handlers:
       python:
         options:
           show_object_full_path: false
           show_root_heading: true
-          show_if_no_docstring: true
+          show_if_no_docstring: false
           show_root_toc_entry: false
           inherited_members: true
           members_order: source
           separate_signature: true
           unwrap_annotated: true
-          filters: ["!^_",  "!^__all__$"]
-          merge_init_into_class: true
+          filters: ["!^_",  "!^__all__$", "!^reconfigure", "!^get_methods"]
+          merge_init_into_class: true 
           docstring_section_style: spacy
           signature_crossrefs: true
           show_symbol_type_heading: true

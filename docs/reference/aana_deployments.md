@@ -1,6 +1,6 @@
 # Aana Deployments
 
-## AanaDeploymentHandle
+<!-- ## AanaDeploymentHandle
 
 AanaDeploymentHandle is a class that allows you to interact with Aana deployments.
 
@@ -29,4 +29,7 @@ Hugging Face Text Generation Deployment allows you to use Hugging Face transform
 VLLM Deployment allows you to use vLLM library to serve LLMs.
 
 ::: aana.deployments.VLLMConfig
-::: aana.deployments.VLLMDeployment
+::: aana.deployments.VLLMDeployment -->
+
+
+::: aana.deployments
