@@ -124,3 +124,7 @@ nav:
       - reference/models/vad.md
       - reference/models/video.md
       - reference/models/whisper.md
+    - reference/exceptions.md
+    - reference/utils.md
+    - reference/integrations.md
+    - reference/processors.md

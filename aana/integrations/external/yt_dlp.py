@@ -1,6 +1,5 @@
 import hashlib
 from pathlib import Path
-from typing_extensions import TypedDict
 
 import yt_dlp
 from yt_dlp.utils import DownloadError
@@ -10,6 +9,8 @@ from aana.core.models.video import Video, VideoInput, VideoMetadata
 from aana.exceptions.io import (
     DownloadException,
 )
+
+__all__ = ["download_video", "get_video_metadata"]
 
 
 def get_video_metadata(video_url: str) -> VideoMetadata:
@@ -24,7 +25,6 @@ def get_video_metadata(video_url: str) -> VideoMetadata:
     Raises:
         DownloadException: Request does not succeed.
     """
-
     ydl_options = {
         "extract_flat": True,
         "hls_prefer_native": True,

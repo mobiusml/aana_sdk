@@ -2,6 +2,12 @@ from aana.core.models.media import MediaId
 from aana.exceptions.core import BaseException
 from aana.storage.models.video import Status as VideoStatus
 
+__all__ = [
+    "NotFoundException",
+    "MediaIdAlreadyExistsException",
+    "UnfinishedVideoException",
+]
+
 
 class NotFoundException(BaseException):
     """Raised when an item searched by id is not found."""
