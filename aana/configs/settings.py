@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 from aana.configs.db import DbSettings
@@ -44,6 +45,12 @@ class Settings(BaseSettings):
     db_config: DbSettings = DbSettings()
 
     test: TestSettings = TestSettings()
+
+    @field_validator("tmp_data_dir", mode="after")
+    def create_tmp_data_dir(cls, path: Path) -> Path:
+        """Create the tmp_data_dir if it doesn't exist."""
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
 
 settings = Settings()
