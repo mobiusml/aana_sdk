@@ -1,3 +1,16 @@
+---
+hide:
+  - navigation
+--- 
+
+<style>
+.md-content .md-typeset h1 { 
+  position: absolute;
+  left: -999px;
+}
+</style>
+    
+
 # How to Create a New Project with Aana SDK
 
 Aana SDK is a powerful framework for building multimodal applications. It facilitates the large-scale deployment of machine learning models, including those for vision, audio, and language, and supports Retrieval-Augmented Generation (RAG) systems. This enables the development of advanced applications such as search engines, recommendation systems, and data insights platforms.
@@ -6,27 +19,13 @@ Aana SDK comes with a set of example applications that demonstrate the capabilit
 
 If you want to start building a new application, you can use the following GitHub template: [Aana App Template](https://github.com/mobiusml/aana_app_template). It will help you get started with the Aana SDK and provide you with a basic structure for your application and its dependencies.
 
-In this tutorial, we will walk you through the process of creating a new project with Aana SDK. By the end of this tutorial, you will have a runnable application that transcribes a video and summarizes the transcript using a Language Model (LLM). We will use the video transcription application from the [README](/README.md) as a starting point and extend it to include the LLM model for summarization and a new endpoints.
-
-
-- [Prerequisites](#prerequisites)
-- [Video Transcription Application](#video-transcription-application)
-- [Running the Application](#running-the-application)
-- [Application Components](#application-components)
-  - [Deployments](#deployments)
-  - [Endpoints](#endpoints)
-  - [Application](#application)
-  - [Connecting to the Deployments](#connecting-to-the-deployments)
-- [Transcript Summarization Application](#transcript-summarization-application)
-    - [LLM Model](#llm-model)
-    - [Summarization Endpoint](#summarization-endpoint)
-    - [Extending the Application](#extending-the-application)
+In this tutorial, we will walk you through the process of creating a new project with Aana SDK. By the end of this tutorial, you will have a runnable application that transcribes a video and summarizes the transcript using a Language Model (LLM). We will use [the video transcription application](/#creating-a-new-application) as a starting point and extend it to include the LLM model for summarization and a new endpoints.
 
 
 
 ## Prerequisites
 
-Before you begin, make sure you have a working installation of Aana SDK. See the [README](/README.md#installation) for installation instructions.
+Before you begin, make sure you have a working installation of Aana SDK. See the [installation instructions](/#installation) for more information.
 
 ## Video Transcription Application
 
