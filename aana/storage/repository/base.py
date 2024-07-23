@@ -61,20 +61,6 @@ class BaseRepository(Generic[T]):
             raise NotFoundException(self.table_name, item_id)
         return entity
 
-    # def check_id_exists(self, id: int | MediaId) -> bool:
-    #     """Checks if a record with the given id exists in the database.
-
-    #     Args:
-    #         id (int | MediaId): id to check for.
-
-    #     Returns:
-    #         bool: True if the record exists, False otherwise.
-    #     """
-    #     # return (
-    #     #     self.session.query(self.model_class).filter_by(id=str(media_id)).first()
-    #     #     is not None
-    #     # )
-
     def delete(self, id: int | MediaId | UUID, check: bool = True) -> T | None:
         """Deletes an entity.
 

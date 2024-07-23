@@ -1,12 +1,14 @@
 import json
 import time
-from typing import Any
+from typing import Annotated, Any
 from uuid import uuid4
 
 import ray
+from fastapi import Depends
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
 from ray import serve
+from sqlalchemy.orm import Session
 
 from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
 from aana.api.app import app
@@ -15,9 +17,19 @@ from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.chat import ChatCompletetion, ChatCompletionRequest, ChatDialog
 from aana.core.models.sampling import SamplingParams
-from aana.core.models.task import TaskId
+from aana.core.models.task import TaskId, TaskInfo
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.storage.services.task import TaskInfo, delete_task, get_task_info
+from aana.storage.engine import engine
+from aana.storage.repository.task import TaskRepository
+
+
+def get_db():
+    """Get a database session."""
+    db = Session(engine)
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -104,16 +116,25 @@ class RequestHandler:
         description="Get the task status by task ID.",
         include_in_schema=aana_settings.task_queue.enabled,
     )
-    async def get_task_endpoint(self, task_id: str) -> TaskInfo:
+    async def get_task_endpoint(
+        self, task_id: str, db: Annotated[Session, Depends(get_db)]
+    ) -> TaskInfo:
         """Get the task with the given ID.
 
         Args:
             task_id (str): The ID of the task.
+            db (Session): The database session.
 
         Returns:
             TaskInfo: The status of the task.
         """
-        return get_task_info(task_id)
+        task_repo = TaskRepository(db)
+        task = task_repo.read(task_id)
+        return TaskInfo(
+            id=str(task.id),
+            status=task.status,
+            result=task.result,
+        )
 
     @app.get(
         "/tasks/delete/{task_id}",
@@ -121,16 +142,20 @@ class RequestHandler:
         description="Delete the task by task ID.",
         include_in_schema=aana_settings.task_queue.enabled,
     )
-    async def delete_task_endpoint(self, task_id: str) -> TaskId:
+    async def delete_task_endpoint(
+        self, task_id: str, db: Annotated[Session, Depends(get_db)]
+    ) -> TaskId:
         """Delete the task with the given ID.
 
         Args:
             task_id (str): The ID of the task.
+            db (Session): The database session.
 
         Returns:
             TaskInfo: The deleted task.
         """
-        task = delete_task(task_id)
+        task_repo = TaskRepository(db)
+        task = task_repo.delete(task_id)
         return TaskId(task_id=str(task.id))
 
     @app.post("/chat/completions", response_model=ChatCompletetion)

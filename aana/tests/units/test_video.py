@@ -236,6 +236,7 @@ def test_download_video():
     ],
 )
 def test_get_video_metadata_success(url, title, description, duration):
+    """Test getting video metadata."""
     metadata = get_video_metadata(url)
     assert isinstance(metadata, VideoMetadata)
     assert metadata.title == title
@@ -244,6 +245,7 @@ def test_get_video_metadata_success(url, title, description, duration):
 
 
 def test_get_video_metadata_failure():
+    """Test that get_video_metadata fails for invalid URLs."""
     url = "https://www.youtube.com/watch?v=invalid_url"
     with pytest.raises(DownloadException):
         get_video_metadata(url)

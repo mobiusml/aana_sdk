@@ -1,50 +1,22 @@
-from enum import Enum
 
-from sqlalchemy import Column, Float, ForeignKey, String
-from sqlalchemy import Enum as SqlEnum
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
 
-from aana.storage.models.base import BaseEntity, TimeStampEntity
-from aana.storage.types import MediaIdSqlType
+from aana.core.models.media import MediaId
+from aana.storage.models.media import MediaEntity
 
 
-class Status(str, Enum):
-    """Enum for video status."""
-
-    CREATED = "created"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-
-
-class VideoEntity(BaseEntity, TimeStampEntity):
-    """ORM class for video file (video, etc)."""
+class VideoEntity(MediaEntity):
+    """Base ORM class for videos."""
 
     __tablename__ = "video"
 
-    id = Column(MediaIdSqlType, ForeignKey("media.id"), primary_key=True)
-    duration = Column(Float, comment="Media duration in seconds")
-    orig_filename = Column(String, comment="Original filename")
-    orig_url = Column(String, comment="Original URL")
-    title = Column(String, comment="Title of the video")
-    description = Column(String, comment="Description of the video")
-    status = Column(
-        SqlEnum(Status),
-        nullable=False,
-        default=Status.CREATED,
-        comment="Status of the video",
-    )
-    media = relationship("MediaEntity", back_populates="video", uselist=False)
+    id: Mapped[MediaId] = mapped_column(ForeignKey("media.id"), primary_key=True)
+    path: Mapped[str] = mapped_column(comment="Path", nullable=True)
+    url: Mapped[str] = mapped_column(comment="URL", nullable=True)
+    title: Mapped[str] = mapped_column(comment="Title", nullable=True)
+    description: Mapped[str] = mapped_column(comment="Description", nullable=True)
 
-    captions = relationship(
-        "CaptionEntity",
-        back_populates="video",
-        cascade="all, delete",
-        uselist=True,
-    )
-    transcripts = relationship(
-        "TranscriptEntity",
-        back_populates="video",
-        cascade="all, delete",
-        uselist=True,
-    )
+    __mapper_args__ = {  # noqa: RUF012
+        "polymorphic_identity": "video",
+    }
