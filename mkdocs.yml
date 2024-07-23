@@ -1,4 +1,4 @@
-site_name: Aana SDK
+site_name: "Aana SDK"
 
 
 # Repository
@@ -12,7 +12,6 @@ theme:
     - navigation.tabs
     - navigation.indexes
     - navigation.path
-    # - toc.integrate
     - toc.follow
     - navigation.top
     - search.suggest
@@ -20,20 +19,24 @@ theme:
     - content.tabs.link
     - content.code.annotation
     - content.code.copy
+    - content.tooltips
   language: en
+  logo: images/white_logo.png
+  favicon: images/favicon.ico
   palette:
     - scheme: default
       toggle:
         icon: material/toggle-switch-off-outline 
         name: Switch to dark mode
-      primary: 5c21d1
-      accent: purple 
+      primary: custom
     - scheme: slate 
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode    
-      primary: 5c21d1
-      accent: lime
+      primary: custom
+extra_css:
+  - stylesheets/extra.css
+
 
 # Extensions
 markdown_extensions:
@@ -79,6 +82,8 @@ plugins:
           show_symbol_type_heading: true
           show_symbol_type_toc: true
           show_labels: false
+          docstring_options:
+            ignore_init_summary: true
 # Customization
 extra:
   social:
@@ -93,7 +98,7 @@ nav:
   - Getting Started:
     - Tutorial: pages/tutorial.md
   - Integrations:
-    - Overview: pages/integrations.md
+    - Deployments: pages/integrations.md
     - OpenAI API: pages/openai_api.md
   - Deployment:
     - Docker: pages/docker.md
@@ -108,7 +113,9 @@ nav:
     - Testing: pages/testing.md
     - Deployment Test Cache: pages/deployment_test_cache.md
   - Reference (Code API):
-    - reference/api.md
+    - reference/index.md
+    - reference/sdk.md
+    - reference/endpoint.md
     - reference/deployments.md
     - reference/settings.md
     - Models:
@@ -124,7 +131,7 @@ nav:
       - reference/models/vad.md
       - reference/models/video.md
       - reference/models/whisper.md
-    - reference/exceptions.md
-    - reference/utils.md
     - reference/integrations.md
     - reference/processors.md
+    - reference/exceptions.md
+    - reference/utils.md

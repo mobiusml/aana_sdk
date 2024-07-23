@@ -15,8 +15,8 @@ from aana.utils.download import download_file
 class Audio(Media):
     """A class representing an audio.
 
-    At least one of 'path', 'url', or 'content' must be provided.
-    If 'save_on_disk' is True, the audio will be saved on disk automatically.
+    At least one of `path`, `url`, or `content` must be provided.
+    If `save_on_disk` is True, the audio will be saved on disk automatically.
 
     Attributes:
         path (Path): the path to the audio file
@@ -34,7 +34,7 @@ class Audio(Media):
     numpy: np.ndarray | None = None
     audio_lib: type[AbstractAudioLibrary] = pyAVWrapper
 
-    def validate(self):
+    def _validate(self):
         """Validate the audio.
 
         Raises:
@@ -42,7 +42,7 @@ class Audio(Media):
             AudioReadingException: if the audio is not valid
         """
         # validate the parent class
-        super().validate()
+        super()._validate()
 
         # check that at least one of 'path', 'url' or 'content' is provided
         if not any(
@@ -87,11 +87,11 @@ class Audio(Media):
         audio_dir.mkdir(parents=True, exist_ok=True)
         file_path = audio_dir / (self.media_id + ".wav")
         if self.content is not None:
-            self.save_from_audio_content(file_path)
+            self._save_from_audio_content(file_path)
         elif self.numpy is not None:
-            self.save_from_numpy(file_path)
+            self._save_from_numpy(file_path)
         elif self.url:
-            self.save_from_url(file_path)
+            self._save_from_url(file_path)
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
@@ -99,7 +99,7 @@ class Audio(Media):
         self.path = file_path
         self.is_saved = True
 
-    def save_from_audio_content(self, file_path: Path):
+    def _save_from_audio_content(self, file_path: Path):
         """Save the audio from the content.
 
         Args:
@@ -108,7 +108,7 @@ class Audio(Media):
         assert self.content is not None  # noqa: S101
         self.audio_lib.write_audio_bytes(file_path, self.content)
 
-    def save_from_audio_url(self, file_path):
+    def _save_from_audio_url(self, file_path):
         """Save the audio from the URL.
 
         Args:
@@ -121,7 +121,7 @@ class Audio(Media):
         content: bytes = download_file(self.url)
         self.audio_lib.write_audio_bytes(file_path, content)
 
-    def save_from_numpy(self, file_path: Path):
+    def _save_from_numpy(self, file_path: Path):
         """Save the audio from numpy on disk.
 
         Args:
@@ -143,11 +143,11 @@ class Audio(Media):
         if self.numpy is not None:
             return self.numpy
         elif self.path:
-            self.load_numpy_from_path()
+            self._load_numpy_from_path()
         elif self.url:
-            self.load_numpy_from_url()
+            self._load_numpy_from_url()
         elif self.content:
-            self.load_numpy_from_content()
+            self._load_numpy_from_content()
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
@@ -155,7 +155,7 @@ class Audio(Media):
         assert self.numpy is not None  # noqa: S101
         return self.numpy
 
-    def load_numpy_from_path(self):
+    def _load_numpy_from_path(self):
         """Load the audio as a numpy array from a path.
 
         Raises:
@@ -167,7 +167,7 @@ class Audio(Media):
         except Exception as e:
             raise AudioReadingException(self) from e
 
-    def load_numpy_from_audio_bytes(self, audio_bytes: bytes):
+    def _load_numpy_from_audio_bytes(self, audio_bytes: bytes):
         """Load the image as a numpy array from image bytes (downloaded from URL or read from file).
 
         Raises:
@@ -178,7 +178,7 @@ class Audio(Media):
         except Exception as e:
             raise AudioReadingException(self) from e
 
-    def load_numpy_from_url(self):
+    def _load_numpy_from_url(self):
         """Load the audio as a numpy array from a URL.
 
         Raises:
@@ -186,16 +186,16 @@ class Audio(Media):
         """
         assert self.url is not None  # noqa: S101
         content: bytes = download_file(self.url)
-        self.load_numpy_from_audio_bytes(content)
+        self._load_numpy_from_audio_bytes(content)
 
-    def load_numpy_from_content(self):
+    def _load_numpy_from_content(self):
         """Load the image as a numpy array from content.
 
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
         assert self.content is not None  # noqa: S101
-        self.load_numpy_from_audio_bytes(self.content)
+        self._load_numpy_from_audio_bytes(self.content)
 
     def __repr__(self) -> str:
         """Get the representation of the audio.

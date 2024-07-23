@@ -1,4 +1,4 @@
-# Integrations
+# Deployments
 
 Aana SDK comes with a set of predefined deployments that you can use out of the box to deploy models.
 

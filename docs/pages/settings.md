@@ -1,3 +1,16 @@
+---
+hide:
+  - navigation
+---
+
+<style>
+.md-content .md-typeset h1 { 
+  position: absolute;
+  left: -999px;
+}
+</style>
+
+
 # Settings
 
 Here are the environment variables that can be used to configure the Aaana SDK:
