@@ -7,7 +7,14 @@ from aana.storage.models.base import BaseEntity, TimeStampEntity
 
 
 class MediaEntity(BaseEntity, TimeStampEntity):
-    """Table for media items."""
+    """Base ORM class for media (e.g. videos, images, etc.).
+
+    This class is meant to be subclassed by other media types.
+
+    Attributes:
+        id (MediaId): Unique identifier for the media.
+        media_type (str): The type of media (populated automatically by ORM based on `polymorphic_identity` of   subclass).
+    """
 
     __tablename__ = "media"
     id: Mapped[MediaId] = mapped_column(

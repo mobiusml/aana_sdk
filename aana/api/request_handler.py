@@ -19,13 +19,13 @@ from aana.core.models.chat import ChatCompletetion, ChatCompletionRequest, ChatD
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.task import TaskId, TaskInfo
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.storage.engine import engine
 from aana.storage.repository.task import TaskRepository
+from aana.storage.session import get_session
 
 
 def get_db():
     """Get a database session."""
-    db = Session(engine)
+    db = get_session()
     try:
         yield db
     finally:
