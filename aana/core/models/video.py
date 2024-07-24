@@ -121,7 +121,7 @@ class Video(Media):
             f"url={self.url}, "
             f"content={content_hash}, "
             f"media_id={self.media_id}, "
-            f"title={self.title}, "
+            f"title={self.title})"
         )
 
 

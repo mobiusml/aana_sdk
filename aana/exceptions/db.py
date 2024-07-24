@@ -1,6 +1,6 @@
 from aana.core.models.media import MediaId
 from aana.exceptions.core import BaseException
-from aana.storage.models.video import Status as VideoStatus
+from aana.storage.models.extended_video import VideoProcessingStatus
 
 __all__ = [
     "NotFoundException",
@@ -57,7 +57,9 @@ class UnfinishedVideoException(BaseException):
         message (str): The error message.
     """
 
-    def __init__(self, media_id: int | MediaId, status: VideoStatus, message: str):
+    def __init__(
+        self, media_id: int | MediaId, status: VideoProcessingStatus, message: str
+    ):
         """Constructor.
 
         Args:

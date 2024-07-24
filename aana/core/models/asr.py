@@ -78,10 +78,10 @@ class AsrSegment(BaseModel):
     text: str = Field(description="The text of the segment (transcript/translation)")
     time_interval: TimeInterval = Field(description="Time interval of the segment")
     confidence: float | None = Field(
-        ge=0.0, le=1.0, description="Confidence of the segment"
+        None, ge=0.0, le=1.0, description="Confidence of the segment"
     )
     no_speech_confidence: float | None = Field(
-        ge=0.0, le=1.0, description="Chance of being a silence segment"
+        None, ge=0.0, le=1.0, description="Chance of being a silence segment"
     )
     words: list[AsrWord] = Field(
         description="List of words in the segment", default_factory=list

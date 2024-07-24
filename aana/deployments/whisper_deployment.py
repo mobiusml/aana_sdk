@@ -4,7 +4,6 @@ from typing import Any, cast
 
 import torch
 from faster_whisper import WhisperModel
-from faster_whisper.tokenizer import Tokenizer
 from pydantic import BaseModel, Field
 from ray import serve
 from typing_extensions import TypedDict
@@ -15,9 +14,7 @@ from aana.core.models.asr import (
     AsrTranscriptionInfo,
 )
 from aana.core.models.audio import Audio
-from aana.core.models.vad import VadSegment
 from aana.core.models.whisper import (
-    BatchedWhisperParams,
     WhisperParams,
 )
 from aana.deployments.base_deployment import BaseDeployment, test_cache
@@ -309,7 +306,7 @@ class WhisperDeployment(BaseDeployment):
     #     try:
     #         from faster_whisper import BatchedInferencePipeline
     #     except ImportError as e:
-    #         raise ImportError(  # noqa: TRY003
+    #         raise ImportError(
     #             "Batched version of whisper is not available. "
     #             "Install faster-whisper from https://github.com/mobiusml/faster-whisper"
     #         ) from e
