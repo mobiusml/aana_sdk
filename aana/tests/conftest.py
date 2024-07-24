@@ -150,7 +150,7 @@ def db_session():
         # Configure the database to use the temporary file
         settings.db_config.datastore_config = SQLiteConfig(path=tmp.name)
         # Reset the engine
-        settings.db_config.engine = None
+        settings.db_config._engine = None
 
         # Run migrations to set up the schema
         run_alembic_migrations(settings)

@@ -1,7 +1,6 @@
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing_extensions import Doc
 
 __all__ = [
     "Role",

@@ -131,6 +131,10 @@ nav:
       - reference/models/vad.md
       - reference/models/video.md
       - reference/models/whisper.md
+    - Storage:
+      - reference/storage/index.md
+      - reference/storage/models.md
+      - reference/storage/repositories.md
     - reference/integrations.md
     - reference/processors.md
     - reference/exceptions.md

@@ -19,8 +19,8 @@ from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
 )
-from aana.storage.engine import engine
 from aana.storage.services.task import create_task
+from aana.storage.session import get_session
 
 
 def get_default_values(func):
@@ -77,7 +77,7 @@ class Endpoint:
                 self.asr_handle = await AanaDeploymentHandle.create("whisper_deployment")
             ```
         """
-        self.session = Session(engine)
+        self.session = get_session()
         self.initialized = True
 
     async def run(self, *args, **kwargs):
