@@ -10,8 +10,7 @@ from ray import serve
 
 from aana.core.models.audio import Audio
 from aana.core.models.base import pydantic_to_dict
-from aana.core.models.vad import VadSegment
-from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
+from aana.core.models.whisper import WhisperParams
 from aana.tests.utils import (
     LevenshteinOperator,
     get_deployments_by_type,

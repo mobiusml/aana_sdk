@@ -61,7 +61,7 @@ def get_prompt(name):
         return "[INST] Who is Elon Musk? [/INST]"
     elif name == "hf_phi3_mini_4k_instruct_text_gen_deployment":
         return "<|user|>\ Who is Elon Musk? <|end|>\n<|assistant|>"
-    elif name == "meta_llama3_8b_instruct_deployment":
+    elif name == "meta_llama3_8b_instruct_deployment":  # noqa: SIM114
         return "[INST] Who is Elon Musk? [/INST]"
     elif name == "microsoft_phi_3_mini_instruct_deployment":
         return "[INST] Who is Elon Musk? [/INST]"

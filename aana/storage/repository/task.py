@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import and_, desc, or_
@@ -51,6 +52,22 @@ class TaskRepository(BaseRepository[TaskEntity]):
             task_id = UUID(task_id)
         return super().delete(task_id, check)
 
+    def save(self, endpoint: str, data: Any, priority: int = 0):
+        """Add a task to the database.
+
+        Args:
+            endpoint (str): The endpoint to which the task is assigned.
+            data (Any): Data for the task.
+            priority (int): Priority of the task (0 is the lowest).
+
+        Returns:
+            TaskEntity: The saved task.
+        """
+        task = TaskEntity(endpoint=endpoint, data=data, priority=priority)
+        self.session.add(task)
+        self.session.commit()
+        return task
+
     def get_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
         """Fetches all unprocessed tasks.
 
@@ -77,12 +94,36 @@ class TaskRepository(BaseRepository[TaskEntity]):
                         TaskEntity.status.in_(
                             [TaskStatus.RUNNING, TaskStatus.ASSIGNED]
                         ),
-                        TaskEntity.update_ts <= cutoff_time,
+                        TaskEntity.updated_at <= cutoff_time,
                     ),
                 )
             )
-            .order_by(desc(TaskEntity.priority), TaskEntity.create_ts)
+            .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
             .limit(limit)
             .all()
         )
         return tasks
+
+    def update_status(
+        self,
+        task_id: str,
+        status: TaskStatus,
+        progress: int | None = None,
+        result: Any = None,
+    ):
+        """Update the status of a task.
+
+        Args:
+            task_id (str): The ID of the task.
+            status (TaskStatus): The new status.
+            progress (int | None): The progress. If None, the progress will not be updated.
+            result (Any): The result.
+        """
+        task = self.read(task_id)
+        task.status = status
+        if status == TaskStatus.COMPLETED or status == TaskStatus.FAILED:
+            task.completed_at = datetime.now()  # noqa: DTZ005
+        if progress is not None:
+            task.progress = progress
+        task.result = result
+        self.session.commit()
