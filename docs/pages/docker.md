@@ -16,7 +16,7 @@ docker build -t aana:latest .
 docker run --rm --init -p 8000:8000 --gpus all -e TARGET="whisper" -v aana_cache:/root/.aana -v aana_hf_cache:/root/.cache/huggingface --name aana_instance aana:latest
 ```
 
-Use the environment variable TARGET to specify the application you want to run. The available applications are `chat_with_video`, `whisper`, `llama2`, `summarize_transcript` etc. See [Projects](/aana/projects/) for the list of available projects.
+Use the environment variable TARGET to specify the application you want to run. The available applications are `chat_with_video`, `whisper`, `llama2`, `summarize_transcript` etc. See [Projects](https://github.com/mobiusml/aana_sdk/tree/main/aana/projects/) for the list of available projects.
 
 The first run might take a while because the models will be downloaded from the Internet and cached. The models will be stored in the `aana_cache` volume. The HuggingFace models will be stored in the `aana_hf_cache` volume. If you want to remove the cached models, remove the volume.
 

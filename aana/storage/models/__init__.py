@@ -18,3 +18,11 @@ from aana.storage.models.media import MediaEntity
 from aana.storage.models.task import TaskEntity
 from aana.storage.models.transcript import TranscriptEntity
 from aana.storage.models.video import VideoEntity
+
+__all__ = [
+    "BaseEntity",
+    "MediaEntity",
+    "VideoEntity",
+    "CaptionEntity",
+    "TranscriptEntity",
+]

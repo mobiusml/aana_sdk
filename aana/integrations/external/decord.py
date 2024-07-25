@@ -10,9 +10,24 @@ from aana.core.models.image import Image
 from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
 
+__all__ = [
+    "extract_frames",
+    "generate_frames",
+    "get_video_duration",
+    "is_audio",
+    "FramesDict",
+]
+
 
 class FramesDict(TypedDict):
-    """Represents a set of frames with ids, timestamps and total duration."""
+    """Represents a set of frames with ids, timestamps and total duration.
+
+    Attributes:
+        frames (list[Image]): the extracted frames
+        timestamps (list[float]): the timestamps of the extracted frames
+        duration (float): the total duration of the video
+        frame_ids (list[int]): the ids of the extracted frames
+    """
 
     frames: list[Image]
     timestamps: list[float]

@@ -19,8 +19,8 @@ from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
 )
-from aana.storage.engine import engine
 from aana.storage.services.task import create_task
+from aana.storage.session import get_session
 
 
 def get_default_values(func):
@@ -52,9 +52,9 @@ class Endpoint:
 
     Attributes:
         name (str): Name of the endpoint.
-        path (str): Path of the endpoint.
+        path (str): Path of the endpoint (e.g. "/video/transcribe").
         summary (str): Description of the endpoint that will be shown in the API documentation.
-        event_handlers (list[EventHandler], optional): The list of event handlers to register for the endpoint.
+        event_handlers (list[EventHandler] | None): The list of event handlers to register for the endpoint.
     """
 
     name: str
@@ -65,12 +65,34 @@ class Endpoint:
     session: Session | None = None
 
     async def initialize(self):
-        """Initialize the endpoint."""
-        self.session = Session(engine)
+        """Initialize the endpoint.
+
+        Redefine this method to add initialization logic for the endpoint (e.g. create a handle to the deployment).
+        Call super().initialize() to ensure the endpoint is initialized.
+
+        Example:
+            ```python
+            async def initialize(self):
+                await super().initialize()
+                self.asr_handle = await AanaDeploymentHandle.create("whisper_deployment")
+            ```
+        """
+        self.session = get_session()
         self.initialized = True
 
     async def run(self, *args, **kwargs):
-        """Run the endpoint."""
+        """The main method of the endpoint that is called when the endpoint receives a request.
+
+        Redefine this method to implement the logic of the endpoint.
+
+        Example:
+            ```python
+            async def run(self, video: VideoInput) -> WhisperOutput:
+                video_obj: Video = await run_remote(download_video)(video_input=video)
+                transcription = await self.asr_handle.transcribe(audio=audio)
+                return transcription
+            ```
+        """
         raise NotImplementedError
 
     def register(
@@ -86,12 +108,12 @@ class Endpoint:
         RequestModel = self.get_request_model()
         ResponseModel = self.get_response_model()
 
-        file_upload_field = self.get_file_upload_field()
+        file_upload_field = self.__get_file_upload_field()
         if self.event_handlers:
             for handler in self.event_handlers:
                 event_manager.register_handler_for_events(handler, [self.path])
 
-        route_func = self.create_endpoint_func(
+        route_func = self.__create_endpoint_func(
             RequestModel=RequestModel,
             file_upload_field=file_upload_field,
             event_manager=event_manager,
@@ -109,7 +131,7 @@ class Endpoint:
         )(route_func)
         custom_schemas[self.name] = RequestModel.model_json_schema()
 
-    def generate_model_name(self, suffix: str) -> str:
+    def __generate_model_name(self, suffix: str) -> str:
         """Generate a Pydantic model name based on a given suffix.
 
         Args:
@@ -120,7 +142,7 @@ class Endpoint:
         """
         return self.__class__.__name__ + suffix
 
-    def arg_to_field(self, arg_name: str, arg_type: Any) -> tuple[Any, Any]:
+    def __arg_to_field(self, arg_name: str, arg_type: Any) -> tuple[Any, Any]:
         """Convert an argument to a Pydantic field.
 
         Args:
@@ -157,7 +179,7 @@ class Endpoint:
         else:
             return (arg_type, data_model_instance)
 
-    def get_input_fields(self) -> dict[str, tuple[Any, Any]]:
+    def __get_input_fields(self) -> dict[str, tuple[Any, Any]]:
         """Generate fields for the request Pydantic model based on the function annotations.
 
         Returns:
@@ -167,7 +189,7 @@ class Endpoint:
         for arg_name, arg_type in self.run.__annotations__.items():
             if arg_name == "return":
                 continue
-            fields[arg_name] = self.arg_to_field(arg_name, arg_type)
+            fields[arg_name] = self.__arg_to_field(arg_name, arg_type)
         return fields
 
     def get_request_model(self) -> type[BaseModel]:
@@ -176,11 +198,11 @@ class Endpoint:
         Returns:
             type[BaseModel]: Request Pydantic model.
         """
-        model_name = self.generate_model_name("Request")
-        input_fields = self.get_input_fields()
+        model_name = self.__generate_model_name("Request")
+        input_fields = self.__get_input_fields()
         return create_model(model_name, **input_fields)
 
-    def get_output_fields(self) -> dict[str, tuple[Any, Any]]:
+    def __get_output_fields(self) -> dict[str, tuple[Any, Any]]:
         """Generate fields for the response Pydantic model based on the function annotations.
 
         Returns:
@@ -195,7 +217,7 @@ class Endpoint:
             raise ValueError("Endpoint function must have a return annotation.") from e  # noqa: TRY003
         fields = {}
         for arg_name, arg_type in return_type.__annotations__.items():
-            fields[arg_name] = self.arg_to_field(arg_name, arg_type)
+            fields[arg_name] = self.__arg_to_field(arg_name, arg_type)
         return fields
 
     def get_response_model(self) -> type[BaseModel]:
@@ -204,11 +226,11 @@ class Endpoint:
         Returns:
             type[BaseModel]: Response Pydantic model.
         """
-        model_name = self.generate_model_name("Response")
-        output_fields = self.get_output_fields()
+        model_name = self.__generate_model_name("Response")
+        output_fields = self.__get_output_fields()
         return create_model(model_name, **output_fields)
 
-    def get_file_upload_field(self) -> FileUploadField | None:
+    def __get_file_upload_field(self) -> FileUploadField | None:
         """Get the file upload field for the endpoint.
 
         Returns:
@@ -250,7 +272,7 @@ class Endpoint:
         """
         return isasyncgenfunction(cls.run)
 
-    def create_endpoint_func(  # noqa: C901
+    def __create_endpoint_func(  # noqa: C901
         self,
         RequestModel: type[BaseModel],
         file_upload_field: FileUploadField | None = None,

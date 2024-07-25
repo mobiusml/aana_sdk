@@ -189,3 +189,16 @@ hf_phi3_mini_4k_instruct_text_gen_deployment = HfTextGenerationDeployment.option
 available_deployments[
     "hf_phi3_mini_4k_instruct_text_gen_deployment"
 ] = hf_phi3_mini_4k_instruct_text_gen_deployment
+
+__all__ = [
+    "vllm_llama2_7b_chat_deployment",
+    "meta_llama3_8b_instruct_deployment",
+    "internlm2_5_7b_chat_deployment",
+    "microsoft_phi_3_mini_instruct_deployment",
+    "hf_blip2_opt_2_7b_deployment",
+    "whisper_medium_deployment",
+    "stablediffusion2_deployment",
+    "vad_deployment",
+    "hf_blip2_opt_2_7b_pipeline_deployment",
+    "hf_phi3_mini_4k_instruct_text_gen_deployment",
+]

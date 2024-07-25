@@ -1,5 +1,15 @@
 from aana.exceptions.core import BaseException
 
+__all__ = [
+    "InferenceException",
+    "MultipleFileUploadNotAllowed",
+    "PromptTooLongException",
+    "EndpointNotFoundException",
+    "TooManyRequestsException",
+    "HandlerAlreadyRegisteredException",
+    "HandlerNotRegisteredException",
+]
+
 
 class InferenceException(BaseException):
     """Exception raised when there is an error during inference.
