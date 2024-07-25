@@ -42,7 +42,6 @@ class DbSettings(BaseSettings):
         datastore_type (DbType | str): The type of the datastore. Default is DbType.SQLITE.
         datastore_config (SQLiteConfig | PostgreSQLConfig): The configuration for the datastore.
             Default is SQLiteConfig(path="/var/lib/aana_data").
-        engine (Engine | None): The SQLAlchemy engine
     """
 
     datastore_type: DbType | str = DbType.SQLITE
