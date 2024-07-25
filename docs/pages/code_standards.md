@@ -1,16 +1,3 @@
----
-hide:
-  - navigation
----
-
-<style>
-.md-content .md-typeset h1 { 
-  position: absolute;
-  left: -999px;
-}
-</style>
-
-
 # Code Standards
 
 This project uses Ruff for linting and formatting. If you want to 

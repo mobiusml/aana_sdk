@@ -106,12 +106,11 @@ nav:
     - Cluster Setup: pages/cluster_setup.md
   - Configuration:
     - Settings: pages/settings.md
-  - Best Practices:
-    - Code Standards: pages/code_standards.md
   - Development:
     - Development Guide: pages/development.md
     - Testing: pages/testing.md
     - Deployment Test Cache: pages/deployment_test_cache.md
+    - Code Standards: pages/code_standards.md
   - Reference (Code API):
     - reference/index.md
     - reference/sdk.md

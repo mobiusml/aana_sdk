@@ -2,12 +2,12 @@
 
 Aana SDK provides an integration with an SQL database to store and retrieve data. 
 
-Currently, Aana SDK supports SQLite (default) and PostgreSQL databases. See [Database Configuration](/reference/settings/#aana.configs.DbSettings) for more information.
+Currently, Aana SDK supports SQLite (default) and PostgreSQL databases. See [Database Configuration](./../settings.md#aana.configs.DbSettings) for more information.
 
 The database integration is based on the [SQLAlchemy](https://www.sqlalchemy.org/) library and consists of two main components: 
 
-- [Models](/reference/storage/models/) - Database models (entities) that represent tables in the database.
-- [Repositories](/reference/storage/repositories/) - Classes that provide an interface to interact with the database models.
+- [Models](models.md) - Database models (entities) that represent tables in the database.
+- [Repositories](repositories.md) - Classes that provide an interface to interact with the database models.
 
 To use the database integration, you can either:
 
@@ -48,9 +48,9 @@ class TranscribeVideoEndpoint(Endpoint):
 
 ### Create a repository object and use it to interact with the database.
 
-You can use the provided repositories from the `aana.storage.repository` module. See [Repositories](/reference/storage/repositories/) for the list of available repositories.
+You can use the provided repositories from the `aana.storage.repository` module. See [Repositories](repositories.md) for the list of available repositories.
 
-For example, to work with the [`VideoEntity`](/reference/storage/models/#aana.storage.models.VideoEntity) model, you can create a [`VideoRepository`](/reference/storage/repositories/#aana.storage.repository.VideoRepository) object:
+For example, to work with the [`VideoEntity`](models.md#aana.storage.models.VideoEntity) model, you can create a [`VideoRepository`](repositories.md#aana.storage.repository.VideoRepository) object:
 
 ```python
 from aana.storage.repository import VideoRepository

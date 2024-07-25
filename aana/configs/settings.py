@@ -45,7 +45,7 @@ class Settings(BaseSettings):
         video_dir (Path): The temporary video directory.
         audio_dir (Path): The temporary audio directory.
         model_dir (Path): The temporary model directory.
-        num_workers (int): The number of workers in the task queue.
+        num_workers (int): The number of web workers.
         task_queue (TaskQueueSettings): The task queue settings.
         db_config (DbSettings): The database configuration.
         test (TestSettings): The test settings.

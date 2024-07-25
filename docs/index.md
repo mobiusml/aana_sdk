@@ -12,7 +12,7 @@ hide:
 
 
 [![Build Status](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml/badge.svg)](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/mobiusml/aana_sdk?tab=Apache-2.0-1-ov-file#readme)
 [![Website](https://img.shields.io/badge/website-online-brightgreen.svg)](http://www.mobiuslabs.com)
 [![PyPI version](https://img.shields.io/pypi/v/aana.svg)](https://pypi.org/project/aana/)
 [![GitHub release](https://img.shields.io/github/v/release/mobiusml/aana_sdk.svg)](https://github.com/mobiusml/aana_sdk/releases)
@@ -67,7 +67,7 @@ Aana SDK simplifies this process by providing a framework that allows:
 
 **Integrations**:  
 
-   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/pages/integrations.md)).
+   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](pages/integrations.md)).
 
 ## Installation
 
@@ -119,13 +119,11 @@ sh install.sh
 ## Configuration
 - [Settings](pages/settings.md): Documentation on the available settings and configuration options for the project.
 
-## Best Practices
-- [Code Standards](pages/code_standards.md): Learn about our coding standards and best practices for contributing to the project.
-
 ## Development
 - [Development Guide](pages/development.md): A guide for developers working on the project, including code structure, dev container setup, and database management.
 - [Testing](pages/testing.md): This document covers the testing procedures and guidelines for our project.
 - [Deployment Test Cache](pages/deployment_test_cache.md): Information on how deployment test caching works and its configuration.
+- [Code Standards](pages/code_standards.md): Learn about our coding standards and best practices for contributing to the project.
 
 ## Getting Started
 
@@ -143,7 +141,7 @@ If you want to start building a new application, you can use the following GitHu
 
 Let's create a simple application that transcribes a video. The application will download a video from YouTube, extract the audio, and transcribe it using an ASR model.
 
-Aana SDK already provides a deployment for ASR (Automatic Speech Recognition) based on the Whisper model. We will use this [deployment](#Deployments) in the example.
+Aana SDK already provides a deployment for ASR (Automatic Speech Recognition) based on the Whisper model. We will use this [deployment](#deployments) in the example.
 
 ```python
 from aana.api.api_generation import Endpoint
@@ -180,8 +178,8 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         await super().initialize()
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         """Transcribe video."""
@@ -214,6 +212,7 @@ if __name__ == "__main__":
 ```
 
 You have a few options to run the application:
+
 - Copy the code above and run it in a Jupyter notebook.
 - Save the code to a Python file, for example `app.py`, and run it as a Python script: `python app.py`.
 - Save the code to a Python file, for example `app.py`, and run it using the Aana CLI: `aana deploy app:aana_app --host 127.0.0.1 --port 8000 --hide-logs`.
@@ -235,7 +234,8 @@ This will return the full transcription of the video, transcription for each seg
 Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
 
 The following applications are available:
-- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. See [Chat with Video Demo notebook](/notebooks/chat_with_video_demo.ipynb) for more information.
+
+- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. See [Chat with Video Demo notebook](https://github.com/mobiusml/aana_sdk/tree/main/notebooks/chat_with_video_demo.ipynb) for more information.
 - `whisper`: An application that demonstrates the Whisper model for automatic speech recognition (ASR).
 - `llama2`: An application that deploys LLaMa2 7B Chat model.
 
@@ -262,6 +262,7 @@ aana deploy aana.projects.whisper.app:aana_app
 > You can also set the `CUDA_VISIBLE_DEVICES` environment variable to the GPU index you want to use: `export CUDA_VISIBLE_DEVICES=0`.
 >
 > Different applications have different requirements for the GPU memory:
+>
 > - `chat_with_video` requires at least 48GB.
 > - `llama2` requires at least 16GB.
 > - `whisper` requires at least 4GB.
@@ -272,7 +273,7 @@ There are three main components in Aana SDK: deployments, endpoints, and AanaSDK
 
 #### Deployments
 
-Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
+Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](pages/integrations.md) section for more information about predefined deployments.
 
 Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
 
@@ -302,8 +303,8 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         await super().initialize()
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         """Transcribe video."""
