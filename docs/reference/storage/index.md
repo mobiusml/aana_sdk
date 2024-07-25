@@ -50,7 +50,7 @@ class TranscribeVideoEndpoint(Endpoint):
 
 You can use the provided repositories from the `aana.storage.repository` module. See [Repositories](/reference/storage/repositories/) for the list of available repositories.
 
-For example, to work with the `VideoEntity` model, you can create a `VideoRepository` object:
+For example, to work with the [`VideoEntity`](/reference/storage/models/#aana.storage.models.VideoEntity) model, you can create a [`VideoRepository`](/reference/storage/repositories/#aana.storage.repository.VideoRepository) object:
 
 ```python
 from aana.storage.repository import VideoRepository
@@ -58,7 +58,7 @@ from aana.storage.repository import VideoRepository
 video_repository = VideoRepository(session)
 ```
 
-And then use the repository object to interact with the database (for example, save a video):
+And then use the repository object to interact with the database. For example, to save a video object to the database (storing media ID, URL, path, title, description, etc.):  
 
 ```python
 from aana.core.models import Video
