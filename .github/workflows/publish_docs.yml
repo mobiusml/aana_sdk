@@ -1,9 +1,6 @@
 name: Publish Docs
 
 on:
-  push:
-    branches:
-      - '**'  # Runs on push to any branch
   workflow_dispatch:
 
 jobs:
