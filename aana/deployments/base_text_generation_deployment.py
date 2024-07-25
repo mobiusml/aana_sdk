@@ -43,7 +43,19 @@ class ChatOutput(TypedDict):
 
 
 class BaseTextGenerationDeployment(BaseDeployment):
-    """Base class for text generation deployments."""
+    """Base class for text generation deployments.
+
+    To create a new text generation deployment, inherit from this class and implement at least two methods:
+
+    `apply_config`: a method to load the model and configure it
+
+    `generate_stream`: a method to generate text in a streaming fashion given a prompt and sampling parameters
+
+    It defines the interface for text generation deployments and provides a default implementation for the following methods:
+    `generate`, `generate_batch`, `chat`, `chat_stream`.
+
+    You can also override these methods to implement custom inference logic.
+    """
 
     @test_cache
     async def generate_stream(

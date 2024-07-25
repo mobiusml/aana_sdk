@@ -6,13 +6,13 @@ import orjson
 import ray
 from pydantic import BaseModel, Field
 from ray import serve
-from sqlalchemy.orm import Session
 
 from aana.api.exception_handler import custom_exception_handler
 from aana.configs.settings import settings as aana_settings
 from aana.deployments.base_deployment import BaseDeployment
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
+from aana.storage.session import get_session
 from aana.utils.asyncio import run_async
 
 
@@ -35,10 +35,7 @@ class TaskQueueDeployment(BaseDeployment):
         self.loop_task.add_done_callback(
             lambda fut: fut.result() if not fut.cancelled() else None
         )
-
-        from aana.storage.engine import engine
-
-        self.session = Session(engine)
+        self.session = get_session()
         self.task_repo = TaskRepository(self.session)
 
     def check_health(self):
@@ -110,7 +107,7 @@ class TaskQueueDeployment(BaseDeployment):
             )
 
         while True:
-            if not self.configured:
+            if not self._configured:
                 # Wait for the deployment to be configured.
                 await asyncio.sleep(1)
                 continue

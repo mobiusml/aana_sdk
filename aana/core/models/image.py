@@ -32,8 +32,8 @@ from aana.utils.download import download_file
 class Image(Media):
     """A class representing an image.
 
-    At least one of 'path', 'url', 'content' or 'numpy' must be provided.
-    If 'save_on_disk' is True, the image will be saved on disk automatically.
+    At least one of `path`, `url`, `content` or `numpy` must be provided.
+    If `save_on_disk` is True, the image will be saved on disk automatically.
 
     Attributes:
         path (Path): The file path of the image.
@@ -49,10 +49,10 @@ class Image(Media):
         AbstractImageLibrary
     ] = OpenCVWrapper  # The image library to use, TODO: add support for PIL and allow to choose the library
 
-    def validate(self):
+    def _validate(self):
         """Validate the image."""
         # validate the parent class
-        super().validate()
+        super()._validate()
 
         # check that at least one of 'path', 'url', 'content' or 'numpy' is provided
         if not any(
@@ -89,11 +89,11 @@ class Image(Media):
         file_path = image_dir / (self.media_id + ".bmp")
 
         if self.content:
-            self.save_from_content(file_path)
+            self._save_from_content(file_path)
         elif self.numpy is not None:
-            self.save_from_numpy(file_path)
+            self._save_from_numpy(file_path)
         elif self.url:
-            self.save_from_url(file_path)
+            self._save_from_url(file_path)
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
@@ -101,7 +101,7 @@ class Image(Media):
         self.path = file_path
         self.is_saved = True
 
-    def save_from_numpy(self, file_path: Path):
+    def _save_from_numpy(self, file_path: Path):
         """Save the image from numpy on disk.
 
         Args:
@@ -123,11 +123,11 @@ class Image(Media):
         if self.numpy is not None:
             return self.numpy
         elif self.path:
-            self.load_numpy_from_path()
+            self._load_numpy_from_path()
         elif self.url:
-            self.load_numpy_from_url()
+            self._load_numpy_from_url()
         elif self.content:
-            self.load_numpy_from_content()
+            self._load_numpy_from_content()
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
@@ -143,7 +143,7 @@ class Image(Media):
         """
         return PIL.Image.fromarray(self.get_numpy())
 
-    def load_numpy_from_path(self):
+    def _load_numpy_from_path(self):
         """Load the image as a numpy array from a path.
 
         Raises:
@@ -155,7 +155,7 @@ class Image(Media):
         except Exception as e:
             raise ImageReadingException(self) from e
 
-    def load_numpy_from_image_bytes(self, img_bytes: bytes):
+    def _load_numpy_from_image_bytes(self, img_bytes: bytes):
         """Load the image as a numpy array from image bytes (downloaded from URL or read from file).
 
         Raises:
@@ -166,7 +166,7 @@ class Image(Media):
         except Exception as e:
             raise ImageReadingException(self) from e
 
-    def load_numpy_from_url(self):
+    def _load_numpy_from_url(self):
         """Load the image as a numpy array from a URL.
 
         Raises:
@@ -174,16 +174,16 @@ class Image(Media):
         """
         assert self.url is not None  # noqa: S101
         content: bytes = download_file(self.url)
-        self.load_numpy_from_image_bytes(content)
+        self._load_numpy_from_image_bytes(content)
 
-    def load_numpy_from_content(self):
+    def _load_numpy_from_content(self):
         """Load the image as a numpy array from content.
 
         Raises:
             ImageReadingException: If there is an error reading the image.
         """
         assert self.content is not None  # noqa: S101
-        self.load_numpy_from_image_bytes(self.content)
+        self._load_numpy_from_image_bytes(self.content)
 
     def get_content(self) -> bytes:
         """Get the content of the image as bytes.
@@ -197,11 +197,11 @@ class Image(Media):
         if self.content:
             return self.content
         elif self.path:
-            self.load_content_from_path()
+            self._load_content_from_path()
         elif self.url:
-            self.load_content_from_url()
+            self._load_content_from_url()
         elif self.numpy is not None:
-            self.load_content_from_numpy()
+            self._load_content_from_numpy()
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', 'content' or 'numpy' must be provided."
@@ -209,7 +209,7 @@ class Image(Media):
         assert self.content is not None  # noqa: S101
         return self.content
 
-    def load_content_from_numpy(self):
+    def _load_content_from_numpy(self):
         """Load the content of the image from numpy."""
         assert self.numpy is not None  # noqa: S101
         self.content = self.image_lib.write_to_bytes(self.numpy)

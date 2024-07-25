@@ -5,6 +5,8 @@ import numpy as np
 
 from aana.core.libraries.image import AbstractImageLibrary
 
+__all__ = ["OpenCVWrapper"]
+
 
 class OpenCVWrapper(AbstractImageLibrary):
     """Wrapper class for OpenCV functions."""

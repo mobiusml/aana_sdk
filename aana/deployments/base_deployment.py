@@ -170,14 +170,14 @@ def test_cache(func):  # noqa: C901
 class BaseDeployment:
     """Base class for all deployments.
 
-    We can use this class to define common methods for all deployments.
-    For example, we can connect to the database here or download artifacts.
+    To create a new deployment, inherit from this class and implement the `apply_config` method
+    and your custom methods like `generate`, `predict`, etc.
     """
 
     def __init__(self):
         """Inits to unconfigured state."""
         self.config = None
-        self.configured = False
+        self._configured = False
 
     async def reconfigure(self, config: dict[str, Any]):
         """Reconfigure the deployment.
@@ -188,18 +188,22 @@ class BaseDeployment:
         if (
             settings.test.test_mode
             and settings.test.use_deployment_cache
-            and self.check_test_cache_enabled()
+            and self.__check_test_cache_enabled()
         ):
             # If we are in testing mode and we want to use the cache,
             # we don't need to load the model
-            self.configured = True
+            self._configured = True
             return
         else:
             await self.apply_config(config)
-            self.configured = True
+            self._configured = True
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
+
+        This method is called when the deployment is created or updated.
+
+        Define the logic to load the model and configure it here.
 
         Args:
             config (dict): the configuration
@@ -233,7 +237,7 @@ class BaseDeployment:
                 methods_info[name]["doc"] = method.__doc__
         return methods_info
 
-    def check_test_cache_enabled(self):
+    def __check_test_cache_enabled(self):
         """Check if the deployment has any methods decorated with test_cache."""
         for method in self.__class__.__dict__.values():
             if callable(method) and getattr(method, "test_cache_enabled", False):

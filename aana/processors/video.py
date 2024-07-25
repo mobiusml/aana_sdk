@@ -6,6 +6,8 @@ from aana.core.models.audio import Audio
 from aana.core.models.video import Video
 from aana.integrations.external.av import load_audio
 
+__all__ = ["extract_audio", "generate_combined_timeline"]
+
 
 def extract_audio(video: Video) -> Audio:
     """Extract the audio file from a Video and return an Audio object.

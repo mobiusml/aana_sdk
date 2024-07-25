@@ -2,6 +2,8 @@ import asyncio
 import threading
 from typing import Any
 
+__all__ = ["run_async"]
+
 
 def run_async(coro: asyncio.coroutine) -> Any:
     """Run a coroutine in a thread if the current thread is running an event loop.

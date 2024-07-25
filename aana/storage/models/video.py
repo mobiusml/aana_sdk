@@ -1,4 +1,3 @@
-
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -7,7 +6,15 @@ from aana.storage.models.media import MediaEntity
 
 
 class VideoEntity(MediaEntity):
-    """Base ORM class for videos."""
+    """Base ORM class for videos.
+
+    Attributes:
+        id (MediaId): Unique identifier for the video.
+        path (str): Path to the video file.
+        url (str): URL to the video file.
+        title (str): Title of the video.
+        description (str): Description of the video.
+    """
 
     __tablename__ = "video"
 

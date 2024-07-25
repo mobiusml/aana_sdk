@@ -10,6 +10,8 @@ from aana.exceptions.io import (
     DownloadException,
 )
 
+__all__ = ["download_video", "get_video_metadata"]
+
 
 def get_video_metadata(video_url: str) -> VideoMetadata:
     """Fetch video's metadata for a url.
