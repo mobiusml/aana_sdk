@@ -1,6 +1,7 @@
 [![Build Status](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml/badge.svg)](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](/LICENSE)
 [![Website](https://img.shields.io/badge/website-online-brightgreen.svg)](http://www.mobiuslabs.com)
+[![Documentation](https://img.shields.io/website?label=documentation&up_message=online&url=https://mobiusml.github.io/aana_sdk/)](https://mobiusml.github.io/aana_sdk/) 
 [![PyPI version](https://img.shields.io/pypi/v/aana.svg)](https://pypi.org/project/aana/)
 [![GitHub release](https://img.shields.io/github/v/release/mobiusml/aana_sdk.svg)](https://github.com/mobiusml/aana_sdk/releases)
 
@@ -23,6 +24,8 @@ The SDK is designed according to the following principles:
 - **Easy to Use**: Aana is designed to be easy to use by developers. It is built to be modular, with a lot of automation and abstraction.
 
 The SDK is still in development, and not all features are fully implemented. We are constantly working on improving the SDK, and we welcome any feedback or suggestions.
+
+Check out the [documentation](https://mobiusml.github.io/aana_sdk/) for more information.
 
 ## Why use Aana SDK?
 
