@@ -6,7 +6,7 @@ from typing import Annotated, Any, get_origin
 
 from fastapi import FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import StreamingResponse
-from pydantic import Field, ValidationError, create_model
+from pydantic import ConfigDict, Field, ValidationError, create_model
 from pydantic.main import BaseModel
 from sqlalchemy.orm import Session
 
@@ -195,7 +195,7 @@ class Endpoint:
             raise ValueError("Endpoint function must have a return annotation.") from e  # noqa: TRY003
         fields = {}
         for arg_name, arg_type in return_type.__annotations__.items():
-            fields[arg_name] = self.arg_to_field(arg_name, arg_type)
+            fields[arg_name] = (arg_type, Field(None))
         return fields
 
     def get_response_model(self) -> type[BaseModel]:
@@ -206,7 +206,9 @@ class Endpoint:
         """
         model_name = self.generate_model_name("Response")
         output_fields = self.get_output_fields()
-        return create_model(model_name, **output_fields)
+        return create_model(
+            model_name, **output_fields, __config__=ConfigDict(extra="forbid")
+        )
 
     def get_file_upload_field(self) -> FileUploadField | None:
         """Get the file upload field for the endpoint.
