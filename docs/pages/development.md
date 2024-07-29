@@ -1,4 +1,6 @@
-# Code overview
+# Development Guide
+
+## Code overview
 
 ```
 aana/                         | top level source code directory for the project
@@ -44,14 +46,15 @@ aana/                         | top level source code directory for the project
 └── sdk.py                    | base class to create an SDK instance
 ```
 
-# Developing in a Dev Container
+## Developing in a Dev Container
 
 If you are using Visual Studio Code, you can run this repository in a 
 [dev container](https://code.visualstudio.com/docs/devcontainers/containers). This lets you install and 
 run everything you need for the repo in an isolated environment via docker on a host system. 
 
 
-# Databases
+## Databases
+
 The project includes some useful tools for storing structured metadata in a SQL database.
 
 The datastore uses SQLAlchemy as an ORM layer and Alembic for migrations. The migrations are run 

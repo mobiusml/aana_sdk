@@ -24,13 +24,15 @@ from typing_extensions import Self
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import MediaId
 
+__all__ = ["VideoMetadata", "VideoStatus", "VideoParams"]
+
 
 @dataclass
 class Video(Media):
     """A class representing a video.
 
-    At least one of 'path', 'url', or 'content' must be provided.
-    If 'save_on_disk' is True, the video will be saved on disk automatically.
+    At least one of `path`, `url`, or `content` must be provided.
+    If `save_on_disk` is True, the video will be saved on disk automatically.
 
     Attributes:
         path (Path): the path to the video file
@@ -46,7 +48,7 @@ class Video(Media):
     description: str = ""
     media_dir: Path | None = settings.video_dir
 
-    def validate(self):
+    def _validate(self):
         """Validate the video.
 
         Raises:
@@ -54,7 +56,7 @@ class Video(Media):
             VideoReadingException: if the video is not valid
         """
         # validate the parent class
-        super().validate()
+        super()._validate()
 
         # check that at least one of 'path', 'url' or 'content' is provided
         if not any(
@@ -86,7 +88,7 @@ class Video(Media):
                 return False
         return True
 
-    def save_from_url(self, file_path):
+    def _save_from_url(self, file_path):
         """Save the media from the URL.
 
         Args:
@@ -96,7 +98,7 @@ class Video(Media):
             DownloadError: if the media can't be downloaded
             VideoReadingException: if the media is not a valid video
         """
-        super().save_from_url(file_path)
+        super()._save_from_url(file_path)
         # check that the file is a video
         if not self.is_video():
             raise VideoReadingException(video=self)
@@ -129,6 +131,7 @@ class VideoMetadata(BaseModel):
     Attributes:
         title (str): the title of the video
         description (str): the description of the video
+        duration (float): the duration of the video in seconds
     """
 
     title: str = Field(None, description="The title of the video.")

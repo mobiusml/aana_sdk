@@ -5,6 +5,8 @@ from typing import Any
 
 import numpy as np
 
+__all__ = ["BatchProcessor"]
+
 
 class BatchProcessor:
     """Class for parallel processing data in chunks.
@@ -58,14 +60,16 @@ class BatchProcessor:
         are sublists containing only the elements for that batch.
 
         Example:
-            request = {
-                'images': [img1, img2, img3, img4, img5],
-                'texts': ['text1', 'text2', 'text3', 'text4', 'text5']
-            }
-            # Assuming a batch size of 2, this iterator would yield:
-            # 1st iteration: {'images': [img1, img2], 'texts': ['text1', 'text2']}
-            # 2nd iteration: {'images': [img3, img4], 'texts': ['text3', 'text4']}
-            # 3rd iteration: {'images': [img5], 'texts': ['text5']}
+        ```python
+        request = {
+            'images': [img1, img2, img3, img4, img5],
+            'texts': ['text1', 'text2', 'text3', 'text4', 'text5']
+        }
+        # Assuming a batch size of 2, this iterator would yield:
+        # 1st iteration: {'images': [img1, img2], 'texts': ['text1', 'text2']}
+        # 2nd iteration: {'images': [img3, img4], 'texts': ['text3', 'text4']}
+        # 3rd iteration: {'images': [img5], 'texts': ['text5']}
+        ```
 
         Args:
             request (dict[str, list[Any]]): The request data to split into batches.
@@ -110,16 +114,18 @@ class BatchProcessor:
         by extending lists, updating dictionaries, and concatenating numpy arrays.
 
         Example:
-            outputs = [
-                {'images': [processed_img1, processed_img2], 'labels': ['cat', 'dog']},
-                {'images': [processed_img3, processed_img4], 'labels': ['bird', 'mouse']},
-                {'images': [processed_img5], 'labels': ['fish']}
-            ]
-            # The merged result would be:
-            # {
-            #     'images': [processed_img1, processed_img2, processed_img3, processed_img4, processed_img5],
-            #     'labels': ['cat', 'dog', 'bird', 'mouse', 'fish']
-            # }
+        ```python
+        outputs = [
+            {'images': [processed_img1, processed_img2], 'labels': ['cat', 'dog']},
+            {'images': [processed_img3, processed_img4], 'labels': ['bird', 'mouse']},
+            {'images': [processed_img5], 'labels': ['fish']}
+        ]
+        # The merged result would be:
+        # {
+        #     'images': [processed_img1, processed_img2, processed_img3, processed_img4, processed_img5],
+        #     'labels': ['cat', 'dog', 'bird', 'mouse', 'fish']
+        # }
+        ```
 
         Args:
             outputs (list[dict[str, Any]]): List of outputs from the processed batches.

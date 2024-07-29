@@ -13,6 +13,7 @@ class AanaDeploymentHandle:
     ```
 
     Attributes:
+        handle (ray.serve.handle.DeploymentHandle): Ray Serve deployment handle.
         deployment_name (str): The name of the deployment.
     """
 
@@ -24,15 +25,15 @@ class AanaDeploymentHandle:
         """
         self.handle = serve.get_app_handle(deployment_name)
         self.deployment_name = deployment_name
-        self.methods = None
+        self.__methods = None
 
-    def create_async_method(self, name: str):
+    def __create_async_method(self, name: str):
         """Create an method to interact with the deployment.
 
         Args:
             name (str): The name of the method.
         """
-        method_info = self.methods[name]
+        method_info = self.__methods[name]
         annotations = method_info.get("annotations", {})
         return_type = annotations.get("return", None)
 
@@ -50,17 +51,17 @@ class AanaDeploymentHandle:
                     *args, **kwargs
                 )
 
-        if "annotations" in self.methods[name]:
-            method.__annotations__ = self.methods[name]["annotations"]
-        if "doc" in self.methods[name]:
-            method.__doc__ = self.methods[name]["doc"]
+        if "annotations" in self.__methods[name]:
+            method.__annotations__ = self.__methods[name]["annotations"]
+        if "doc" in self.__methods[name]:
+            method.__doc__ = self.__methods[name]["doc"]
         return method
 
-    async def load_methods(self):
+    async def __load_methods(self):
         """Load the methods available in the deployment."""
-        self.methods = await self.handle.get_methods.remote()
-        for name in self.methods:
-            setattr(self, name, self.create_async_method(name))
+        self.__methods = await self.handle.get_methods.remote()
+        for name in self.__methods:
+            setattr(self, name, self.__create_async_method(name))
 
     @classmethod
     async def create(cls, deployment_name: str):
@@ -70,5 +71,5 @@ class AanaDeploymentHandle:
             deployment_name (str): The name of the deployment to interact with.
         """
         handle = cls(deployment_name)
-        await handle.load_methods()
+        await handle.__load_methods()
         return handle

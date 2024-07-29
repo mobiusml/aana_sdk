@@ -3,8 +3,11 @@ import collections.abc
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
-class MyConfig(ConfigDict, total=False):  # noqa: D101
+class MyConfig(ConfigDict, total=False):
     json_schema_extra: dict
+
+
+__all__ = ["WhisperParams", "BatchedWhisperParams"]
 
 
 class WhisperParams(BaseModel):

@@ -40,16 +40,19 @@ MediaId = Annotated[
     Field(description="The media ID.", max_length=36),
     WrapValidator(verify_media_id),
 ]
+"""
+The media ID (str, max length 36 characters).
+"""
 
 
 @dataclass
 class Media:
     """A base class representing a media file.
 
-    It is used to represent images, medias, and audio files.
+    It is used to represent images, videos, and audio files.
 
-    At least one of 'path', 'url', or 'content' must be provided.
-    If 'save_on_disk' is True, the media will be saved on disk automatically.
+    At least one of `path`, `url`, or `content` must be provided.
+    If `save_on_disk` is True, the media will be saved on disk automatically.
 
     Attributes:
         path (Path): the path to the media file
@@ -66,7 +69,7 @@ class Media:
     is_saved: bool = False
     media_dir: Path | None = None
 
-    def validate(self):
+    def _validate(self):
         """Validate the media."""
         # check that path is a Path object
         if self.path and not isinstance(self.path, Path):
@@ -81,7 +84,7 @@ class Media:
 
         Perform checks and save the media on disk if needed.
         """
-        self.validate()
+        self._validate()
 
         if self.save_on_disk:
             self.save()
@@ -107,16 +110,16 @@ class Media:
         file_path = self.media_dir / (self.media_id + ".mp4")
 
         if self.content:
-            self.save_from_content(file_path)
+            self._save_from_content(file_path)
         elif self.url:
-            self.save_from_url(file_path)
+            self._save_from_url(file_path)
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', or 'content' must be provided."
             )
         self.is_saved = True
 
-    def save_from_bytes(self, file_path: Path, content: bytes):
+    def _save_from_bytes(self, file_path: Path, content: bytes):
         """Save the media from bytes.
 
         Args:
@@ -126,16 +129,16 @@ class Media:
         file_path.write_bytes(content)
         self.path = file_path
 
-    def save_from_content(self, file_path: Path):
+    def _save_from_content(self, file_path: Path):
         """Save the media from the content.
 
         Args:
             file_path (Path): the path to save the media to
         """
         assert self.content is not None  # noqa: S101
-        self.save_from_bytes(file_path, self.content)
+        self._save_from_bytes(file_path, self.content)
 
-    def save_from_url(self, file_path):
+    def _save_from_url(self, file_path):
         """Save the media from the URL.
 
         Args:
@@ -146,7 +149,7 @@ class Media:
         """
         assert self.url is not None  # noqa: S101
         content: bytes = download_file(self.url)
-        self.save_from_bytes(file_path, content)
+        self._save_from_bytes(file_path, content)
 
     def get_content(self) -> bytes:
         """Get the content of the media as bytes.
@@ -160,9 +163,9 @@ class Media:
         if self.content:
             return self.content
         elif self.path:
-            self.load_content_from_path()
+            self._load_content_from_path()
         elif self.url:
-            self.load_content_from_url()
+            self._load_content_from_url()
         else:
             raise ValueError(  # noqa: TRY003
                 "At least one of 'path', 'url', or 'content' must be provided."
@@ -170,12 +173,12 @@ class Media:
         assert self.content is not None  # noqa: S101
         return self.content
 
-    def load_content_from_path(self):
+    def _load_content_from_path(self):
         """Load the content of the media from the path."""
         assert self.path is not None  # noqa: S101
         self.content = self.path.read_bytes()
 
-    def load_content_from_url(self):
+    def _load_content_from_url(self):
         """Load the content of the media from the URL.
 
         Raises:
