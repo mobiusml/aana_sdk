@@ -1,79 +1,26 @@
 # This file is used to define fixtures that are used in the integration tests.
-# The fixtures are used to setup Ray and Ray Serve, and to call the endpoints.
-# The fixtures depend on each other, to setup the environment for the tests.
-# Here is a dependency graph of the fixtures:
-# app_setup (module scope, starts Ray and Ray Serve app for a specific target, args: deployments, endpoints)
-#     -> call_endpoint (module scope, calls endpoint, args: endpoint_path, data, ignore_expected_output, expected_error)
-
 # ruff: noqa: S101
 import importlib
-import json
 import os
 import tempfile
 from pathlib import Path
 from typing import Any
 
 import pytest
-import requests
-from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from aana.api.api_generation import Endpoint
 from aana.configs.db import DbSettings, SQLiteConfig
 from aana.configs.settings import settings
-from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
 from aana.storage.op import DbType, run_alembic_migrations
+from aana.tests.utils import (
+    is_gpu_available,
+    is_using_deployment_cache,
+    send_api_request,
+    verify_output,
+)
 from aana.utils.core import import_from
 from aana.utils.json import jsonify
-
-
-def send_api_request(
-    endpoint: Endpoint,
-    app: AanaSDK,
-    data: dict[str, Any],
-    timeout: int = 30,
-) -> dict[str, Any] | list[dict[str, Any]]:
-    """Call an endpoint, handling both streaming and non-streaming responses."""
-    url = f"http://localhost:{app.port}{endpoint.path}"
-    payload = {"body": json.dumps(data)}
-
-    if endpoint.is_streaming_response():
-        output = []
-        with requests.post(url, data=payload, timeout=timeout, stream=True) as r:
-            for chunk in r.iter_content(chunk_size=None):
-                chunk_output = json.loads(chunk.decode("utf-8"))
-                output.append(chunk_output)
-                if "error" in chunk_output:
-                    return [chunk_output]
-        return output
-    else:
-        response = requests.post(url, data=payload, timeout=timeout)
-        return response.json()
-
-
-def verify_output(
-    endpoint: Endpoint,
-    response: dict[str, Any] | list[dict[str, Any]],
-    expected_error: str | None = None,
-) -> None:
-    """Verify the output of an endpoint call."""
-    is_streaming = endpoint.is_streaming_response()
-    ResponseModel = endpoint.get_response_model()
-    if expected_error:
-        error = response[0]["error"] if is_streaming else response["error"]
-        assert error == expected_error, response
-    else:
-        try:
-            if is_streaming:
-                for item in response:
-                    ResponseModel.model_validate(item, strict=True)
-            else:
-                ResponseModel.model_validate(response, strict=True)
-        except ValidationError as e:
-            raise AssertionError(  # noqa: TRY003
-                f"Validation failed. Errors:\n{e}\n\nResponse: {response}"
-            ) from e
 
 
 @pytest.fixture(scope="module")
@@ -106,6 +53,61 @@ def app_factory():
 
 
 @pytest.fixture(scope="module")
+def app_create():
+    """Setup Ray Serve app for given deployments and endpoints."""
+    # create temporary database
+    tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
+    db_config = DbSettings(
+        datastore_type=DbType.SQLITE,
+        datastore_config=SQLiteConfig(path=tmp_database_path),
+    )
+    # set environment variable for the database config so Ray can find it
+    os.environ["DB_CONFIG"] = jsonify(db_config)
+
+    # set database config in aana settings
+    settings.db_config = db_config
+
+    app = AanaSDK()
+    app.connect(
+        port=8000, show_logs=True, num_cpus=10
+    )  # pretend we have 10 cpus for testing
+
+    def start_app(deployments, endpoints):
+        for deployment in deployments:
+            deployment_instance = deployment["instance"]
+            if not is_gpu_available() and is_using_deployment_cache():
+                # if GPU is not available and we are using deployment cache,
+                # then we don't want to request GPU resources
+                deployment_instance = deployment_instance.options(
+                    ray_actor_options={"num_gpus": 0}
+                )
+
+            app.register_deployment(
+                name=deployment["name"], instance=deployment_instance
+            )
+
+        for endpoint in endpoints:
+            app.register_endpoint(
+                name=endpoint["name"],
+                path=endpoint["path"],
+                summary=endpoint["summary"],
+                endpoint_cls=endpoint["endpoint_cls"],
+                event_handlers=endpoint.get("event_handlers", []),
+            )
+
+        app.deploy(blocking=False)
+
+        return app
+
+    yield start_app
+
+    # delete temporary database
+    tmp_database_path.unlink()
+
+    app.shutdown()
+
+
+@pytest.fixture(scope="module")
 def call_endpoint(app_setup):
     """Call an endpoint and verify the output."""
     app = app_setup
@@ -134,26 +136,35 @@ def call_endpoint(app_setup):
 @pytest.fixture(scope="module")
 def one_request_worker():
     """Fixture to update settings to only run one request worker."""
-    aana_settings.num_workers = 1
+    from aana.configs.settings import settings
+
+    settings.num_workers = 1
     yield
 
 
 @pytest.fixture(scope="function")
 def db_session():
     """Creates a new database file and session for each test."""
-    with tempfile.NamedTemporaryFile(dir=settings.tmp_data_dir) as tmp:
-        # Configure the database to use the temporary file
-        settings.db_config.datastore_config = SQLiteConfig(path=tmp.name)
-        # Reset the engine
-        settings.db_config._engine = None
+    tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
+    db_config = DbSettings(
+        datastore_type=DbType.SQLITE,
+        datastore_config=SQLiteConfig(path=tmp_database_path),
+    )
+    os.environ["DB_CONFIG"] = jsonify(db_config)
 
-        # Run migrations to set up the schema
-        run_alembic_migrations(settings)
+    # Reload the settings to update the database path
+    import aana.configs.settings
 
-        # Create a new session
-        engine = settings.db_config.get_engine()
-        with Session(engine) as session:
-            yield session
+    importlib.reload(aana.configs.settings)
+
+    from aana.configs.settings import settings
+
+    run_alembic_migrations(settings)
+
+    # Create a new session
+    engine = settings.db_config.get_engine()
+    with Session(engine) as session:
+        yield session
 
 
 # TODO: add support for postgresql using pytest-postgresql

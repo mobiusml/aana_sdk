@@ -76,9 +76,9 @@ endpoints = [
 ]
 
 
-def test_app_streaming(app_setup):
+def test_app_streaming(app_create):
     """Test the Ray Serve app with streaming enabled."""
-    aana_app = app_setup(deployments=deployments, endpoints=endpoints)
+    aana_app = app_create(deployments=deployments, endpoints=endpoints)
 
     port = aana_app.port
     route_prefix = ""
