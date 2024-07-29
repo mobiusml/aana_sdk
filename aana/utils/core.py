@@ -62,3 +62,19 @@ def import_from_path(path, reload=False):
     else:
         module, name = ".".join(path.split(".")[:-1]), path.split(".")[-1]
     return import_from(module, name, reload=reload)
+
+
+def get_module_dir(module_name: str) -> Path:
+    """Get the directory of a module.
+
+    Args:
+        module_name (str): Name of the module (e.g. 'aana')
+
+    Returns:
+        Path: Root directory of the module.
+    """
+    spec = importlib.util.find_spec(module_name)
+    if spec is None:
+        raise ImportError(f"Module {module_name} not found")  # noqa: TRY003
+    module_path = spec.origin
+    return Path(module_path).parent
