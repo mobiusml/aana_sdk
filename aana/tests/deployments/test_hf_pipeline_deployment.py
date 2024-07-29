@@ -23,7 +23,7 @@ def get_expected_output(name):
 @pytest.fixture(
     scope="function", params=get_deployments_by_type("HfPipelineDeployment")
 )
-def setup_hf_pipeline_deployment(app_setup, request):
+def setup_hf_pipeline_deployment(app_create, request):
     """Setup HF Pipeline deployment."""
     name, deployment = request.param
     deployments = [
@@ -34,7 +34,7 @@ def setup_hf_pipeline_deployment(app_setup, request):
     ]
     endpoints = []
 
-    return name, deployment, app_setup(deployments, endpoints)
+    return name, deployment, app_create(deployments, endpoints)
 
 
 @pytest.mark.skipif(

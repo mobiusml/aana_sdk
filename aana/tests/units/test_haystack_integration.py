@@ -110,9 +110,9 @@ endpoints = [
 ]
 
 
-def test_haystack_integration(app_setup):
+def test_haystack_integration(app_create):
     """Test Haystack integration."""
-    aana_app = app_setup(deployments, endpoints)
+    aana_app = app_create(deployments, endpoints)
 
     port = aana_app.port
 

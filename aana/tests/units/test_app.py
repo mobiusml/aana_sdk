@@ -76,9 +76,9 @@ endpoints = [
 ]
 
 
-def test_app(app_setup):
+def test_app(app_create):
     """Test the Ray Serve app."""
-    aana_app = app_setup(deployments, endpoints)
+    aana_app = app_create(deployments, endpoints)
 
     port = aana_app.port
     route_prefix = ""
