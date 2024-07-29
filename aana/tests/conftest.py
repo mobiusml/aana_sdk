@@ -7,131 +7,126 @@
 
 # ruff: noqa: S101
 import importlib
+import json
 import os
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import pytest
+import requests
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
+from aana.api.api_generation import Endpoint
 from aana.configs.db import DbSettings, SQLiteConfig
 from aana.configs.settings import settings
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
 from aana.storage.op import DbType, run_alembic_migrations
-from aana.tests.utils import (
-    call_and_check_endpoint,
-    clear_database,
-    is_gpu_available,
-    is_using_deployment_cache,
-)
+from aana.utils.core import import_from
 from aana.utils.json import jsonify
 
 
-@pytest.fixture(scope="module")
-def app_setup():
-    """Setup Ray Serve app for given deployments and endpoints."""
-    # create temporary database
-    tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
-    db_config = DbSettings(
-        datastore_type=DbType.SQLITE,
-        datastore_config=SQLiteConfig(path=tmp_database_path),
-    )
-    # set environment variable for the database config so Ray can find it
-    os.environ["DB_CONFIG"] = jsonify(db_config)
+def send_api_request(
+    endpoint: Endpoint,
+    app: AanaSDK,
+    data: dict[str, Any],
+    timeout: int = 30,
+) -> dict[str, Any] | list[dict[str, Any]]:
+    """Call an endpoint, handling both streaming and non-streaming responses."""
+    url = f"http://localhost:{app.port}{endpoint.path}"
+    payload = {"body": json.dumps(data)}
 
-    # set database config in aana settings
-    aana_settings.db_config = db_config
+    if endpoint.is_streaming_response():
+        output = []
+        with requests.post(url, data=payload, timeout=timeout, stream=True) as r:
+            for chunk in r.iter_content(chunk_size=None):
+                chunk_output = json.loads(chunk.decode("utf-8"))
+                output.append(chunk_output)
+                if "error" in chunk_output:
+                    return [chunk_output]
+        return output
+    else:
+        response = requests.post(url, data=payload, timeout=timeout)
+        return response.json()
 
-    # clear database before running the test
-    clear_database(aana_settings)
 
-    app = AanaSDK()
-    app.connect(
-        port=8000, show_logs=True, num_cpus=10
-    )  # pretend we have 10 cpus for testing
-
-    def start_app(deployments, endpoints):
-        for deployment in deployments:
-            deployment_instance = deployment["instance"]
-            if not is_gpu_available() and is_using_deployment_cache():
-                # if GPU is not available and we are using deployment cache,
-                # then we don't want to request GPU resources
-                deployment_instance = deployment_instance.options(
-                    ray_actor_options={"num_gpus": 0}
-                )
-
-            app.register_deployment(
-                name=deployment["name"], instance=deployment_instance
-            )
-
-        for endpoint in endpoints:
-            app.register_endpoint(
-                name=endpoint["name"],
-                path=endpoint["path"],
-                summary=endpoint["summary"],
-                endpoint_cls=endpoint["endpoint_cls"],
-                event_handlers=endpoint.get("event_handlers", []),
-            )
-
-        app.deploy(blocking=False)
-
-        return app
-
-    yield start_app
-
-    # delete temporary database
-    tmp_database_path.unlink()
-
-    app.shutdown()
+def verify_output(
+    endpoint: Endpoint,
+    response: dict[str, Any] | list[dict[str, Any]],
+    expected_error: str | None = None,
+) -> None:
+    """Verify the output of an endpoint call."""
+    is_streaming = endpoint.is_streaming_response()
+    ResponseModel = endpoint.get_response_model()
+    if expected_error:
+        error = response[0]["error"] if is_streaming else response["error"]
+        assert error == expected_error, response
+    else:
+        try:
+            if is_streaming:
+                for item in response:
+                    ResponseModel.model_validate(item, strict=True)
+            else:
+                ResponseModel.model_validate(response, strict=True)
+        except ValidationError as e:
+            raise AssertionError(  # noqa: TRY003
+                f"Validation failed. Errors:\n{e}\n\nResponse: {response}"
+            ) from e
 
 
 @pytest.fixture(scope="module")
-def call_endpoint(app_setup, request):  # noqa: D417
-    """Call endpoint.
+def app_factory():
+    """Factory fixture to create and configure the app."""
 
-    Args:
-        endpoint_path: The endpoint path.
-        data: The data to send.
-        ignore_expected_output: Whether to ignore the expected output. Defaults to False.
-        expected_error: The expected error. Defaults to None.
-    """
-    target = request.param
+    def create_app(app_module, app_name):
+        # Create a temporary database for testing
+        tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
+        db_config = DbSettings(
+            datastore_type=DbType.SQLITE,
+            datastore_config=SQLiteConfig(path=tmp_database_path),
+        )
+        os.environ["DB_CONFIG"] = jsonify(db_config)
 
-    module = importlib.import_module(f"aana.projects.{target}.app")
-    deployments = module.deployments
-    endpoints = module.endpoints
+        # Reload the settings to update the database path
+        import aana.configs.settings
 
-    aana_app = app_setup(deployments, endpoints)
+        importlib.reload(aana.configs.settings)
 
-    port = aana_app.port
-    route_prefix = ""
+        # Import and start the app
+        app = import_from(app_module, app_name)
+        app.connect(port=8000, show_logs=True, num_cpus=10)
+        app.migrate()
+        app.deploy()
+
+        return app, tmp_database_path
+
+    return create_app
+
+
+@pytest.fixture(scope="module")
+def call_endpoint(app_setup):
+    """Call an endpoint and verify the output."""
+    app = app_setup
 
     def _call_endpoint(
         endpoint_path: str,
-        data: dict,
-        ignore_expected_output: bool = False,
+        data: dict[str, Any],
         expected_error: str | None = None,
-    ) -> dict | list:
-        endpoint = None
-        for e in endpoints:
-            if e["path"] == endpoint_path:
-                endpoint = e
-                break
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        endpoint = next(
+            (e for e in app.endpoints.values() if e.path == endpoint_path), None
+        )
         if endpoint is None:
             raise ValueError(f"Endpoint with path {endpoint_path} not found")  # noqa: TRY003
-        is_streaming = endpoint["endpoint_cls"].is_streaming_response()
-
-        return call_and_check_endpoint(
-            target=target,
-            port=port,
-            route_prefix=route_prefix,
-            endpoint_path=endpoint_path,
-            data=data,
-            is_streaming=is_streaming,
+        response = send_api_request(endpoint=endpoint, app=app, data=data)
+        verify_output(
+            endpoint=endpoint,
+            response=response,
             expected_error=expected_error,
-            ignore_expected_output=ignore_expected_output,
         )
+        return response
 
     return _call_endpoint
 
