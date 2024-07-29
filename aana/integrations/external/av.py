@@ -10,8 +10,10 @@ import numpy as np
 
 from aana.core.libraries.audio import AbstractAudioLibrary
 
+__all__ = ["load_audio", "pyAVWrapper"]
 
-def load_audio(file: Path | None, sample_rate: int = 16000) -> bytes:
+
+def load_audio(file: Path, sample_rate: int = 16000) -> bytes:
     """Open an audio file and read as mono waveform, resampling as necessary.
 
     Args:

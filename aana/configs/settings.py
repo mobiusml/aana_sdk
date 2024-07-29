@@ -7,7 +7,13 @@ from aana.configs.db import DbSettings
 
 
 class TestSettings(BaseSettings):
-    """A pydantic model for test settings."""
+    """A pydantic model for test settings.
+
+    Attributes:
+        test_mode (bool): Flag indicating if the SDK is in test mode.
+        use_deployment_cache (bool): Flag indicating if the SDK should use cached deployment results for testing.
+        save_deployment_cache (bool): Flag indicating if the SDK should save deployment results to cache for testing.
+    """
 
     test_mode: bool = False
     use_deployment_cache: bool = False  # use cached deployment results for testing
@@ -31,7 +37,19 @@ class TaskQueueSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    """A pydantic model for SDK settings."""
+    """A pydantic model for SDK settings.
+
+    Attributes:
+        tmp_data_dir (Path): The temporary data directory.
+        image_dir (Path): The temporary image directory.
+        video_dir (Path): The temporary video directory.
+        audio_dir (Path): The temporary audio directory.
+        model_dir (Path): The temporary model directory.
+        num_workers (int): The number of web workers.
+        task_queue (TaskQueueSettings): The task queue settings.
+        db_config (DbSettings): The database configuration.
+        test (TestSettings): The test settings.
+    """
 
     tmp_data_dir: Path = Path("/tmp/aana_data")  # noqa: S108
     image_dir: Path = tmp_data_dir / "images"

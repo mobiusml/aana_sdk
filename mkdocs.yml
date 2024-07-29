@@ -1,0 +1,140 @@
+site_name: "Aana SDK"
+
+
+# Repository
+repo_name: mobiusml/aana_sdk
+repo_url: https://github.com/mobiusml/aana_sdk
+
+# Configuration
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.path
+    - toc.follow
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+    - content.tooltips
+  language: en
+  logo: images/white_logo.png
+  favicon: images/favicon.ico
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline 
+        name: Switch to dark mode
+      primary: custom
+    - scheme: slate 
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode    
+      primary: custom
+extra_css:
+  - stylesheets/extra.css
+
+
+# Extensions
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - toc:
+      permalink: true
+  # - toc:
+  #     toc_depth: 2
+
+# Plugins
+plugins:
+  search:
+  mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_object_full_path: false
+          show_root_heading: true
+          show_if_no_docstring: false
+          show_root_toc_entry: false
+          inherited_members: true
+          members_order: source
+          separate_signature: true
+          unwrap_annotated: true
+          filters: ["!^_",  "!^__all__$", "!^reconfigure", "!^get_methods"]
+          merge_init_into_class: true 
+          docstring_section_style: spacy
+          signature_crossrefs: true
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          show_labels: false
+          docstring_options:
+            ignore_init_summary: true
+# Customization
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/mobiusml/aana_sdk
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/Mobius_Labs
+
+# Page tree
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Tutorial: pages/tutorial.md
+  - Integrations:
+    - Deployments: pages/integrations.md
+    - OpenAI API: pages/openai_api.md
+  - Deployment:
+    - Docker: pages/docker.md
+    - Serve Config Files: pages/serve_config_files.md
+    - Cluster Setup: pages/cluster_setup.md
+  - Configuration:
+    - Settings: pages/settings.md
+  - Development:
+    - Development Guide: pages/development.md
+    - Testing: pages/testing.md
+    - Deployment Test Cache: pages/deployment_test_cache.md
+    - Code Standards: pages/code_standards.md
+  - Reference (Code API):
+    - reference/index.md
+    - reference/sdk.md
+    - reference/endpoint.md
+    - reference/deployments.md
+    - reference/settings.md
+    - Models:
+      - reference/models/index.md
+      - reference/models/media.md
+      - reference/models/asr.md
+      - reference/models/captions.md
+      - reference/models/chat.md
+      - reference/models/custom_config.md
+      - reference/models/sampling.md
+      - reference/models/time.md
+      - reference/models/types.md
+      - reference/models/vad.md
+      - reference/models/video.md
+      - reference/models/whisper.md
+    - Storage:
+      - reference/storage/index.md
+      - reference/storage/models.md
+      - reference/storage/repositories.md
+    - reference/integrations.md
+    - reference/processors.md
+    - reference/exceptions.md
+    - reference/utils.md

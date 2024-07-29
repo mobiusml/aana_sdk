@@ -1,32 +1,31 @@
+---
+hide:
+  - navigation
+--- 
+
+<style>
+.md-content .md-typeset h1 { 
+  position: absolute;
+  left: -999px;
+}
+</style>
+    
+
 # How to Create a New Project with Aana SDK
 
 Aana SDK is a powerful framework for building multimodal applications. It facilitates the large-scale deployment of machine learning models, including those for vision, audio, and language, and supports Retrieval-Augmented Generation (RAG) systems. This enables the development of advanced applications such as search engines, recommendation systems, and data insights platforms.
 
-Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. These applications can be used as a reference to build your own applications. See the [projects](/aana/projects/) directory for the example applications.
+Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. These applications can be used as a reference to build your own applications. See the [projects](https://github.com/mobiusml/aana_sdk/tree/main/aana/projects/) directory for the example applications.
 
 If you want to start building a new application, you can use the following GitHub template: [Aana App Template](https://github.com/mobiusml/aana_app_template). It will help you get started with the Aana SDK and provide you with a basic structure for your application and its dependencies.
 
-In this tutorial, we will walk you through the process of creating a new project with Aana SDK. By the end of this tutorial, you will have a runnable application that transcribes a video and summarizes the transcript using a Language Model (LLM). We will use the video transcription application from the [README](/README.md) as a starting point and extend it to include the LLM model for summarization and a new endpoints.
-
-
-- [Prerequisites](#prerequisites)
-- [Video Transcription Application](#video-transcription-application)
-- [Running the Application](#running-the-application)
-- [Application Components](#application-components)
-  - [Deployments](#deployments)
-  - [Endpoints](#endpoints)
-  - [Application](#application)
-  - [Connecting to the Deployments](#connecting-to-the-deployments)
-- [Transcript Summarization Application](#transcript-summarization-application)
-    - [LLM Model](#llm-model)
-    - [Summarization Endpoint](#summarization-endpoint)
-    - [Extending the Application](#extending-the-application)
+In this tutorial, we will walk you through the process of creating a new project with Aana SDK. By the end of this tutorial, you will have a runnable application that transcribes a video and summarizes the transcript using a Language Model (LLM). We will use [the video transcription application](./../index.md#creating-a-new-application) as a starting point and extend it to include the LLM model for summarization and a new endpoints.
 
 
 
 ## Prerequisites
 
-Before you begin, make sure you have a working installation of Aana SDK. See the [README](/README.md#installation) for installation instructions.
+Before you begin, make sure you have a working installation of Aana SDK. See the [installation instructions](./../index.md#installation) for more information.
 
 ## Video Transcription Application
 
@@ -67,8 +66,8 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         await super().initialize()
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         """Transcribe video."""
@@ -103,6 +102,7 @@ if __name__ == "__main__":
 ## Running the Application
 
 You have a few options to run the application:
+
 - Copy the code above and run it in a Jupyter notebook.
 - Save the code to a Python file, for example `app.py`, and run it as a Python script: `python app.py`.
 - Save the code to a Python file, for example `app.py`, and run it using the Aana CLI: `aana deploy app:aana_app --host 127.0.0.1 --port 8000 --hide-logs`.
@@ -159,8 +159,8 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         await super().initialize()
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         """Transcribe video."""
@@ -214,12 +214,14 @@ This is quite useful for testing or debugging your application.
 ## Transcript Summarization Application
 
 Now that we have reviewed the video transcription application, let's build on it to create a video transcript summarization application. For the summarization we will need a few extra components:
+
 - An LLM model to summarize the transcript.
 - An endpoint to summarize the transcript.
 
 ### LLM Model
 
 LLM model can be registered as a deployment in the application. Aana SDK provides two deployments that can be used to deploy LLM models:
+
 - `HfTextGenerationDeployment`: A deployment based on Hugging Face Transformers library.
 - `VLLMDeployment`: A deployment based on vLLM library.
 
@@ -245,6 +247,7 @@ llm_deployment = HfTextGenerationDeployment.options(
 ```
 
 Let's take a closer look at the configuration options:
+
 - `HfTextGenerationDeployment` is the deployment class.
 - `num_replicas=1` specifies the number of replicas to deploy. If you want to scale the deployment, you can increase this number to deploy more replicas on more GPUs or nodes.
 - `ray_actor_options={"num_gpus": 0.25}` specifies the number of GPUs that each replica requires. This will be used to allocate resources on the Ray cluster but keep in mind that it will not limit the deployment to use only this amount of GPUs, it's only used for resource allocation. If you want to run the deployment on a CPU, you can remove this line.
@@ -268,9 +271,9 @@ class SummarizeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
+        await super().initialize()
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
-        await super().initialize()
 
     async def run(self, video: VideoInput) -> SummarizeVideoEndpointOutput:
         """Summarize video."""
@@ -303,6 +306,7 @@ In the `initialize` method, we create handles for the ASR and LLM deployments.
 `run` method is the main method of the endpoint. The `run` method should be annotated with the input and output types. In this case, we only have one input `video` of type `VideoInput` and the output is a dictionary with one key `summary` of type `str`. The output type is defined as a `TypedDict` called `SummarizeVideoEndpointOutput`.
 
 The `run` method performs the following steps:
+
 - Downloading the video: We use the `download_video` function from the `yt_dlp` integration to download the video. The `run_remote` function is used to run the function as a remote task in the Ray cluster. It is useful to run heavy tasks with `run_remote` to offload the main thread.
 - Extracting the audio from the video: We use the `extract_audio` function from the `video` processor to extract the audio.
 - Transcribing the audio: We call ASR deployment to transcribe the audio. Here we use ASR deployment handle that we created in the `initialize` method. Calling the deployment is as simple as calling a method on the handle. The call is asynchronous so we use `await` to wait for the result.
@@ -419,8 +423,8 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         await super().initialize()
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         """Transcribe video."""
@@ -435,9 +439,9 @@ class SummarizeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
+        await super().initialize()
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
-        await super().initialize()
 
     async def run(self, video: VideoInput) -> SummarizeVideoEndpointOutput:
         """Summarize video."""
@@ -540,10 +544,10 @@ class SummarizeVideoStreamEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
+        await super().initialize()
         self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         self.llm_handle = await AanaDeploymentHandle.create("llm_deployment")
-        await super().initialize()
-
+       
     async def run(
         self, video: VideoInput
     ) -> AsyncGenerator[SummarizeVideoStreamEndpointOutput, None]:
@@ -571,6 +575,7 @@ class SummarizeVideoStreamEndpoint(Endpoint):
 ```
 
 The difference between the non-streaming version and the streaming version:
+
 - `run` method is now an asynchronous generator that yields `SummarizeVideoEndpointOutput` objects: `AsyncGenerator[SummarizeVideoEndpointOutput, None]`. If you want endpoint to be able to stream output, you need to define the output type as an asynchronous generator to let the SDK know that the endpoint will be streaming output.
 - We use the `chat_stream` method to interact with the LLM model. The `chat_stream` method returns an asynchronous generator that yields text as it is generated by the model. We use `async for` to iterate over the generator and yield the text chunks as they are generated.
 - We use `yield` to yield the text chunks as they are generated by the LLM model instead of using `return` to return a single response.
@@ -593,4 +598,4 @@ import requests, json;
 
 In this tutorial, we have walked you through the process of creating a new project with Aana SDK. We have reviewed the video transcription application and extended it to include the LLM model for summarization and a new endpoint. We have also demonstrated how to stream the output from the LLM model. You can use this tutorial as a reference to build your own applications with Aana SDK. 
 
-The full code for the application is available in the [projects](/aana/projects/summarize_transcript) directory.
+The full code for the application is available in the [projects](https://github.com/mobiusml/aana_sdk/tree/main/aana/projects/summarize_transcript) directory.

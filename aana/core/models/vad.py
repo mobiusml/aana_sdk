@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aana.core.models.time import TimeInterval
 
+__all__ = ["VadParams", "VadSegment", "VadSegments"]
+
 
 class VadParams(BaseModel):
     """A model for the Voice Activity Detection model parameters.
@@ -69,3 +71,6 @@ class VadSegment(BaseModel):
 VadSegments = Annotated[
     list[VadSegment], Field(description="List of VAD segments", default_factory=list)
 ]
+"""
+List of VadSegment objects.
+"""
