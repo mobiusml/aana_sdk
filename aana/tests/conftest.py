@@ -1,6 +1,5 @@
 # This file is used to define fixtures that are used in the integration tests.
 # ruff: noqa: S101
-import importlib
 import os
 import tempfile
 from pathlib import Path
@@ -10,7 +9,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from aana.configs.db import DbSettings, SQLiteConfig
-from aana.configs.settings import settings
+from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
 from aana.storage.op import DbType, run_alembic_migrations
 from aana.tests.utils import (
@@ -36,10 +35,8 @@ def app_factory():
         )
         os.environ["DB_CONFIG"] = jsonify(db_config)
 
-        # Reload the settings to update the database path
-        import aana.configs.settings
-
-        importlib.reload(aana.configs.settings)
+        aana_settings.db_config = db_config
+        aana_settings.db_config._engine = None
 
         # Import and start the app
         app = import_from(app_module, app_name)
@@ -65,7 +62,9 @@ def app_create():
     os.environ["DB_CONFIG"] = jsonify(db_config)
 
     # set database config in aana settings
-    settings.db_config = db_config
+    aana_settings.db_config = db_config
+
+    run_alembic_migrations(aana_settings)
 
     app = AanaSDK()
     app.connect(
@@ -136,38 +135,33 @@ def call_endpoint(app_setup):
 @pytest.fixture(scope="module")
 def one_request_worker():
     """Fixture to update settings to only run one request worker."""
-    from aana.configs.settings import settings
-
-    settings.num_workers = 1
+    aana_settings.num_workers = 1
     yield
 
 
 @pytest.fixture(scope="function")
 def db_session():
     """Creates a new database file and session for each test."""
-    tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
-    db_config = DbSettings(
-        datastore_type=DbType.SQLITE,
-        datastore_config=SQLiteConfig(path=tmp_database_path),
-    )
-    os.environ["DB_CONFIG"] = jsonify(db_config)
+    with tempfile.NamedTemporaryFile(dir=aana_settings.tmp_data_dir) as tmp:
+        db_config = DbSettings(
+            datastore_type=DbType.SQLITE,
+            datastore_config=SQLiteConfig(path=tmp.name),
+        )
+        os.environ["DB_CONFIG"] = jsonify(db_config)
 
-    # Reload the settings to update the database path
-    import aana.configs.settings
+        aana_settings.db_config = db_config
+        aana_settings.db_config._engine = None
 
-    importlib.reload(aana.configs.settings)
+        run_alembic_migrations(aana_settings)
 
-    from aana.configs.settings import settings
-
-    run_alembic_migrations(settings)
-
-    # Create a new session
-    engine = settings.db_config.get_engine()
-    with Session(engine) as session:
-        yield session
+        # Create a new session
+        engine = aana_settings.db_config.get_engine()
+        with Session(engine) as session:
+            yield session
 
 
-# TODO: add support for postgresql using pytest-postgresql
+# TODO: add support
+# for postgresql using pytest-postgresql
 # @pytest.fixture(scope="function")
 # def db_session(postgresql):
 #     """Creates a new database file and session for each test."""
