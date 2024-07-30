@@ -66,7 +66,9 @@ pytest-asyncio = "^0.23.6"
 pytest-dotenv = "^0.5.2"
 pytest-env = "^1.1.3"
 pytest-mock = "^3.12.0"
+pytest-postgresql = "^6.0.0"
 pytest-timeout = "^2.2.0"
+psycopg = {extras = ["binary"], version = "^3.2.1"}
 sqlalchemy-utils = "^0.41.1"
 
 [tool.poetry.group.docs.dependencies]
@@ -79,6 +81,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
+postgresql_exec = "./pg_ctl.sh"
 norecursedirs = "mobius-pipeline"
 timeout = 600
 env = [

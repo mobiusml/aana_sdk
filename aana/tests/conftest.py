@@ -10,11 +10,10 @@ import importlib
 import os
 import tempfile
 from pathlib import Path
-
 import pytest
 from sqlalchemy.orm import Session
 
-from aana.configs.db import DbSettings, SQLiteConfig
+from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
 from aana.configs.settings import settings
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
@@ -144,43 +143,24 @@ def one_request_worker():
 
 
 @pytest.fixture(scope="function")
-def db_session():
+def db_session(postgresql):
     """Creates a new database file and session for each test."""
-    with tempfile.NamedTemporaryFile(dir=settings.tmp_data_dir) as tmp:
-        # Configure the database to use the temporary file
-        settings.db_config.datastore_config = SQLiteConfig(path=tmp.name)
-        # Reset the engine
-        settings.db_config._engine = None
+    settings.db_config.datastore_type = DbType.POSTGRESQL
+    settings.db_config.datastore_config = PostgreSQLConfig(
+        host=postgresql.info.host,
+        port=postgresql.info.port,
+        user=postgresql.info.user,
+        password=postgresql.info.password,
+        database=postgresql.info.dbname,
+    )
 
-        # Run migrations to set up the schema
-        run_alembic_migrations(settings)
+    # Reset the engine
+    settings.db_config._engine = None
 
-        # Create a new session
-        engine = settings.db_config.get_engine()
-        with Session(engine) as session:
-            yield session
+    # Run migrations to set up the schema
+    run_alembic_migrations(settings)
 
-
-# TODO: add support for postgresql using pytest-postgresql
-# @pytest.fixture(scope="function")
-# def db_session(postgresql):
-#     """Creates a new database file and session for each test."""
-#     settings.db_config.datastore_type = DbType.POSTGRESQL
-#     settings.db_config.datastore_config = PostgreSQLConfig(
-#         host=postgresql.info.host,
-#         port=postgresql.info.port,
-#         user=postgresql.info.user,
-#         password=postgresql.info.password,
-#         database=postgresql.info.dbname,
-#     )
-
-#     # Reset the engine
-#     settings.db_config.engine = None
-
-#     # Run migrations to set up the schema
-#     run_alembic_migrations(settings)
-
-#     # Create a new session
-#     engine = settings.db_config.get_engine()
-#     with Session(engine) as session:
-#         yield session
+    # Create a new session
+    engine = settings.db_config.get_engine()
+    with Session(engine) as session:
+        yield session
