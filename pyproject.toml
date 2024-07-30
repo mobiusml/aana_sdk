@@ -81,7 +81,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-postgresql_exec = "./pg_ctl.sh"
 norecursedirs = "mobius-pipeline"
 timeout = 600
 env = [
