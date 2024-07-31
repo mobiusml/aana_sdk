@@ -13,6 +13,9 @@
 		},
 		"ghcr.io/devcontainers-contrib/features/poetry:2": {
 			"version": "latest"
+		},
+		"ghcr.io/itsmechlark/features/postgresql:1": {
+			"version": "16"
 		}
 	},
 	"hostRequirements": {

@@ -32,6 +32,8 @@ jobs:
         ./install.sh
         sudo apt-get update
         sudo apt-get install ffmpeg
+    - name: Install postgres
+      uses: ikalnytskyi/action-setup-postgres@v6 
     - name: Test with pytest
       env:
         USE_DEPLOYMENT_CACHE: True

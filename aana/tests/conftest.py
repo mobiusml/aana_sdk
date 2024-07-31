@@ -12,9 +12,10 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from pytest_postgresql import factories
 from sqlalchemy.orm import Session
 
-from aana.configs.db import DbSettings, SQLiteConfig
+from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
 from aana.configs.settings import settings
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
@@ -26,6 +27,11 @@ from aana.tests.utils import (
     is_using_deployment_cache,
 )
 from aana.utils.json import jsonify
+
+# Change file permission if the user is root
+if os.geteuid() == 0:
+    postgresql_proc = factories.postgresql_proc(executable='./pg_ctl.sh')
+    postgresql = factories.postgresql('postgresql_proc')
 
 
 @pytest.fixture(scope="module")
@@ -144,8 +150,9 @@ def one_request_worker():
 
 
 @pytest.fixture(scope="function")
-def db_session():
-    """Creates a new database file and session for each test."""
+def sqlite_db_session():
+    """Creates a new sql database file and session for each test."""
+    settings.db_config.datastore_type = DbType.SQLITE
     with tempfile.NamedTemporaryFile(dir=settings.tmp_data_dir) as tmp:
         # Configure the database to use the temporary file
         settings.db_config.datastore_config = SQLiteConfig(path=tmp.name)
@@ -161,26 +168,30 @@ def db_session():
             yield session
 
 
-# TODO: add support for postgresql using pytest-postgresql
-# @pytest.fixture(scope="function")
-# def db_session(postgresql):
-#     """Creates a new database file and session for each test."""
-#     settings.db_config.datastore_type = DbType.POSTGRESQL
-#     settings.db_config.datastore_config = PostgreSQLConfig(
-#         host=postgresql.info.host,
-#         port=postgresql.info.port,
-#         user=postgresql.info.user,
-#         password=postgresql.info.password,
-#         database=postgresql.info.dbname,
-#     )
+@pytest.fixture(scope="function")
+def postgres_db_session(postgresql):
+    """Creates a new postgres database and session for each test."""
+    settings.db_config.datastore_type = DbType.POSTGRESQL
+    settings.db_config.datastore_config = PostgreSQLConfig(
+        host=postgresql.info.host,
+        port=postgresql.info.port,
+        user=postgresql.info.user,
+        password=postgresql.info.password,
+        database=postgresql.info.dbname,
+    )
 
-#     # Reset the engine
-#     settings.db_config.engine = None
+    # Reset the engine
+    settings.db_config._engine = None
 
-#     # Run migrations to set up the schema
-#     run_alembic_migrations(settings)
+    # Run migrations to set up the schema
+    run_alembic_migrations(settings)
 
-#     # Create a new session
-#     engine = settings.db_config.get_engine()
-#     with Session(engine) as session:
-#         yield session
+    # Create a new session
+    engine = settings.db_config.get_engine()
+    with Session(engine) as session:
+        yield session
+
+@pytest.fixture(params=['sqlite_db_session', 'postgres_db_session'])
+def db_session(request):
+    """Iterate over different database type for db tests"""
+    return request.getfixturevalue(request.param)
