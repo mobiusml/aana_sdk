@@ -594,8 +594,58 @@ import requests, json;
 "
 ```
 
+## App Template
+
+The best way to start building a new application is to use [Aana App Template](https://github.com/mobiusml/aana_app_template). It is a GitHub template repository that you can use to create a new repository with the same directory structure and files as the template. It will help you get started with the Aana SDK and provide you with a basic structure for your application and its dependencies.
+
+Let's create a new project using the Aana App Template:
+
+### Create a New Repository
+
+Go to the [Aana App Template](https://github.com/new?template_name=aana_app_template). Choose a name for your repository and fill in the other details. Click on the "Create repository" button. GitHub will create a new repository with the same directory structure and files as the template. There is a GitHub Actions workflow that will run after the repository is created to modify the project name to match the repository name. It is pretty fast but make sure it's finished before you proceed.
+
+### Clone the Repository
+
+Clone the repository to your local machine:
+
+```bash
+git clone <repository-url>
+cd <repository-name>
+```
+
+### Create the Application
+
+For our example project we need to adjust a few things.
+
+#### Deployments
+
+Define the deployments in the [`aana_summarize_video/configs/deployments.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/deployments.py). Just like in the example above.
+
+#### Endpoints
+
+The endpoints are defined in the [`aana_summarize_video/endpoints`](https://github.com/mobiusml/aana_summarize_video/tree/main/aana_summarize_video/endpoints) directory. It is a good practice to define each endpoint in a separate file. In our case, we will define 3 endpoints in 3 separate files: `transcribe_video.py`, `summarize_video.py`, and `summarize_video_stream.py`.
+
+We also need to register the endpoints. The list of endpoints is defined in the [`aana_summarize_video/configs/endpoints.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/endpoints.py) file.
+
+### Run the Application
+
+Now you can run the application:
+
+```bash
+aana deploy aana_summarize_video.app:aana_app
+```
+
+Or if you want to be on the safe side, you can run the application with `poetry run` and CUDA_VISIBLE_DEVICES set to the GPU index you want to use:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana_summarize_video.app:aana_app
+```
+
+Once the application is running, you can send a request to transcribe and summarize a video as described in the previous sections.
+
+
 ## Conclusion
 
-In this tutorial, we have walked you through the process of creating a new project with Aana SDK. We have reviewed the video transcription application and extended it to include the LLM model for summarization and a new endpoint. We have also demonstrated how to stream the output from the LLM model. You can use this tutorial as a reference to build your own applications with Aana SDK. 
+In this tutorial, we have walked you through the process of creating a new project with Aana SDK. We have reviewed the video transcription application and extended it to includ e the LLM model for summarization and a new endpoint. We have also demonstrated how to stream the output from the LLM model. You can use this tutorial as a reference to build your own applications with Aana SDK. 
 
 The full code for the application is available in the [projects](https://github.com/mobiusml/aana_sdk/tree/main/aana/projects/summarize_transcript) directory.
