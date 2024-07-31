@@ -150,8 +150,9 @@ def one_request_worker():
 
 
 @pytest.fixture(scope="function")
-def sql_db_session():
+def sqlite_db_session():
     """Creates a new sql database file and session for each test."""
+    settings.db_config.datastore_type = DbType.SQLITE
     with tempfile.NamedTemporaryFile(dir=settings.tmp_data_dir) as tmp:
         # Configure the database to use the temporary file
         settings.db_config.datastore_config = SQLiteConfig(path=tmp.name)
@@ -190,7 +191,7 @@ def postgres_db_session(postgresql):
     with Session(engine) as session:
         yield session
 
-@pytest.fixture(params=['sql_db_session', 'postgres_db_session'])
+@pytest.fixture(params=['sqlite_db_session', 'postgres_db_session'])
 def db_session(request):
     """Iterate over different database type for db tests"""
     return request.getfixturevalue(request.param)
