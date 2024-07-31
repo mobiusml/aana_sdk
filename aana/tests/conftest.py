@@ -10,7 +10,9 @@ import importlib
 import os
 import tempfile
 from pathlib import Path
+
 import pytest
+from pytest_postgresql import factories
 from sqlalchemy.orm import Session
 
 from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
@@ -25,6 +27,11 @@ from aana.tests.utils import (
     is_using_deployment_cache,
 )
 from aana.utils.json import jsonify
+
+# Change file permission if the user is root
+if os.geteuid() == 0:
+    postgresql_proc = factories.postgresql_proc(executable='./pg_ctl.sh')
+    postgresql = factories.postgresql('postgresql_proc')
 
 
 @pytest.fixture(scope="module")
