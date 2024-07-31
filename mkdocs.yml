@@ -107,10 +107,12 @@ nav:
   - Configuration:
     - Settings: pages/settings.md
   - Development:
-    - Development Guide: pages/development.md
+    - Code Overview: pages/code_overview.md
+    - Dev Environment: pages/dev_environment.md
+    - Code Standards: pages/code_standards.md
+    - Database: pages/database.md
     - Testing: pages/testing.md
     - Deployment Test Cache: pages/deployment_test_cache.md
-    - Code Standards: pages/code_standards.md
   - Reference (Code API):
     - reference/index.md
     - reference/sdk.md
