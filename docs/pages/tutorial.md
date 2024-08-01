@@ -646,6 +646,6 @@ Once the application is running, you can send a request to transcribe and summar
 
 ## Conclusion
 
-In this tutorial, we have walked you through the process of creating a new project with Aana SDK. We have reviewed the video transcription application and extended it to includ e the LLM model for summarization and a new endpoint. We have also demonstrated how to stream the output from the LLM model. You can use this tutorial as a reference to build your own applications with Aana SDK. 
+In this tutorial, we have walked you through the process of creating a new project with Aana SDK. We have reviewed the video transcription application and extended it to include the LLM model for summarization and a new endpoint. We have also demonstrated how to stream the output from the LLM model. You can use this tutorial as a reference to build your own applications with Aana SDK. 
 
 The full code for the application is available in the [projects](https://github.com/mobiusml/aana_sdk/tree/main/aana/projects/summarize_transcript) directory.

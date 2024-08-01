@@ -50,7 +50,7 @@ def app_factory():
 
 
 @pytest.fixture(scope="module")
-def app_create():
+def create_app():
     """Setup Ray Serve app for given deployments and endpoints."""
     # create temporary database
     tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
