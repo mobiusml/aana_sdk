@@ -122,9 +122,9 @@ endpoints = [
 ]
 
 
-def test_task_queue(app_create):
+def test_task_queue(create_app):
     """Test the Ray Serve app."""
-    aana_app = app_create(deployments, endpoints)
+    aana_app = create_app(deployments, endpoints)
 
     port = aana_app.port
     route_prefix = ""

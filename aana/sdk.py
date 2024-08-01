@@ -90,7 +90,6 @@ class AanaSDK:
 
     def migrate(self):
         """Run Alembic migrations."""
-        print(aana_settings.db_config)
         if self.migration_func:
             try:
                 self.migration_func(aana_settings)

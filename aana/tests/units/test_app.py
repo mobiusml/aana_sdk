@@ -76,9 +76,9 @@ endpoints = [
 ]
 
 
-def test_app(app_create):
+def test_app(create_app):
     """Test the Ray Serve app."""
-    aana_app = app_create(deployments, endpoints)
+    aana_app = create_app(deployments, endpoints)
 
     port = aana_app.port
     route_prefix = ""
@@ -96,5 +96,4 @@ def test_app(app_create):
     )
     assert response.status_code == 200
     lowercase_text = response.json().get("text")
-    print(lowercase_text)
     assert lowercase_text == ["hello world!", "this is a test."]
