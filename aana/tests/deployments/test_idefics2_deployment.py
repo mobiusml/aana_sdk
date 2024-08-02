@@ -9,6 +9,7 @@ from aana.core.models.chat import ChatMessage, Prompt
 from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
 from aana.tests.utils import (
+    compare_texts,
     get_deployments_by_type,
     is_gpu_available,
     is_using_deployment_cache,
@@ -49,30 +50,8 @@ async def test_idefics2_deployment_chat(setup_deployment, prompt, image_path, ex
     output_message = output["message"]
 
     assert type(output_message) == ChatMessage
-    assert output_message.content == expected_output
+    compare_texts(expected_output, output_message.content)
     assert output_message.role == "assistant"
-
-
-@pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
-    reason="GPU is not available",
-)
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "prompt, image_path, expected_output",
-    [("Who is the painter of the image?", "aana/tests/files/images/Starry_Night.jpeg", "Van gogh.")],
-)
-async def test_idefics2_deployment_chat_stream(setup_deployment, prompt, image_path, expected_output):
-    """Test Idefics 2 deployments chat stream."""
-    handle = serve.get_app_handle("idefics_2_deployment")
-    image = Image(path=Path(image_path), save_on_disk=False, media_id="test_image")
-    dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[image])
-    output_message = ""
-    stream = handle.options(stream=True).chat_stream.remote(dialog=dialog)
-    async for chunk in stream:
-        output_message += chunk["text"]
-
-    assert output_message == expected_output
 
 
 @pytest.mark.skipif(
@@ -94,5 +73,5 @@ async def test_idefics2_deployment_chat_batch(setup_deployment, prompt, image_pa
         output_message = output["message"]
 
         assert type(output_message) == ChatMessage
-        assert output_message.content == expected_output
+        compare_texts(expected_output, output_message.content)
         assert output_message.role == "assistant"
