@@ -35,6 +35,8 @@ def json_serializer_default(obj: object) -> object:
         return obj.model_dump()
     if isinstance(obj, Path):
         return str(obj)
+    if isinstance(obj, type):
+        return str(type)
     from aana.core.models.media import Media
 
     if isinstance(obj, Media):

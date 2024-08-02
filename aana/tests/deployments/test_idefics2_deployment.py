@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from ray import serve
 
-from aana.core.models.chat import Prompt
+from aana.core.models.chat import ChatMessage, Prompt
 from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
 from aana.tests.utils import (
@@ -16,7 +16,7 @@ from aana.tests.utils import (
 
 
 @pytest.fixture(
-    scope="function", params=get_deployments_by_type("idefics_2_deployment")
+    scope="function", params=get_deployments_by_type("Idefics2Deployment")
 )
 def setup_deployment(app_setup, request):
     """Setup Idefics 2 deployment."""
@@ -37,12 +37,17 @@ def setup_deployment(app_setup, request):
 )
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "prompt, image_path",
-    [("Mona Lisa but from Picasso's Blue Period", "aana/tests/files/images/Starry_Night.jpeg")],
+    "prompt, image_path,expected_output",
+    [("Who is the painter of the image?", "aana/tests/files/images/Starry_Night.jpeg", "Van gogh.")],
 )
-async def test_idefics2_deployment(setup_deployment, prompt, image_path):
+async def test_idefics2_deployment_chat(setup_deployment, prompt, image_path, expected_output):
     """Test Idefics 2 deployments."""
     handle = serve.get_app_handle("idefics_2_deployment")
+    image = Image(path=Path(image_path), save_on_disk=False, media_id="test_image")
+    dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[image])
+    output = await handle.chat.remote(dialog=dialog)
+    output_message = output["message"]
 
-    dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[Image(path=Path(image_path), save_on_disk=False)])
-    output = await handle.chat_batch.remote()
+    assert type(output_message) == ChatMessage
+    assert output_message.content == expected_output
+    assert output_message.role == "assistant"
