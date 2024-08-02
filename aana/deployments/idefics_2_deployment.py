@@ -20,7 +20,7 @@ from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image_chat import ImageChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, test_cache
 from aana.deployments.base_text_generation_deployment import ChatOutput, LLMOutput
 from aana.exceptions.runtime import InferenceException
 
@@ -99,6 +99,7 @@ class Idefics2Deployment(BaseDeployment):
             self.model_id, **self.model_kwargs
         )
 
+    @test_cache
     async def chat_stream(
         self, dialog: ImageChatDialog, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:
@@ -183,6 +184,7 @@ class Idefics2Deployment(BaseDeployment):
 
         return ChatOutput(message=ChatMessage(content=text, role="assistant"))
 
+    @test_cache
     async def chat_batch(
         self,
         dialogs: list[ImageChatDialog],
