@@ -193,5 +193,5 @@ def postgres_db_session(postgresql):
 
 @pytest.fixture(params=['sqlite_db_session', 'postgres_db_session'])
 def db_session(request):
-    """Iterate over different database type for db tests"""
+    """Iterate over different database type for db tests."""
     return request.getfixturevalue(request.param)

@@ -1,4 +1,5 @@
 from transformers import BitsAndBytesConfig
+from transformers.utils.import_utils import is_flash_attn_2_available
 
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
@@ -11,6 +12,7 @@ from aana.deployments.hf_text_generation_deployment import (
     HfTextGenerationConfig,
     HfTextGenerationDeployment,
 )
+from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
 from aana.deployments.stablediffusion2_deployment import (
     StableDiffusion2Config,
     StableDiffusion2Deployment,
@@ -190,6 +192,21 @@ available_deployments[
     "hf_phi3_mini_4k_instruct_text_gen_deployment"
 ] = hf_phi3_mini_4k_instruct_text_gen_deployment
 
+
+idefics_2_deployment = Idefics2Deployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.85},
+    user_config=Idefics2Config(
+        model="HuggingFaceM4/idefics2-8b",
+        dtype=Dtype.FLOAT16,
+        enable_flash_attention_2=is_flash_attn_2_available(),
+    ).model_dump(mode="json"),
+)
+
+available_deployments[
+    "idefics_2_deployment"
+] = idefics_2_deployment
+
 __all__ = [
     "vllm_llama2_7b_chat_deployment",
     "meta_llama3_8b_instruct_deployment",
@@ -201,4 +218,5 @@ __all__ = [
     "vad_deployment",
     "hf_blip2_opt_2_7b_pipeline_deployment",
     "hf_phi3_mini_4k_instruct_text_gen_deployment",
+    "idefics_2_deployment",
 ]
