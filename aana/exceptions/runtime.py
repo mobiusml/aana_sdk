@@ -152,3 +152,15 @@ class HandlerNotRegisteredException(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, ())
+
+
+class DeploymentException(Exception):
+    pass
+
+
+class InsufficientResources(DeploymentException):
+    pass
+
+
+class FailedDeployment(DeploymentException):
+    pass

@@ -7,14 +7,22 @@ from pathlib import Path
 import ray
 import yaml
 from ray import serve
+from ray.autoscaler.v2.schema import ResourceDemand
+from ray.autoscaler.v2.sdk import get_cluster_status
 from ray.serve.config import HTTPOptions
 from ray.serve.deployment import Application, Deployment
+from ray.serve.schema import ApplicationStatusOverview
 from rich import print as rprint
 
 from aana.api.api_generation import Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
 from aana.configs.settings import settings as aana_settings
+from aana.exceptions.runtime import (
+    DeploymentException,
+    FailedDeployment,
+    InsufficientResources,
+)
 from aana.storage.op import run_alembic_migrations
 from aana.utils.core import import_from_path
 
@@ -88,35 +96,36 @@ class AanaSDK:
         """Run Alembic migrations."""
         run_alembic_migrations(aana_settings)
 
-    def show_status(self, app_name: str):
-        """Show the status of the application.
+    def print_app_status(self, app_name: str, app_status: ApplicationStatusOverview):
+        """Show the status of the application using simple ASCII formatting.
 
         Args:
             app_name (str): The name of the application.
+            app_status (ApplicationStatusOverview): The status of the application.
         """
 
+        def print_separator(end="\n"):
+            print("=" * 60, end=end)
+
         def print_header(title):
-            print(f"\n{'=' * 55}\n{title}\n{'=' * 55}")
+            print_separator()
+            print(title)
+            print_separator()
 
-        def print_status(deployment, status):
-            print(f"{deployment:<30} Status: {status}")
+        def print_key_value(key, value, indent=0):
+            print(f"{' ' * indent}{key}: {value}")
 
-        status = serve.status()
-        app_status = status.applications[app_name]
+        if app_status.deployments:
+            for deployment_name, deployment_status in app_status.deployments.items():
+                print_header(f"{deployment_name} ({app_name})")
+                print_key_value("Status", deployment_status.status.value, indent=0)
+                print_key_value("Message", deployment_status.message, indent=0)
+        print_separator()
 
-        print_header(f"Application {app_name}")
-        print_status(app_name, app_status.status.value)
-
-        for deployment_name, deployment_status in app_status.deployments.items():
-            print_header(f"Deployment {deployment_name}")
-            print_status("Status", deployment_status.status.value)
-            print(f"\n{deployment_status.message}\n")
-
-    def add_task_queue(self, blocking: bool = False, deploy: bool = False):
+    def add_task_queue(self, deploy: bool = False):
         """Add a task queue deployment.
 
         Args:
-            blocking (bool, optional): If True, the function will block until deployment is complete. Defaults to False.
             deploy (bool, optional): If True, the deployment will be deployed immediately,
                     otherwise it will be registered and can be deployed later when deploy() is called. Defaults to False.
         """
@@ -135,14 +144,12 @@ class AanaSDK:
             "task_queue_deployment",
             task_queue_deployment,
             deploy=deploy,
-            blocking=blocking,
         )
 
     def register_deployment(
         self,
         name: str,
         instance: Deployment,
-        blocking: bool = False,
         deploy: bool = False,
     ):
         """Register a deployment.
@@ -150,20 +157,22 @@ class AanaSDK:
         Args:
             name (str): The name of the deployment.
             instance (Deployment): The instance of the deployment to be registered.
-            blocking (bool, optional): If True, the function will block until deployment is complete. Defaults to False.
             deploy (bool, optional): If True, the deployment will be deployed immediately,
                     otherwise it will be registered and can be deployed later when deploy() is called. Defaults to False.
         """
         if deploy:
             try:
-                serve.run(
+                serve.api._run(
                     instance.bind(),
                     name=name,
                     route_prefix=f"/{name}",
-                    blocking=blocking,
+                    _blocking=False,
                 )
-            except RuntimeError:
-                self.show_status(name)
+                self.wait_for_deployment()
+            except FailedDeployment:
+                status = serve.status()
+                app_status = status.applications[name]
+                self.print_app_status(name, app_status)
         else:
             self.deployments[name] = instance
 
@@ -238,30 +247,62 @@ class AanaSDK:
         if name in self.endpoints:
             del self.endpoints[name]
 
+    def wait_for_deployment(self):
+        """Wait for the deployment to complete."""
+        while True:
+            status = serve.status()
+            if all(
+                application.status == "RUNNING"
+                for application in status.applications.values()
+            ):
+                break
+            if any(
+                application.status == "DEPLOY_FAILED"
+                or application.status == "UNHEALTHY"
+                for application in status.applications.values()
+            ):
+                raise FailedDeployment()
+            gcs_address = ray.get_runtime_context().gcs_address
+            cluster_status = get_cluster_status(gcs_address)
+            demands = (
+                cluster_status.resource_demands.cluster_constraint_demand
+                + cluster_status.resource_demands.ray_task_actor_demand
+                + cluster_status.resource_demands.placement_group_demand
+            )
+            for demand in demands:
+                if isinstance(demand, ResourceDemand) and demand.bundles_by_count:
+                    error_message = f"Error: No available node types can fulfill resource request {demand.bundles_by_count[0].bundle}. "
+                    if "GPU" in demand.bundles_by_count[0].bundle:
+                        error_message += "Might be due to insufficient or misconfigured GPU resources."
+                else:
+                    error_message = f"Error: {demand}"
+                raise InsufficientResources(error_message)
+            time.sleep(1)  # Wait for 1 second before checking again
+
     def deploy(self, blocking: bool = False):
         """Deploy the application with the registered endpoints and deployments.
 
         Args:
             blocking (bool, optional): If True, the function will block until interrupted. Defaults to False.
         """
-        for deployment_name in self.deployments:
-            try:
-                serve.run(
+        try:
+            for deployment_name in self.deployments:
+                serve.api._run(
                     self.get_deployment_app(deployment_name),
                     name=deployment_name,
                     route_prefix=f"/{deployment_name}",
-                    blocking=False,
+                    _blocking=False,
                 )
-            except RuntimeError:  # noqa: PERF203
-                self.show_status(deployment_name)
 
-        try:
-            serve.run(
+            serve.api._run(
                 self.get_main_app(),
                 name=self.name,
                 route_prefix="/",
-                blocking=False,  # blocking manually after to display the message "Deployed successfully."
+                _blocking=False,  # blocking manually after to display the message "Deployed successfully."
             )
+
+            self.wait_for_deployment()
+
             rprint("[green]Deployed successfully.[/green]")
             rprint(
                 f"Documentation is available at "
@@ -274,13 +315,22 @@ class AanaSDK:
             print("Got KeyboardInterrupt, shutting down...")
             serve.shutdown()
             sys.exit()
-        except RuntimeError:
-            self.show_status(self.name)
+        except DeploymentException as e:
+            status = serve.status()
+            serve.shutdown()
+            for app_name, app_status in status.applications.items():
+                if (
+                    app_status.status == "DEPLOY_FAILED"
+                    or app_status.status == "UNHEALTHY"
+                ):
+                    self.print_app_status(app_name, app_status)
+            print(e)
         except Exception:
+            serve.shutdown()
             traceback.print_exc()
             print(
-                "Received unexpected error, see console logs for more details. Shutting "
-                "down..."
+                "Received unexpected error, see console logs for more details. "
+                "Shutting down..."
             )
 
     def shutdown(self):
