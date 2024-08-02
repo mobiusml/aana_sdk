@@ -25,6 +25,11 @@ from aana.deployments.hf_text_generation_deployment import (
     HfTextGenerationConfig,
     HfTextGenerationDeployment,
 )
+from aana.deployments.idefics_2_deployment import (
+    Idefics2Config,
+    Idefics2Deployment
+)
+
 from aana.deployments.vad_deployment import (
     VadConfig,
     VadDeployment,
@@ -46,6 +51,8 @@ __all__ = [
     "BaseTextGenerationDeployment",
     "HfTextGenerationConfig",
     "HfTextGenerationDeployment",
+    "Idefics2Config",
+    "Idefics2Deployment",
     "VLLMConfig",
     "VLLMDeployment",
     "WhisperConfig",
