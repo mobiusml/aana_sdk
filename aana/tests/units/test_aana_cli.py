@@ -9,7 +9,7 @@ from click.testing import CliRunner
 
 from aana.cli import cli
 
-test_app_path = "aana.projects.lowercase.app:aana_app"
+test_app_path = "aana.tests.projects.lowercase.app:aana_app"
 port = 5000
 
 
@@ -95,7 +95,7 @@ def config_paths():
 def test_aana_build(config_paths):
     """Test aana build command."""
     expected_app_config = (
-        "from aana.projects.lowercase.app import aana_app\n"
+        "from aana.tests.projects.lowercase.app import aana_app\n"
         "\n"
         "task_queue_deployment = aana_app.get_deployment_app('task_queue_deployment')\n"
         "lowercase_deployment = aana_app.get_deployment_app('lowercase_deployment')\n"

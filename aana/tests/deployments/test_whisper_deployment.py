@@ -45,7 +45,7 @@ def compare_transcriptions(expected_transcription, transcription):
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("WhisperDeployment"))
-def setup_whisper_deployment(app_setup, request):
+def setup_whisper_deployment(create_app, request):
     """Setup whisper deployment."""
     name, deployment = request.param
     deployments = [
@@ -56,7 +56,7 @@ def setup_whisper_deployment(app_setup, request):
     ]
     endpoints = []
 
-    return name, deployment, app_setup(deployments, endpoints)
+    return name, deployment, create_app(deployments, endpoints)
 
 
 @pytest.mark.skipif(

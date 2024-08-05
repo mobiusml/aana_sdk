@@ -14,7 +14,7 @@ from aana.tests.utils import (
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("HFBlip2Deployment"))
-def setup_hf_blip2_deployment(app_setup, request):
+def setup_hf_blip2_deployment(create_app, request):
     """Setup HF BLIP2 deployment."""
     name, deployment = request.param
     deployments = [
@@ -25,7 +25,7 @@ def setup_hf_blip2_deployment(app_setup, request):
     ]
     endpoints = []
 
-    return name, deployment, app_setup(deployments, endpoints)
+    return name, deployment, create_app(deployments, endpoints)
 
 
 @pytest.mark.skipif(
