@@ -79,7 +79,7 @@ long_context_models = ["internlm2_5_7b_chat_deployment"]
     params=get_deployments_by_type("VLLMDeployment")
     + get_deployments_by_type("HfTextGenerationDeployment"),
 )
-def setup_text_generation_deployment(app_setup, request):
+def setup_text_generation_deployment(create_app, request):
     """Setup text_generation deployment."""
     name, deployment = request.param
     deployments = [
@@ -90,7 +90,7 @@ def setup_text_generation_deployment(app_setup, request):
     ]
     endpoints = []
 
-    return name, deployment, app_setup(deployments, endpoints)
+    return name, deployment, create_app(deployments, endpoints)
 
 
 @pytest.mark.skipif(

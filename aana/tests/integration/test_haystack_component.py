@@ -79,6 +79,10 @@ async def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F8
     assert len(result["image_sizer"]["size"]) == 2
 
 
+@pytest.mark.skipif(
+    not is_gpu_available() and not is_using_deployment_cache(),
+    reason="GPU is not available",
+)
 @pytest.mark.asyncio
 async def test_haystack_wrapper_fails(setup_stablediffusion2_deployment):  # noqa: F811
     """Tests that haystack wrapper raises if method_name is missing."""
