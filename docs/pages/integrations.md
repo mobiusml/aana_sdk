@@ -38,6 +38,24 @@ VLLMDeployment.options(
 )
 ```
 
+## Idefics2
+
+Idefics2 deployment allows you to efficiently integrate Idefics2 Model [Idefics2](https://huggingface.co/docs/transformers/main/en/model_doc/idefics2) into the pipeline.
+
+```python
+from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
+
+Idefics2Deployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.85},
+    user_config=Idefics2Config(
+        model="HuggingFaceM4/idefics2-8b",
+        dtype=Dtype.FLOAT16,
+        enable_flash_attention_2=True,
+    ).model_dump(mode="json"),
+)
+```
+
 ## Hugging Face Transformers
 
 Hugging Face Pipeline deployment allows you to serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models). It is a wrapper for [Hugging Face Pipelines](https://huggingface.co/transformers/main_classes/pipelines.html) so you can deploy and scale *almost* any model from the Hugging Face Hub with a few lines of code.
