@@ -142,22 +142,8 @@ class VideoMetadata(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "description": "Metadata of a video.",
-        }
-    )
-
-
-class VideoStatus(BaseModel):
-    """Video processing status.
-
-    Attributes:
-        status (str): processing status of video
-    """
-
-    status: str = Field(None, description="Current processing status of video.")
-    model_config = ConfigDict(
-        json_schema_extra={
-            "status": "Current processing status of video.",
-        }
+        },
+        extra="forbid",
     )
 
 

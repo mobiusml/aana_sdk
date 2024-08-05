@@ -55,7 +55,7 @@ def compare_vad_outputs(expected_output, predictions):
 
 
 @pytest.fixture(scope="function", params=get_deployments_by_type("VadDeployment"))
-def setup_vad_deployment(app_setup, request):
+def setup_vad_deployment(create_app, request):
     """Setup vad deployment."""
     name, deployment = request.param
     deployments = [
@@ -66,7 +66,7 @@ def setup_vad_deployment(app_setup, request):
     ]
     endpoints = []
 
-    return name, deployment, app_setup(deployments, endpoints)
+    return name, deployment, create_app(deployments, endpoints)
 
 
 @pytest.mark.skipif(

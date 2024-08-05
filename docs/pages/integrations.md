@@ -6,6 +6,8 @@ Aana SDK comes with a set of predefined deployments that you can use out of the 
 
 Whisper deployment allows you to transcribe audio with an automatic Speech Recognition (ASR) model based on the [faster-whisper](https://github.com/SYSTRAN/faster-whisper). 
 
+See [WhisperDeployment](./../reference/deployments.md#aana.deployments.WhisperDeployment) to learn more about the deployment capabilities.
+
 ```python
 from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
 
@@ -19,6 +21,8 @@ WhisperDeployment.options(
 ## vLLM
 
 vLLM deployment allows you to efficiently serve Large Language Model (LLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
+
+See [VLLMDeployment](./../reference/deployments.md#aana.deployments.VLLMDeployment) to learn more about the deployment capabilities.
 
 ```python
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
@@ -41,6 +45,8 @@ VLLMDeployment.options(
 ## Hugging Face Transformers
 
 Hugging Face Pipeline deployment allows you to serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models). It is a wrapper for [Hugging Face Pipelines](https://huggingface.co/transformers/main_classes/pipelines.html) so you can deploy and scale *almost* any model from the Hugging Face Hub with a few lines of code.
+
+See [HfPipelineDeployment](./../reference/deployments.md#aana.deployments.HfPipelineDeployment) to learn more about the deployment capabilities.
 
 ```python
 from transformers import BitsAndBytesConfig
