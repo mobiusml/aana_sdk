@@ -619,13 +619,83 @@ For our example project we need to adjust a few things.
 
 #### Deployments
 
-Define the deployments in the [`aana_summarize_video/configs/deployments.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/deployments.py). Just like in the example above.
+Define the deployments in the [`configs/deployments.py`](https://github.com/mobiusml/aana_app_template/blob/main/aana_app_project/configs/deployments.py). 
+
+For our summarization project it looks like this: 
+
+```python
+from transformers import BitsAndBytesConfig
+from aana.deployments.hf_text_generation_deployment import HfTextGenerationConfig, HfTextGenerationDeployment
+from aana.deployments.whisper_deployment import WhisperComputeType, WhisperConfig, WhisperDeployment, WhisperModelSize
+
+asr_deployment = WhisperDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(
+        model_size=WhisperModelSize.MEDIUM,
+        compute_type=WhisperComputeType.FLOAT16,
+    ).model_dump(mode="json"),
+)
+
+llm_deployment = HfTextGenerationDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=HfTextGenerationConfig(
+        model_id="microsoft/Phi-3-mini-4k-instruct",
+        model_kwargs={
+            "trust_remote_code": True,
+            "quantization_config": BitsAndBytesConfig(
+                load_in_8bit=False, load_in_4bit=True
+            ),
+        },
+    ).model_dump(mode="json"),
+)
+
+
+deployments: list[dict] = [
+    {"name": "asr_deployment", "instance": asr_deployment},
+    {"name": "llm_deployment", "instance": llm_deployment},
+]
+```
+
+See [`aana_summarize_video/configs/deployments.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/deployments.py).
 
 #### Endpoints
 
 The endpoints are defined in the [`aana_summarize_video/endpoints`](https://github.com/mobiusml/aana_summarize_video/tree/main/aana_summarize_video/endpoints) directory. It is a good practice to define each endpoint in a separate file. In our case, we will define 3 endpoints in 3 separate files: `transcribe_video.py`, `summarize_video.py`, and `summarize_video_stream.py`.
 
-We also need to register the endpoints. The list of endpoints is defined in the [`aana_summarize_video/configs/endpoints.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/endpoints.py) file.
+We also need to register the endpoints. The list of endpoints is defined in the [`configs/endpoints.py`](https://github.com/mobiusml/aana_app_template/blob/main/aana_app_project/configs/endpoints.py).
+
+For this project we need to register 3 endpoints:
+
+```python
+from aana_summarize_video.endpoints.summarize_video import SummarizeVideoEndpoint
+from aana_summarize_video.endpoints.summarize_video_stream import SummarizeVideoStreamEndpoint
+from aana_summarize_video.endpoints.transcribe_video import TranscribeVideoEndpoint
+
+endpoints: list[dict] = [
+    {
+        "name": "transcribe_video",
+        "path": "/video/transcribe",
+        "summary": "Transcribe a video",
+        "endpoint_cls": TranscribeVideoEndpoint,
+    },
+    {
+        "name": "summarize_video",
+        "path": "/video/summarize",
+        "summary": "Summarize a video",
+        "endpoint_cls": SummarizeVideoEndpoint,
+    },
+    {
+        "name": "summarize_video_stream",
+        "path": "/video/summarize_stream",
+        "summary": "Summarize a video with streaming output",
+        "endpoint_cls": SummarizeVideoStreamEndpoint,
+    },
+]
+```
+
+See [`aana_summarize_video/configs/endpoints.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/endpoints.py).
 
 ### Run the Application
 
