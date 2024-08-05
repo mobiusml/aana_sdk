@@ -261,7 +261,20 @@ class AanaSDK:
                 or application.status == "UNHEALTHY"
                 for application in status.applications.values()
             ):
-                raise FailedDeployment()
+                error_messages = []
+                for app_name, app_status in status.applications.items():
+                    if (
+                        app_status.status == "DEPLOY_FAILED"
+                        or app_status.status == "UNHEALTHY"
+                    ):
+                        for (
+                            deployment_name,
+                            deployment_status,
+                        ) in app_status.deployments.items():
+                            error_messages.append(
+                                f"Error: {deployment_name} ({app_name}): {deployment_status.message}"
+                            )
+                raise FailedDeployment("\n".join(error_messages))
             gcs_address = ray.get_runtime_context().gcs_address
             cluster_status = get_cluster_status(gcs_address)
             demands = (
@@ -315,7 +328,7 @@ class AanaSDK:
             print("Got KeyboardInterrupt, shutting down...")
             serve.shutdown()
             sys.exit()
-        except DeploymentException as e:
+        except DeploymentException:
             status = serve.status()
             serve.shutdown()
             for app_name, app_status in status.applications.items():
@@ -324,7 +337,7 @@ class AanaSDK:
                     or app_status.status == "UNHEALTHY"
                 ):
                     self.print_app_status(app_name, app_status)
-            print(e)
+            raise
         except Exception:
             serve.shutdown()
             traceback.print_exc()
@@ -332,6 +345,7 @@ class AanaSDK:
                 "Received unexpected error, see console logs for more details. "
                 "Shutting down..."
             )
+            raise
 
     def shutdown(self):
         """Shutdown the Aana server."""

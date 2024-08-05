@@ -1,7 +1,9 @@
+import contextlib
 import sys
 
 import click
 
+from aana.exceptions.runtime import DeploymentException
 from aana.sdk import AanaSDK
 from aana.utils.core import import_from_path
 
@@ -70,7 +72,10 @@ def deploy(
         aana_app.migrate()
     show_logs = not hide_logs
     aana_app.connect(port=port, host=host, show_logs=show_logs, address=ray_address)
-    aana_app.deploy(blocking=True)
+    with contextlib.suppress(
+        DeploymentException
+    ):  # we have a nice error message for this
+        aana_app.deploy(blocking=True)
 
 
 @cli.command()

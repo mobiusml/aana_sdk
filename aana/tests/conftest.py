@@ -30,8 +30,8 @@ from aana.utils.json import jsonify
 
 # Change file permission if the user is root
 if os.geteuid() == 0:
-    postgresql_proc = factories.postgresql_proc(executable='./pg_ctl.sh')
-    postgresql = factories.postgresql('postgresql_proc')
+    postgresql_proc = factories.postgresql_proc(executable="./pg_ctl.sh")
+    postgresql = factories.postgresql("postgresql_proc")
 
 
 @pytest.fixture(scope="module")
@@ -191,7 +191,8 @@ def postgres_db_session(postgresql):
     with Session(engine) as session:
         yield session
 
-@pytest.fixture(params=['sqlite_db_session', 'postgres_db_session'])
+
+@pytest.fixture(params=["sqlite_db_session", "postgres_db_session"])
 def db_session(request):
-    """Iterate over different database type for db tests"""
+    """Iterate over different database type for db tests."""
     return request.getfixturevalue(request.param)
