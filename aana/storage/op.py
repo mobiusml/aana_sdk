@@ -6,6 +6,8 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine
 
+from aana.exceptions.runtime import EmptyMigrationsException
+from aana.utils.core import get_module_dir
 from aana.utils.json import orjson_serializer
 
 
@@ -82,16 +84,19 @@ def get_alembic_config(
     return alembic_config
 
 
-def run_alembic_migrations(settings):
+def run_alembic_migrations(settings, root_path: Path | None = None):
     """Runs alembic migrations before starting up."""
-    # We need the path to aana/alembic and aana/alembic.ini
-    # This is a hack until we need something better.
-    current_path = Path(__file__)
-    aana_root = current_path.parent.parent  # go up two directories
-    if aana_root.name != "aana":  # we are not in the right place
-        raise RuntimeError("Not in right directory, exiting.")  # noqa: TRY003
-    ini_file_path = aana_root / "alembic.ini"
-    alembic_data_path = aana_root / "alembic"
+    if root_path is None:
+        root_path = get_module_dir("aana")
+
+    ini_file_path = root_path / "alembic.ini"
+    alembic_data_path = root_path / "alembic"
+    if not alembic_data_path.exists():
+        raise RuntimeError("Alembic directory does not exist.")  # noqa: TRY003
+    versions_path = alembic_data_path / "versions"
+    # Check if the versions directory is empty (no .py files)
+    if not versions_path.exists() or not any(Path(versions_path).glob("*.py")):
+        raise EmptyMigrationsException()
 
     alembic_config = get_alembic_config(settings, ini_file_path, alembic_data_path)
     engine = settings.db_config.get_engine()
@@ -100,15 +105,16 @@ def run_alembic_migrations(settings):
         command.upgrade(alembic_config, "head")
 
 
-def drop_all_tables(settings):
+def drop_all_tables(settings, root_path: Path | None = None):
     """Drops all tables in the database."""
     # TODO: only allow this in testing mode
-    current_path = Path(__file__)
-    aana_root = current_path.parent.parent  # go up two directories
-    if aana_root.name != "aana":  # we are not in the right place
-        raise RuntimeError("Not in right directory, exiting.")  # noqa: TRY003
-    ini_file_path = aana_root / "alembic.ini"
-    alembic_data_path = aana_root / "alembic"
+    if root_path is None:
+        root_path = get_module_dir("aana")
+
+    ini_file_path = root_path / "alembic.ini"
+    alembic_data_path = root_path / "alembic"
+    if not alembic_data_path.exists():
+        raise RuntimeError("Alembic directory does not exist.")  # noqa: TRY003
 
     alembic_config = get_alembic_config(settings, ini_file_path, alembic_data_path)
     command.downgrade(alembic_config, "base")
