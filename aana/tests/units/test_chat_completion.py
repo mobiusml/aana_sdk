@@ -58,9 +58,9 @@ deployments = [
 ]
 
 
-def test_chat_completion(app_setup):
+def test_chat_completion(create_app):
     """Test the chat completion endpoint for OpenAI compatible API."""
-    aana_app = app_setup(deployments, [])
+    aana_app = create_app(deployments, [])
 
     port = aana_app.port
     route_prefix = ""

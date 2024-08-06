@@ -13,7 +13,7 @@ aana build <app_module>:<app_name>
 For example:
 
 ```bash
-aana build aana.projects.chat_with_video.app:aana_app
+aana build aana_chat_with_video.app:aana_app
 ```
 
 The command will generate the Serve Config file and App Config file and save them in the project directory. You can then use these files to deploy the application using the Ray Serve CLI.
@@ -29,7 +29,7 @@ aana migrate <app_module>:<app_name>
 For example:
 
 ```bash
-aana migrate aana.projects.chat_with_video.app:aana_app
+aana migrate aana_chat_with_video.app:aana_app
 ```
 
 Before deploying the application, make sure you have the Ray cluster running. If you want to start a new Ray cluster on a single machine, you can use the following command:

@@ -594,6 +594,126 @@ import requests, json;
 "
 ```
 
+## App Template
+
+The best way to start building a new application is to use [Aana App Template](https://github.com/mobiusml/aana_app_template). It is a GitHub template repository that you can use to create a new repository with the same directory structure and files as the template. It will help you get started with the Aana SDK and provide you with a basic structure for your application and its dependencies.
+
+Let's create a new project using the Aana App Template:
+
+### Create a New Repository
+
+Go to the [Aana App Template](https://github.com/new?template_name=aana_app_template). Choose a name for your repository and fill in the other details. Click on the "Create repository" button. GitHub will create a new repository with the same directory structure and files as the template. There is a GitHub Actions workflow that will run after the repository is created to modify the project name to match the repository name. It is pretty fast but make sure it's finished before you proceed.
+
+### Clone the Repository
+
+Clone the repository to your local machine:
+
+```bash
+git clone <repository-url>
+cd <repository-name>
+```
+
+### Create the Application
+
+For our example project we need to adjust a few things.
+
+#### Deployments
+
+Define the deployments in the [`configs/deployments.py`](https://github.com/mobiusml/aana_app_template/blob/main/aana_app_project/configs/deployments.py). 
+
+For our summarization project it looks like this: 
+
+```python
+from transformers import BitsAndBytesConfig
+from aana.deployments.hf_text_generation_deployment import HfTextGenerationConfig, HfTextGenerationDeployment
+from aana.deployments.whisper_deployment import WhisperComputeType, WhisperConfig, WhisperDeployment, WhisperModelSize
+
+asr_deployment = WhisperDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=WhisperConfig(
+        model_size=WhisperModelSize.MEDIUM,
+        compute_type=WhisperComputeType.FLOAT16,
+    ).model_dump(mode="json"),
+)
+
+llm_deployment = HfTextGenerationDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.25},
+    user_config=HfTextGenerationConfig(
+        model_id="microsoft/Phi-3-mini-4k-instruct",
+        model_kwargs={
+            "trust_remote_code": True,
+            "quantization_config": BitsAndBytesConfig(
+                load_in_8bit=False, load_in_4bit=True
+            ),
+        },
+    ).model_dump(mode="json"),
+)
+
+
+deployments: list[dict] = [
+    {"name": "asr_deployment", "instance": asr_deployment},
+    {"name": "llm_deployment", "instance": llm_deployment},
+]
+```
+
+See [`aana_summarize_video/configs/deployments.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/deployments.py).
+
+#### Endpoints
+
+The endpoints are defined in the [`aana_summarize_video/endpoints`](https://github.com/mobiusml/aana_summarize_video/tree/main/aana_summarize_video/endpoints) directory. It is a good practice to define each endpoint in a separate file. In our case, we will define 3 endpoints in 3 separate files: `transcribe_video.py`, `summarize_video.py`, and `summarize_video_stream.py`.
+
+We also need to register the endpoints. The list of endpoints is defined in the [`configs/endpoints.py`](https://github.com/mobiusml/aana_app_template/blob/main/aana_app_project/configs/endpoints.py).
+
+For this project we need to register 3 endpoints:
+
+```python
+from aana_summarize_video.endpoints.summarize_video import SummarizeVideoEndpoint
+from aana_summarize_video.endpoints.summarize_video_stream import SummarizeVideoStreamEndpoint
+from aana_summarize_video.endpoints.transcribe_video import TranscribeVideoEndpoint
+
+endpoints: list[dict] = [
+    {
+        "name": "transcribe_video",
+        "path": "/video/transcribe",
+        "summary": "Transcribe a video",
+        "endpoint_cls": TranscribeVideoEndpoint,
+    },
+    {
+        "name": "summarize_video",
+        "path": "/video/summarize",
+        "summary": "Summarize a video",
+        "endpoint_cls": SummarizeVideoEndpoint,
+    },
+    {
+        "name": "summarize_video_stream",
+        "path": "/video/summarize_stream",
+        "summary": "Summarize a video with streaming output",
+        "endpoint_cls": SummarizeVideoStreamEndpoint,
+    },
+]
+```
+
+See [`aana_summarize_video/configs/endpoints.py`](https://github.com/mobiusml/aana_summarize_video/blob/main/aana_summarize_video/configs/endpoints.py).
+
+### Run the Application
+
+Now you can run the application:
+
+```bash
+aana deploy aana_summarize_video.app:aana_app
+```
+
+Or if you want to be on the safe side, you can run the application with `poetry run` and CUDA_VISIBLE_DEVICES set to the GPU index you want to use:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana_summarize_video.app:aana_app
+```
+
+Once the application is running, you can send a request to transcribe and summarize a video as described in the previous sections.
+
+
 ## Conclusion
 
 In this tutorial, we have walked you through the process of creating a new project with Aana SDK. We have reviewed the video transcription application and extended it to include the LLM model for summarization and a new endpoint. We have also demonstrated how to stream the output from the LLM model. You can use this tutorial as a reference to build your own applications with Aana SDK. 
