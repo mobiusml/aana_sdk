@@ -1,5 +1,4 @@
 from transformers import BitsAndBytesConfig
-from transformers.utils.import_utils import is_flash_attn_2_available
 
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
@@ -199,7 +198,6 @@ idefics_2_deployment = Idefics2Deployment.options(
     user_config=Idefics2Config(
         model="HuggingFaceM4/idefics2-8b",
         dtype=Dtype.FLOAT16,
-        enable_flash_attention_2=is_flash_attn_2_available(),
     ).model_dump(mode="json"),
 )
 

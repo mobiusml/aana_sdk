@@ -78,23 +78,23 @@ class ImageChatDialog(BaseModel):
         
         Example:
         ```
-            messages = [
-                {
-                    "content": [
-                        { "type": "image", "image": Image(...) },
-                        { "type": "text", "text": "..." }
-                    ],
-                    "role": "system"
-                },
-                {
-                    "content": [
-                        { "type": "image", "image": Image(...) },
-                        { "type": "text", "text": "..." }
-                    ],
-                    "role": "user"
-                }
-            ]
-            dialog = ImageChatDialog.from_list(messages)
+        messages = [
+            {
+                "content": [
+                    { "type": "image", "image": Image(...) },
+                    { "type": "text", "text": "..." }
+                ],
+                "role": "system"
+            },
+            {
+                "content": [
+                    { "type": "image", "image": Image(...) },
+                    { "type": "text", "text": "..." }
+                ],
+                "role": "user"
+            }
+        ]
+        dialog = ImageChatDialog.from_list(messages)
         ```
         """
         return ImageChatDialog(

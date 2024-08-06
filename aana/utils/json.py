@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import orjson
 from pydantic import BaseModel
 from sqlalchemy import Engine
@@ -37,6 +38,8 @@ def json_serializer_default(obj: object) -> object:
         return str(obj)
     if isinstance(obj, type):
         return str(type)
+    if isinstance(obj, np.ndarray):
+        return str(obj)
     from aana.core.models.media import Media
 
     if isinstance(obj, Media):

@@ -46,6 +46,10 @@ VLLMDeployment.options(
 
 Idefics 2 deployment allows you to serve the [Idefics 2 models](https://huggingface.co/docs/transformers/main/en/model_doc/idefics2) using the [Hugging Face Transformers](https://huggingface.co/transformers/) library. Idefics 2 is a vision-language model (VLM) that can answer questions about images, describe visual content, create stories grounded on multiple images, or simply behave as a pure language model without visual inputs.
 
+Idefics 2 deployment also supports using `Flash Attention 2` to boost the efficiency of the transformer model. You can set the value to `True` or leave it to `None`, so the deployment will check the availability of the `Flash Attention 2` on the server node, automatically.
+
+See [Idefics2Deployment](./../reference/deployments.md#aana.deployments.Idefics2Deployment) to learn more about the deployment capabilities.
+
 ```python
 from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
 
