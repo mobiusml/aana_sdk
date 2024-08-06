@@ -40,7 +40,7 @@ VLLMDeployment.options(
 
 ## Idefics2
 
-Idefics2 deployment allows you to efficiently integrate Idefics2 Model [Idefics2](https://huggingface.co/docs/transformers/main/en/model_doc/idefics2) into the pipeline.
+Idefics 2 deployment allows you to serve the [Idefics 2 models](https://huggingface.co/docs/transformers/main/en/model_doc/idefics2) using the [Hugging Face Transformers](https://huggingface.co/transformers/) library. Idefics 2 is a vision-language model (VLM) that can answer questions about images, describe visual content, create stories grounded on multiple images, or simply behave as a pure language model without visual inputs.
 
 ```python
 from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment

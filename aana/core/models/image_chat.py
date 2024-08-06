@@ -75,6 +75,27 @@ class ImageChatDialog(BaseModel):
 
         Returns:
             ImageChatDialog: the chat dialog
+        
+        Example:
+        ```
+            messages = [
+                {
+                    "content": [
+                        { "type": "image", "image": Image(...) },
+                        { "type": "text", "text": "..." }
+                    ],
+                    "role": "system"
+                },
+                {
+                    "content": [
+                        { "type": "image", "image": Image(...) },
+                        { "type": "text", "text": "..." }
+                    ],
+                    "role": "user"
+                }
+            ]
+            dialog = ImageChatDialog.from_list(messages)
+        ```
         """
         return ImageChatDialog(
             messages=[ImageChatMessage(**message) for message in messages]
@@ -108,10 +129,11 @@ class ImageChatDialog(BaseModel):
             exclude={"messages": {"__all__": {"content": {"__all__": {"image"}}}}}
         )
         messages = dialog_dict["messages"]
-        images = []
-        for message in self.messages:
-            for content in message.content:
-                if content.type == "image":
-                    images.append(content.image)
+        # images = []
+        # for message in self.messages:
+        #     for content in message.content:
+        #         if content.type == "image":
+        #             images.append(content.image)
+        images = [content.image for message in self.messages for content in message.content if content.type == "image"]
 
         return messages, images
