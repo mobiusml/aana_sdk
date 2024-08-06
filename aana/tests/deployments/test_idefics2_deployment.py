@@ -39,13 +39,13 @@ def setup_deployment(create_app, request):
 )
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "prompt, image_path, expected_output",
+    "prompt, image_name, expected_output",
     [("Who is the painter of the image?", "Starry_Night.jpeg", "Van gogh.")],
 )
-async def test_idefics2_deployment_chat(setup_deployment, prompt, image_path, expected_output):
+async def test_idefics2_deployment_chat(setup_deployment, prompt, image_name, expected_output):
     """Test Idefics 2 deployments."""
     handle = serve.get_app_handle("idefics_2_deployment")
-    image = Image(path=resources.path("aana.tests.files.images" ,image_path), save_on_disk=False, media_id="test_image")
+    image = Image(path=resources.path("aana.tests.files.images", image_name), save_on_disk=False, media_id="test_image")
     dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[image])
     output = await handle.chat.remote(dialog=dialog)
     output_message = output["message"]
@@ -61,13 +61,13 @@ async def test_idefics2_deployment_chat(setup_deployment, prompt, image_path, ex
 )
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "prompt, image_path, expected_output",
+    "prompt, image_name, expected_output",
     [("Who is the painter of the image?", "Starry_Night.jpeg", "Van gogh.")],
 )
-async def test_idefics2_deployment_chat_batch(setup_deployment, prompt, image_path, expected_output):
+async def test_idefics2_deployment_chat_batch(setup_deployment, prompt, image_name, expected_output):
     """Test Idefics 2 deployments in batch."""
     handle = serve.get_app_handle("idefics_2_deployment")
-    image = Image(path=resources.path("aana.tests.files.images" ,image_path), save_on_disk=False, media_id="test_image")
+    image = Image(path=resources.path("aana.tests.files.images", image_name), save_on_disk=False, media_id="test_image")
     dialogs = [ImageChatDialog.from_prompt(prompt=prompt, images=[image]) for _ in range(10)]
     outputs = await handle.chat_batch.remote(dialogs=dialogs)
     for output in outputs:
