@@ -72,7 +72,6 @@ class HaystackTestEndpoint(Endpoint):
 
 text_embedder_deployment = HaystackComponentDeployment.options(
     num_replicas=1,
-    max_concurrent_queries=1000,
     user_config=HaystackComponentDeploymentConfig(
         component="haystack.components.embedders.SentenceTransformersTextEmbedder",
         params={"model": "sentence-transformers/all-mpnet-base-v2"},
@@ -81,7 +80,6 @@ text_embedder_deployment = HaystackComponentDeployment.options(
 
 document_embedder_deployment = HaystackComponentDeployment.options(
     num_replicas=1,
-    max_concurrent_queries=1000,
     user_config=HaystackComponentDeploymentConfig(
         component="haystack.components.embedders.SentenceTransformersDocumentEmbedder",
         params={"model": "sentence-transformers/all-mpnet-base-v2"},
