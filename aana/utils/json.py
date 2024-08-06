@@ -41,7 +41,7 @@ def json_serializer_default(obj: object) -> object:
 
     if isinstance(obj, Media):
         return str(obj)
-    raise TypeError
+    raise TypeError(type(obj))
 
 
 def jsonify(data: Any) -> str:
