@@ -39,7 +39,7 @@ def json_serializer_default(obj: object) -> object:
     if isinstance(obj, type):
         return str(type)
     if isinstance(obj, np.ndarray):
-        return str(obj)
+        return obj.tostring()
     from aana.core.models.media import Media
 
     if isinstance(obj, Media):
