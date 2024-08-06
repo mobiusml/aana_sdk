@@ -6,7 +6,7 @@ from ray import serve
 from sentence_transformers import SentenceTransformer
 from typing_extensions import TypedDict
 
-from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
 
@@ -67,7 +67,6 @@ class SentenceTransformerDeployment(BaseDeployment):
 
         self.model = SentenceTransformer(self.model_id)
 
-    @test_cache
     async def embed_batch(self, **kwargs) -> np.ndarray:
         """Embed the given sentences.
 

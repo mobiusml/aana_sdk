@@ -9,7 +9,7 @@ from ray import serve
 from aana.core.models.audio import Audio
 from aana.core.models.time import TimeInterval
 from aana.core.models.vad import VadParams, VadSegment
-from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
 from aana.processors.vad import BinarizeVadScores, VoiceActivitySegmentation
 from aana.utils.download import download_model
@@ -208,7 +208,6 @@ class VadDeployment(BaseDeployment):
 
         return vad_segments
 
-    @test_cache
     async def asr_preprocess_vad(
         self, audio: Audio, params: VadParams | None = None
     ) -> VadOutput:

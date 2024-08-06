@@ -4,7 +4,6 @@ from aana.exceptions.core import BaseException
 __all__ = [
     "NotFoundException",
     "MediaIdAlreadyExistsException",
-    "UnfinishedVideoException",
 ]
 
 

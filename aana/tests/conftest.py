@@ -15,7 +15,6 @@ from aana.sdk import AanaSDK
 from aana.storage.op import DbType, run_alembic_migrations
 from aana.tests.utils import (
     is_gpu_available,
-    is_using_deployment_cache,
     send_api_request,
     verify_output,
 )
@@ -80,9 +79,8 @@ def create_app():
     def start_app(deployments, endpoints):
         for deployment in deployments:
             deployment_instance = deployment["instance"]
-            if not is_gpu_available() and is_using_deployment_cache():
-                # if GPU is not available and we are using deployment cache,
-                # then we don't want to request GPU resources
+            if not is_gpu_available():
+                # if GPU is not available then we don't want to request GPU resources
                 deployment_instance = deployment_instance.options(
                     ray_actor_options={"num_gpus": 0}
                 )

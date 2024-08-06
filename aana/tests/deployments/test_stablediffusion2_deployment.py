@@ -7,7 +7,6 @@ from aana.core.models.chat import Prompt
 from aana.tests.utils import (
     get_deployments_by_type,
     is_gpu_available,
-    is_using_deployment_cache,
 )
 
 
@@ -29,7 +28,7 @@ def setup_deployment(create_app, request):
 
 
 @pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
+    not is_gpu_available(),
     reason="GPU is not available",
 )
 @pytest.mark.asyncio
