@@ -11,13 +11,9 @@ class TestSettings(BaseSettings):
 
     Attributes:
         test_mode (bool): Flag indicating if the SDK is in test mode.
-        use_deployment_cache (bool): Flag indicating if the SDK should use cached deployment results for testing.
-        save_deployment_cache (bool): Flag indicating if the SDK should save deployment results to cache for testing.
     """
 
     test_mode: bool = False
-    use_deployment_cache: bool = False  # use cached deployment results for testing
-    save_deployment_cache: bool = False  # save deployment results to cache for testing
 
 
 class TaskQueueSettings(BaseSettings):

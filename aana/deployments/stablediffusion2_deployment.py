@@ -8,7 +8,7 @@ from ray import serve
 
 from aana.core.models.chat import Prompt
 from aana.core.models.types import Dtype
-from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_deployment import BaseDeployment
 
 
 class StableDiffusion2Output(TypedDict):
@@ -63,7 +63,6 @@ class StableDiffusion2Deployment(BaseDeployment):
 
         self.model.to(self.device)
 
-    @test_cache
     async def generate(self, prompt: Prompt) -> StableDiffusion2Output:
         """Runs the model on a given prompt and returns the first output.
 

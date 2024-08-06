@@ -16,7 +16,6 @@ from transformers import (
 
 from aana.core.models.base import merged_options
 from aana.core.models.sampling import SamplingParams
-from aana.deployments.base_deployment import test_cache
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
@@ -80,7 +79,6 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
         self.chat_template_name = config_obj.chat_template
 
-    @test_cache
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:

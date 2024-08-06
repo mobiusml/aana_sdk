@@ -9,11 +9,11 @@ from aana.integrations.haystack.deployment_component import AanaDeploymentCompon
 from aana.tests.deployments.test_stablediffusion2_deployment import (
     setup_deployment as setup_stablediffusion2_deployment,  # noqa: F401
 )
-from aana.tests.utils import is_gpu_available, is_using_deployment_cache
+from aana.tests.utils import is_gpu_available
 
 
 @pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
+    not is_gpu_available(),
     reason="GPU is not available",
 )
 @pytest.mark.asyncio
@@ -29,7 +29,7 @@ async def test_haystack_wrapper(setup_stablediffusion2_deployment):  # noqa: F81
 
 
 @pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
+    not is_gpu_available(),
     reason="GPU is not available",
 )
 @pytest.mark.asyncio
@@ -80,7 +80,7 @@ async def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F8
 
 
 @pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
+    not is_gpu_available(),
     reason="GPU is not available",
 )
 @pytest.mark.asyncio

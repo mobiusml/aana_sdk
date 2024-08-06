@@ -17,7 +17,7 @@ from aana.core.models.audio import Audio
 from aana.core.models.whisper import (
     WhisperParams,
 )
-from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
 
 
@@ -144,7 +144,6 @@ class WhisperDeployment(BaseDeployment):
             self.model_size, device=self.device, compute_type=self.compute_type
         )
 
-    @test_cache
     async def transcribe(
         self, audio: Audio, params: WhisperParams | None = None
     ) -> WhisperOutput:
@@ -194,7 +193,6 @@ class WhisperDeployment(BaseDeployment):
             transcription=asr_transcription,
         )
 
-    @test_cache
     async def transcribe_stream(
         self, audio: Audio, params: WhisperParams | None = None
     ) -> AsyncGenerator[WhisperOutput, None]:
@@ -242,7 +240,6 @@ class WhisperDeployment(BaseDeployment):
                     transcription=asr_transcription,
                 )
 
-    @test_cache
     async def transcribe_batch(
         self, audio_batch: list[Audio], params: WhisperParams | None = None
     ) -> WhisperBatchOutput:
@@ -278,7 +275,6 @@ class WhisperDeployment(BaseDeployment):
         )
 
     # TODO: Update once batched whisper PR is merged
-    # @test_cache
     # async def transcribe_in_chunks(
     #     self,
     #     audio: Audio,
