@@ -110,6 +110,24 @@ def create_app():
     app.shutdown()
 
 
+@pytest.fixture(scope="function")
+def setup_deployment(create_app):
+    """Start the app with provided deployment."""
+
+    def _setup_deployment(deployment_name, deployment):
+        deployments = [
+            {
+                "name": deployment_name,
+                "instance": deployment,
+            }
+        ]
+        endpoints = []
+
+        return create_app(deployments, endpoints)
+
+    return _setup_deployment
+
+
 @pytest.fixture(scope="module")
 def call_endpoint(app_setup):
     """Call an endpoint and verify the output."""

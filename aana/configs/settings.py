@@ -11,9 +11,11 @@ class TestSettings(BaseSettings):
 
     Attributes:
         test_mode (bool): Flag indicating if the SDK is in test mode.
+        save_expected_output (bool): Flag indicating if the expected output should be saved (to create test cases).
     """
 
     test_mode: bool = False
+    save_expected_output: bool = False
 
 
 class TaskQueueSettings(BaseSettings):

@@ -6,9 +6,6 @@ import pytest
 
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.integrations.haystack.deployment_component import AanaDeploymentComponent
-from aana.tests.deployments.test_stablediffusion2_deployment import (
-    setup_deployment as setup_stablediffusion2_deployment,  # noqa: F401
-)
 from aana.tests.utils import is_gpu_available
 
 
@@ -17,7 +14,7 @@ from aana.tests.utils import is_gpu_available
     reason="GPU is not available",
 )
 @pytest.mark.asyncio
-async def test_haystack_wrapper(setup_stablediffusion2_deployment):  # noqa: F811
+async def test_haystack_wrapper(setup_stablediffusion2_deployment):
     """Tests haystack wrapper for deployments."""
     deployment_name = "sd2_deployment"
     method_name = "generate"
@@ -33,7 +30,7 @@ async def test_haystack_wrapper(setup_stablediffusion2_deployment):  # noqa: F81
     reason="GPU is not available",
 )
 @pytest.mark.asyncio
-async def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F811
+async def test_haystack_pipeline(setup_stablediffusion2_deployment):
     """Tests haystack wrapper in a pipeline."""
 
     # Haystack components generally take lists of things
@@ -84,7 +81,7 @@ async def test_haystack_pipeline(setup_stablediffusion2_deployment):  # noqa: F8
     reason="GPU is not available",
 )
 @pytest.mark.asyncio
-async def test_haystack_wrapper_fails(setup_stablediffusion2_deployment):  # noqa: F811
+async def test_haystack_wrapper_fails(setup_stablediffusion2_deployment):
     """Tests that haystack wrapper raises if method_name is missing."""
     deployment_name = "sd2_deployment"
     missing_method_name = "does_not_exist"
