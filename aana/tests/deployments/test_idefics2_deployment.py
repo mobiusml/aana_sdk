@@ -50,7 +50,7 @@ async def test_idefics2_deployment_chat(setup_deployment, prompt, image_name, ex
     output = await handle.chat.remote(dialog=dialog)
     output_message = output["message"]
 
-    assert type(output_message) == ChatMessage
+    assert isinstance(output_message, ChatMessage)
     compare_texts(expected_output, output_message.content)
     assert output_message.role == "assistant"
 
@@ -73,6 +73,6 @@ async def test_idefics2_deployment_chat_batch(setup_deployment, prompt, image_na
     for output in outputs:
         output_message = output["message"]
 
-        assert type(output_message) == ChatMessage
+        assert isinstance(output_message, ChatMessage)
         compare_texts(expected_output, output_message.content)
         assert output_message.role == "assistant"
