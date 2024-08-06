@@ -1,11 +1,12 @@
 # ruff: noqa: S101
 
-from pathlib import Path
+
+from importlib import resources
 
 import pytest
 from ray import serve
 
-from aana.core.models.chat import ChatMessage, Prompt
+from aana.core.models.chat import ChatMessage
 from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
 from aana.tests.utils import (
@@ -39,12 +40,12 @@ def setup_deployment(app_setup, request):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "prompt, image_path, expected_output",
-    [("Who is the painter of the image?", "aana/tests/files/images/Starry_Night.jpeg", "Van gogh.")],
+    [("Who is the painter of the image?", "Starry_Night.jpeg", "Van gogh.")],
 )
 async def test_idefics2_deployment_chat(setup_deployment, prompt, image_path, expected_output):
     """Test Idefics 2 deployments."""
     handle = serve.get_app_handle("idefics_2_deployment")
-    image = Image(path=Path(image_path), save_on_disk=False, media_id="test_image")
+    image = Image(path=resources.path("aana.tests.files.images" ,image_path), save_on_disk=False, media_id="test_image")
     dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[image])
     output = await handle.chat.remote(dialog=dialog)
     output_message = output["message"]
@@ -61,12 +62,12 @@ async def test_idefics2_deployment_chat(setup_deployment, prompt, image_path, ex
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "prompt, image_path, expected_output",
-    [("Who is the painter of the image?", "aana/tests/files/images/Starry_Night.jpeg", "Van gogh.")],
+    [("Who is the painter of the image?", "Starry_Night.jpeg", "Van gogh.")],
 )
 async def test_idefics2_deployment_chat_batch(setup_deployment, prompt, image_path, expected_output):
     """Test Idefics 2 deployments in batch."""
     handle = serve.get_app_handle("idefics_2_deployment")
-    image = Image(path=Path(image_path), save_on_disk=False, media_id="test_image")
+    image = Image(path=resources.path("aana.tests.files.images" ,image_path), save_on_disk=False, media_id="test_image")
     dialogs = [ImageChatDialog.from_prompt(prompt=prompt, images=[image]) for _ in range(10)]
     outputs = await handle.chat_batch.remote(dialogs=dialogs)
     for output in outputs:

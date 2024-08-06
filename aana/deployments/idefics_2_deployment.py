@@ -78,11 +78,6 @@ class Idefics2Deployment(BaseDeployment):
         self.model_kwargs = config_obj.model_kwargs
         self.dtype = config_obj.dtype
         self.default_sampling_params = config_obj.default_sampling_params
-        # if self.dtype == Dtype.INT8:
-        #     load_in_8bit = True
-        #     self.torch_dtype = Dtype.FLOAT16.to_torch()
-        # else:
-        #     load_in_8bit = False
         self.torch_dtype = self.dtype.to_torch()
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -252,8 +247,7 @@ class Idefics2Deployment(BaseDeployment):
                     ChatOutput(message=ChatMessage(
                         content=text, role="assistant"))
                 )
-
-            return chat_outputs
-
         except Exception as e:
             raise InferenceException(model_name=self.model_id) from e
+        else:
+            return chat_outputs
