@@ -13,6 +13,7 @@ from transformers import (
     AutoProcessor,
     TextIteratorStreamer,
 )
+from transformers.utils.import_utils import is_flash_attn_2_available
 
 from aana.core.models.base import merged_options
 from aana.core.models.chat import ChatMessage
@@ -43,7 +44,7 @@ class Idefics2Config(BaseModel):
     Attributes:
         model (str): the model ID on HuggingFace
         dtype (str): the data type (optional, default: "auto"), one of "auto", "float32", "float16"
-        enable_flash_attention_2 (bool): enable Flash Attention 2 (optional, default: False)
+        enable_flash_attention_2 (bool): enable Flash Attention 2 (optional, default: None which check automaticaly for availability of Flash Attention on the server node)
         model_kwargs (dict): the extra model keyword arguments
         do_image_splitting (bool): do image splitting (optional, default: False)
         default_sampling_params (SamplingParams): the default sampling parameters (optional, default: {"temperature": 0, "max_tokens": 512})
@@ -51,7 +52,7 @@ class Idefics2Config(BaseModel):
 
     model: str
     model_kwargs: CustomConfig = {}
-    enable_flash_attention_2: bool = Field(default=False)
+    enable_flash_attention_2: bool | None = Field(default=None)
     do_image_splitting: bool = Field(default=False)
     dtype: Dtype = Field(default=Dtype.AUTO)
     default_sampling_params: SamplingParams = SamplingParams(
@@ -88,6 +89,9 @@ class Idefics2Deployment(BaseDeployment):
             torch_dtype=self.torch_dtype,
             device_map=self.device,
         ))
+        if config_obj.enable_flash_attention_2 == None:
+            config_obj.enable_flash_attention_2 = is_flash_attn_2_available()
+            self.model_kwargs["_attn_implementation"] = "flash_attention_2"
         if config_obj.enable_flash_attention_2:
             self.model_kwargs["_attn_implementation"] = "flash_attention_2"
         self.model = AutoModelForVision2Seq.from_pretrained(
