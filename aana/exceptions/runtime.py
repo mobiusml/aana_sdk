@@ -152,3 +152,9 @@ class HandlerNotRegisteredException(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, ())
+
+
+class EmptyMigrationsException(BaseException):
+    """Exception raised when there are no migrations to apply."""
+
+    pass

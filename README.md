@@ -57,7 +57,7 @@ Aana SDK simplifies this process by providing a framework that allows:
 - **Task Queue Support**:
   - Run every endpoint you define as a task in the background without any changes to your code.
 - **Integrations**:  
-   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](docs/pages/integrations.md)).
+   - Aana SDK has integrations with various machine learning models and libraries: Whisper, vLLM, Hugging Face Transformers, Deepset Haystack, and more to come (for more information see [Integrations](https://mobiusml.github.io/aana_sdk/pages/integrations/)).
 
 ## Installation
 
@@ -196,39 +196,13 @@ This will return the full transcription of the video, transcription for each seg
 
 ### Running Example Applications
 
-Aana SDK comes with a set of example applications that demonstrate the capabilities of the SDK. You can run the example applications using the Aana CLI.
+We provide a few example applications that demonstrate the capabilities of Aana SDK.
 
-The following applications are available:
-- `chat_with_video`: A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. See [Chat with Video Demo notebook](/notebooks/chat_with_video_demo.ipynb) for more information.
-- `whisper`: An application that demonstrates the Whisper model for automatic speech recognition (ASR).
-- `llama2`: An application that deploys LLaMa2 7B Chat model.
+- [Chat with Video](https://github.com/mobiusml/aana_chat_with_video): A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. See [Chat with Video Demo notebook](https://github.com/mobiusml/aana_chat_with_video/blob/main/notebooks/chat_with_video_demo.ipynb) to see how to use the application.
+- [Summarize Video](https://github.com/mobiusml/aana_summarize_video): An Aana application that summarizes a video by extracting transcription from the audio and generating a summary using a Language Model (LLM). This application is a part of the [tutorial](https://mobiusml.github.io/aana_sdk/pages/tutorial/) on how to build multimodal applications with Aana SDK.
 
-To run an example application, use the following command:
 
-```bash
-aana deploy aana.projects.<app_name>.app:aana_app
-```
-
-For example, to run the `whisper` application, use the following command:
-
-```bash
-aana deploy aana.projects.whisper.app:aana_app
-```
-
-> **⚠️ Warning**
->
-> The example applications require a GPU to run. 
->
-> The applications will detect the available GPU automatically but you need to make sure that `CUDA_VISIBLE_DEVICES` is set correctly.
-> 
-> Sometimes `CUDA_VISIBLE_DEVICES` is set to an empty string and the application will not be able to detect the GPU. Use `unset CUDA_VISIBLE_DEVICES` to unset the variable.
-> 
-> You can also set the `CUDA_VISIBLE_DEVICES` environment variable to the GPU index you want to use: `export CUDA_VISIBLE_DEVICES=0`.
->
-> Different applications have different requirements for the GPU memory:
-> - `chat_with_video` requires at least 48GB.
-> - `llama2` requires at least 16GB.
-> - `whisper` requires at least 4GB.
+See the README files of the applications for more information on how to install and run them.
 
 ### Main components
 
@@ -266,8 +240,8 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def initialize(self):
         """Initialize the endpoint."""
-        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
         await super().initialize()
+        self.asr_handle = await AanaDeploymentHandle.create("asr_deployment")
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         """Transcribe video."""
@@ -312,7 +286,7 @@ You can deploy example applications using Docker. See the [documentation on how 
 
 ## Documentation
 
-For more information on how to use Aana SDK, see the [documentation](docs/README.md).
+For more information on how to use Aana SDK, see the [documentation](https://mobiusml.github.io/aana_sdk/).
 
 ## License
 
@@ -322,6 +296,6 @@ Aana SDK is licensed under the [Apache License 2.0](./LICENSE). Commercial licen
 
 We welcome contributions from the community to enhance Aana SDK's functionality and usability. Feel free to open issues for bug reports, feature requests, or submit pull requests to contribute code improvements.
 
-Before contributing, please read our [Code Standards](docs/pages/code_standards.md) and [Development Documentation](docs/pages/development.md).
+Check out the [Development Documentation](https://mobiusml.github.io/aana_sdk/pages/development/) for more information on how to contribute.
 
 We have adopted the [Contributor Covenant](https://www.contributor-covenant.org/) as our code of conduct.

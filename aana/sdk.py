@@ -2,6 +2,7 @@ import importlib
 import sys
 import time
 import traceback
+from collections.abc import Callable
 from pathlib import Path
 
 import ray
@@ -15,6 +16,7 @@ from aana.api.api_generation import Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
 from aana.configs.settings import settings as aana_settings
+from aana.exceptions.runtime import EmptyMigrationsException
 from aana.storage.op import run_alembic_migrations
 from aana.utils.core import import_from_path
 
@@ -22,13 +24,15 @@ from aana.utils.core import import_from_path
 class AanaSDK:
     """Aana SDK to deploy and manage Aana deployments and endpoints."""
 
-    def __init__(self, name: str = "app"):
+    def __init__(self, name: str = "app", migration_func: Callable | None = None):
         """Aana SDK to deploy and manage Aana deployments and endpoints.
 
         Args:
             name (str, optional): The name of the application. Defaults to "app".
+            migration_func (Callable | None): The migration function to run. Defaults to None.
         """
         self.name = name
+        self.migration_func = migration_func
         self.endpoints: dict[str, Endpoint] = {}
         self.deployments: dict[str, Deployment] = {}
 
@@ -86,7 +90,16 @@ class AanaSDK:
 
     def migrate(self):
         """Run Alembic migrations."""
-        run_alembic_migrations(aana_settings)
+        if self.migration_func:
+            try:
+                self.migration_func(aana_settings)
+            except EmptyMigrationsException:
+                print(
+                    "No versions found in the custom migrations. Using default migrations."
+                )
+                run_alembic_migrations(aana_settings)
+        else:
+            run_alembic_migrations(aana_settings)
 
     def show_status(self, app_name: str):
         """Show the status of the application.
