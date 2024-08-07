@@ -28,20 +28,27 @@ def run_async(coro: asyncio.coroutine) -> Any:
             """Initialize the thread."""
             self.coro = coro
             self.result = None
+            self.exception = None
             super().__init__()
 
         def run(self):
             """Run the coroutine."""
-            self.result = asyncio.run(self.coro)
+            try:
+                self.result = asyncio.run(self.coro)
+            except Exception as e:
+                self.exception = e
 
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
         loop = None
+
     if loop and loop.is_running():
         thread = RunThread(coro)
         thread.start()
         thread.join()
+        if thread.exception:
+            raise thread.exception
         return thread.result
     else:
         return asyncio.run(coro)
