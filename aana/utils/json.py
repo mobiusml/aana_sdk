@@ -1,13 +1,11 @@
-import json
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import orjson
 from pydantic import BaseModel
 from sqlalchemy import Engine
 
-__all__ = ["jsonify", "orjson_serializer", "json_serializer_default"]
+__all__ = ["jsonify", "json_serializer_default"]
 
 
 def json_serializer_default(obj: object) -> object:
@@ -38,37 +36,24 @@ def json_serializer_default(obj: object) -> object:
         return str(obj)
     if isinstance(obj, type):
         return str(type)
-    if isinstance(obj, np.ndarray):
-        return str(orjson_serializer(obj))
-    from aana.core.models.media import Media
 
+    from aana.core.models.media import Media
     if isinstance(obj, Media):
         return str(obj)
+
     raise TypeError(type(obj))
 
 
-def jsonify(data: Any) -> str:
-    """Convert data to JSON string.
-
-    Args:
-        data (Any): the data
-
-    Returns:
-        str: the JSON string
-    """
-    return json.dumps(data, default=json_serializer_default)
-
-
-def orjson_serializer(
-    content: Any, option: int | None = orjson.OPT_SERIALIZE_NUMPY
-) -> bytes:
+def jsonify(data: Any, option: int | None = orjson.OPT_SERIALIZE_NUMPY, as_bytes: bool = False) -> str | bytes:
     """Serialize content using orjson.
 
     Args:
-        content (Any): The content to serialize.
+        data (Any): The content to serialize.
         option (int | None): The option for orjson.dumps.
+        as_bytes (bool): Return output as bytes instead of string
 
     Returns:
-        bytes: The serialized content.
+        bytes | str: The serialized data as desired format.
     """
-    return orjson.dumps(content, option=option, default=json_serializer_default)
+    output = orjson.dumps(data, option=option, default=json_serializer_default)
+    return output if as_bytes else output.decode()

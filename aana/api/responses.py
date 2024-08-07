@@ -3,7 +3,7 @@ from typing import Any
 import orjson
 from fastapi.responses import JSONResponse
 
-from aana.utils.json import orjson_serializer
+from aana.utils.json import jsonify
 
 
 class AanaJSONResponse(JSONResponse):
@@ -22,4 +22,4 @@ class AanaJSONResponse(JSONResponse):
 
     def render(self, content: Any) -> bytes:
         """Override the render method to use orjson.dumps instead of json.dumps."""
-        return orjson_serializer(content, option=self.option)
+        return jsonify(content, option=self.option, as_bytes=True)
