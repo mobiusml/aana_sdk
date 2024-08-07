@@ -24,7 +24,7 @@ from typing_extensions import Self
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import MediaId
 
-__all__ = ["VideoMetadata", "VideoStatus", "VideoParams"]
+__all__ = ["VideoMetadata", "VideoParams"]
 
 
 @dataclass
