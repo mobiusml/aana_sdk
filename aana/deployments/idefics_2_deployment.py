@@ -89,7 +89,7 @@ class Idefics2Deployment(BaseDeployment):
             torch_dtype=self.torch_dtype,
             device_map=self.device,
         ))
-        if config_obj.enable_flash_attention_2 == None:
+
         if config_obj.enable_flash_attention_2 is None:
             config_obj.enable_flash_attention_2 = is_flash_attn_2_available()
         if config_obj.enable_flash_attention_2:
