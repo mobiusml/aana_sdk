@@ -110,7 +110,7 @@ def create_app():
     app.shutdown()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def setup_deployment(create_app):
     """Start the app with provided deployment."""
 

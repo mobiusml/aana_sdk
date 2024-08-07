@@ -1,90 +1,125 @@
 # ruff: noqa: S101
+from typing import Any, TypedDict
+
 import haystack
 import haystack.components.preprocessors
-import PIL
+import numpy as np
 import pytest
+from haystack import Document
+from haystack.components.preprocessors import TextCleaner
+from ray import serve
 
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.deployments.base_deployment import BaseDeployment
 from aana.integrations.haystack.deployment_component import AanaDeploymentComponent
-from aana.tests.utils import is_gpu_available
 
 
-@pytest.mark.skipif(
-    not is_gpu_available(),
-    reason="GPU is not available",
-)
+class DummyEmbedderOutput(TypedDict):
+    """Output of the dummy embedder."""
+
+    embeddings: np.ndarray
+
+
+@serve.deployment
+class DummyEmbedder(BaseDeployment):
+    """Simple deployment to store video data."""
+
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration to the deployment and initialize it."""
+        pass
+
+    async def embed(self, texts: list[str]) -> DummyEmbedderOutput:
+        """Generate a dummy embedding for the texts."""
+        return {"embeddings": np.random.default_rng().random((len(texts), 8))}
+
+    async def embed_fail(self, texts: list[str]) -> DummyEmbedderOutput:
+        """Fail to generate a dummy embedding for the texts."""
+        raise Exception("Dummy exception")  # noqa: TRY002, TRY003
+
+
+@pytest.fixture(scope="module")
+def setup_dummy_embedder_deployment(setup_deployment):
+    """Set up the dummy embedder deployment."""
+    deployment_name = "dummy_embedder"
+    deployment = DummyEmbedder.options(num_replicas=1, user_config={})
+    return deployment_name, setup_deployment(deployment_name, deployment)
+
+
 @pytest.mark.asyncio
-async def test_haystack_wrapper(setup_stablediffusion2_deployment):
+async def test_haystack_wrapper(setup_dummy_embedder_deployment):
     """Tests haystack wrapper for deployments."""
-    deployment_name = "sd2_deployment"
-    method_name = "generate"
-    result_key = "image"
+    deployment_name, _ = setup_dummy_embedder_deployment
     deployment_handle = await AanaDeploymentHandle.create(deployment_name)
-    component = AanaDeploymentComponent(deployment_handle, method_name)
-    result = component.run(prompt="foo")
-    assert result_key in result, result
+    component = AanaDeploymentComponent(deployment_handle, "embed")
+    result = component.run(texts=["Hello, world!", "Roses are red", "Violets are blue"])
+    print(result)
+    assert "embeddings" in result
+    assert isinstance(result["embeddings"], np.ndarray)
+    assert result["embeddings"].shape == (3, 8)
 
 
-@pytest.mark.skipif(
-    not is_gpu_available(),
-    reason="GPU is not available",
-)
 @pytest.mark.asyncio
-async def test_haystack_pipeline(setup_stablediffusion2_deployment):
+async def test_haystack_pipeline(setup_dummy_embedder_deployment):
     """Tests haystack wrapper in a pipeline."""
+    deployment_name, _ = setup_dummy_embedder_deployment
 
-    # Haystack components generally take lists of things
-    # so we need a component to turn a list of strings into a single string
     @haystack.component
-    class TextCombinerComponent:
-        @haystack.component.output_types(text=str)
-        def run(self, texts: list[str]):
-            return {"text": " ".join(texts)}
+    class DocumentCombinerComponent:
+        @haystack.component.output_types(documents=list[Document])
+        def run(self, texts: list[str], embeddings: np.ndarray):
+            documents = [
+                Document(content=text, embedding=embedding)
+                for text, embedding in zip(texts, embeddings, strict=True)
+            ]
+            return {"documents": documents}
 
-    # Haystack also doesn't have any simple components that
-    # take images as inputs, so let's have one of those as well
-    @haystack.component
-    class ImageSizeComponent:
-        @haystack.component.output_types(size=tuple[int, int])
-        def run(self, image: PIL.Image.Image):
-            return {"size": image.size}
+    embedder_handle = await AanaDeploymentHandle.create(deployment_name)
+    embedder = AanaDeploymentComponent(embedder_handle, "embed")
 
-    deployment_name = "sd2_deployment"
-    method_name = "generate"
-    # result_key = "image"
-    deployment_handle = await AanaDeploymentHandle.create(deployment_name)
-    aana_component = AanaDeploymentComponent(deployment_handle, method_name)
-    aana_component.warm_up()
-    text_cleaner = haystack.components.preprocessors.TextCleaner(
+    text_cleaner = TextCleaner(
         convert_to_lowercase=False, remove_punctuation=True, remove_numbers=True
     )
-    text_combiner = TextCombinerComponent()
-    image_sizer = ImageSizeComponent()
+
+    document_combiner = DocumentCombinerComponent()
 
     pipeline = haystack.Pipeline()
-    pipeline.add_component("stablediffusion2", aana_component)
     pipeline.add_component("text_cleaner", text_cleaner)
-    pipeline.add_component("text_combiner", text_combiner)
-    pipeline.add_component("image_sizer", image_sizer)
-    pipeline.connect("text_cleaner.texts", "text_combiner.texts")
-    pipeline.connect("text_combiner.text", "stablediffusion2.prompt")
-    pipeline.connect("stablediffusion2.image", "image_sizer.image")
-    result = pipeline.run({"text_cleaner": {"texts": ["A? dog!"]}})
+    pipeline.add_component("dummy_embedder", embedder)
+    pipeline.add_component("document_combiner", document_combiner)
+    pipeline.connect("text_cleaner.texts", "dummy_embedder.texts")
+    pipeline.connect("dummy_embedder.embeddings", "document_combiner.embeddings")
+    pipeline.connect("text_cleaner.texts", "document_combiner.texts")
 
-    assert "image_sizer" in result
-    assert "size" in result["image_sizer"]
-    assert len(result["image_sizer"]["size"]) == 2
+    texts = ["Hello, world!", "Roses are red", "Violets are blue"]
+
+    output = pipeline.run({"text_cleaner": {"texts": texts}})
+    # {'document_combiner':
+    #   {'documents':
+    #       [Document(id=489009ee9ce0fd7f2aa38658ff7885fe8c2ea70fab5a711b14ee9d5eb65b2843, content: 'Hello world', embedding: vector of size 8),
+    #        Document(id=489009ee9ce0fd7f2aa38658ff7885fe8c2ea70fab5a711b14ee9d5eb65b2843, content: 'Roses red', embedding: vector of size 8),
+    #        Document(id=489009ee9ce0fd7f2aa38658ff7885fe8c2ea70fab5a711b14ee9d5eb65b2843, content: 'Violets blue', embedding: vector of size 8)
+    #       ]
+    #   }
+    # }
+
+    assert "document_combiner" in output
+    assert "documents" in output["document_combiner"]
+    assert len(output["document_combiner"]["documents"]) == 3
+    assert all(
+        isinstance(doc, Document) for doc in output["document_combiner"]["documents"]
+    )
 
 
-@pytest.mark.skipif(
-    not is_gpu_available(),
-    reason="GPU is not available",
-)
 @pytest.mark.asyncio
-async def test_haystack_wrapper_fails(setup_stablediffusion2_deployment):
+async def test_haystack_wrapper_fails(setup_dummy_embedder_deployment):
     """Tests that haystack wrapper raises if method_name is missing."""
-    deployment_name = "sd2_deployment"
+    deployment_name, _ = setup_dummy_embedder_deployment
     missing_method_name = "does_not_exist"
     deployment_handle = await AanaDeploymentHandle.create(deployment_name)
     with pytest.raises(AttributeError):
-        _component = AanaDeploymentComponent(deployment_handle, missing_method_name)
+        AanaDeploymentComponent(deployment_handle, missing_method_name)
+
+    failing_method_name = "embed_fail"
+    component = AanaDeploymentComponent(deployment_handle, failing_method_name)
+    with pytest.raises(Exception):  # noqa: B017
+        component.run(texts=["Hello, world!", "Roses are red", "Violets are blue"])
