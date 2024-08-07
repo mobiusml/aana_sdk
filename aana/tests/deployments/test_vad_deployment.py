@@ -35,30 +35,30 @@ deployments = [
 
 
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
-@pytest.mark.asyncio
-@pytest.mark.parametrize("deployment_name, deployment", deployments)
-@pytest.mark.parametrize("audio_file", ["physicsworks.wav", "squirrel.wav"])
-async def test_vad_deployment(
-    setup_deployment, deployment_name, deployment, audio_file
-):
+@pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
+class TestVadDeployment:
     """Test VAD deployment."""
-    setup_deployment(deployment_name, deployment)
 
-    handle = await AanaDeploymentHandle.create(deployment_name)
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("audio_file", ["physicsworks.wav", "squirrel.wav"])
+    async def test_vad(self, setup_deployment, audio_file):
+        """Test VAD."""
+        deployment_name, handle_name, _ = setup_deployment
 
-    audio_file_name = Path(audio_file).stem
-    expected_output_path = (
-        resources.path("aana.tests.files.expected", "")
-        / "vad"
-        / f"{audio_file_name}.json"
-    )
+        handle = await AanaDeploymentHandle.create(handle_name)
 
-    # asr_preprocess_vad method to test
-    path = resources.path("aana.tests.files.audios", audio_file)
-    assert path.exists(), f"Audio not found: {path}"
+        audio_file_name = Path(audio_file).stem
+        expected_output_path = (
+            resources.path("aana.tests.files.expected", "")
+            / "vad"
+            / f"{audio_file_name}.json"
+        )
 
-    audio = Audio(path=path)
+        path = resources.path("aana.tests.files.audios", audio_file)
+        assert path.exists(), f"Audio not found: {path}"
 
-    output = await handle.asr_preprocess_vad(audio=audio, params=VadParams())
-    output = pydantic_to_dict(output)
-    verify_deployment_results(expected_output_path, output)
+        audio = Audio(path=path)
+
+        output = await handle.asr_preprocess_vad(audio=audio, params=VadParams())
+        output = pydantic_to_dict(output)
+        verify_deployment_results(expected_output_path, output)

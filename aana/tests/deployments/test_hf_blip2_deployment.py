@@ -31,35 +31,36 @@ deployments = [
 
 
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
-@pytest.mark.asyncio
-@pytest.mark.parametrize("deployment_name, deployment", deployments)
-@pytest.mark.parametrize("image_name", ["Starry_Night.jpeg"])
-async def test_hf_blip2_deployments(
-    setup_deployment, deployment_name, deployment, image_name
-):
-    """Test HuggingFace BLIP2 deployments."""
-    setup_deployment(deployment_name, deployment)
+@pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
+class TestHFBlip2Deployment:
+    """Test HuggingFace BLIP2 deployment."""
 
-    handle = await AanaDeploymentHandle.create(deployment_name)
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("image_name", ["Starry_Night.jpeg"])
+    async def test_methods(self, setup_deployment, image_name):
+        """Test HuggingFace BLIP2 methods."""
+        deployment_name, handle_name, _ = setup_deployment
 
-    expected_output_path = (
-        resources.path("aana.tests.files.expected", "")
-        / "hf_blip2"
-        / f"{deployment_name}_{image_name}.json"
-    )
+        handle = await AanaDeploymentHandle.create(handle_name)
 
-    path = resources.path("aana.tests.files.images", image_name)
-    image = Image(path=path, save_on_disk=False, media_id=image_name)
+        expected_output_path = (
+            resources.path("aana.tests.files.expected", "")
+            / "hf_blip2"
+            / f"{deployment_name}_{image_name}.json"
+        )
 
-    output = await handle.generate(image=image)
-    caption = output["caption"]
-    verify_deployment_results(expected_output_path, caption)
+        path = resources.path("aana.tests.files.images", image_name)
+        image = Image(path=path, save_on_disk=False, media_id=image_name)
 
-    images = [image] * 8
-
-    output = await handle.generate_batch(images=images)
-    captions = output["captions"]
-
-    assert len(captions) == 8
-    for caption in captions:
+        output = await handle.generate(image=image)
+        caption = output["caption"]
         verify_deployment_results(expected_output_path, caption)
+
+        images = [image] * 8
+
+        output = await handle.generate_batch(images=images)
+        captions = output["captions"]
+
+        assert len(captions) == 8
+        for caption in captions:
+            verify_deployment_results(expected_output_path, caption)

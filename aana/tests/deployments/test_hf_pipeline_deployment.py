@@ -35,36 +35,37 @@ deployments = [
 
 
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
-@pytest.mark.asyncio
-@pytest.mark.parametrize("deployment_name, deployment", deployments)
-@pytest.mark.parametrize("image_name", ["Starry_Night.jpeg"])
-async def test_hf_pipeline_deployments(
-    setup_deployment, deployment_name, deployment, image_name
-):
-    """Test HuggingFace Pipeline deployments."""
-    setup_deployment(deployment_name, deployment)
+@pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
+class TestHFPipelineDeployment:
+    """Test HuggingFace Pipeline deployment."""
 
-    handle = await AanaDeploymentHandle.create(deployment_name)
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("image_name", ["Starry_Night.jpeg"])
+    async def test_call(self, setup_deployment, image_name):
+        """Test call method."""
+        deployment_name, handle_name, _ = setup_deployment
 
-    expected_output_path = (
-        resources.path("aana.tests.files.expected", "")
-        / "hf_pipeline"
-        / f"{deployment_name}_{image_name}.json"
-    )
-    path = resources.path("aana.tests.files.images", image_name)
-    image = Image(path=path, save_on_disk=False, media_id=image_name)
+        handle = await AanaDeploymentHandle.create(handle_name)
 
-    output = await handle.call(images=image)
-    verify_deployment_results(expected_output_path, output)
+        expected_output_path = (
+            resources.path("aana.tests.files.expected", "")
+            / "hf_pipeline"
+            / f"{deployment_name}_{image_name}.json"
+        )
+        path = resources.path("aana.tests.files.images", image_name)
+        image = Image(path=path, save_on_disk=False, media_id=image_name)
 
-    output = await handle.call(image)
-    verify_deployment_results(expected_output_path, output)
+        output = await handle.call(images=image)
+        verify_deployment_results(expected_output_path, output)
 
-    output = await handle.call(images=[str(path)])
-    verify_deployment_results(expected_output_path, [output])
+        output = await handle.call(image)
+        verify_deployment_results(expected_output_path, output)
 
-    output = await handle.call(images=[image])
-    verify_deployment_results(expected_output_path, [output])
+        output = await handle.call(images=[str(path)])
+        verify_deployment_results(expected_output_path, [output])
 
-    output = await handle.call([image])
-    verify_deployment_results(expected_output_path, [output])
+        output = await handle.call(images=[image])
+        verify_deployment_results(expected_output_path, [output])
+
+        output = await handle.call([image])
+        verify_deployment_results(expected_output_path, [output])

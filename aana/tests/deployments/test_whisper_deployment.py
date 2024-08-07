@@ -36,50 +36,51 @@ deployments = [
 
 
 @pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
-@pytest.mark.asyncio
-@pytest.mark.parametrize("deployment_name, deployment", deployments)
-@pytest.mark.parametrize("audio_file", ["squirrel.wav", "physicsworks.wav"])
-async def test_whisper_deployment(
-    setup_deployment, deployment_name, deployment, audio_file
-):
-    """Test whisper deployment."""
-    setup_deployment(deployment_name, deployment)
+@pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
+class TestWhisperDeployment:
+    """Test Whisper deployment."""
 
-    handle = await AanaDeploymentHandle.create(deployment_name)
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("audio_file", ["squirrel.wav", "physicsworks.wav"])
+    async def test_transcribe(self, setup_deployment, audio_file):
+        """Test transcribe methods."""
+        deployment_name, handle_name, _ = setup_deployment
 
-    expected_output_path = (
-        resources.path("aana.tests.files.expected", "")
-        / "whisper"
-        / f"{deployment_name}_{audio_file}.json"
-    )
+        handle = await AanaDeploymentHandle.create(handle_name)
 
-    # Test transcribe method
-    path = resources.path("aana.tests.files.audios", audio_file)
-    assert path.exists(), f"Audio not found: {path}"
-    audio = Audio(path=path, media_id=audio_file)
+        expected_output_path = (
+            resources.path("aana.tests.files.expected", "")
+            / "whisper"
+            / f"{deployment_name}_{audio_file}.json"
+        )
 
-    output = await handle.transcribe(
-        audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
-    )
-    verify_deployment_results(expected_output_path, output)
+        # Test transcribe method
+        path = resources.path("aana.tests.files.audios", audio_file)
+        assert path.exists(), f"Audio not found: {path}"
+        audio = Audio(path=path, media_id=audio_file)
 
-    # Test transcribe_stream method
-    stream = handle.transcribe_stream(
-        audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
-    )
+        output = await handle.transcribe(
+            audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
+        )
+        verify_deployment_results(expected_output_path, output)
 
-    # Combine individual segments and compare with the final dict
-    grouped_dict = defaultdict(list)
-    transcript = ""
-    async for chunk in stream:
-        output = pydantic_to_dict(chunk)
-        transcript += output["transcription"]["text"]
-        grouped_dict["segments"].extend(output.get("segments", []))
+        # Test transcribe_stream method
+        stream = handle.transcribe_stream(
+            audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
+        )
 
-    grouped_dict["transcription"] = {"text": transcript}
-    grouped_dict["transcription_info"] = output.get("transcription_info")
+        # Combine individual segments and compare with the final dict
+        grouped_dict = defaultdict(list)
+        transcript = ""
+        async for chunk in stream:
+            output = pydantic_to_dict(chunk)
+            transcript += output["transcription"]["text"]
+            grouped_dict["segments"].extend(output.get("segments", []))
 
-    verify_deployment_results(expected_output_path, grouped_dict)
+        grouped_dict["transcription"] = {"text": transcript}
+        grouped_dict["transcription_info"] = output.get("transcription_info")
+
+        verify_deployment_results(expected_output_path, grouped_dict)
 
     # Test transcribe_batch method
 
