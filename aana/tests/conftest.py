@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+import portpicker
 import pytest
 from pytest_postgresql import factories
 from sqlalchemy.orm import Session
@@ -45,7 +46,7 @@ def app_factory():
 
         # Import and start the app
         app = import_from(app_module, app_name)
-        app.connect(port=8000, show_logs=True, num_cpus=10)
+        app.connect(port=portpicker.pick_unused_port(), show_logs=True, num_cpus=10)
         app.migrate()
         app.deploy()
 
@@ -73,7 +74,7 @@ def create_app():
 
     app = AanaSDK()
     app.connect(
-        port=8000, show_logs=True, num_cpus=10
+        port=portpicker.pick_unused_port(), show_logs=True, num_cpus=10
     )  # pretend we have 10 cpus for testing
 
     def start_app(deployments, endpoints):
@@ -110,22 +111,25 @@ def create_app():
     app.shutdown()
 
 
-@pytest.fixture(scope="module")
-def setup_deployment(create_app):
+@pytest.fixture(scope="class")
+def setup_deployment(create_app, request):
     """Start the app with provided deployment."""
+    deployment_name = request.param[0]
+    deployment = request.param[1]
 
-    def _setup_deployment(deployment_name, deployment):
-        deployments = [
-            {
-                "name": deployment_name,
-                "instance": deployment,
-            }
-        ]
-        endpoints = []
+    # keep it the same for all tests so the deployment is replaced
+    # when the fixture is called again
+    handle_name = "test_deployment"
 
-        return create_app(deployments, endpoints)
+    deployments = [
+        {
+            "name": handle_name,
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
 
-    return _setup_deployment
+    return deployment_name, handle_name, create_app(deployments, endpoints)
 
 
 @pytest.fixture(scope="module")
