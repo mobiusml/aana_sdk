@@ -158,3 +158,21 @@ class EmptyMigrationsException(BaseException):
     """Exception raised when there are no migrations to apply."""
 
     pass
+
+
+class DeploymentException(Exception):
+    """Base exception for deployment errors."""
+
+    pass
+
+
+class InsufficientResources(DeploymentException):
+    """Exception raised when there are insufficient resources for a deployment."""
+
+    pass
+
+
+class FailedDeployment(DeploymentException):
+    """Exception raised when there is an error during deployment."""
+
+    pass
