@@ -90,8 +90,8 @@ class Idefics2Deployment(BaseDeployment):
             device_map=self.device,
         ))
         if config_obj.enable_flash_attention_2 == None:
+        if config_obj.enable_flash_attention_2 is None:
             config_obj.enable_flash_attention_2 = is_flash_attn_2_available()
-            self.model_kwargs["_attn_implementation"] = "flash_attention_2"
         if config_obj.enable_flash_attention_2:
             self.model_kwargs["_attn_implementation"] = "flash_attention_2"
         self.model = AutoModelForVision2Seq.from_pretrained(
