@@ -1,0 +1,257 @@
+import asyncio
+from collections.abc import AsyncGenerator
+from queue import Empty
+from threading import Thread
+from typing import Any
+
+import torch
+import transformers
+from pydantic import BaseModel, Field
+from ray import serve
+from transformers import (
+    AutoModelForVision2Seq,
+    AutoProcessor,
+    TextIteratorStreamer,
+)
+from transformers.utils.import_utils import is_flash_attn_2_available
+
+from aana.core.models.base import merged_options
+from aana.core.models.chat import ChatMessage
+from aana.core.models.custom_config import CustomConfig
+from aana.core.models.image_chat import ImageChatDialog
+from aana.core.models.sampling import SamplingParams
+from aana.core.models.types import Dtype
+from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_text_generation_deployment import ChatOutput, LLMOutput
+from aana.exceptions.runtime import InferenceException
+
+
+async def async_streamer_adapter(streamer):
+    """Adapt the TextIteratorStreamer to an async generator."""
+    while True:
+        try:
+            for item in streamer:
+                yield item
+            break
+        except Empty:
+            # wait for the next item
+            await asyncio.sleep(0.01)
+
+
+class Idefics2Config(BaseModel):
+    """The configuration for the Idefics 2 model.
+
+    Attributes:
+        model (str): the model ID on HuggingFace
+        dtype (str): the data type (optional, default: "auto"), one of "auto", "float32", "float16"
+        enable_flash_attention_2 (bool): enable Flash Attention 2 (optional, default: None which check automaticaly for availability of Flash Attention on the server node)
+        model_kwargs (dict): the extra model keyword arguments
+        do_image_splitting (bool): do image splitting (optional, default: False)
+        default_sampling_params (SamplingParams): the default sampling parameters (optional, default: {"temperature": 0, "max_tokens": 512})
+    """
+
+    model: str
+    model_kwargs: CustomConfig = {}
+    enable_flash_attention_2: bool | None = Field(default=None)
+    do_image_splitting: bool = Field(default=False)
+    dtype: Dtype = Field(default=Dtype.AUTO)
+    default_sampling_params: SamplingParams = SamplingParams(
+        temperature=1.0, max_tokens=256
+    )
+
+
+@serve.deployment
+class Idefics2Deployment(BaseDeployment):
+    """Deployment to serve the Idefics 2 model."""
+
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
+
+        The method is called when the deployment is created or updated.
+
+        It loads the model and processor from HuggingFace.
+
+        The configuration should conform to the Idefics2Config schema.
+        """
+        config_obj = Idefics2Config(**config)
+
+        self.model_id = config_obj.model
+        self.model_kwargs = config_obj.model_kwargs
+        self.dtype = config_obj.dtype
+        self.default_sampling_params = config_obj.default_sampling_params
+        self.torch_dtype = self.dtype.to_torch()
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        self.processor = AutoProcessor.from_pretrained(
+            self.model_id, do_image_splitting=config_obj.do_image_splitting
+        )
+        self.model_kwargs.update(dict(
+            torch_dtype=self.torch_dtype,
+            device_map=self.device,
+        ))
+
+        if config_obj.enable_flash_attention_2 is None:
+            config_obj.enable_flash_attention_2 = is_flash_attn_2_available()
+        if config_obj.enable_flash_attention_2:
+            self.model_kwargs["_attn_implementation"] = "flash_attention_2"
+        self.model = AutoModelForVision2Seq.from_pretrained(
+            self.model_id, **self.model_kwargs
+        )
+
+    @test_cache
+    async def chat_stream(
+        self, dialog: ImageChatDialog, sampling_params: SamplingParams | None = None
+    ) -> AsyncGenerator[LLMOutput, None]:
+        """Chat with the vision model and stream the results.
+
+        Args:
+            dialog (ImageChatDialog): the dialog with images
+            sampling_params (SamplingParams | None): the sampling parameters
+
+        Yields:
+            LLMOutput: the dictionary with the key "text" and the chunk of generated text as the value
+        """
+        # Set the seed to make the results reproducible
+        transformers.set_seed(42)
+
+        if sampling_params is None:
+            sampling_params = SamplingParams()
+        sampling_params = merged_options(
+            self.default_sampling_params, sampling_params)
+
+        messages, images = dialog.to_objects()
+        text = self.processor.apply_chat_template(
+            messages, add_generation_prompt=True)
+        inputs = self.processor(
+            images=[img.get_pil_image() for img in images],
+            text=text,
+            return_tensors="pt",
+        ).to(self.device)
+
+        try:
+            with torch.no_grad():
+                streamer = TextIteratorStreamer(
+                    self.processor.tokenizer,
+                    timeout=0,
+                    skip_prompt=True,
+                    skip_special_tokens=True,
+                )
+                generation_kwargs = dict(
+                    **inputs,
+                    streamer=streamer,
+                    max_new_tokens=sampling_params.max_tokens,
+                    top_k=sampling_params.top_k,
+                    top_p=sampling_params.top_p,
+                    temperature=sampling_params.temperature,
+                    num_return_sequences=1,
+                    eos_token_id=self.processor.tokenizer.eos_token_id,
+                )
+                if sampling_params.temperature == 0:
+                    generation_kwargs["do_sample"] = False
+                    generation_kwargs["temperature"] = None
+                generation_thread = Thread(
+                    target=self.model.generate, kwargs=generation_kwargs
+                )
+                generation_thread.start()
+
+                async_streamer = async_streamer_adapter(streamer)
+                async for new_text in async_streamer:
+                    yield LLMOutput(text=new_text)
+
+                # clean up
+                inputs.to("cpu")
+                del streamer
+                del inputs
+        except Exception as e:
+            raise InferenceException(model_name=self.model_id) from e
+
+    async def chat(
+        self, dialog: ImageChatDialog, sampling_params: SamplingParams | None = None
+    ) -> ChatOutput:
+        """Chat with the vision model.
+
+        Args:
+            dialog (ImageChatDialog): the dialog with images
+            sampling_params (SamplingParams | None): the sampling parameters
+
+        Returns:
+            ChatOutput: the chat output with the message
+        """
+        text = ""
+        async for chunk in self.chat_stream(dialog, sampling_params):
+            text += chunk["text"]
+
+        return ChatOutput(message=ChatMessage(content=text, role="assistant"))
+
+    @test_cache
+    async def chat_batch(
+        self,
+        dialogs: list[ImageChatDialog],
+        sampling_params: SamplingParams | None = None,
+    ) -> list[ChatOutput]:
+        """Chat with the vision model in batch mode.
+
+        Args:
+            dialogs (list[ImageChatDialog]): the list of dialogs with images
+            sampling_params (SamplingParams | None): the sampling parameters
+
+        Returns:
+            list[ChatOutput]: the list of chat outputs with the messages
+        """
+        # Set the seed to make the results reproducible
+        transformers.set_seed(42)
+
+        if sampling_params is None:
+            sampling_params = SamplingParams()
+        sampling_params = merged_options(
+            self.default_sampling_params, sampling_params)
+
+        text_batch = []
+        image_batch = []
+        for dialog in dialogs:
+            messages, images = dialog.to_objects()
+            text = self.processor.apply_chat_template(
+                messages, add_generation_prompt=True
+            )
+            text_batch.append(text)
+            image_batch.append([img.get_pil_image() for img in images])
+
+        inputs = self.processor(
+            images=image_batch,
+            text=text_batch,
+            return_tensors="pt",
+            padding=True,
+        ).to(self.device)
+
+        try:
+            generation_kwargs = dict(
+                **inputs,
+                max_new_tokens=sampling_params.max_tokens,
+                top_k=sampling_params.top_k,
+                top_p=sampling_params.top_p,
+                temperature=sampling_params.temperature,
+                num_return_sequences=1,
+                eos_token_id=self.processor.tokenizer.eos_token_id,
+            )
+            if sampling_params.temperature == 0:
+                generation_kwargs["do_sample"] = False
+                generation_kwargs["temperature"] = None
+
+            generated_texts = self.model.generate(**generation_kwargs)
+            generated_texts = self.processor.batch_decode(
+                generated_texts, skip_special_tokens=True
+            )
+
+            chat_outputs = []
+            for text in generated_texts:
+                # Remove the prompt from the generated text
+                # TODO: find a better way to remove the prompt, it will not work for other prompt formats
+                text = text.split("Assistant:")[1].strip()
+                chat_outputs.append(
+                    ChatOutput(message=ChatMessage(
+                        content=text, role="assistant"))
+                )
+        except Exception as e:
+            raise InferenceException(model_name=self.model_id) from e
+        else:
+            return chat_outputs
