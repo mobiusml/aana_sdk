@@ -27,7 +27,7 @@ def create_postgresql_engine(config):
     Returns:
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
     """
-    connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}"
+    connection_string = f"postgresql+psycopg://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}"
     return create_engine(
         connection_string,
         json_serializer=lambda obj: orjson_serializer(obj).decode(),
