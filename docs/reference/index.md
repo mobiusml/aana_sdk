@@ -20,6 +20,7 @@ This section contains the reference documentation for the public API of the proj
 - [Automatic Speech Recognition (ASR) Models](./models/asr.md) - Models for working with automatic speech recognition (ASR) models.
 - [Caption Models](./models/captions.md) - Models for working with captions.
 - [Chat Models](./models/chat.md) - Models for working with chat models.
+- [Image Chat Models](./models/image_chat.md) - Models for working with visual-text content for visual-language models.
 - [Custom Config](./models/custom_config.md) - Custom Config model can be used to pass arbitrary configuration to the deployment.
 - [Sampling Models](./models/sampling.md) - Contains Sampling Parameters model which can be used to pass sampling parameters to the LLM models.
 - [Time Models](./models/time.md) - Contains time models like TimeInterval.

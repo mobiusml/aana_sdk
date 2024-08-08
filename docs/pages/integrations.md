@@ -42,6 +42,28 @@ VLLMDeployment.options(
 )
 ```
 
+## Idefics2
+
+Idefics 2 deployment allows you to serve the [Idefics 2 models](https://huggingface.co/docs/transformers/main/en/model_doc/idefics2) using the [Hugging Face Transformers](https://huggingface.co/transformers/) library. Idefics 2 is a vision-language model (VLM) that can answer questions about images, describe visual content, create stories grounded on multiple images, or simply behave as a pure language model without visual inputs.
+
+Idefics 2 deployment also supports using `Flash Attention 2` to boost the efficiency of the transformer model. You can set the value to `True` or leave it to `None`, so the deployment will check the availability of the `Flash Attention 2` on the server node, automatically.
+
+See [Idefics2Deployment](./../reference/deployments.md#aana.deployments.Idefics2Deployment) to learn more about the deployment capabilities.
+
+```python
+from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
+
+Idefics2Deployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.85},
+    user_config=Idefics2Config(
+        model="HuggingFaceM4/idefics2-8b",
+        dtype=Dtype.FLOAT16,
+        enable_flash_attention_2=True,
+    ).model_dump(mode="json"),
+)
+```
+
 ## Hugging Face Transformers
 
 Hugging Face Pipeline deployment allows you to serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models). It is a wrapper for [Hugging Face Pipelines](https://huggingface.co/transformers/main_classes/pipelines.html) so you can deploy and scale *almost* any model from the Hugging Face Hub with a few lines of code.

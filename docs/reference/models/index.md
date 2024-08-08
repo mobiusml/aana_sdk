@@ -43,6 +43,10 @@ Models for working with captions. These models represent the output of image cap
 
 Models for working with chat models. These models represent the input and output of chat models and models for OpenAI-compatible API.
 
+## [Image Chat Models](./image_chat.md)
+
+Models for working with visual chat models. These models represent the input of chat models containing text and image input for describing visual content of vision-language model (VLM).
+
 ## [Custom Config](./custom_config.md)
 
 Custom Config model can be used to pass arbitrary configuration to the deployment.

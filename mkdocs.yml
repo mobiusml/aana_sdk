@@ -124,6 +124,7 @@ nav:
       - reference/models/asr.md
       - reference/models/captions.md
       - reference/models/chat.md
+      - reference/models/image_chat.md
       - reference/models/custom_config.md
       - reference/models/sampling.md
       - reference/models/time.md
