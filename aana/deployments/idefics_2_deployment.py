@@ -21,7 +21,7 @@ from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image_chat import ImageChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
-from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_deployment import BaseDeployment
 from aana.deployments.base_text_generation_deployment import ChatOutput, LLMOutput
 from aana.exceptions.runtime import InferenceException
 
@@ -85,10 +85,12 @@ class Idefics2Deployment(BaseDeployment):
         self.processor = AutoProcessor.from_pretrained(
             self.model_id, do_image_splitting=config_obj.do_image_splitting
         )
-        self.model_kwargs.update(dict(
-            torch_dtype=self.torch_dtype,
-            device_map=self.device,
-        ))
+        self.model_kwargs.update(
+            dict(
+                torch_dtype=self.torch_dtype,
+                device_map=self.device,
+            )
+        )
 
         if config_obj.enable_flash_attention_2 is None:
             config_obj.enable_flash_attention_2 = is_flash_attn_2_available()
@@ -98,7 +100,6 @@ class Idefics2Deployment(BaseDeployment):
             self.model_id, **self.model_kwargs
         )
 
-    @test_cache
     async def chat_stream(
         self, dialog: ImageChatDialog, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:
@@ -116,12 +117,10 @@ class Idefics2Deployment(BaseDeployment):
 
         if sampling_params is None:
             sampling_params = SamplingParams()
-        sampling_params = merged_options(
-            self.default_sampling_params, sampling_params)
+        sampling_params = merged_options(self.default_sampling_params, sampling_params)
 
         messages, images = dialog.to_objects()
-        text = self.processor.apply_chat_template(
-            messages, add_generation_prompt=True)
+        text = self.processor.apply_chat_template(messages, add_generation_prompt=True)
         inputs = self.processor(
             images=[img.get_pil_image() for img in images],
             text=text,
@@ -183,7 +182,6 @@ class Idefics2Deployment(BaseDeployment):
 
         return ChatOutput(message=ChatMessage(content=text, role="assistant"))
 
-    @test_cache
     async def chat_batch(
         self,
         dialogs: list[ImageChatDialog],
@@ -203,8 +201,7 @@ class Idefics2Deployment(BaseDeployment):
 
         if sampling_params is None:
             sampling_params = SamplingParams()
-        sampling_params = merged_options(
-            self.default_sampling_params, sampling_params)
+        sampling_params = merged_options(self.default_sampling_params, sampling_params)
 
         text_batch = []
         image_batch = []
@@ -248,8 +245,7 @@ class Idefics2Deployment(BaseDeployment):
                 # TODO: find a better way to remove the prompt, it will not work for other prompt formats
                 text = text.split("Assistant:")[1].strip()
                 chat_outputs.append(
-                    ChatOutput(message=ChatMessage(
-                        content=text, role="assistant"))
+                    ChatOutput(message=ChatMessage(content=text, role="assistant"))
                 )
         except Exception as e:
             raise InferenceException(model_name=self.model_id) from e
