@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 
 from aana.exceptions.runtime import EmptyMigrationsException
 from aana.utils.core import get_module_dir
-from aana.utils.json import orjson_serializer
+from aana.utils.json import jsonify
 
 
 class DbType(str, Enum):
@@ -30,7 +30,7 @@ def create_postgresql_engine(config):
     connection_string = f"postgresql+psycopg://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}"
     return create_engine(
         connection_string,
-        json_serializer=lambda obj: orjson_serializer(obj).decode(),
+        json_serializer=lambda obj: jsonify(obj),
         json_deserializer=orjson.loads,
     )
 
@@ -47,7 +47,7 @@ def create_sqlite_engine(config):
     connection_string = f"sqlite:///{config['path']}"
     return create_engine(
         connection_string,
-        json_serializer=lambda obj: orjson_serializer(obj).decode(),
+        json_serializer=lambda obj: jsonify(obj),
         json_deserializer=orjson.loads,
     )
 
