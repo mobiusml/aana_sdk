@@ -44,7 +44,7 @@ def json_serializer_default(obj: object) -> object:
     raise TypeError(type(obj))
 
 
-def jsonify(data: Any, option: int | None = orjson.OPT_SERIALIZE_NUMPY, as_bytes: bool = False) -> str | bytes:
+def jsonify(data: Any, option: int | None = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_SORT_KEYS, as_bytes: bool = False) -> str | bytes:
     """Serialize content using orjson.
 
     Args:

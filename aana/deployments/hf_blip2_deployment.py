@@ -10,7 +10,7 @@ from typing_extensions import TypedDict
 from aana.core.models.captions import Caption, CaptionsList
 from aana.core.models.image import Image
 from aana.core.models.types import Dtype
-from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
 
@@ -103,7 +103,6 @@ class HFBlip2Deployment(BaseDeployment):
         self.processor = Blip2Processor.from_pretrained(self.model_id)
         self.model.to(self.device)
 
-    @test_cache
     async def generate(self, image: Image) -> CaptioningOutput:
         """Generate captions for the given image.
 
@@ -122,7 +121,6 @@ class HFBlip2Deployment(BaseDeployment):
         )
         return CaptioningOutput(caption=captions["captions"][0])
 
-    @test_cache
     async def generate_batch(self, **kwargs) -> CaptioningBatchOutput:
         """Generate captions for the given images.
 

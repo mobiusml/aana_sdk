@@ -1,6 +1,10 @@
 name: Publish Python Package
 
 on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       publish_target:
@@ -39,7 +43,7 @@ jobs:
       run: poetry build
 
     - name: Publish to PyPI
-      if: ${{ github.event.inputs.publish_target == 'pypi' }}
+      if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_target == 'pypi')
       env:
         PYPI_USERNAME: "__token__"
         PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
@@ -47,7 +51,7 @@ jobs:
         poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD
 
     - name: Publish to Test PyPI
-      if: ${{ github.event.inputs.publish_target == 'testpypi' }}
+      if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_target == 'testpypi')
       env:
         PYPI_USERNAME: "__token__"
         PYPI_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}

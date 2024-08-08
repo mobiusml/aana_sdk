@@ -24,7 +24,6 @@ from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
 
 from aana.core.models.sampling import SamplingParams
-from aana.deployments.base_deployment import test_cache
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
 
 
@@ -114,7 +113,6 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         self.tokenizer = self.engine.engine.tokenizer.tokenizer
         self.model_config = await self.engine.get_model_config()
 
-    @test_cache
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:

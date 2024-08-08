@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+import portpicker
 import pytest
 from pytest_postgresql import factories
 from sqlalchemy.orm import Session
@@ -15,7 +16,6 @@ from aana.sdk import AanaSDK
 from aana.storage.op import DbType, run_alembic_migrations
 from aana.tests.utils import (
     is_gpu_available,
-    is_using_deployment_cache,
     send_api_request,
     verify_output,
 )
@@ -46,7 +46,7 @@ def app_factory():
 
         # Import and start the app
         app = import_from(app_module, app_name)
-        app.connect(port=8000, show_logs=True, num_cpus=10)
+        app.connect(port=portpicker.pick_unused_port(), show_logs=True, num_cpus=10)
         app.migrate()
         app.deploy()
 
@@ -74,15 +74,14 @@ def create_app():
 
     app = AanaSDK()
     app.connect(
-        port=8000, show_logs=True, num_cpus=10
+        port=portpicker.pick_unused_port(), show_logs=True, num_cpus=10
     )  # pretend we have 10 cpus for testing
 
     def start_app(deployments, endpoints):
         for deployment in deployments:
             deployment_instance = deployment["instance"]
-            if not is_gpu_available() and is_using_deployment_cache():
-                # if GPU is not available and we are using deployment cache,
-                # then we don't want to request GPU resources
+            if not is_gpu_available():
+                # if GPU is not available then we don't want to request GPU resources
                 deployment_instance = deployment_instance.options(
                     ray_actor_options={"num_gpus": 0}
                 )
@@ -110,6 +109,32 @@ def create_app():
     tmp_database_path.unlink()
 
     app.shutdown()
+
+
+@pytest.fixture(scope="class")
+def setup_deployment(create_app, request):
+    """Start the app with provided deployment."""
+    deployment_name = request.param[0]
+    deployment = request.param[1]
+
+    # skip the test if GPU is not available and the deployment requires GPU
+    num_gpus = deployment.ray_actor_options.get("num_gpus", 0)
+    if not is_gpu_available() and num_gpus > 0:
+        pytest.skip("GPU is not available")
+
+    # keep it the same for all tests so the deployment is replaced
+    # when the fixture is called again
+    handle_name = "test_deployment"
+
+    deployments = [
+        {
+            "name": handle_name,
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
+
+    return deployment_name, handle_name, create_app(deployments, endpoints)
 
 
 @pytest.fixture(scope="module")
