@@ -56,7 +56,7 @@ def jsonify(data: Any) -> str:
     Returns:
         str: the JSON string
     """
-    return json.dumps(data, default=json_serializer_default)
+    return json.dumps(data, default=json_serializer_default, sort_keys=True)
 
 
 def orjson_serializer(

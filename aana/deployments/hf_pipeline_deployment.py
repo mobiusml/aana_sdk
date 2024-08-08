@@ -8,7 +8,7 @@ from transformers import pipeline
 
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
-from aana.deployments.base_deployment import BaseDeployment, test_cache
+from aana.deployments.base_deployment import BaseDeployment
 
 
 class HfPipelineConfig(BaseModel):
@@ -77,7 +77,6 @@ class HfPipelineDeployment(BaseDeployment):
                 else:
                     raise
 
-    @test_cache
     async def call(self, *args, **kwargs):
         """Call the pipeline.
 

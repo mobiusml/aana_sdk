@@ -2,72 +2,66 @@
 from importlib import resources
 
 import pytest
-from ray import serve
+from transformers import BitsAndBytesConfig
 
 from aana.core.models.image import Image
-from aana.tests.utils import (
-    get_deployments_by_type,
-    is_gpu_available,
-    is_using_deployment_cache,
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.deployments.hf_pipeline_deployment import (
+    HfPipelineConfig,
+    HfPipelineDeployment,
 )
+from aana.tests.utils import verify_deployment_results
+
+deployments = [
+    (
+        "hf_pipeline_blip2_deployment",
+        HfPipelineDeployment.options(
+            num_replicas=1,
+            ray_actor_options={"num_gpus": 1},
+            user_config=HfPipelineConfig(
+                model_id="Salesforce/blip2-opt-2.7b",
+                model_kwargs={
+                    "quantization_config": BitsAndBytesConfig(
+                        load_in_8bit=False, load_in_4bit=True
+                    ),
+                },
+            ).model_dump(mode="json"),
+        ),
+    )
+]
 
 
-def get_expected_output(name):
-    """Gets expected output for a given deployment name."""
-    if name == "hf_blip2_opt_2_7b_pipeline_deployment":
-        return [[{"generated_text": "the starry night by van gogh\n"}]]
-    else:
-        raise ValueError(f"Unknown deployment name: {name}")  # noqa: TRY003
+@pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
+class TestHFPipelineDeployment:
+    """Test HuggingFace Pipeline deployment."""
 
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("image_name", ["Starry_Night.jpeg"])
+    async def test_call(self, setup_deployment, image_name):
+        """Test call method."""
+        deployment_name, handle_name, _ = setup_deployment
 
-@pytest.fixture(
-    scope="function", params=get_deployments_by_type("HfPipelineDeployment")
-)
-def setup_hf_pipeline_deployment(create_app, request):
-    """Setup HF Pipeline deployment."""
-    name, deployment = request.param
-    deployments = [
-        {
-            "name": "hf_pipeline_deployment",
-            "instance": deployment,
-        }
-    ]
-    endpoints = []
+        handle = await AanaDeploymentHandle.create(handle_name)
 
-    return name, deployment, create_app(deployments, endpoints)
+        expected_output_path = (
+            resources.path("aana.tests.files.expected", "")
+            / "hf_pipeline"
+            / f"{deployment_name}_{image_name}.json"
+        )
+        path = resources.path("aana.tests.files.images", image_name)
+        image = Image(path=path, save_on_disk=False, media_id=image_name)
 
+        output = await handle.call(images=image)
+        verify_deployment_results(expected_output_path, output)
 
-@pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
-    reason="GPU is not available",
-)
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "image_name",
-    ["Starry_Night.jpeg"],
-)
-async def test_hf_pipeline_deployments(setup_hf_pipeline_deployment, image_name):
-    """Test HuggingFace Pipeline deployments."""
-    name, deployment, app = setup_hf_pipeline_deployment
+        output = await handle.call(image)
+        verify_deployment_results(expected_output_path, output)
 
-    handle = serve.get_app_handle("hf_pipeline_deployment")
+        output = await handle.call(images=[str(path)])
+        verify_deployment_results(expected_output_path, [output])
 
-    expected_output = get_expected_output(name)
+        output = await handle.call(images=[image])
+        verify_deployment_results(expected_output_path, [output])
 
-    path = resources.path("aana.tests.files.images", image_name)
-    output = await handle.call.remote(images=[str(path)])
-    assert output == expected_output
-
-    image = Image(path=path, save_on_disk=False, media_id=image_name)
-
-    output = await handle.call.remote(images=[image])
-    assert output == expected_output
-
-    output = await handle.call.remote([image])
-    assert output == expected_output
-
-    output = await handle.call.remote(images=image)
-    assert output == expected_output[0]
-
-    output = await handle.call.remote(image)
-    assert output == expected_output[0]
+        output = await handle.call([image])
+        verify_deployment_results(expected_output_path, [output])
