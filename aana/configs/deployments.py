@@ -12,10 +12,6 @@ from aana.deployments.hf_text_generation_deployment import (
     HfTextGenerationDeployment,
 )
 from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
-from aana.deployments.stablediffusion2_deployment import (
-    StableDiffusion2Config,
-    StableDiffusion2Deployment,
-)
 from aana.deployments.vad_deployment import VadConfig, VadDeployment
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
 from aana.deployments.whisper_deployment import (
@@ -130,17 +126,6 @@ whisper_medium_deployment = WhisperDeployment.options(
 )
 available_deployments["whisper_medium_deployment"] = whisper_medium_deployment
 
-stablediffusion2_deployment = StableDiffusion2Deployment.options(
-    num_replicas=1,
-    max_ongoing_requests=1000,
-    ray_actor_options={"num_gpus": 1},
-    user_config=StableDiffusion2Config(
-        model="stabilityai/stable-diffusion-2",
-        dtype=Dtype.FLOAT16,
-    ).model_dump(mode="json"),
-)
-available_deployments["stablediffusion2_deployment"] = stablediffusion2_deployment
-
 vad_deployment = VadDeployment.options(
     num_replicas=1,
     max_ongoing_requests=1000,
@@ -201,9 +186,7 @@ idefics_2_deployment = Idefics2Deployment.options(
     ).model_dump(mode="json"),
 )
 
-available_deployments[
-    "idefics_2_deployment"
-] = idefics_2_deployment
+available_deployments["idefics_2_deployment"] = idefics_2_deployment
 
 __all__ = [
     "vllm_llama2_7b_chat_deployment",
@@ -212,7 +195,6 @@ __all__ = [
     "microsoft_phi_3_mini_instruct_deployment",
     "hf_blip2_opt_2_7b_deployment",
     "whisper_medium_deployment",
-    "stablediffusion2_deployment",
     "vad_deployment",
     "hf_blip2_opt_2_7b_pipeline_deployment",
     "hf_phi3_mini_4k_instruct_text_gen_deployment",

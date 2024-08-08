@@ -1,78 +1,80 @@
 # ruff: noqa: S101
-
-
 from importlib import resources
 
 import pytest
-from ray import serve
 
 from aana.core.models.chat import ChatMessage
 from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
-from aana.tests.utils import (
-    compare_texts,
-    get_deployments_by_type,
-    is_gpu_available,
-    is_using_deployment_cache,
-)
+from aana.core.models.types import Dtype
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
+from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
+from aana.tests.utils import verify_deployment_results
+from aana.utils.core import get_object_hash
+
+deployments = [
+    (
+        "idefics_2_8b_deployment",
+        Idefics2Deployment.options(
+            num_replicas=1,
+            ray_actor_options={"num_gpus": 0.85},
+            user_config=Idefics2Config(
+                model="HuggingFaceM4/idefics2-8b",
+                dtype=Dtype.FLOAT16,
+            ).model_dump(mode="json"),
+        ),
+    )
+]
 
 
-@pytest.fixture(
-    scope="function", params=get_deployments_by_type("Idefics2Deployment")
-)
-def setup_deployment(create_app, request):
-    """Setup Idefics 2 deployment."""
-    name, deployment = request.param
-    deployments = [
-        {
-            "name": "idefics_2_deployment",
-            "instance": deployment,
-        }
-    ]
-    endpoints = []
+@pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
+class TestIdefics2Deployment:
+    """Test Idefics 2 deployment."""
 
-    return name, deployment, create_app(deployments, endpoints)
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "prompt, image_name",
+        [("Who is the painter of the image?", "Starry_Night.jpeg")],
+    )
+    async def test_idefics2_deployment_chat(self, setup_deployment, prompt, image_name):
+        """Test Idefics 2 deployments."""
+        deployment_name, handle_name, app = setup_deployment
+        handle = await AanaDeploymentHandle.create(handle_name)
 
-@pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
-    reason="GPU is not available",
-)
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "prompt, image_name, expected_output",
-    [("Who is the painter of the image?", "Starry_Night.jpeg", "Van gogh.")],
-)
-async def test_idefics2_deployment_chat(setup_deployment, prompt, image_name, expected_output):
-    """Test Idefics 2 deployments."""
-    handle = serve.get_app_handle("idefics_2_deployment")
-    image = Image(path=resources.path("aana.tests.files.images", image_name), save_on_disk=False, media_id="test_image")
-    dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[image])
-    output = await handle.chat.remote(dialog=dialog)
-    output_message = output["message"]
+        prompt_hash = get_object_hash(prompt)
+        expected_output_path = (
+            resources.path("aana.tests.files.expected", "")
+            / "idefics"
+            / f"{deployment_name}_{image_name}_{prompt_hash}.json"
+        )
 
-    assert isinstance(output_message, ChatMessage)
-    compare_texts(expected_output, output_message.content)
-    assert output_message.role == "assistant"
+        image = Image(path=resources.path("aana.tests.files.images", image_name))
+        dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[image])
 
-
-@pytest.mark.skipif(
-    not is_gpu_available() and not is_using_deployment_cache(),
-    reason="GPU is not available",
-)
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "prompt, image_name, expected_output",
-    [("Who is the painter of the image?", "Starry_Night.jpeg", "Van gogh.")],
-)
-async def test_idefics2_deployment_chat_batch(setup_deployment, prompt, image_name, expected_output):
-    """Test Idefics 2 deployments in batch."""
-    handle = serve.get_app_handle("idefics_2_deployment")
-    image = Image(path=resources.path("aana.tests.files.images", image_name), media_id="test_image")
-    dialogs = [ImageChatDialog.from_prompt(prompt=prompt, images=[image]) for _ in range(10)]
-    outputs = await handle.chat_batch.remote(dialogs=dialogs)
-    for output in outputs:
+        # test chat method
+        output = await handle.chat(dialog=dialog)
         output_message = output["message"]
 
         assert isinstance(output_message, ChatMessage)
-        compare_texts(expected_output, output_message.content)
         assert output_message.role == "assistant"
+        verify_deployment_results(expected_output_path, output_message.content)
+
+        # test chat_batch method
+        batch_size = 2
+        dialogs = [dialog] * batch_size
+        outputs = await handle.chat_batch(dialogs=dialogs)
+        assert len(outputs) == batch_size
+        for output in outputs:
+            output_message = output["message"]
+
+            assert isinstance(output_message, ChatMessage)
+            assert output_message.role == "assistant"
+            verify_deployment_results(expected_output_path, output_message.content)
+
+        # test chat_stream method
+        stream = handle.chat_stream(dialog=dialog)
+        text = ""
+        async for chunk in stream:
+            text += chunk["text"]
+
+        verify_deployment_results(expected_output_path, text)
