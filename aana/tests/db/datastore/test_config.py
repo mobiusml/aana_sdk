@@ -41,7 +41,7 @@ def test_pg_datastore_config(pg_settings):
     engine = pg_settings.get_engine()
 
     assert engine.name == "postgresql"
-    assert str(engine.url) == "postgresql://postgres:***@0.0.0.0:5432/postgres"
+    assert str(engine.url) == "postgresql+psycopg://postgres:***@0.0.0.0:5432/postgres"
 
 
 def test_sqlite_datastore_config(sqlite_settings):
