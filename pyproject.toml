@@ -42,6 +42,8 @@ pyannote-audio = "^3.1.1"
 pydantic = ">=2.0"
 pydantic-settings = "^2.1.0"
 python-multipart = "^0.0.9"
+psycopg = {extras = ["binary"], version = "^3.2.1"}
+psycopg2-binary = "^2.9.9"
 qdrant-haystack = "^3.2.1"
 ray = {extras = ["serve"], version = ">=2.20"}
 rapidfuzz = "^3.4.0"
@@ -61,14 +63,12 @@ matplotlib = "^3.8.2"
 mypy = "^1.6.1"
 ruff = "^0.1.5"
 portpicker = "^1.6.0"
-psycopg2-binary = "^2.9.9"
 pytest-asyncio = "^0.23.6"
 pytest-dotenv = "^0.5.2"
 pytest-env = "^1.1.3"
 pytest-mock = "^3.12.0"
 pytest-postgresql = "^6.0.0"
 pytest-timeout = "^2.2.0"
-psycopg = {extras = ["binary"], version = "^3.2.1"}
 sqlalchemy-utils = "^0.41.1"
 
 [tool.poetry.group.docs.dependencies]
