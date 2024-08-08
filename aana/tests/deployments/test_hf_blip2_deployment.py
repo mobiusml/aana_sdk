@@ -7,10 +7,7 @@ from aana.core.models.image import Image
 from aana.core.models.types import Dtype
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
-from aana.tests.utils import (
-    is_gpu_available,
-    verify_deployment_results,
-)
+from aana.tests.utils import verify_deployment_results
 
 deployments = [
     (
@@ -30,7 +27,6 @@ deployments = [
 ]
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
 class TestHFBlip2Deployment:
     """Test HuggingFace BLIP2 deployment."""

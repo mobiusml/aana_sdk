@@ -117,6 +117,11 @@ def setup_deployment(create_app, request):
     deployment_name = request.param[0]
     deployment = request.param[1]
 
+    # skip the test if GPU is not available and the deployment requires GPU
+    num_gpus = deployment.ray_actor_options.get("num_gpus", 0)
+    if not is_gpu_available() and num_gpus > 0:
+        pytest.skip("GPU is not available")
+
     # keep it the same for all tests so the deployment is replaced
     # when the fixture is called again
     handle_name = "test_deployment"

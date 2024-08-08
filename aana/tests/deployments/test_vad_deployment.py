@@ -9,10 +9,7 @@ from aana.core.models.base import pydantic_to_dict
 from aana.core.models.vad import VadParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.vad_deployment import VadConfig, VadDeployment
-from aana.tests.utils import (
-    is_gpu_available,
-    verify_deployment_results,
-)
+from aana.tests.utils import verify_deployment_results
 
 deployments = [
     (
@@ -34,7 +31,6 @@ deployments = [
 ]
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
 class TestVadDeployment:
     """Test VAD deployment."""

@@ -10,10 +10,7 @@ from aana.deployments.hf_pipeline_deployment import (
     HfPipelineConfig,
     HfPipelineDeployment,
 )
-from aana.tests.utils import (
-    is_gpu_available,
-    verify_deployment_results,
-)
+from aana.tests.utils import verify_deployment_results
 
 deployments = [
     (
@@ -34,7 +31,6 @@ deployments = [
 ]
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
 class TestHFPipelineDeployment:
     """Test HuggingFace Pipeline deployment."""
