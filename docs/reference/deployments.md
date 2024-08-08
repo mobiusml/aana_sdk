@@ -8,7 +8,7 @@ AanaDeploymentHandle is a class that allows you to interact with Aana deployment
 
 ## Base classes for deployments
 
-At the momemnt there are two base classes that you can use to create your own deployments:
+At the moment there are two base classes that you can use to create your own deployments:
 - BaseDeployment: This is the base class for all Aana deployments.
 - BaseTextGenerationDeployment: This is the base class for all text generation deployments (LLM deployments).
 

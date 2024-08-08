@@ -9,8 +9,8 @@ __all__ = [
     "ChatMessage",
     "ChatDialog",
     "ChatCompletionRequest",
-    "ChatCompletetionChoice",
-    "ChatCompletetion",
+    "ChatCompletionChoice",
+    "ChatCompletion",
 ]
 
 Role = Literal["system", "user", "assistant"]
@@ -170,7 +170,7 @@ class ChatCompletionRequest(BaseModel):
     )
 
 
-class ChatCompletetionChoice(BaseModel):
+class ChatCompletionChoice(BaseModel):
     """A chat completion choice for OpenAI compatible API.
 
     Attributes:
@@ -186,14 +186,14 @@ class ChatCompletetionChoice(BaseModel):
     )
 
 
-class ChatCompletetion(BaseModel):
+class ChatCompletion(BaseModel):
     """A chat completion for OpenAI compatible API.
 
     Attributes:
         id (str): a unique identifier for the chat completion
         model (str): the model used for the chat completion
         created (int): the Unix timestamp (in seconds) of when the chat completion was created
-        choices (list[ChatCompletetionChoice]): a list of chat completion choices
+        choices (list[ChatCompletionChoice]): a list of chat completion choices
         object (Literal["chat.completion"]): the object type, which is always `chat.completion`
     """
 
@@ -203,7 +203,7 @@ class ChatCompletetion(BaseModel):
         ...,
         description="The Unix timestamp (in seconds) of when the chat completion was created.",
     )
-    choices: list[ChatCompletetionChoice] = Field(
+    choices: list[ChatCompletionChoice] = Field(
         ...,
         description="A list of chat completion choices.",
     )
