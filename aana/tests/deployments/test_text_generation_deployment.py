@@ -13,10 +13,7 @@ from aana.deployments.hf_text_generation_deployment import (
 )
 from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
 from aana.exceptions.runtime import PromptTooLongException
-from aana.tests.utils import (
-    is_gpu_available,
-    verify_deployment_results,
-)
+from aana.tests.utils import verify_deployment_results
 from aana.utils.core import get_object_hash
 
 deployments = [
@@ -62,7 +59,6 @@ deployments = [
 ]
 
 
-@pytest.mark.skipif(not is_gpu_available(), reason="GPU is not available")
 @pytest.mark.parametrize(
     "setup_deployment, prompt_template", deployments, indirect=["setup_deployment"]
 )

@@ -38,11 +38,19 @@ class DummyEmbedder(BaseDeployment):
 
 
 @pytest.fixture(scope="module")
-def setup_dummy_embedder_deployment(setup_deployment):
+def setup_dummy_embedder_deployment(create_app):
     """Set up the dummy embedder deployment."""
     deployment_name = "dummy_embedder"
     deployment = DummyEmbedder.options(num_replicas=1, user_config={})
-    return deployment_name, setup_deployment(deployment_name, deployment)
+    deployments = [
+        {
+            "name": deployment_name,
+            "instance": deployment,
+        }
+    ]
+    endpoints = []
+
+    return deployment_name, create_app(deployments, endpoints)
 
 
 @pytest.mark.asyncio
@@ -52,7 +60,7 @@ async def test_haystack_wrapper(setup_dummy_embedder_deployment):
     deployment_handle = await AanaDeploymentHandle.create(deployment_name)
     component = AanaDeploymentComponent(deployment_handle, "embed")
     result = component.run(texts=["Hello, world!", "Roses are red", "Violets are blue"])
-    print(result)
+
     assert "embeddings" in result
     assert isinstance(result["embeddings"], np.ndarray)
     assert result["embeddings"].shape == (3, 8)
