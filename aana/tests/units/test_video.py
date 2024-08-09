@@ -167,44 +167,6 @@ def test_download_video():
     finally:
         video.cleanup()
 
-    # Test Youtube URL
-    youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    youtube_url_hash = hashlib.md5(
-        youtube_url.encode(), usedforsecurity=False
-    ).hexdigest()
-    video_dir = settings.video_dir
-    expected_path = video_dir / f"{youtube_url_hash}.mp4"
-    # remove the file if it exists
-    expected_path.unlink(missing_ok=True)
-
-    try:
-        youtube_video_input = VideoInput(url=youtube_url, media_id="dQw4w9WgXcQ")
-        video = download_video(youtube_video_input)
-        assert isinstance(video, Video)
-        # ignore extension
-        assert video.path.with_suffix("") == expected_path.with_suffix("")
-        assert video.path is not None
-        assert video.path.exists()
-        assert video.content is None
-        assert video.url == youtube_url
-        assert video.media_id == "dQw4w9WgXcQ"
-        assert (
-            video.title
-            == "Rick Astley - Never Gonna Give You Up (Official Music Video)"
-        )
-        assert video.description.startswith(
-            "The official video for “Never Gonna Give You Up” by Rick Astley."
-        )
-    finally:
-        if video and video.path:
-            video.path.unlink(missing_ok=True)
-
-    # Test YoutubeVideoInput with invalid youtube_url
-    youtube_url = "https://www.youtube.com/watch?v=invalid_url"
-    youtube_video_input = VideoInput(url=youtube_url)
-    with pytest.raises(DownloadException):
-        download_video(youtube_video_input)
-
     # Test url that doesn't contain a video
     url = "https://mobius-public.s3.eu-west-1.amazonaws.com/Starry_Night.jpeg"
     video_input = VideoInput(url=url)
@@ -235,8 +197,20 @@ def test_download_video():
         ),
     ],
 )
-def test_get_video_metadata_success(url, title, description, duration):
+def test_get_video_metadata_success(mocker, url, title, description, duration):
     """Test getting video metadata."""
+    # Mock the yt-dlp YoutubeDL class and its methods
+    mock_ydl = mocker.patch("yt_dlp.YoutubeDL", autospec=True)
+    mock_ydl_instance = mock_ydl.return_value
+    mock_ydl_instance.__enter__.return_value = mock_ydl_instance
+
+    mock_info = {
+        "title": title,
+        "description": description,
+        "duration": duration,
+    }
+    mock_ydl_instance.extract_info.return_value = mock_info
+
     metadata = get_video_metadata(url)
     assert isinstance(metadata, VideoMetadata)
     assert metadata.title == title
@@ -249,3 +223,58 @@ def test_get_video_metadata_failure():
     url = "https://www.youtube.com/watch?v=invalid_url"
     with pytest.raises(DownloadException):
         get_video_metadata(url)
+
+
+def test_download_youtube_video(mocker):
+    """Test downloading a YouTube video."""
+    youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    youtube_url_hash = hashlib.md5(
+        youtube_url.encode(), usedforsecurity=False
+    ).hexdigest()
+    video_dir = settings.video_dir
+    expected_path = Path(video_dir) / f"{youtube_url_hash}.mp4"
+
+    # Mock the VideoInput object
+    youtube_video_input = VideoInput(url=youtube_url, media_id="dQw4w9WgXcQ")
+
+    # Mock the yt-dlp YoutubeDL class and its methods
+    mock_ydl = mocker.patch("yt_dlp.YoutubeDL", autospec=True)
+    mock_ydl_instance = mock_ydl.return_value
+    mock_ydl_instance.__enter__.return_value = mock_ydl_instance
+
+    mock_info = {
+        "title": "Rick Astley - Never Gonna Give You Up (Official Music Video)",
+        "description": "The official video for “Never Gonna Give You Up” by Rick Astley.",
+        "ext": "mp4",
+    }
+    mock_ydl_instance.extract_info.return_value = mock_info
+    mock_ydl_instance.prepare_filename.return_value = str(expected_path)
+    mock_ydl_instance.download.return_value = None
+
+    # # Mock Path.exists to simulate that the file will exist after download
+    mocker.patch("aana.integrations.external.yt_dlp.Path.exists", return_value=True)
+
+    # Mock decord.VideoReader to avoid trying to read the non-existent mocked file
+    mocker.patch("decord.VideoReader", autospec=True)
+
+    video = download_video(youtube_video_input)
+
+    assert isinstance(video, Video)
+    assert video.path.with_suffix("") == expected_path.with_suffix("")
+    assert video.path is not None
+    assert video.path.exists()
+    assert video.content is None
+    assert video.url == youtube_url
+    assert video.media_id == "dQw4w9WgXcQ"
+    assert video.title == "Rick Astley - Never Gonna Give You Up (Official Music Video)"
+    assert video.description.startswith(
+        "The official video for “Never Gonna Give You Up” by Rick Astley."
+    )
+
+
+def test_download_youtube_video_failure():
+    """Test YoutubeVideoInput with invalid youtube URL."""
+    youtube_url = "https://www.youtube.com/watch?v=invalid_url"
+    youtube_video_input = VideoInput(url=youtube_url)
+    with pytest.raises(DownloadException):
+        download_video(youtube_video_input)
