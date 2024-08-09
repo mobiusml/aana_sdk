@@ -2,11 +2,12 @@ from typing import Any
 
 import torch
 import transformers
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 from transformers import Blip2ForConditionalGeneration, Blip2Processor
 from typing_extensions import TypedDict
 
+from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.captions import Caption, CaptionsList
 from aana.core.models.image import Image
 from aana.core.models.types import Dtype
@@ -31,6 +32,8 @@ class HFBlip2Config(BaseModel):
     batch_size: int = Field(default=1)
     num_processing_threads: int = Field(default=1)
     max_new_tokens: int = Field(default=64)
+
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
 class CaptioningOutput(TypedDict):

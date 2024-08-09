@@ -2,10 +2,11 @@ from copy import copy, deepcopy
 from typing import Any
 
 import torch
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from ray import serve
 from transformers import pipeline
 
+from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
 from aana.deployments.base_deployment import BaseDeployment
@@ -27,6 +28,8 @@ class HfPipelineConfig(BaseModel):
     model_kwargs: CustomConfig = {}
     pipeline_kwargs: CustomConfig = {}
     generation_kwargs: CustomConfig = {}
+
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
 @serve.deployment
