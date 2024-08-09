@@ -3,10 +3,11 @@ from typing import Any, TypedDict
 
 import torch
 from pyannote.audio import Model
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 
 from aana.core.models.audio import Audio
+from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.time import TimeInterval
 from aana.core.models.vad import VadParams, VadSegment
 from aana.deployments.base_deployment import BaseDeployment
@@ -78,6 +79,8 @@ class VadConfig(BaseModel):
     )
 
     sample_rate: int = Field(default=16000, description="Sample rate of the audio.")
+
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
 @serve.deployment

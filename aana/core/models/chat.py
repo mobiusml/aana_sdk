@@ -2,6 +2,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from aana.core.models.base import pydantic_protected_fields
+
 __all__ = [
     "Role",
     "Prompt",
@@ -169,6 +171,8 @@ class ChatCompletionRequest(BaseModel):
         ),
     )
 
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
+
 
 class ChatCompletionChoice(BaseModel):
     """A chat completion choice for OpenAI compatible API.
@@ -211,3 +215,5 @@ class ChatCompletion(BaseModel):
         "chat.completion",
         description="The object type, which is always `chat.completion`.",
     )
+
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))

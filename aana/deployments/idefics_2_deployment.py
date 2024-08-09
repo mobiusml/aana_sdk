@@ -6,7 +6,7 @@ from typing import Any
 
 import torch
 import transformers
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 from transformers import (
     AutoModelForVision2Seq,
@@ -15,7 +15,7 @@ from transformers import (
 )
 from transformers.utils.import_utils import is_flash_attn_2_available
 
-from aana.core.models.base import merged_options
+from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.chat import ChatMessage
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image_chat import ImageChatDialog
@@ -58,6 +58,7 @@ class Idefics2Config(BaseModel):
     default_sampling_params: SamplingParams = SamplingParams(
         temperature=1.0, max_tokens=256
     )
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
 @serve.deployment
