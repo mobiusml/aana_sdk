@@ -54,7 +54,7 @@ torch = ">=2.0.0"
 torchaudio = ">=2.0.0"
 torchvision = ">=0.15.0"
 vllm = "^0.5.0.post1"
-yt-dlp = ">=2024.4.9"
+yt-dlp = ">=2024.08.06"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
