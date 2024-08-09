@@ -6,7 +6,7 @@ from typing import Any
 
 import torch
 import transformers
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from ray import serve
 from transformers import (
     AutoModelForCausalLM,
@@ -14,7 +14,7 @@ from transformers import (
     TextIteratorStreamer,
 )
 
-from aana.core.models.base import merged_options
+from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.sampling import SamplingParams
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
@@ -40,6 +40,8 @@ class HfTextGenerationConfig(BaseModel):
         temperature=0, max_tokens=256
     )
     chat_template: str | None = None
+
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
 async def async_streamer_adapter(streamer):

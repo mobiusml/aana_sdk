@@ -1,11 +1,12 @@
 from typing import Any
 
 import numpy as np
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 from sentence_transformers import SentenceTransformer
 from typing_extensions import TypedDict
 
+from aana.core.models.base import pydantic_protected_fields
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
@@ -23,6 +24,8 @@ class SentenceTransformerConfig(BaseModel):
     model: str
     batch_size: int = Field(default=1)
     num_processing_threads: int = Field(default=1)
+
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
 class SentenceTransformerOutput(TypedDict):

@@ -81,3 +81,26 @@ def pydantic_to_dict(data: Any) -> Any:
         return {key: pydantic_to_dict(value) for key, value in data.items()}
     else:
         return data  # return as is for non-Pydantic types
+
+
+# Workaround for the annoying issue with Pydantic's protected fields.
+# See: https://github.com/pydantic/pydantic/issues/9177
+# TODO: Remove this workaround once the issue is resolved.
+pydantic_protected_fields = [
+    "model_computed_fields",
+    "model_config",
+    "model_construct",
+    "model_copy",
+    "model_dump",
+    "model_dump_json",
+    "model_extra",
+    "model_fields",
+    "model_fields_set",
+    "model_json_schema",
+    "model_parametrized_name",
+    "model_post_init",
+    "model_rebuild",
+    "model_validate",
+    "model_validate_json",
+    "model_validate_strings",
+]
