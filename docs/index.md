@@ -120,10 +120,11 @@ sh install.sh
 - [Settings](pages/settings.md): Documentation on the available settings and configuration options for the project.
 
 ## Development
-- [Development Guide](pages/development.md): A guide for developers working on the project, including code structure, dev container setup, and database management.
-- [Testing](pages/testing.md): This document covers the testing procedures and guidelines for our project.
-- [Deployment Test Cache](pages/deployment_test_cache.md): Information on how deployment test caching works and its configuration.
+- [Code Overview](pages/code_overview.md): An overview of the structure of the project.
+- [Development Environment](pages/dev_environment.md): Instructions for setting up the development environment.
 - [Code Standards](pages/code_standards.md): Learn about our coding standards and best practices for contributing to the project.
+- [Database](pages/database.md): Learn how to use SQL databases in the project.
+- [Testing](pages/testing.md): Information on how to run tests and write new tests.
 
 ## Getting Started
 
@@ -239,6 +240,7 @@ We provide a few example applications that demonstrate the capabilities of Aana 
 
 See the README files of the applications for more information on how to install and run them.
 
+The full list of example applications is available in the [Aana Examples](https://github.com/mobiusml/aana_examples) repository. You can use these examples as a starting point for building your own applications.
 
 ### Main components
 
