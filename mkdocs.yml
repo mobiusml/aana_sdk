@@ -97,6 +97,13 @@ nav:
   - Home: index.md
   - Getting Started:
     - Tutorial: pages/tutorial.md
+  - Model Hub:
+    - pages/model_hub/index.md
+    - pages/model_hub/text_generation.md
+    - pages/model_hub/image_to_text.md
+    - pages/model_hub/asr.md
+    # - pages/model_hub/vad.md
+    - pages/model_hub/hf_pipeline.md
   - Integrations:
     - Deployments: pages/integrations.md
     - OpenAI API: pages/openai_api.md

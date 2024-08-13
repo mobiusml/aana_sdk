@@ -42,12 +42,12 @@ class Idefics2Config(BaseModel):
     """The configuration for the Idefics 2 model.
 
     Attributes:
-        model (str): the model ID on HuggingFace
-        dtype (str): the data type (optional, default: "auto"), one of "auto", "float32", "float16"
-        enable_flash_attention_2 (bool): enable Flash Attention 2 (optional, default: None which check automaticaly for availability of Flash Attention on the server node)
-        model_kwargs (dict): the extra model keyword arguments
-        do_image_splitting (bool): do image splitting (optional, default: False)
-        default_sampling_params (SamplingParams): the default sampling parameters (optional, default: {"temperature": 0, "max_tokens": 512})
+        model (str): The model ID on HuggingFace.
+        dtype (Dtype): The data type. Defaults to Dtype.AUTO.
+        enable_flash_attention_2 (bool | None): Use Flash Attention 2. If None, Flash Attention 2 wii be enabled if available. Defaults to None.
+        do_image_splitting (bool): Do image splitting. Defaults to False.
+        model_kwargs (CustomConfig): The extra model keyword arguments. Defaults to {}.
+        default_sampling_params (SamplingParams): The default sampling parameters. Defaults to SamplingParams(temperature=1.0, max_tokens=256).
     """
 
     model: str

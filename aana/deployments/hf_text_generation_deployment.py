@@ -28,10 +28,12 @@ class HfTextGenerationConfig(BaseModel):
     """The configuration for the Hugging Face text generation deployment.
 
     Attributes:
-        model_id (str): the model ID on Hugging Face
-        model_kwargs (dict): the model keyword arguments
-        default_sampling_params (SamplingParams): the default sampling parameters
-        chat_template (str): the name of the chat template (optional, default: None)
+        model_id (str): The model ID on Hugging Face.
+        model_kwargs (CustomConfig): The extra model keyword arguments. Defaults to {}.
+        default_sampling_params (SamplingParams): The default sampling parameters.
+            Defaults to SamplingParams(temperature=0, max_tokens=256).
+        chat_template (str | None): The name of the chat template. If not provided, the chat template
+            from the model will be used. Some models may not have a chat template. Defaults to None.
     """
 
     model_id: str
