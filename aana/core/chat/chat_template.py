@@ -19,13 +19,11 @@ def load_chat_template(chat_template_name: str) -> str:
     Raises:
         ValueError: If the chat template does not exist.
     """
-    with resources.path(
-        "aana.core.chat.templates", f"{chat_template_name}.jinja"
-    ) as path:
-        if not path.exists():
-            raise ValueError(f"Chat template {chat_template_name} does not exist.")  # noqa: TRY003
+    path = resources.files("aana.core.chat.templates") / f"{chat_template_name}.jinja"
+    if not path.exists():
+        raise ValueError(f"Chat template {chat_template_name} does not exist.")  # noqa: TRY003
 
-        return path.read_text()
+    return path.read_text()
 
 
 def apply_chat_template(

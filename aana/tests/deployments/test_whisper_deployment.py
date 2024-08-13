@@ -54,13 +54,13 @@ class TestWhisperDeployment:
         handle = await AanaDeploymentHandle.create(handle_name)
 
         expected_output_path = (
-            resources.path("aana.tests.files.expected", "")
+            resources.files("aana.tests.files.expected")
             / "whisper"
             / f"{deployment_name}_{audio_file}.json"
         )
 
         # Test transcribe method
-        path = resources.path("aana.tests.files.audios", audio_file)
+        path = resources.files("aana.tests.files.audios") / audio_file
         assert path.exists(), f"Audio not found: {path}"
         audio = Audio(path=path, media_id=audio_file)
 
