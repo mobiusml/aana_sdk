@@ -43,12 +43,12 @@ class TestIdefics2Deployment:
 
         prompt_hash = get_object_hash(prompt)
         expected_output_path = (
-            resources.path("aana.tests.files.expected", "")
+            resources.files("aana.tests.files.expected")
             / "idefics"
             / f"{deployment_name}_{image_name}_{prompt_hash}.json"
         )
 
-        image = Image(path=resources.path("aana.tests.files.images", image_name))
+        image = Image(path=resources.files("aana.tests.files.images") / image_name)
         dialog = ImageChatDialog.from_prompt(prompt=prompt, images=[image])
 
         # test chat method

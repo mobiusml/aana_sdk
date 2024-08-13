@@ -1,11 +1,14 @@
 import asyncio
 import threading
-from typing import Any
+from collections.abc import Coroutine
+from typing import Any, TypeVar
 
 __all__ = ["run_async"]
 
+T = TypeVar("T")
 
-def run_async(coro: asyncio.coroutine) -> Any:
+
+def run_async(coro: Coroutine[Any, Any, T]) -> T:
     """Run a coroutine in a thread if the current thread is running an event loop.
 
     Otherwise, run the coroutine in the current asyncio loop.
@@ -18,17 +21,17 @@ def run_async(coro: asyncio.coroutine) -> Any:
         coro (Coroutine): The coroutine to run.
 
     Returns:
-        Any: The result of the coroutine.
+        T: The result of the coroutine.
     """
 
     class RunThread(threading.Thread):
         """Run a coroutine in a thread."""
 
-        def __init__(self, coro):
+        def __init__(self, coro: Coroutine[Any, Any, T]):
             """Initialize the thread."""
             self.coro = coro
-            self.result = None
-            self.exception = None
+            self.result: T | None = None
+            self.exception: Exception | None = None
             super().__init__()
 
         def run(self):

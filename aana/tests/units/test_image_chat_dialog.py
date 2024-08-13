@@ -16,8 +16,9 @@ from aana.core.models.image_chat import (
 @pytest.fixture
 def input_image():
     """Gets an Image for test."""
-    image_path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    image_path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
     return Image(path=image_path)
+
 
 @pytest.fixture
 def input_prompt():
@@ -54,17 +55,18 @@ def test_image_content_creation(input_image):
     with pytest.raises(ValueError):
         content = ImageContent(image="Image")
 
+
 def test_image_dialog_creation(input_image, input_prompt):
     """Test that a image chat dialog can be created."""
-    system_messages = ImageChatMessage(content=[
-        ImageContent(image=input_image),
-        TextContent(text=input_prompt)
-    ], role="system")
+    system_messages = ImageChatMessage(
+        content=[ImageContent(image=input_image), TextContent(text=input_prompt)],
+        role="system",
+    )
 
-    user_messages = ImageChatMessage(content=[
-        ImageContent(image=input_image),
-        TextContent(text=input_prompt)
-    ], role="user")
+    user_messages = ImageChatMessage(
+        content=[ImageContent(image=input_image), TextContent(text=input_prompt)],
+        role="user",
+    )
 
     dialog = ImageChatDialog(messages=[system_messages, user_messages])
 
@@ -80,7 +82,7 @@ def test_image_dialog_creation(input_image, input_prompt):
 
         assert isinstance(message.content[1], TextContent)
         assert message.content[1].text == input_prompt
-    
+
     messages, images = dialog.to_objects()
     assert len(messages) == 2
     assert len(images) == 2
@@ -130,30 +132,18 @@ def test_image_dialog_creation_from_list(input_image, input_prompt):
     messages = [
         {
             "content": [
-                {
-                    "type": "image",
-                    "image": input_image
-                },
-                {
-                    "type": "text",
-                    "text": input_prompt
-                }
+                {"type": "image", "image": input_image},
+                {"type": "text", "text": input_prompt},
             ],
-            "role": "system"
+            "role": "system",
         },
         {
             "content": [
-                {
-                    "type": "image",
-                    "image": input_image
-                },
-                {
-                    "type": "text",
-                    "text": input_prompt
-                }
+                {"type": "image", "image": input_image},
+                {"type": "text", "text": input_prompt},
             ],
-            "role": "user"
-        }
+            "role": "user",
+        },
     ]
 
     dialog = ImageChatDialog.from_list(messages)
@@ -170,7 +160,7 @@ def test_image_dialog_creation_from_list(input_image, input_prompt):
 
         assert isinstance(message.content[1], TextContent)
         assert message.content[1].text == input_prompt
-    
+
     messages, images = dialog.to_objects()
     assert len(messages) == 2
     assert len(images) == 2

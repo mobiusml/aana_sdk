@@ -14,7 +14,7 @@ from aana.core.models.image import ImageInput, ImageInputList
 def mock_download_file(mocker):
     """Mock download_file."""
     mock = mocker.patch("aana.core.models.image.download_file", autospec=True)
-    path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
     content = path.read_bytes()
     mock.return_value = content
     return mock
@@ -158,7 +158,7 @@ def test_imageinput_set_files():
 
 def test_imageinput_convert_input_to_object(mock_download_file):
     """Test that ImageInput can be converted to Image."""
-    path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
     image_input = ImageInput(path=str(path))
     try:
         image_object = image_input.convert_input_to_object()

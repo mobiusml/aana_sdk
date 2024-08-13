@@ -7,7 +7,6 @@ from typing import Any
 
 import rapidfuzz
 import requests
-from deepdiff.operator import BaseOperator
 from pydantic import ValidationError
 
 from aana.api.api_generation import Endpoint
@@ -141,17 +140,6 @@ def verify_deployment_results(
         expected_output = json.load(f)
 
     compare_results(expected_output, results)
-
-
-class LevenshteinOperator(BaseOperator):
-    """Deepdiff operator class for Levenshtein distances."""
-
-    def give_up_diffing(self, level, diff_instance) -> bool:
-        """Short-circuit if we're certain to exceed error rate based on length."""
-        dist = rapidfuzz.distance.Levenshtein.distance(level.t1, level.t2)
-        if dist < len(level.t1) * ALLOWED_LEVENSTEIN_ERROR_RATE:
-            return True
-        return False
 
 
 def get_deployments_by_type(deployment_type: str) -> list:
