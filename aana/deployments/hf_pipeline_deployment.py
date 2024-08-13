@@ -12,14 +12,14 @@ from aana.deployments.base_deployment import BaseDeployment
 
 
 class HfPipelineConfig(BaseModel):
-    """The configuration for the Hugging Face pipeline deployment.
+    """The configuration for the Hugging Face Pipeline deployment.
 
     Attributes:
-        model_id (str): the model ID on Hugging Face
-        task (str): the task name (optional, by default the task is inferred from the model ID)
-        model_kwargs (dict): the model keyword arguments
-        pipeline_kwargs (dict): the pipeline keyword arguments
-        generation_kwargs (dict): the generation keyword arguments
+        model_id (str): The model ID on Hugging Face.
+        task (str | None): The task name. If not provided, the task is inferred from the model ID. Defaults to None.
+        model_kwargs (CustomConfig): The model keyword arguments. Defaults to {}.
+        pipeline_kwargs (CustomConfig): The pipeline keyword arguments. Defaults to {}.
+        generation_kwargs (CustomConfig): The generation keyword arguments. Defaults to {}.
     """
 
     model_id: str

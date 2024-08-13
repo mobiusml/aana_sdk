@@ -154,24 +154,6 @@ class LevenshteinOperator(BaseOperator):
         return False
 
 
-def get_deployments_by_type(deployment_type: str) -> list:
-    """Get deployments by type from the list of all available deployments.
-
-    Args:
-        deployment_type (str): Deployment type. For example, "VLLMDeployment".
-
-    Returns:
-        list: List of deployments with the given type.
-    """
-    from aana.configs.deployments import available_deployments
-
-    return [
-        (name, deployment)
-        for name, deployment in available_deployments.items()
-        if deployment.name == deployment_type
-    ]
-
-
 def send_api_request(
     endpoint: Endpoint,
     app: AanaSDK,

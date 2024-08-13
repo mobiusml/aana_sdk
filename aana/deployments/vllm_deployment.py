@@ -10,6 +10,7 @@ from vllm.inputs import TokensPrompt
 
 from aana.core.models.base import merged_options
 from aana.core.models.custom_config import CustomConfig
+from aana.core.models.types import Dtype
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
@@ -32,13 +33,13 @@ class VLLMConfig(BaseModel):
 
     Attributes:
         model (str): The model name.
-        dtype (str): The data type. Defaults to "auto".
-        quantization (str): The quantization method. Defaults to None.
+        dtype (Dtype): The data type. Defaults to Dtype.AUTO.
+        quantization (str | None): The quantization method. Defaults to None.
         gpu_memory_reserved (float): The GPU memory reserved for the model in MB.
         default_sampling_params (SamplingParams): The default sampling parameters.
             Defaults to SamplingParams(temperature=0, max_tokens=256).
-        max_model_len (int): The maximum generated text length in tokens. Defaults to None.
-        chat_template (str): The name of the chat template. If not provided, the chat template
+        max_model_len (int | None): The maximum generated text length in tokens. Defaults to None.
+        chat_template (str | None): The name of the chat template. If not provided, the chat template
             from the model will be used. Some models may not have a chat template.
             Defaults to None.
         enforce_eager (bool): Whether to enforce eager execution. Defaults to False.
@@ -46,7 +47,7 @@ class VLLMConfig(BaseModel):
     """
 
     model: str
-    dtype: str | None = Field(default="auto")
+    dtype: Dtype = Field(default=Dtype.AUTO)
     quantization: str | None = Field(default=None)
     gpu_memory_reserved: float
     default_sampling_params: SamplingParams = SamplingParams(
@@ -54,7 +55,7 @@ class VLLMConfig(BaseModel):
     )
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
-    enforce_eager: bool | None = Field(default=False)
+    enforce_eager: bool = Field(default=False)
     engine_args: CustomConfig = {}
 
 
