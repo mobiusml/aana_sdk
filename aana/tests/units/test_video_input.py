@@ -12,7 +12,7 @@ from aana.core.models.video import VideoInput, VideoInputList
 def mock_download_file(mocker):
     """Mock download_file."""
     mock = mocker.patch("aana.core.models.media.download_file", autospec=True)
-    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
     content = path.read_bytes()
     mock.return_value = content
     return mock
@@ -121,7 +121,7 @@ def test_videoinput_set_files():
 
 def test_videoinput_convert_input_to_object(mock_download_file):
     """Test that VideoInput can be converted to Video."""
-    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
     video_input = VideoInput(path=str(path))
     try:
         video_object = video_input.convert_input_to_object()

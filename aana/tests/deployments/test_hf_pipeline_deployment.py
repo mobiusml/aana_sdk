@@ -44,11 +44,11 @@ class TestHFPipelineDeployment:
         handle = await AanaDeploymentHandle.create(handle_name)
 
         expected_output_path = (
-            resources.path("aana.tests.files.expected", "")
+            resources.files("aana.tests.files.expected")
             / "hf_pipeline"
             / f"{deployment_name}_{image_name}.json"
         )
-        path = resources.path("aana.tests.files.images", image_name)
+        path = resources.files("aana.tests.files.images") / image_name
         image = Image(path=path, save_on_disk=False, media_id=image_name)
 
         output = await handle.call(images=image)
