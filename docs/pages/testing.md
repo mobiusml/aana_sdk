@@ -74,7 +74,7 @@ For example,
 
 ```python
 expected_output_path = (
-    resources.path("aana.tests.files.expected", "")
+    resources.files("aana.tests.files.expected")
     / "whisper"
     / f"{deployment_name}_{audio_file}.json"
 )
@@ -154,13 +154,13 @@ class TestWhisperDeployment:
         # - The name of the subdirectory for the deployment (whisper), should be changed for each deployment type.
         # - File name with based on the parameters (deployment_name, audio_file, etc.).
         expected_output_path = (
-            resources.path("aana.tests.files.expected", "")
+            resources.files("aana.tests.files.expected")
             / "whisper"
             / f"{deployment_name}_{audio_file}.json"
         )
 
         # Run the deployment method.
-        path = resources.path("aana.tests.files.audios", audio_file)
+        path = resources.files("aana.tests.files.audios") / audio_file
         assert path.exists(), f"Audio not found: {path}"
 
         audio = Audio(path=path, media_id=audio_file)

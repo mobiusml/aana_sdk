@@ -45,12 +45,12 @@ class TestVadDeployment:
 
         audio_file_name = Path(audio_file).stem
         expected_output_path = (
-            resources.path("aana.tests.files.expected", "")
+            resources.files("aana.tests.files.expected")
             / "vad"
             / f"{audio_file_name}.json"
         )
 
-        path = resources.path("aana.tests.files.audios", audio_file)
+        path = resources.files("aana.tests.files.audios") / audio_file
         assert path.exists(), f"Audio not found: {path}"
 
         audio = Audio(path=path)
