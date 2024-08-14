@@ -80,11 +80,6 @@ def create_app():
     def start_app(deployments, endpoints):
         for deployment in deployments:
             deployment_instance = deployment["instance"]
-            if not is_gpu_available():
-                # if GPU is not available then we don't want to request GPU resources
-                deployment_instance = deployment_instance.options(
-                    ray_actor_options={"num_gpus": 0}
-                )
 
             app.register_deployment(
                 name=deployment["name"], instance=deployment_instance
