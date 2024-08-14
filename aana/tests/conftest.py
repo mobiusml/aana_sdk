@@ -76,6 +76,7 @@ def create_app():
     app.connect(
         port=portpicker.pick_unused_port(), show_logs=True, num_cpus=10
     )  # pretend we have 10 cpus for testing
+    app.migrate()
 
     def start_app(deployments, endpoints):
         for deployment in deployments:

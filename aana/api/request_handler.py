@@ -15,6 +15,7 @@ from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
+from aana.core.models.api import SDKStatus, SDKStatusResponse
 from aana.core.models.chat import ChatCompletion, ChatCompletionRequest, ChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.task import TaskId, TaskInfo
@@ -229,3 +230,46 @@ class RequestHandler:
                 "created": int(time.time()),
                 "choices": [{"index": 0, "message": response["message"]}],
             }
+
+    @app.get("/api/status", response_model=SDKStatusResponse)
+    async def status(self) -> SDKStatusResponse:
+        """The endpoint for checking the status of the application.
+
+        Returns:
+            SDKStatusResponse: The response containing the status of the application.
+        """
+        serve_status = serve.status()
+        message = ""
+        if any(
+            app.status == "DEPLOY_FAILED"
+            or app.status == "UNHEALTHY"
+            or app.status == "NOT_STARTED"
+            for app in serve_status.applications.values()
+        ):
+            sdk_status = SDKStatus.UNHEALTHY
+            error_messages = []
+            for app_name, app_status in serve_status.applications.items():
+                if (
+                    app_status.status == "DEPLOY_FAILED"
+                    or app_status.status == "UNHEALTHY"
+                ):
+                    for (
+                        deployment_name,
+                        deployment_status,
+                    ) in app_status.deployments.items():
+                        error_messages.append(
+                            f"Error: {deployment_name} ({app_name}): {deployment_status.message}"
+                        )
+            message = "\n".join(error_messages)
+        elif all(app.status == "RUNNING" for app in serve_status.applications.values()):
+            sdk_status = SDKStatus.RUNNING
+        elif any(
+            app.status == "DEPLOYING" or app.status == "DELETING"
+            for app in serve_status.applications.values()
+        ):
+            sdk_status = SDKStatus.DEPLOYING
+        else:
+            sdk_status = SDKStatus.UNHEALTHY
+            message = "Unknown status"
+
+        return SDKStatusResponse(status=sdk_status, message=message)
