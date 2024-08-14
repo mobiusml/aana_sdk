@@ -1,9 +1,10 @@
 from pathlib import Path
 
-from pydantic import field_validator
+from pydantic import ConfigDict, field_validator
 from pydantic_settings import BaseSettings
 
 from aana.configs.db import DbSettings
+from aana.core.models.base import pydantic_protected_fields
 
 
 class TestSettings(BaseSettings):
@@ -67,6 +68,10 @@ class Settings(BaseSettings):
         """Create the tmp_data_dir if it doesn't exist."""
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    model_config = ConfigDict(
+        protected_namespaces=("settings", *pydantic_protected_fields)
+    )
 
 
 settings = Settings()

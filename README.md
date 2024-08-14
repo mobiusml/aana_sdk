@@ -201,8 +201,9 @@ We provide a few example applications that demonstrate the capabilities of Aana 
 - [Chat with Video](https://github.com/mobiusml/aana_chat_with_video): A multimodal chat application that allows users to upload a video and ask questions about the video content based on the visual and audio information. See [Chat with Video Demo notebook](https://github.com/mobiusml/aana_chat_with_video/blob/main/notebooks/chat_with_video_demo.ipynb) to see how to use the application.
 - [Summarize Video](https://github.com/mobiusml/aana_summarize_video): An Aana application that summarizes a video by extracting transcription from the audio and generating a summary using a Language Model (LLM). This application is a part of the [tutorial](https://mobiusml.github.io/aana_sdk/pages/tutorial/) on how to build multimodal applications with Aana SDK.
 
-
 See the README files of the applications for more information on how to install and run them.
+
+The full list of example applications is available in the [Aana Examples](https://github.com/mobiusml/aana_examples) repository. You can use these examples as a starting point for building your own applications.
 
 ### Main components
 
@@ -210,7 +211,7 @@ There are three main components in Aana SDK: deployments, endpoints, and AanaSDK
 
 #### Deployments
 
-Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](#integrations) section for more information about predefined deployments.
+Deployments are the building blocks of Aana SDK. They represent the machine learning models that you want to deploy. Aana SDK comes with a set of predefined deployments that you can use or you can define your own deployments. See [Integrations](https://mobiusml.github.io/aana_sdk/pages/integrations/) for more information about predefined deployments.
 
 Each deployment has a main class that defines it and a configuration class that allows you to specify the deployment parameters.
 
@@ -279,12 +280,12 @@ All you need to do is define the deployments and endpoints you want to use in yo
 
 ## Serve Config Files
 
-The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications. See the [Serve Config Files documentation](docs/pages/serve_config_files.md) on how to build and deploy the applications using the Serve Config Files.
+The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications. See the [Serve Config Files documentation](https://mobiusml.github.io/aana_sdk/pages/serve_config_files/) on how to build and deploy the applications using the Serve Config Files.
 
 
 ## Run with Docker
 
-You can deploy example applications using Docker. See the [documentation on how to run Aana SDK with Docker](docs/pages/docker.md).
+You can deploy example applications using Docker. See the [documentation on how to run Aana SDK with Docker](https://mobiusml.github.io/aana_sdk/pages/docker/).
 
 ## Documentation
 
@@ -292,12 +293,12 @@ For more information on how to use Aana SDK, see the [documentation](https://mob
 
 ## License
 
-Aana SDK is licensed under the [Apache License 2.0](./LICENSE). Commercial licensing options are also available.
+Aana SDK is licensed under the [Apache License 2.0](https://github.com/mobiusml/aana_sdk?tab=Apache-2.0-1-ov-file#readme). Commercial licensing options are also available.
 
 ## Contributing
 
 We welcome contributions from the community to enhance Aana SDK's functionality and usability. Feel free to open issues for bug reports, feature requests, or submit pull requests to contribute code improvements.
 
-Check out the [Development Documentation](https://mobiusml.github.io/aana_sdk/pages/development/) for more information on how to contribute.
+Check out the [Development Documentation](https://mobiusml.github.io/aana_sdk/pages/code_overview/) for more information on how to contribute.
 
 We have adopted the [Contributor Covenant](https://www.contributor-covenant.org/) as our code of conduct.

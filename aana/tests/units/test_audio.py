@@ -15,7 +15,7 @@ def test_audio(audio_file):
     """Test that the audio can be created from path, url(pending), or content."""
     # Test creation from a path
     try:
-        path = resources.path("aana.tests.files.audios", audio_file)
+        path = resources.files("aana.tests.files.audios") / audio_file
         audio = Audio(path=path, save_on_disk=False)
         assert audio.path == path
         assert audio.content is None
@@ -39,7 +39,7 @@ def test_audio(audio_file):
 
     # Test creation from content
     try:
-        path = resources.path("aana.tests.files.audios", audio_file)
+        path = resources.files("aana.tests.files.audios") / audio_file
         content = path.read_bytes()
         audio = Audio(content=content, save_on_disk=False)
         assert audio.path is None
@@ -63,7 +63,7 @@ def test_save_audio(audio_file):
     """Test that save_on_disk works for audio."""
     # Test that the audio is saved to disk when save_on_disk is True
     try:
-        path = resources.path("aana.tests.files.audios", audio_file)
+        path = resources.files("aana.tests.files.audios") / audio_file
         audio = Audio(path=path, save_on_disk=True)
         assert audio.path == path
         assert audio.content is None
@@ -88,7 +88,7 @@ def test_save_audio(audio_file):
 def test_cleanup(audio_file):
     """Test that cleanup works for audios."""
     try:
-        path = resources.path("aana.tests.files.audios", audio_file)
+        path = resources.files("aana.tests.files.audios") / audio_file
         audio = Audio(path=path, save_on_disk=True)
         assert audio.path.exists()
     finally:
@@ -110,7 +110,7 @@ def test_at_least_one_input():
 def test_extract_audio():
     """Test download_video and extract_audio."""
     # Test VideoInput with video path (tests download_video and extract_audio): return audio bytes
-    path = resources.path("aana.tests.files.videos", "physicsworks.webm")
+    path = resources.files("aana.tests.files.videos") / "physicsworks.webm"
     video_input = VideoInput(path=str(path))
     video = download_video(video_input)
     assert isinstance(video, Video)
@@ -125,7 +125,7 @@ def test_extract_audio():
     assert audio.url is None
 
     # Test audio from VideoInput (for audio input): return audio bytes
-    path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+    path = resources.files("aana.tests.files.audios") / "physicsworks.wav"
     video_input = VideoInput(path=str(path))
     video = download_video(video_input)
     assert isinstance(video, Video)
@@ -136,7 +136,7 @@ def test_extract_audio():
     assert audio.url is None
 
     # Test audio from VideoInput (for no audio channel): return empty bytes
-    path = resources.path("aana.tests.files.videos", "squirrel_no_audio.mp4")
+    path = resources.files("aana.tests.files.videos") / "squirrel_no_audio.mp4"
     video_input = VideoInput(path=str(path))
     video = download_video(video_input)
     audio = extract_audio(video)
@@ -162,16 +162,16 @@ def test_extract_audio():
         audio.cleanup()
 
     # Test loading numpy from the Audio object
-    path = resources.path("aana.tests.files.audios", "physicsworks.wav")
+    path = resources.files("aana.tests.files.audios") / "physicsworks.wav"
     audio = Audio(path=path, save_on_disk=True)
     assert audio.get_numpy() is not None
 
-    path = resources.path("aana.tests.files.audios", "squirrel.wav")
+    path = resources.files("aana.tests.files.audios") / "squirrel.wav"
     audio = Audio(path=path, save_on_disk=True)
     assert audio.get_numpy().all() == 0
 
     # Test content of Audio objects created in different ways from same source video is the same.
-    video_path = resources.path("aana.tests.files.videos", "physicsworks.webm")
+    video_path = resources.files("aana.tests.files.videos") / "physicsworks.webm"
     video = Video(path=video_path)
     extracted_audio_1 = extract_audio(video)
 

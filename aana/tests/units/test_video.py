@@ -15,7 +15,7 @@ def test_video():
     """Test that the video can be created from path, url, or content."""
     # Test creation from a path
     try:
-        path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+        path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
         video = Video(path=path, save_on_disk=False)
         assert video.path == path
         assert video.content is None
@@ -41,7 +41,7 @@ def test_video():
 
     # Test creation from content
     try:
-        path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+        path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
         content = path.read_bytes()
         video = Video(content=content, save_on_disk=False)
         assert video.path is None
@@ -80,7 +80,7 @@ def test_save_video():
     """Test that save_on_disk works for video."""
     # Test that the video is saved to disk when save_on_disk is True
     try:
-        path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+        path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
         video = Video(path=path, save_on_disk=True)
         assert video.path == path
         assert video.content is None
@@ -102,7 +102,7 @@ def test_save_video():
 
     # Test saving from content to disk
     try:
-        path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+        path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
         content = path.read_bytes()
         video = Video(content=content, save_on_disk=True)
         assert video.content == content
@@ -123,7 +123,7 @@ def test_cleanup():
         assert not video.path.exists()
 
     try:
-        path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+        path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
         video = Video(path=path, save_on_disk=True)
         assert video.path.exists()
     finally:
@@ -145,7 +145,7 @@ def test_at_least_one_input():
 def test_download_video():
     """Test download_video."""
     # Test VideoInput with path
-    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
     video_input = VideoInput(path=str(path))
     video = download_video(video_input)
     assert isinstance(video, Video)
@@ -174,7 +174,7 @@ def test_download_video():
         download_video(video_input)
 
     # Test Video object as input
-    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
     video = Video(path=path)
     downloaded_video = download_video(video)
     assert downloaded_video == video
