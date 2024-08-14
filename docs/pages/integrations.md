@@ -1,6 +1,6 @@
 # Deployments
 
-Aana SDK comes with a set of predefined deployments that you can use out of the box to deploy models.
+Aana SDK comes with a set of predefined deployments that you can use out of the box to deploy models. See [Model Hub](./model_hub/index.md) for a collection of configurations for different models that can be used with the predefined deployments.
 
 ## Whisper
 

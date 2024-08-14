@@ -19,6 +19,7 @@ As an example, let's see how to configure the Hugging Face Pipeline deployment t
     
     ```python
     from transformers import BitsAndBytesConfig
+    from aana.deployments.hf_pipeline_deployment import HfPipelineConfig, HfPipelineDeployment
 
     HfPipelineDeployment.options(
         num_replicas=1,
