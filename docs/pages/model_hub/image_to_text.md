@@ -24,6 +24,9 @@ As an example, let's see how to configure the Idefics2 deployment for the [Huggi
 !!! example "Hugging Face Idefics2 8B"
 
     ```python
+    from aana.core.models.types import Dtype
+    from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
+
     Idefics2Deployment.options(
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.85},
@@ -54,6 +57,9 @@ As an example, let's see how to configure the BLIP-2 deployment for the [Salesfo
 !!! example "BLIP-2 OPT-2.7b"
 
     ```python
+    from aana.core.models.types import Dtype
+    from aana.deployments.hf_blip2_deployment import HFBlip2Config, HFBlip2Deployment
+
     HFBlip2Deployment.options(
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.25},

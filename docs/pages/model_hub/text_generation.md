@@ -26,6 +26,10 @@ As an example, let's see how to configure the vLLM deployment for the [Meta Llam
 !!! example "Meta Llama 3 8B Instruct"
 
     ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.core.models.types import Dtype
+    from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
     VLLMDeployment.options(
         num_replicas=1,
         max_ongoing_requests=1000,
@@ -51,6 +55,10 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
 ??? example "Llama 2 7B Cha t with AWQ quantization"
 
     ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.core.models.types import Dtype
+    from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
     VLLMDeployment.options(
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.25},
@@ -71,6 +79,10 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
 ??? example "InternLM 2.5 7B Chat"
 
     ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.core.models.types import Dtype
+    from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
     VLLMDeployment.options(
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.45},
@@ -91,6 +103,10 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
 ??? example "Phi 3 Mini 4K Instruct"
 
     ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.core.models.types import Dtype
+    from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
     VLLMDeployment.options(
         num_replicas=1,
         max_ongoing_requests=1000,
@@ -128,6 +144,8 @@ As an example, let's see how to configure the Hugging Face Text Generation deplo
 !!! example "Phi 3 Mini 4K Instruct"
 
     ```python
+    from aana.deployments.hf_text_generation_deployment import HfTextGenerationConfig, HfTextGenerationDeployment
+
     HfTextGenerationDeployment.options(
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.25},
@@ -149,6 +167,8 @@ Here are other example configurations for the Hugging Face Text Generation deplo
 
     ```python
     from transformers import BitsAndBytesConfig
+    from aana.deployments.hf_text_generation_deployment import HfTextGenerationConfig, HfTextGenerationDeployment
+
     HfTextGenerationDeployment.options(
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.25},

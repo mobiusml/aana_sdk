@@ -19,6 +19,8 @@ As an example, let's see how to configure the Whisper deployment for the [Whispe
 !!! example "Whisper Medium"
     
     ```python
+    from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
+
     WhisperDeployment.options(
         num_replicas=1,
         max_ongoing_requests=1000,
@@ -37,6 +39,8 @@ Here are some other possible configurations for the Whisper deployment:
 ??? example "Whisper Tiny on CPU"
     
     ```python
+    from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
+
     # for CPU do not specify num_gpus and use FLOAT32 compute type
     WhisperDeployment.options(
         num_replicas=1,
