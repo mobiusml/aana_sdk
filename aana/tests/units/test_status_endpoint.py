@@ -1,7 +1,10 @@
 # ruff: noqa: S101, S113
+import asyncio
 import json
+import os
 from typing import TypedDict
 
+import pytest
 import requests
 from ray import serve
 
@@ -23,6 +26,9 @@ class Lowercase(BaseDeployment):
         Returns:
             dict: The lowercase text
         """
+        # kill the deployment if the text is "kill"
+        if text == "kill":
+            os._exit(0)
         return {"text": text.lower()}
 
 
@@ -72,24 +78,39 @@ endpoints = [
 ]
 
 
-def test_app(create_app):
-    """Test the Ray Serve app."""
+def get_status(app):
+    """Get the status of the app."""
+    response = requests.get(f"http://localhost:{app.port}/api/status")
+    return response.json()
+
+
+@pytest.mark.asyncio
+async def test_status_endpoint(create_app):
+    """Test SDK status endpoint."""
     aana_app = create_app(deployments, endpoints)
 
-    port = aana_app.port
-    route_prefix = ""
+    status = get_status(aana_app)
+    assert status["status"] == "RUNNING"
 
-    # Check that the server is ready
-    response = requests.get(f"http://localhost:{port}{route_prefix}/api/ready")
-    assert response.status_code == 200
-    assert response.json() == {"ready": True}
+    # kill the deployment
+    response = requests.post(  # noqa: ASYNC100
+        f"http://localhost:{aana_app.port}/lowercase",
+        data={"body": json.dumps({"text": "kill"})},
+    ).json()
+    assert "error" in response
 
-    # Test lowercase endpoint
-    data = {"text": "Hello World! This is a test."}
-    response = requests.post(
-        f"http://localhost:{port}{route_prefix}/lowercase",
-        data={"body": json.dumps(data)},
-    )
-    assert response.status_code == 200
-    lowercase_text = response.json().get("text")
-    assert lowercase_text == "hello world! this is a test."
+    # Wait for the UNHEALTHY status for 30 seconds
+    for _ in range(30):
+        status = get_status(aana_app)
+        if status["status"] == "UNHEALTHY":
+            break
+        await asyncio.sleep(1)
+    assert status["status"] == "UNHEALTHY"
+
+    # Wait for the RUNNING status for 30 seconds (deployment should restart and be healthy again)
+    for _ in range(30):
+        status = get_status(aana_app)
+        if status["status"] == "RUNNING":
+            break
+        await asyncio.sleep(1)
+    assert status["status"] == "RUNNING"
