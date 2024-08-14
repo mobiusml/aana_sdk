@@ -77,7 +77,7 @@ class TestTextGenerationDeployments:
 
         query_hash = get_object_hash(query)
         expected_output_path = (
-            resources.path("aana.tests.files.expected", "")
+            resources.files("aana.tests.files.expected")
             / "text_generation"
             / f"{deployment_name}_{query_hash}.json"
         )

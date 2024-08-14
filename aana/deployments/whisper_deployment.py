@@ -4,7 +4,7 @@ from typing import Any, cast
 
 import torch
 from faster_whisper import WhisperModel
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 from typing_extensions import TypedDict
 
@@ -14,6 +14,7 @@ from aana.core.models.asr import (
     AsrTranscriptionInfo,
 )
 from aana.core.models.audio import Audio
+from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.whisper import (
     WhisperParams,
 )
@@ -94,6 +95,8 @@ class WhisperConfig(BaseModel):
     compute_type: WhisperComputeType = Field(
         default=WhisperComputeType.FLOAT16, description="The compute type."
     )
+
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
 class WhisperOutput(TypedDict):

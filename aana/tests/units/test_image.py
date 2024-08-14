@@ -19,7 +19,7 @@ def load_numpy_from_image_bytes(content: bytes) -> np.ndarray:
 def mock_download_file(mocker):
     """Mock download_file function in both media and image modules."""
     # Path to the file to be used as mock return value
-    path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+    path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
     content = path.read_bytes()
 
     # Mock for aana.core.models.media.download_file
@@ -41,7 +41,7 @@ def mock_download_file(mocker):
 def test_image(mock_download_file):
     """Test that the image can be created from path, url, content, or numpy."""
     try:
-        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
         image = Image(path=path, save_on_disk=False)
         assert image.path == path
         assert image.content is None
@@ -75,7 +75,7 @@ def test_image(mock_download_file):
         image.cleanup()
 
     try:
-        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
         content = path.read_bytes()
         image = Image(content=content, save_on_disk=False)
         assert image.path is None
@@ -120,7 +120,7 @@ def test_image_path_not_exist():
 def test_save_image(mock_download_file):
     """Test that save_on_disk works."""
     try:
-        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
         image = Image(path=path, save_on_disk=True)
         assert image.path == path
         assert image.content is None
@@ -143,7 +143,7 @@ def test_save_image(mock_download_file):
         image.cleanup()
 
     try:
-        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
         content = path.read_bytes()
         image = Image(content=content, save_on_disk=True)
         assert image.content == content
@@ -187,7 +187,7 @@ def test_at_least_one_input():
 def test_get_pil_image():
     """Test that get_pil_image method."""
     try:
-        path = resources.path("aana.tests.files.images", "Starry_Night.jpeg")
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
         image = Image(path=path, save_on_disk=False)
         pil_image = image.get_pil_image()
         assert isinstance(pil_image, PIL.Image.Image)

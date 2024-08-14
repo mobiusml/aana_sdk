@@ -14,7 +14,7 @@ from aana.storage.repository.video import VideoRepository
 def dummy_video():
     """Creates a dummy video for testing."""
     media_id = str(uuid.uuid4())
-    path = resources.path("aana.tests.files.videos", "squirrel.mp4")
+    path = resources.files("aana.tests.files.videos") / "squirrel.mp4"
     video = Video(path=path, media_id=media_id)
     return video
 
