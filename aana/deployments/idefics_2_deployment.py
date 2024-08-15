@@ -6,7 +6,7 @@ from typing import Any
 
 import torch
 import transformers
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
 from transformers import (
     AutoModelForVision2Seq,
@@ -42,7 +42,7 @@ class Idefics2Config(BaseModel):
     """The configuration for the Idefics 2 model.
 
     Attributes:
-        model (str): The model ID on HuggingFace.
+        model_id (str): The model ID on HuggingFace.
         dtype (Dtype): The data type. Defaults to Dtype.AUTO.
         enable_flash_attention_2 (bool | None): Use Flash Attention 2. If None, Flash Attention 2 wii be enabled if available. Defaults to None.
         do_image_splitting (bool): Do image splitting. Defaults to False.
@@ -50,7 +50,7 @@ class Idefics2Config(BaseModel):
         default_sampling_params (SamplingParams): The default sampling parameters. Defaults to SamplingParams(temperature=1.0, max_tokens=256).
     """
 
-    model: str
+    model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
     model_kwargs: CustomConfig = {}
     enable_flash_attention_2: bool | None = Field(default=None)
     do_image_splitting: bool = Field(default=False)
@@ -76,7 +76,7 @@ class Idefics2Deployment(BaseDeployment):
         """
         config_obj = Idefics2Config(**config)
 
-        self.model_id = config_obj.model
+        self.model_id = config_obj.model_id
         self.model_kwargs = config_obj.model_kwargs
         self.dtype = config_obj.dtype
         self.default_sampling_params = config_obj.default_sampling_params

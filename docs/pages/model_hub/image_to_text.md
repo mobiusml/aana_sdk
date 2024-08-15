@@ -31,7 +31,7 @@ As an example, let's see how to configure the Idefics2 deployment for the [Huggi
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.85},
         user_config=Idefics2Config(
-            model="HuggingFaceM4/idefics2-8b",
+            model_id="HuggingFaceM4/idefics2-8b",
             dtype=Dtype.FLOAT16,
         ).model_dump(mode="json"),
     )
@@ -64,7 +64,7 @@ As an example, let's see how to configure the BLIP-2 deployment for the [Salesfo
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.25},
         user_config=HFBlip2Config(
-            model="Salesforce/blip2-opt-2.7b",
+            model_id="Salesforce/blip2-opt-2.7b",
             dtype=Dtype.FLOAT16,
             batch_size=2,
             num_processing_threads=2,

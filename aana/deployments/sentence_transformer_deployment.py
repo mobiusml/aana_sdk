@@ -1,7 +1,7 @@
 from typing import Any
 
 import numpy as np
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
 from sentence_transformers import SentenceTransformer
 from typing_extensions import TypedDict
@@ -16,12 +16,12 @@ class SentenceTransformerConfig(BaseModel):
     """The configuration for the BLIP2 deployment with HuggingFace models.
 
     Attributes:
-        model (str): the model ID on HuggingFace
+        model_id (str): the model ID on HuggingFace
         batch_size (int): the batch size (optional, default: 1)
         num_processing_threads (int): the number of processing threads (optional, default: 1)
     """
 
-    model: str
+    model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
     batch_size: int = Field(default=1)
     num_processing_threads: int = Field(default=1)
 
@@ -66,7 +66,7 @@ class SentenceTransformerDeployment(BaseDeployment):
             num_threads=self.num_processing_threads,
         )
 
-        self.model_id = config_obj.model
+        self.model_id = config_obj.model_id
 
         self.model = SentenceTransformer(self.model_id)
 
