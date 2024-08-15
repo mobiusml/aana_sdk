@@ -223,7 +223,9 @@ class AanaSDK:
             Application: The main application instance.
         """
         return RequestHandler.options(num_replicas=aana_settings.num_workers).bind(
-            endpoints=self.endpoints.values()
+            app_name=self.name,
+            endpoints=self.endpoints.values(),
+            deployments=list(self.deployments.keys()),
         )
 
     def register_endpoint(

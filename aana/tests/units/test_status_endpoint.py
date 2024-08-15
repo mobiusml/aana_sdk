@@ -106,6 +106,9 @@ async def test_status_endpoint(create_app):
             break
         await asyncio.sleep(1)
     assert status["status"] == "UNHEALTHY"
+    assert len(status["message"]) > 0
+    assert status["deployments"]["lowercase_deployment"]["status"] == "UNHEALTHY"
+    assert len(status["deployments"]["lowercase_deployment"]["message"]) > 0
 
     # Wait for the RUNNING status for 30 seconds (deployment should restart and be healthy again)
     for _ in range(30):
@@ -114,3 +117,6 @@ async def test_status_endpoint(create_app):
             break
         await asyncio.sleep(1)
     assert status["status"] == "RUNNING"
+    assert len(status["message"]) == 0
+    assert status["deployments"]["lowercase_deployment"]["status"] == "RUNNING"
+    assert len(status["deployments"]["lowercase_deployment"]["message"]) == 0
