@@ -35,7 +35,7 @@ As an example, let's see how to configure the vLLM deployment for the [Meta Llam
         max_ongoing_requests=1000,
         ray_actor_options={"num_gpus": 0.45},
         user_config=VLLMConfig(
-            model="meta-llama/Meta-Llama-3-8B-Instruct",
+            model_id="meta-llama/Meta-Llama-3-8B-Instruct",
             dtype=Dtype.AUTO,
             gpu_memory_reserved=30000,
             enforce_eager=True,
@@ -63,7 +63,7 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.25},
         user_config=VLLMConfig(
-            model="TheBloke/Llama-2-7b-Chat-AWQ",
+            model_id="TheBloke/Llama-2-7b-Chat-AWQ",
             dtype=Dtype.AUTO,
             quantization="awq",
             gpu_memory_reserved=13000,
@@ -87,7 +87,7 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
         num_replicas=1,
         ray_actor_options={"num_gpus": 0.45},
         user_config=VLLMConfig(
-            model="internlm/internlm2_5-7b-chat",
+            model_id="internlm/internlm2_5-7b-chat",
             dtype=Dtype.AUTO,
             gpu_memory_reserved=30000,
             max_model_len=50000,
@@ -112,7 +112,7 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
         max_ongoing_requests=1000,
         ray_actor_options={"num_gpus": 0.25},
         user_config=VLLMConfig(
-            model="microsoft/Phi-3-mini-4k-instruct",
+            model_id="microsoft/Phi-3-mini-4k-instruct",
             dtype=Dtype.AUTO,
             gpu_memory_reserved=10000,
             enforce_eager=True,

@@ -2,7 +2,7 @@ import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
@@ -33,7 +33,7 @@ class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
 
     Attributes:
-        model (str): The model name.
+        model_id (str): The model name.
         dtype (Dtype): The data type. Defaults to Dtype.AUTO.
         quantization (str | None): The quantization method. Defaults to None.
         gpu_memory_reserved (float): The GPU memory reserved for the model in MB.
@@ -47,7 +47,7 @@ class VLLMConfig(BaseModel):
         engine_args (CustomConfig): Extra engine arguments. Defaults to {}.
     """
 
-    model: str
+    model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
     dtype: Dtype = Field(default=Dtype.AUTO)
     quantization: str | None = Field(default=None)
     gpu_memory_reserved: float
@@ -74,7 +74,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         It loads the model and creates the engine.
 
         The configuration should contain the following keys:
-        - model: the model name
+        - model_id: the model name
         - dtype: the data type (optional, default: "auto")
         - quantization: the quantization method (optional, default: None)
         - gpu_memory_reserved: the GPU memory reserved for the model in mb
@@ -88,7 +88,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             config (dict): the configuration of the deployment
         """
         config_obj = VLLMConfig(**config)
-        self.model = config_obj.model
+        self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
         total_gpu_memory_mb = total_gpu_memory_bytes / 1024**2
         self.gpu_memory_utilization = (
@@ -100,7 +100,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         self.chat_template_name = config_obj.chat_template
 
         args = AsyncEngineArgs(
-            model=config_obj.model,
+            model=config_obj.model_id,
             dtype=config_obj.dtype,
             quantization=config_obj.quantization,
             enforce_eager=config_obj.enforce_eager,
@@ -171,4 +171,4 @@ class VLLMDeployment(BaseTextGenerationDeployment):
                 await self.engine.abort(request_id)
             raise
         except Exception as e:
-            raise InferenceException(model_name=self.model) from e
+            raise InferenceException(model_name=self.model_id) from e
