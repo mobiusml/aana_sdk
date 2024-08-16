@@ -15,6 +15,7 @@ from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
+from aana.core.models.api import DeploymentStatus, SDKStatus, SDKStatusResponse
 from aana.core.models.chat import ChatCompletion, ChatCompletionRequest, ChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.task import TaskId, TaskInfo
@@ -39,13 +40,19 @@ class RequestHandler:
 
     ready = False
 
-    def __init__(self, endpoints: list[Endpoint]):
+    def __init__(
+        self, app_name: str, endpoints: list[Endpoint], deployments: list[str]
+    ):
         """Constructor.
 
         Args:
-            endpoints (dict): List of endpoints for the request
+            app_name (str): The name of the application.
+            endpoints (dict): List of endpoints for the request.
+            deployments (list[str]): List of deployment names for the app.
         """
+        self.app_name = app_name
         self.endpoints = endpoints
+        self.deployments = deployments
 
         self.event_manager = EventManager()
         self.custom_schemas: dict[str, dict] = {}
@@ -229,3 +236,64 @@ class RequestHandler:
                 "created": int(time.time()),
                 "choices": [{"index": 0, "message": response["message"]}],
             }
+
+    @app.get("/api/status", response_model=SDKStatusResponse)
+    async def status(self) -> SDKStatusResponse:
+        """The endpoint for checking the status of the application."""
+        app_names = [
+            self.app_name,
+            *self.deployments,
+        ]  # the list of Ray Serve apps that belong to this Aana app
+        serve_status = serve.status()
+        app_statuses = {
+            app_name: app_status
+            for app_name, app_status in serve_status.applications.items()
+            if app_name in app_names
+        }
+
+        app_status_message = ""
+        if any(
+            app.status in ["DEPLOY_FAILED", "UNHEALTHY", "NOT_STARTED"]
+            for app in app_statuses.values()
+        ):
+            sdk_status = SDKStatus.UNHEALTHY
+            error_messages = []
+            for app_name, app_status in app_statuses.items():
+                if app_status.status in ["DEPLOY_FAILED", "UNHEALTHY"]:
+                    for (
+                        deployment_name,
+                        deployment_status,
+                    ) in app_status.deployments.items():
+                        error_messages.append(
+                            f"Error: {deployment_name} ({app_name}): {deployment_status.message}"
+                        )
+            app_status_message = "\n".join(error_messages)
+        elif all(app.status == "RUNNING" for app in app_statuses.values()):
+            sdk_status = SDKStatus.RUNNING
+        elif any(
+            app.status in ["DEPLOYING", "DELETING"] for app in app_statuses.values()
+        ):
+            sdk_status = SDKStatus.DEPLOYING
+        else:
+            sdk_status = SDKStatus.UNHEALTHY
+            app_status_message = "Unknown status"
+
+        deployment_statuses = {}
+        for app_name, app_status in app_statuses.items():
+            messages = []
+            for deployment_name, deployment_status in app_status.deployments.items():
+                if deployment_status.message:
+                    messages.append(
+                        f"{deployment_name} ({app_name}): {deployment_status.message}"
+                    )
+            message = "\n".join(messages)
+
+            deployment_statuses[app_name] = DeploymentStatus(
+                status=app_status.status, message=message
+            )
+
+        return SDKStatusResponse(
+            status=sdk_status,
+            message=app_status_message,
+            deployments=deployment_statuses,
+        )
