@@ -195,7 +195,7 @@ aana_app.migrate()  # Runs the migrations to create the database tables.
 aana_app.deploy()   # Deploys the application.
 ```
 
-### Connecting to the DeploymentS
+### Connecting to the Deployments
 
 Once the application is deployed, you can also access the deployments from other processes or applications using the `AanaSDK` class. For example, you can access the ASR deployment like this:
 
