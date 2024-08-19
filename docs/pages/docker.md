@@ -1,6 +1,6 @@
 # Run with Docker
 
-We provide a docker-compose configuration to run the application in a Docker container in [Aana App Template](https://github.com/mobiusml/aana_app_template/?tab=readme-ov-file#running-with-docker).
+We provide a docker-compose configuration to run the application in a Docker container in [Aana App Template](https://github.com/mobiusml/aana_app_template/blob/main?tab=readme-ov-file#running-with-docker).
 
 Requirements:
 
@@ -8,8 +8,8 @@ Requirements:
 - Docker Compose >= 1.29.2
 - NVIDIA Driver >= 525.60.13
 
-You can edit the [Dockerfile](https://github.com/mobiusml/aana_app_template/Dockerfile.yaml) to assemble the image as you desire and
-and [docker-compose file](https://github.com/mobiusml/aana_app_template/docker-compose.yaml) for container instances and their environment variables.
+You can edit the [Dockerfile](https://github.com/mobiusml/aana_app_template/blob/main/Dockerfile) to assemble the image as you desire and
+and [docker-compose file](https://github.com/mobiusml/aana_app_template/blob/main/docker-compose.yaml) for container instances and their environment variables.
 
 To run the application, simply run the following command:
 
