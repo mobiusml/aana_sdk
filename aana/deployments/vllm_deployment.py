@@ -2,7 +2,7 @@ import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
@@ -10,6 +10,7 @@ from vllm.inputs import TokensPrompt
 
 from aana.core.models.base import merged_options
 from aana.core.models.custom_config import CustomConfig
+from aana.core.models.types import Dtype
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
@@ -32,22 +33,22 @@ class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
 
     Attributes:
-        model (str): The model name.
-        dtype (str): The data type. Defaults to "auto".
-        quantization (str): The quantization method. Defaults to None.
+        model_id (str): The model name.
+        dtype (Dtype): The data type. Defaults to Dtype.AUTO.
+        quantization (str | None): The quantization method. Defaults to None.
         gpu_memory_reserved (float): The GPU memory reserved for the model in MB.
         default_sampling_params (SamplingParams): The default sampling parameters.
             Defaults to SamplingParams(temperature=0, max_tokens=256).
-        max_model_len (int): The maximum generated text length in tokens. Defaults to None.
-        chat_template (str): The name of the chat template. If not provided, the chat template
+        max_model_len (int | None): The maximum generated text length in tokens. Defaults to None.
+        chat_template (str | None): The name of the chat template. If not provided, the chat template
             from the model will be used. Some models may not have a chat template.
             Defaults to None.
         enforce_eager (bool): Whether to enforce eager execution. Defaults to False.
         engine_args (CustomConfig): Extra engine arguments. Defaults to {}.
     """
 
-    model: str
-    dtype: str | None = Field(default="auto")
+    model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
+    dtype: Dtype = Field(default=Dtype.AUTO)
     quantization: str | None = Field(default=None)
     gpu_memory_reserved: float
     default_sampling_params: SamplingParams = SamplingParams(
@@ -55,7 +56,7 @@ class VLLMConfig(BaseModel):
     )
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
-    enforce_eager: bool | None = Field(default=False)
+    enforce_eager: bool = Field(default=False)
     engine_args: CustomConfig = {}
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
@@ -73,7 +74,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         It loads the model and creates the engine.
 
         The configuration should contain the following keys:
-        - model: the model name
+        - model_id: the model name
         - dtype: the data type (optional, default: "auto")
         - quantization: the quantization method (optional, default: None)
         - gpu_memory_reserved: the GPU memory reserved for the model in mb
@@ -87,7 +88,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             config (dict): the configuration of the deployment
         """
         config_obj = VLLMConfig(**config)
-        self.model = config_obj.model
+        self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
         total_gpu_memory_mb = total_gpu_memory_bytes / 1024**2
         self.gpu_memory_utilization = (
@@ -99,7 +100,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         self.chat_template_name = config_obj.chat_template
 
         args = AsyncEngineArgs(
-            model=config_obj.model,
+            model=config_obj.model_id,
             dtype=config_obj.dtype,
             quantization=config_obj.quantization,
             enforce_eager=config_obj.enforce_eager,
@@ -170,4 +171,4 @@ class VLLMDeployment(BaseTextGenerationDeployment):
                 await self.engine.abort(request_id)
             raise
         except Exception as e:
-            raise InferenceException(model_name=self.model) from e
+            raise InferenceException(model_name=self.model_id) from e

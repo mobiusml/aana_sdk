@@ -85,8 +85,8 @@ class WhisperConfig(BaseModel):
     """The configuration for the whisper deployment from faster-whisper.
 
     Attributes:
-        model_size (WhisperModelSize): The whisper model size.
-        compute_type (WhisperComputeType): The compute type.
+        model_size (WhisperModelSize): The whisper model size. Defaults to WhisperModelSize.BASE.
+        compute_type (WhisperComputeType): The compute type. Defaults to WhisperComputeType.FLOAT16.
     """
 
     model_size: WhisperModelSize = Field(

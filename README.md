@@ -227,6 +227,8 @@ asr_deployment = WhisperDeployment.options(
 )
 ```
 
+See [Model Hub](https://mobiusml.github.io/aana_sdk/pages/model_hub/) for a collection of configurations for different models that can be used with the predefined deployments.
+
 #### Endpoints
 
 Endpoints define the functionality of your application. They allow you to connect multiple deployments (models) to each other and define the input and output of your application.
