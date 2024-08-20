@@ -1,6 +1,6 @@
 # Deployments
 
-Aana SDK comes with a set of predefined deployments that you can use out of the box to deploy models.
+Aana SDK comes with a set of predefined deployments that you can use out of the box to deploy models. See [Model Hub](./model_hub/index.md) for a collection of configurations for different models that can be used with the predefined deployments.
 
 ## Whisper
 
@@ -31,7 +31,7 @@ VLLMDeployment.options(
     num_replicas=1,
     ray_actor_options={"num_gpus": 1},
     user_config=VLLMConfig(
-        model="meta-llama/Meta-Llama-3-8B-Instruct",
+        model_id="meta-llama/Meta-Llama-3-8B-Instruct",
         dtype=Dtype.AUTO,
         gpu_memory_reserved=30000,
         enforce_eager=True,
@@ -57,7 +57,7 @@ Idefics2Deployment.options(
     num_replicas=1,
     ray_actor_options={"num_gpus": 0.85},
     user_config=Idefics2Config(
-        model="HuggingFaceM4/idefics2-8b",
+        model_id="HuggingFaceM4/idefics2-8b",
         dtype=Dtype.FLOAT16,
         enable_flash_attention_2=True,
     ).model_dump(mode="json"),
