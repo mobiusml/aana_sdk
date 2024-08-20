@@ -226,3 +226,14 @@ def test_task_queue(create_app):
 
     assert task_status == "completed"
     assert [chunk["text"] for chunk in result] == lowercase_text
+
+    # Send 30 tasks to the task queue
+    task_ids = []
+    for i in range(30):
+        data = {"text": [f"Task {i}"]}
+        response = requests.post(
+            f"http://localhost:{port}{route_prefix}/lowercase_stream?defer=True",
+            data={"body": json.dumps(data)},
+        )
+        assert response.status_code == 200
+        task_ids.append(response.json().get("task_id"))

@@ -42,7 +42,9 @@ class TaskQueueDeployment(BaseDeployment):
         """Check the health of the deployment."""
         # if the loop is not running, the deployment is unhealthy
         if self.loop_task.done():
-            raise RuntimeError("Task queue loop is not running")  # noqa: TRY003
+            raise RuntimeError(  # noqa: TRY003
+                "Task queue loop is not running"
+            ) from self.loop_task.exception()
 
     def __del__(self):
         """Clean up the deployment."""
@@ -75,20 +77,23 @@ class TaskQueueDeployment(BaseDeployment):
 
         async def handle_task(task_id: str):
             """Process a task."""
+            session = get_session()
+            task_repo = TaskRepository(session)
+
             # Fetch the task details
-            task = self.task_repo.read(task_id)
+            task = task_repo.read(task_id)
             # Initially set the task status to RUNNING
-            self.task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
+            task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
             try:
                 # Call the endpoint asynchronously
                 out = await self.handle.call_endpoint.remote(task.endpoint, **task.data)
                 # Update the task status to COMPLETED
-                self.task_repo.update_status(task_id, TaskStatus.COMPLETED, 100, out)
+                task_repo.update_status(task_id, TaskStatus.COMPLETED, 100, out)
             except Exception as e:
                 # Handle the exception and update the task status to FAILED
                 error_response = custom_exception_handler(None, e)
                 error = orjson.loads(error_response.body)
-                self.task_repo.update_status(task_id, TaskStatus.FAILED, 0, error)
+                task_repo.update_status(task_id, TaskStatus.FAILED, 0, error)
 
         def run_handle_task(task_id):
             """Wrapper to run the handle_task function."""
