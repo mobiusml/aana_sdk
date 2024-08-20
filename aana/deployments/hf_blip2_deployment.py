@@ -2,7 +2,7 @@ from typing import Any
 
 import torch
 import transformers
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
 from transformers import Blip2ForConditionalGeneration, Blip2Processor
 from typing_extensions import TypedDict
@@ -20,14 +20,14 @@ class HFBlip2Config(BaseModel):
     """The configuration for the BLIP2 deployment with HuggingFace models.
 
     Attributes:
-        model (str): the model ID on HuggingFace
-        dtype (str): the data type (optional, default: "auto"), one of "auto", "float32", "float16"
-        batch_size (int): the batch size (optional, default: 1)
-        num_processing_threads (int): the number of processing threads (optional, default: 1)
-        max_new_tokens (int): The maximum numbers of tokens to generate. (optional, default: 64)
+        model_id (str): The model ID on HuggingFace.
+        dtype (Dtype): The data type. Defaults to Dtype.AUTO.
+        batch_size (int): The batch size. Defaults to 1.
+        num_processing_threads (int): The number of processing threads. Defaults to 1.
+        max_new_tokens (int): The maximum numbers of tokens to generate. Defaults to 64.
     """
 
-    model: str
+    model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
     dtype: Dtype = Field(default=Dtype.AUTO)
     batch_size: int = Field(default=1)
     num_processing_threads: int = Field(default=1)
@@ -85,7 +85,7 @@ class HFBlip2Deployment(BaseDeployment):
         )
 
         # Load the model and processor for BLIP2 from HuggingFace
-        self.model_id = config_obj.model
+        self.model_id = config_obj.model_id
         self.dtype = config_obj.dtype
         if self.dtype == Dtype.INT8:
             load_in_8bit = True

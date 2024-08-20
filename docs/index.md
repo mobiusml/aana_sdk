@@ -264,6 +264,8 @@ asr_deployment = WhisperDeployment.options(
 )
 ```
 
+See [Model Hub](./pages/model_hub/index.md) for a collection of configurations for different models that can be used with the predefined deployments.
+
 #### Endpoints
 
 Endpoints define the functionality of your application. They allow you to connect multiple deployments (models) to each other and define the input and output of your application.

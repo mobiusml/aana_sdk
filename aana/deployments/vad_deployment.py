@@ -45,12 +45,12 @@ class VadConfig(BaseModel):
     """The configuration for the vad deployment.
 
     Attributes:
-        model (str): Model file url.
-        onset (float): Threshold for voice activity, default 0.5.
-        offset (float): Threshold for silence, default 0.363.
-        min_duration_on (float): Minimum voiced duration, default 0.1.
-        min_duration_off (float): Minimum silence duration, default 0.1.
-        sample_rate (int): The sample rate of the audio, default 16000.
+        model (str): The model url.
+        onset (float): The onset threshold. Defaults to 0.500.
+        offset (float): The offset threshold. Defaults to 0.363.
+        min_duration_on (float): The minimum duration for voice activity. Defaults to 0.1.
+        min_duration_off (float): The minimum duration for silence. Defaults to 0.1.
+        sample_rate (int): The sample rate of the audio. Defaults to 16000.
     """
 
     model: str = Field(
