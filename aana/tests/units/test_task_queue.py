@@ -11,10 +11,6 @@ from ray import serve
 from aana.api.api_generation import Endpoint
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.base_deployment import BaseDeployment
-from aana.deployments.task_queue_deployment import (
-    TaskQueueConfig,
-    TaskQueueDeployment,
-)
 
 
 @serve.deployment
@@ -95,13 +91,6 @@ deployments = [
     {
         "name": "lowercase_deployment",
         "instance": Lowercase,
-    },
-    {
-        "name": "task_queue_deployment",
-        "instance": TaskQueueDeployment.options(
-            num_replicas=1,
-            user_config=TaskQueueConfig(app_name="app").model_dump(mode="json"),
-        ),
     },
 ]
 
