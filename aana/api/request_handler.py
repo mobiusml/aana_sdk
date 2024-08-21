@@ -112,10 +112,13 @@ class RequestHandler:
         if not endpoint.initialized:
             await endpoint.initialize()
 
-        if endpoint.is_streaming_response():
-            return [item async for item in endpoint.run(**kwargs)]
-        else:
-            return await endpoint.run(**kwargs)
+        try:
+            if endpoint.is_streaming_response():
+                return [item async for item in endpoint.run(**kwargs)]
+            else:
+                return await endpoint.run(**kwargs)
+        except ray.exceptions.RayTaskError as e:
+            raise e.cause from e
 
     @app.get(
         "/tasks/get/{task_id}",
