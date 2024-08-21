@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from pydantic import ConfigDict, field_validator
-from pydantic_settings import BaseSettings
+from pydantic import BaseModel, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from aana.configs.db import DbSettings
 from aana.core.models.base import pydantic_protected_fields
 
 
-class TestSettings(BaseSettings):
+class TestSettings(BaseModel):
     """A pydantic model for test settings.
 
     Attributes:
@@ -19,7 +19,7 @@ class TestSettings(BaseSettings):
     save_expected_output: bool = False
 
 
-class TaskQueueSettings(BaseSettings):
+class TaskQueueSettings(BaseModel):
     """A pydantic model for task queue settings.
 
     Attributes:
@@ -69,8 +69,10 @@ class Settings(BaseSettings):
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    model_config = ConfigDict(
-        protected_namespaces=("settings", *pydantic_protected_fields)
+    model_config = SettingsConfigDict(
+        protected_namespaces=("settings", *pydantic_protected_fields),
+        env_nested_delimiter="__",
+        env_ignore_empty=True,
     )
 
 
