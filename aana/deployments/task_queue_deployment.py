@@ -88,7 +88,29 @@ class TaskQueueDeployment(BaseDeployment):
             # Remove completed tasks from the list of running tasks
             running_task_ids = self.task_repo.remove_completed_tasks(running_task_ids)
 
-            # TODO: Add task timeout handling
+            # Check for expired tasks
+            execution_timeout = aana_settings.task_queue.execution_timeout
+            expired_tasks = self.task_repo.get_expired_tasks(execution_timeout)
+            for task in expired_tasks:
+                if task.num_retries >= aana_settings.task_queue.max_retries:
+                    self.task_repo.update_status(
+                        task_id=task.id,
+                        status=TaskStatus.FAILED,
+                        progress=0,
+                        result={
+                            "error": "TimeoutError",
+                            "message": (
+                                f"Task execution timed out after {execution_timeout} seconds and "
+                                f"exceeded the maximum number of retries ({aana_settings.task_queue.max_retries})"
+                            ),
+                        },
+                    )
+                else:
+                    self.task_repo.update_status(
+                        task_id=task.id,
+                        status=TaskStatus.ASSIGNED,
+                        progress=0,
+                    )
 
             # If the queue is full, wait and retry
             if len(running_task_ids) >= aana_settings.task_queue.num_workers:
@@ -105,8 +127,6 @@ class TaskQueueDeployment(BaseDeployment):
             if not tasks:
                 await asyncio.sleep(0.1)
                 continue
-            # else:
-            #     print(f"num_tasks_to_assign: {num_tasks_to_assign}, tasks: {tasks}")
 
             if not handle:
                 # Sometimes the app isn't available immediately after the deployment is created

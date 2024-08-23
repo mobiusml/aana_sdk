@@ -54,11 +54,15 @@ class TaskEntity(BaseEntity, TimeStampEntity):
     result: Mapped[dict | None] = mapped_column(
         JSON, comment="Result of the task in JSON format"
     )
+    num_retries: Mapped[int] = mapped_column(
+        nullable=False, default=0, comment="Number of retries"
+    )
 
     def __repr__(self) -> str:
         """String representation of the task."""
         return (
             f"<TaskEntity(id={self.id}, "
             f"endpoint={self.endpoint}, status={self.status}, "
-            f"priority={self.priority}, progress={self.progress})>"
+            f"priority={self.priority}, progress={self.progress}, "
+            f"num_retries={self.num_retries})>"
         )

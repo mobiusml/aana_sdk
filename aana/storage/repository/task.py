@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 from uuid import UUID
 
@@ -109,6 +109,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
             task.completed_at = datetime.now()  # noqa: DTZ005
         if status == TaskStatus.ASSIGNED:
             task.assigned_at = datetime.now()  # noqa: DTZ005
+            task.num_retries += 1
         if progress is not None:
             task.progress = progress
         task.status = status
@@ -152,3 +153,28 @@ class TaskRepository(BaseRepository[TaskEntity]):
         )
         incomplete_task_ids = [str(task.id) for task in tasks]
         return incomplete_task_ids
+
+    def get_expired_tasks(self, execution_timeout: float) -> list[TaskEntity]:
+        """Fetches all tasks that are expired.
+
+        The task is considered expired if it is in RUNNING or ASSIGNED state and the
+        updated_at time is older than the execution_timeout.
+
+        Args:
+            execution_timeout (float): The maximum execution time for a task in seconds
+
+        Returns:
+            list[TaskEntity]: the expired tasks.
+        """
+        cutoff_time = datetime.now() - timedelta(seconds=execution_timeout)  # noqa: DTZ005
+        tasks = (
+            self.session.query(TaskEntity)
+            .filter(
+                and_(
+                    TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED]),
+                    TaskEntity.updated_at <= cutoff_time,
+                ),
+            )
+            .all()
+        )
+        return tasks

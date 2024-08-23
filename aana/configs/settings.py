@@ -28,11 +28,13 @@ class TaskQueueSettings(BaseModel):
         execution_timeout (int): The maximum execution time for a task in seconds.
             After this time, if the task is still running,
             it will be considered as stuck and will be reassign to another worker.
+        max_retries (int): The maximum number of retries for a task.
     """
 
     enabled: bool = True
     num_workers: int = 4
     execution_timeout: int = 600
+    max_retries: int = 3
 
 
 class Settings(BaseSettings):
