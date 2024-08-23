@@ -45,6 +45,7 @@ class TaskEntity(BaseEntity, TimeStampEntity):
         comment="Timestamp when the task was assigned",
     )
     completed_at: Mapped[timestamp | None] = mapped_column(
+        server_default=None,
         comment="Timestamp when the task was completed",
     )
     progress: Mapped[float] = mapped_column(
@@ -56,4 +57,8 @@ class TaskEntity(BaseEntity, TimeStampEntity):
 
     def __repr__(self) -> str:
         """String representation of the task."""
-        return f"<TaskEntity(id={self.id}, endpoint={self.endpoint}, status={self.status}, priority={self.priority}, progress={self.progress})>"
+        return (
+            f"<TaskEntity(id={self.id}, "
+            f"endpoint={self.endpoint}, status={self.status}, "
+            f"priority={self.priority}, progress={self.progress})>"
+        )

@@ -226,3 +226,31 @@ def test_task_queue(create_app):
         )
         assert response.status_code == 200
         task_ids.append(response.json().get("task_id"))
+
+    # Check the task statusES with timeout of 10 seconds
+    start_time = time.time()
+    completed_tasks = []
+    while time.time() - start_time < 10:
+        for task_id in task_ids:
+            if task_id in completed_tasks:
+                continue
+            response = requests.get(
+                f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
+            )
+            task_status = response.json().get("status")
+            result = response.json().get("result")
+            if task_status == "completed":
+                completed_tasks.append(task_id)
+
+        if len(completed_tasks) == len(task_ids):
+            break
+        time.sleep(0.1)
+
+    # Check that all tasks are completed
+    for task_id in task_ids:
+        response = requests.get(
+            f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
+        )
+        response = response.json()
+        task_status = response.get("status")
+        assert task_status == "completed", response
