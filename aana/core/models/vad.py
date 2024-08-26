@@ -74,3 +74,41 @@ VadSegments = Annotated[
 """
 List of VadSegment objects.
 """
+
+
+class SDSegment(BaseModel):
+    """Pydantic schema for Segment from Speaker Diarization model.
+
+    Attributes:
+        time_interval (TimeInterval): The start and end time of the segment
+        speaker (str): speaker assignment of the model in the format "SPEAKER_XX"
+    """
+
+    time_interval: TimeInterval = Field(description="Time interval of the segment")
+    speaker: str = Field(description="speaker assignment from the model")
+
+    def to_whisper_dict(self) -> dict:
+        """Generate dictionary with start, end and speaker keys from SDSegment.
+
+        Returns:
+            dict: Dictionary with start, end and speaker keys
+        """
+        return {
+            "start": self.time_interval.start,
+            "end": self.time_interval.end,
+            "speaker": self.speaker,
+        }
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "SD Segment",
+        }
+    )
+
+
+SDSegments = Annotated[
+    list[SDSegment], Field(description="List of SD segments", default_factory=list)
+]
+"""
+List of SDSegment objects.
+"""
