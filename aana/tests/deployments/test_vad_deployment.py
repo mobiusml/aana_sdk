@@ -17,7 +17,7 @@ deployments = [
         VadDeployment.options(
             num_replicas=1,
             max_ongoing_requests=1000,
-            ray_actor_options={"num_gpus": 0.05},
+            ray_actor_options={"num_gpus": 0},
             user_config=VadConfig(
                 model=(
                     "https://whisperx.s3.eu-west-2.amazonaws.com/model_weights/segmentation/"
