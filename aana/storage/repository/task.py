@@ -146,7 +146,13 @@ class TaskRepository(BaseRepository[TaskEntity]):
             .filter(
                 and_(
                     TaskEntity.id.in_(task_ids),
-                    TaskEntity.status.not_in([TaskStatus.COMPLETED, TaskStatus.FAILED]),
+                    TaskEntity.status.not_in(
+                        [
+                            TaskStatus.COMPLETED,
+                            TaskStatus.FAILED,
+                            TaskStatus.NOT_FINISHED,
+                        ]
+                    ),
                 )
             )
             .all()
