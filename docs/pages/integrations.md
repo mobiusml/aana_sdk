@@ -101,3 +101,22 @@ See [Haystack integration notebook](https://github.com/mobiusml/aana_sdk/tree/ma
 ## OpenAI-compatible Chat Completions API
 
 The OpenAI-compatible Chat Completions API allows you to access the Aana applications with any OpenAI-compatible client. See [OpenAI-compatible API docs](openai_api.md) for more details.
+
+## Speaker Diarization
+
+Speaker Diarization deployment allows you to diarize speakers in an audio with an Speaker Diarization models based on [pyannote.audio](https://github.com/pyannote/pyannote-audio). 
+
+See [SpeakerDiarizationDeployment](./../reference/deployments.md#aana.deployments.SpeakerDiarizationDeployment) to learn more about the deployment capabilities.
+
+```python
+from aana.deployments.speaker_diarization_deployment import SpeakerDiarizationDeployment, SpeakerDiarizationConfig
+
+SpeakerDiarizationDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.05},
+    user_config=SpeakerDiarizationConfig(
+        model_name=("pyannote/speaker-diarization-3.1"),
+        sample_rate=16000,
+    ).model_dump(mode="json"),
+)
+```
