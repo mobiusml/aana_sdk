@@ -8,23 +8,23 @@ from ray import serve
 
 from aana.core.models.audio import Audio
 from aana.core.models.base import pydantic_protected_fields
+from aana.core.models.speaker import SpeakerDiarizationParams, SpeakerDiarizationSegment
 from aana.core.models.time import TimeInterval
-from aana.core.models.vad import SDSegment
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
 
 
-class SDOutput(TypedDict):
-    """The output of the SD model.
+class SpeakerDiarizationOutput(TypedDict):
+    """The output of the Speaker Diarization model.
 
     Attributes:
-        segments (list[SDSegment]): The SD segments.
+        segments (list[SpeakerDiarizationSegment]): The Speaker Diarization segments.
     """
 
-    segments: list[SDSegment]
+    segments: list[SpeakerDiarizationSegment]
 
 
-class SDConfig(BaseModel):
+class SpeakerDiarizationConfig(BaseModel):
     """The configuration for the Speaker Diarization deployment.
 
     Attributes:
@@ -34,11 +34,10 @@ class SDConfig(BaseModel):
 
     model_name: str = Field(
         default="pyannote/speaker-diarization-3.1",
-        description="The SD model name.",
+        description="The Speaker Diarization model name.",
     )
 
     sample_rate: int = Field(default=16000, description="Sample rate of the audio.")
-    # TODO: add min speakers, max speakers, see default values@ https://github.com/pyannote/pyannote-audio
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
@@ -54,10 +53,10 @@ class SpeakerDiarizationDeployment(BaseDeployment):
 
         It loads the model and instantiate speaker diarization pipeline.
 
-        The configuration should conform to the SDConfig schema.
+        The configuration should conform to the SpeakerDiarizationConfig schema.
 
         """
-        config_obj = SDConfig(**config)
+        config_obj = SpeakerDiarizationConfig(**config)
 
         self.sample_rate = config_obj.sample_rate
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -68,58 +67,63 @@ class SpeakerDiarizationDeployment(BaseDeployment):
             torch.cuda.manual_seed_all(42)
 
         # load model using pyannote Pipeline
-        # TODO: Discuss feasibility/usefulness of having the model locally
-
         self.diarize_model = Pipeline.from_pretrained(self.model_name)
         self.diarize_model.to(torch.device(self.device))
 
-    async def __inference(self, audio: Audio) -> Annotation:
-        """Perform speaker diarization inference on the Audio with the SD model.
+    async def __inference(
+        self, audio: Audio, params: SpeakerDiarizationParams
+    ) -> Annotation:
+        """Perform inference on the Audio with the Speaker Diarization model.
 
         Args:
-            audio (Audio): The audio to perform SD.
+            audio (Audio): The audio to perform Speaker Diarization.
+            params (SpeakerDiarizationParams): Parameters for the speaker diarization model.
 
         Returns:
             speaker_segments (Annotation): The list of speaker diarized segments.
 
         Raises:
-            InferenceException: If the vad inference fails.
+            InferenceException: If the Speaker Diarization inference fails.
         """
         audio_array = audio.get_numpy()
-        sd_input = {
+        speaker_diarization_input = {
             "waveform": torch.from_numpy(audio_array).unsqueeze(0),
             "sample_rate": self.sample_rate,
         }
 
         try:
-            speaker_segments = self.diarize_model(sd_input)
+            speaker_segments = self.diarize_model(
+                speaker_diarization_input,
+                min_speakers=params.min_speakers,
+                max_speakers=params.max_speakers,
+            )
 
         except Exception as e:
             raise InferenceException(self.model_name) from e
 
         return speaker_segments
 
-    async def diarize_segments(self, audio: Audio) -> SDOutput:
-        """Perform SD inference to get speaker segments.
+    async def diarize(
+        self, audio: Audio, params: SpeakerDiarizationParams | None = None
+    ) -> SpeakerDiarizationOutput:
+        """Perform Speaker Diarization inference to get speaker segments.
 
         Args:
-            audio (Audio): The audio to perform SD.
+            audio (Audio): The audio to perform Speaker Diarization.
+            params (Speaker Diarization Params): Parameters for the speaker diarization model.
 
         Returns:
-            SDOutput: Output speaker segments to the SD model.
-
-        Raises:
-            InferenceException: If the SD inference fails.
-
-        TODO: Add user defined params (SDParams).
-        TODO: add further processing with VAD if needed.
+            Speaker Diarization Output: Output speaker segments to the Speaker Diarization model.
 
         """
-        speaker_segments = await self.__inference(audio)
-        sd_segments = []
+        if not params:
+            params = SpeakerDiarizationParams()
+
+        speaker_segments = await self.__inference(audio, params)
+        speaker_diarization_segments = []
         for speech_turn, _, speaker in speaker_segments.itertracks(yield_label=True):
-            sd_segments.append(
-                SDSegment(
+            speaker_diarization_segments.append(
+                SpeakerDiarizationSegment(
                     time_interval=TimeInterval(
                         start=speech_turn.start, end=speech_turn.end
                     ),
@@ -127,7 +131,4 @@ class SpeakerDiarizationDeployment(BaseDeployment):
                 )
             )
 
-        if not sd_segments:
-            print("no speaker segments detected.")
-
-        return SDOutput(segments=sd_segments)
+        return SpeakerDiarizationOutput(segments=speaker_diarization_segments)
