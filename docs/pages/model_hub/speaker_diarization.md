@@ -15,6 +15,7 @@
 
 As an example, let's see how to configure the Speaker Diarization deployment for the [Speaker Diarization-3.1 model](https://huggingface.co/pyannote/speaker-diarization-3.1).
 
+Note that pyannote speaker diarization models are gated. Get access to the model from (https://huggingface.co/pyannote/speaker-diarization-3.1) and use HuggingFace access token via setting environment variable in the SDK (`HF_TOKEN` variable in `.env`) before using the model.
 
 !!! example "Speaker diarization-3.1"
     
