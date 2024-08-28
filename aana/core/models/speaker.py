@@ -15,16 +15,16 @@ class SpeakerDiarizationParams(BaseModel):
     """A model for the Speaker Diarization model parameters.
 
     Attributes:
-        min_speakers (int): The minimum number of speakers present in the audio.
-        max_speakers (int): The maximum number of speakers present in the audio.
+        min_speakers (int | None): The minimum number of speakers present in the audio.
+        max_speakers (int | None): The maximum number of speakers present in the audio.
     """
 
-    min_speakers: int = Field(
+    min_speakers: int | None = Field(
         default=None,
         description="The minimum number of speakers present in the audio.",
     )
 
-    max_speakers: int = Field(
+    max_speakers: int | None = Field(
         default=None,
         description="The maximum number of speakers present in the audio.",
     )
@@ -47,7 +47,7 @@ class SpeakerDiarizationSegment(BaseModel):
     time_interval: TimeInterval = Field(description="Time interval of the segment")
     speaker: str = Field(description="speaker assignment from the model")
 
-    def to_whisper_dict(self) -> dict:
+    def to_dict(self) -> dict:
         """Generate dictionary with start, end and speaker keys from SpeakerDiarizationSegment.
 
         Returns:

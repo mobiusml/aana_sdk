@@ -11,11 +11,31 @@
         show_docstring_description: false
         docstring_section_style: list
 
+
+### Accessing Gated Models
+
+The PyAnnote speaker diarization models are gated, requiring special access. To use these models:
+
+1. **Request Access**:  
+    Visit the [PyAnnote Speaker Diarization 3.1 model page](https://huggingface.co/pyannote/speaker-diarization-3.1) on Hugging Face. Log in, fil out the form, and request access.
+
+2. **Approval**:  
+    - If automatic, access is granted immediately.
+    - If manual, wait for the model authors to approve your request.
+
+3. **Set Up the SDK**:  
+    After approval, add your Hugging Face access token to your `.env` file by setting the `HF_TOKEN` variable:
+
+    ```plaintext
+    HF_TOKEN=your_huggingface_access_token
+    ```
+
+    To get your Hugging Face access token, visit the [Hugging Face Settings - Tokens](https://huggingface.co/settings/tokens).
+
+
 ### Example Configurations
 
 As an example, let's see how to configure the Speaker Diarization deployment for the [Speaker Diarization-3.1 model](https://huggingface.co/pyannote/speaker-diarization-3.1).
-
-Note that pyannote speaker diarization models are gated. Get access to the model from (https://huggingface.co/pyannote/speaker-diarization-3.1) and use HuggingFace access token via setting environment variable in the SDK (`HF_TOKEN` variable in `.env`) before using the model.
 
 !!! example "Speaker diarization-3.1"
     
