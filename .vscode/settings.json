@@ -12,4 +12,10 @@
     "python.testing.pytestPath": "poetry run pytest",
     "ruff.fixAll": true,
     "ruff.organizeImports": true,
+    "python.analysis.packageIndexDepths": [
+        {
+            "name": "haystack",
+            "depth": 10,
+        }
+    ],
 }

@@ -249,7 +249,7 @@ class Image(Media):
 class ImageInput(BaseModel):
     """An image input.
 
-    Exactly one of 'path', 'url', or 'content' must be provided.
+    Exactly one of 'path', 'url', 'content' or 'numpy' must be provided.
 
     If 'content' or 'numpy' is set to 'file',
     the image will be loaded from the files uploaded to the endpoint.
@@ -388,10 +388,10 @@ class ImageInput(BaseModel):
         json_schema_extra={
             "description": (
                 "An image. \n"
-                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                "Exactly one of 'path', 'url', 'content', or 'numpy' must be provided. \n"
                 "If 'path' is provided, the image will be loaded from the path. \n"
                 "If 'url' is provided, the image will be downloaded from the url. \n"
-                "The 'content' will be loaded automatically "
+                "The 'content' or 'numpy' will be loaded automatically "
                 "if files are uploaded to the endpoint (should be set to 'file' for that)."
             )
         },
