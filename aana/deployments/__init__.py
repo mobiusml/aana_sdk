@@ -26,6 +26,11 @@ from aana.deployments.hf_text_generation_deployment import (
     HfTextGenerationDeployment,
 )
 from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
+from aana.deployments.speaker_diarization_deployment import (
+    SpeakerDiarizationConfig,
+    SpeakerDiarizationDeployment,
+    SpeakerDiarizationOutput,
+)
 from aana.deployments.vad_deployment import (
     VadConfig,
     VadDeployment,
@@ -53,6 +58,9 @@ __all__ = [
     "VLLMDeployment",
     "WhisperConfig",
     "WhisperDeployment",
+    "SpeakerDiarizationConfig",
+    "SpeakerDiarizationDeployment",
+    "SpeakerDiarizationOutput",
     "VadConfig",
     "VadDeployment",
     "HfPipelineConfig",

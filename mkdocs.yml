@@ -102,6 +102,7 @@ nav:
     - pages/model_hub/text_generation.md
     - pages/model_hub/image_to_text.md
     - pages/model_hub/asr.md
+    - pages/model_hub/speaker_diarization.md
     # - pages/model_hub/vad.md
     - pages/model_hub/hf_pipeline.md
   - Integrations:
@@ -137,6 +138,7 @@ nav:
       - reference/models/time.md
       - reference/models/types.md
       - reference/models/vad.md
+      - reference/models/speaker.md
       - reference/models/video.md
       - reference/models/whisper.md
     - Storage:
