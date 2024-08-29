@@ -7,20 +7,20 @@ import pytest
 from aana.core.models.audio import Audio
 from aana.core.models.base import pydantic_to_dict
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.deployments.speaker_diarization_deployment import (
-    SpeakerDiarizationConfig,
-    SpeakerDiarizationDeployment,
+from aana.deployments.pyannote_speaker_diarization_deployment import (
+    PyannoteSpeakerDiarizationConfig,
+    PyannoteSpeakerDiarizationDeployment,
 )
 from aana.tests.utils import verify_deployment_results
 
 deployments = [
     (
         "sd_deployment",
-        SpeakerDiarizationDeployment.options(
+        PyannoteSpeakerDiarizationDeployment.options(
             num_replicas=1,
             max_ongoing_requests=1000,
             ray_actor_options={"num_gpus": 0.05},
-            user_config=SpeakerDiarizationConfig(
+            user_config=PyannoteSpeakerDiarizationConfig(
                 model_name=("pyannote/speaker-diarization-3.1"),
                 sample_rate=16000,
             ).model_dump(mode="json"),
@@ -30,13 +30,13 @@ deployments = [
 
 
 @pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
-class TestSpeakerDiarizationDeployment:
-    """Test Speaker Diarization deployment."""
+class TestPyannoteSpeakerDiarizationDeployment:
+    """Test pyannote Speaker Diarization deployment."""
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("audio_file", ["sd_sample.wav"])
     async def test_speaker_diarization(self, setup_deployment, audio_file):
-        """Test Speaker Diarization."""
+        """Test pyannote Speaker Diarization."""
         deployment_name, handle_name, _ = setup_deployment
 
         handle = await AanaDeploymentHandle.create(handle_name)

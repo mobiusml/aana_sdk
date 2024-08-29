@@ -1,10 +1,12 @@
-# Speaker Diarization (SD) Models
+# Speaker Recognition 
 
-[SpeakerDiarizationDeployment](./../../reference/deployments.md#aana.deployments.SpeakerDiarizationDeployment) allows you to diarize the audio for speakers audio with pyannote models. The deployment is based on the [pyannote.audio](https://github.com/pyannote/pyannote-audio) library.
+## Speaker Diarization (SD) Models
 
-[SpeakerDiarizationConfig](./../../reference/deployments.md#aana.deployments.SpeakerDiarizationConfig) is used to configure the Speaker Diarization deployment.
+[PyannoteSpeakerDiarizationDeployment](./../../reference/deployments.md#aana.deployments.PyannoteSpeakerDiarizationDeployment) allows you to diarize the audio for speakers audio with pyannote models. The deployment is based on the [pyannote.audio](https://github.com/pyannote/pyannote-audio) library.
 
-::: aana.deployments.SpeakerDiarizationConfig
+[PyannoteSpeakerDiarizationConfig](./../../reference/deployments.md#aana.deployments.SpeakerDiarizationConfig) is used to configure the Speaker Diarization deployment.
+
+::: aana.deployments.PyannoteSpeakerDiarizationConfig
     options:
         show_bases: false
         heading_level: 4
@@ -12,7 +14,7 @@
         docstring_section_style: list
 
 
-### Accessing Gated Models
+## Accessing Gated Models
 
 The PyAnnote speaker diarization models are gated, requiring special access. To use these models:
 
@@ -33,20 +35,20 @@ The PyAnnote speaker diarization models are gated, requiring special access. To 
     To get your Hugging Face access token, visit the [Hugging Face Settings - Tokens](https://huggingface.co/settings/tokens).
 
 
-### Example Configurations
+## Example Configurations
 
-As an example, let's see how to configure the Speaker Diarization deployment for the [Speaker Diarization-3.1 model](https://huggingface.co/pyannote/speaker-diarization-3.1).
+As an example, let's see how to configure the Pyannote Speaker Diarization deployment for the [Speaker Diarization-3.1 model](https://huggingface.co/pyannote/speaker-diarization-3.1).
 
 !!! example "Speaker diarization-3.1"
     
     ```python
-    from aana.deployments.speaker_diarization_deployment import SpeakerDiarizationDeployment, SpeakerDiarizationConfig
+    from aana.deployments.pyannote_speaker_diarization_deployment import PyannoteSpeakerDiarizationDeployment, PyannoteSpeakerDiarizationConfig
 
-    SpeakerDiarizationDeployment.options(
+    PyannoteSpeakerDiarizationDeployment.options(
         num_replicas=1,
         max_ongoing_requests=1000,
         ray_actor_options={"num_gpus": 0.05},
-        user_config=SpeakerDiarizationConfig(
+        user_config=PyannoteSpeakerDiarizationConfig(
             model_name=("pyannote/speaker-diarization-3.1"),
             sample_rate=16000,
         ).model_dump(mode="json"),

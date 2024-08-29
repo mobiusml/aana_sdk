@@ -8,7 +8,10 @@ from ray import serve
 
 from aana.core.models.audio import Audio
 from aana.core.models.base import pydantic_protected_fields
-from aana.core.models.speaker import SpeakerDiarizationParams, SpeakerDiarizationSegment
+from aana.core.models.speaker import (
+    PyannoteSpeakerDiarizationParams,
+    SpeakerDiarizationSegment,
+)
 from aana.core.models.time import TimeInterval
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
@@ -24,7 +27,7 @@ class SpeakerDiarizationOutput(TypedDict):
     segments: list[SpeakerDiarizationSegment]
 
 
-class SpeakerDiarizationConfig(BaseModel):
+class PyannoteSpeakerDiarizationConfig(BaseModel):
     """The configuration for the Speaker Diarization deployment.
 
     Attributes:
@@ -43,7 +46,7 @@ class SpeakerDiarizationConfig(BaseModel):
 
 
 @serve.deployment
-class SpeakerDiarizationDeployment(BaseDeployment):
+class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
     """Deployment to serve Speaker Diarization (SD) models."""
 
     async def apply_config(self, config: dict[str, Any]):
@@ -53,10 +56,10 @@ class SpeakerDiarizationDeployment(BaseDeployment):
 
         It loads the model and instantiate speaker diarization pipeline.
 
-        The configuration should conform to the SpeakerDiarizationConfig schema.
+        The configuration should conform to the PyannoteSpeakerDiarizationConfig schema.
 
         """
-        config_obj = SpeakerDiarizationConfig(**config)
+        config_obj = PyannoteSpeakerDiarizationConfig(**config)
 
         self.sample_rate = config_obj.sample_rate
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -71,7 +74,7 @@ class SpeakerDiarizationDeployment(BaseDeployment):
         self.diarize_model.to(torch.device(self.device))
 
     async def __inference(
-        self, audio: Audio, params: SpeakerDiarizationParams
+        self, audio: Audio, params: PyannoteSpeakerDiarizationParams
     ) -> Annotation:
         """Perform inference on the Audio with the Speaker Diarization model.
 
@@ -104,7 +107,7 @@ class SpeakerDiarizationDeployment(BaseDeployment):
         return speaker_segments
 
     async def diarize(
-        self, audio: Audio, params: SpeakerDiarizationParams | None = None
+        self, audio: Audio, params: PyannoteSpeakerDiarizationParams | None = None
     ) -> SpeakerDiarizationOutput:
         """Perform Speaker Diarization inference to get speaker segments.
 
@@ -117,7 +120,7 @@ class SpeakerDiarizationDeployment(BaseDeployment):
 
         """
         if not params:
-            params = SpeakerDiarizationParams()
+            params = PyannoteSpeakerDiarizationParams()
 
         speaker_segments = await self.__inference(audio, params)
         speaker_diarization_segments = []

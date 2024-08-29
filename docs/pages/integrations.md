@@ -104,17 +104,17 @@ The OpenAI-compatible Chat Completions API allows you to access the Aana applica
 
 ## Speaker Diarization
 
-Speaker Diarization deployment allows you to diarize the speakers in an audio with Speaker Diarization models based on [pyannote.audio](https://github.com/pyannote/pyannote-audio). 
+Speaker Diarization deployment allows you to classify the speakers present in the audio with their timestamp information. Speaker Diarization models are based on [pyannote.audio](https://github.com/pyannote/pyannote-audio). 
 
-See [SpeakerDiarizationDeployment](./../reference/deployments.md#aana.deployments.SpeakerDiarizationDeployment) to learn more about the deployment capabilities.
+See [PyannoteSpeakerDiarizationDeployment](./../reference/deployments.md#aana.deployments.PyannoteSpeakerDiarizationDeployment) to learn more about the deployment capabilities.
 
 ```python
-from aana.deployments.speaker_diarization_deployment import SpeakerDiarizationDeployment, SpeakerDiarizationConfig
+from aana.deployments.pyannote_speaker_diarization_deployment import PyannoteSpeakerDiarizationDeployment, PyannoteSpeakerDiarizationConfig
 
-SpeakerDiarizationDeployment.options(
+PyannoteSpeakerDiarizationDeployment.options(
     num_replicas=1,
     ray_actor_options={"num_gpus": 0.05},
-    user_config=SpeakerDiarizationConfig(
+    user_config=PyannoteSpeakerDiarizationConfig(
         model_name=("pyannote/speaker-diarization-3.1"),
         sample_rate=16000,
     ).model_dump(mode="json"),
