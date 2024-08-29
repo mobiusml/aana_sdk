@@ -5,14 +5,14 @@ from pydantic import BaseModel, ConfigDict, Field
 from aana.core.models.time import TimeInterval
 
 __all__ = [
-    "SpeakerDiarizationParams",
+    "PyannoteSpeakerDiarizationParams",
     "SpeakerDiarizationSegment",
     "SpeakerDiarizationSegments",
 ]
 
 
-class SpeakerDiarizationParams(BaseModel):
-    """A model for the Speaker Diarization model parameters.
+class PyannoteSpeakerDiarizationParams(BaseModel):
+    """A model for the pyannote Speaker Diarization model parameters.
 
     Attributes:
         min_speakers (int | None): The minimum number of speakers present in the audio.
@@ -31,7 +31,7 @@ class SpeakerDiarizationParams(BaseModel):
 
     model_config = ConfigDict(
         json_schema_extra={
-            "description": "Parameters for the spekaer diarization model.",
+            "description": "Parameters for the pyannote spekaer diarization model.",
         }
     )
 
