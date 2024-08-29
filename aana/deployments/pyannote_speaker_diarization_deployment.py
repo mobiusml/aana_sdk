@@ -31,13 +31,13 @@ class PyannoteSpeakerDiarizationConfig(BaseModel):
     """The configuration for the Pyannote Speaker Diarization deployment.
 
     Attributes:
-        model_name (str): name of the speaker diarization pipeline.
+        model_id (str): name of the speaker diarization pipeline.
         sample_rate (int): The sample rate of the audio. Defaults to 16000.
     """
 
-    model_name: str = Field(
+    model_id: str = Field(
         default="pyannote/speaker-diarization-3.1",
-        description="The Speaker Diarization model name.",
+        description="The Speaker Diarization model ID.",
     )
 
     sample_rate: int = Field(default=16000, description="Sample rate of the audio.")
@@ -63,14 +63,14 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
 
         self.sample_rate = config_obj.sample_rate
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model_name = config_obj.model_name
+        self.model_id = config_obj.model_id
 
         # for consistency across multiple runs
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(42)
 
         # load model using pyannote Pipeline
-        self.diarize_model = Pipeline.from_pretrained(self.model_name)
+        self.diarize_model = Pipeline.from_pretrained(self.model_id)
         self.diarize_model.to(torch.device(self.device))
 
     async def __inference(
@@ -102,7 +102,7 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
             )
 
         except Exception as e:
-            raise InferenceException(self.model_name) from e
+            raise InferenceException(self.model_id) from e
 
         return speaker_segments
 
