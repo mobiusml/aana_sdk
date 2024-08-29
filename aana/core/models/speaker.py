@@ -31,7 +31,7 @@ class PyannoteSpeakerDiarizationParams(BaseModel):
 
     model_config = ConfigDict(
         json_schema_extra={
-            "description": "Parameters for the pyannote spekaer diarization model.",
+            "description": "Parameters for the pyannote speaker diarization model.",
         }
     )
 
