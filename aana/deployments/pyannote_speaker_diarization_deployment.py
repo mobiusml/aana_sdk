@@ -28,7 +28,7 @@ class SpeakerDiarizationOutput(TypedDict):
 
 
 class PyannoteSpeakerDiarizationConfig(BaseModel):
-    """The configuration for the Speaker Diarization deployment.
+    """The configuration for the Pyannote Speaker Diarization deployment.
 
     Attributes:
         model_name (str): name of the speaker diarization pipeline.
@@ -47,7 +47,7 @@ class PyannoteSpeakerDiarizationConfig(BaseModel):
 
 @serve.deployment
 class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
-    """Deployment to serve Speaker Diarization (SD) models."""
+    """Deployment to serve Pyannote Speaker Diarization (SD) models."""
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
@@ -76,11 +76,11 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
     async def __inference(
         self, audio: Audio, params: PyannoteSpeakerDiarizationParams
     ) -> Annotation:
-        """Perform inference on the Audio with the Speaker Diarization model.
+        """Perform inference on the Audio with the Pyannote Speaker Diarization model.
 
         Args:
             audio (Audio): The audio to perform Speaker Diarization.
-            params (SpeakerDiarizationParams): Parameters for the speaker diarization model.
+            params (PyannoteSpeakerDiarizationParams): Parameters for the pyannote speaker diarization model.
 
         Returns:
             speaker_segments (Annotation): The list of speaker diarized segments.
@@ -113,10 +113,10 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
 
         Args:
             audio (Audio): The audio to perform Speaker Diarization.
-            params (Speaker Diarization Params): Parameters for the speaker diarization model.
+            params (PyannoteSpeakerDiarizationParams): Parameters for the speaker diarization model.
 
         Returns:
-            Speaker Diarization Output: Output speaker segments to the Speaker Diarization model.
+            SpeakerDiarizationOutput: Output speaker segments from the Speaker Diarization pipeline.
 
         """
         if not params:
