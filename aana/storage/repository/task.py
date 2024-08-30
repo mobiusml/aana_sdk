@@ -131,7 +131,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         )
         return tasks
 
-    def remove_completed_tasks(self, task_ids: list[str]) -> list[str]:
+    def filter_incomplete_tasks(self, task_ids: list[str]) -> list[str]:
         """Remove the task IDs that are already completed (COMPLETED or FAILED).
 
         Args:

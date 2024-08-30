@@ -64,5 +64,6 @@ class TaskEntity(BaseEntity, TimeStampEntity):
             f"<TaskEntity(id={self.id}, "
             f"endpoint={self.endpoint}, status={self.status}, "
             f"priority={self.priority}, progress={self.progress}, "
-            f"num_retries={self.num_retries})>"
+            f"num_retries={self.num_retries}, "
+            f"updated_at={self.updated_at})>"
         )

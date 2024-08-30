@@ -32,6 +32,8 @@ class TaskQueueDeployment(BaseDeployment):
         )
         self.session = get_session()
         self.task_repo = TaskRepository(self.session)
+        self.running_task_ids: list[str] = []
+        self.deployment_responses = {}
 
     def check_health(self):
         """Check the health of the deployment."""
@@ -45,10 +47,17 @@ class TaskQueueDeployment(BaseDeployment):
         """Clean up the deployment."""
         # Cancel the loop task to prevent tasks from being reassigned
         self.loop_task.cancel()
-        # Set all non-completed tasks to NOT_FINISHED
-        for task_id, future in self.futures.items():
-            if not future.done():
-                self.task_repo.update_status(task_id, TaskStatus.NOT_FINISHED, 0)
+        # Cancel all deployment responses to stop the tasks
+        # and set all non-completed tasks to NOT_FINISHED
+        for task_id in self.running_task_ids:
+            deployment_response = self.deployment_responses.get(task_id)
+            if deployment_response:
+                deployment_response.cancel()
+            self.task_repo.update_status(
+                task_id=task_id,
+                status=TaskStatus.NOT_FINISHED,
+                progress=0,
+            )
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
@@ -65,13 +74,12 @@ class TaskQueueDeployment(BaseDeployment):
 
         The loop will check the queue and assign tasks to workers.
         """
-        running_task_ids: list[str] = []
         handle = None
 
         active_tasks = self.task_repo.get_active_tasks()
         for task in active_tasks:
             if task.status == TaskStatus.RUNNING:
-                running_task_ids.append(task.id)
+                self.running_task_ids.append(str(task.id))
             if task.status == TaskStatus.ASSIGNED:
                 self.task_repo.update_status(
                     task_id=task.id,
@@ -86,12 +94,17 @@ class TaskQueueDeployment(BaseDeployment):
                 continue
 
             # Remove completed tasks from the list of running tasks
-            running_task_ids = self.task_repo.remove_completed_tasks(running_task_ids)
+            self.running_task_ids = self.task_repo.filter_incomplete_tasks(
+                self.running_task_ids
+            )
 
             # Check for expired tasks
             execution_timeout = aana_settings.task_queue.execution_timeout
             expired_tasks = self.task_repo.get_expired_tasks(execution_timeout)
             for task in expired_tasks:
+                deployment_response = self.deployment_responses.get(task.id)
+                if deployment_response:
+                    deployment_response.cancel()
                 if task.num_retries >= aana_settings.task_queue.max_retries:
                     self.task_repo.update_status(
                         task_id=task.id,
@@ -108,18 +121,18 @@ class TaskQueueDeployment(BaseDeployment):
                 else:
                     self.task_repo.update_status(
                         task_id=task.id,
-                        status=TaskStatus.ASSIGNED,
+                        status=TaskStatus.NOT_FINISHED,
                         progress=0,
                     )
 
             # If the queue is full, wait and retry
-            if len(running_task_ids) >= aana_settings.task_queue.num_workers:
+            if len(self.running_task_ids) >= aana_settings.task_queue.num_workers:
                 await asyncio.sleep(0.1)
                 continue
 
             # Get new tasks from the database
             num_tasks_to_assign = aana_settings.task_queue.num_workers - len(
-                running_task_ids
+                self.running_task_ids
             )
             tasks = self.task_repo.get_unprocessed_tasks(limit=num_tasks_to_assign)
 
@@ -153,5 +166,6 @@ class TaskQueueDeployment(BaseDeployment):
                     status=TaskStatus.ASSIGNED,
                     progress=0,
                 )
-                handle.execute_task.remote(task_id=task.id)
-                running_task_ids.append(str(task.id))
+                deployment_response = handle.execute_task.remote(task_id=task.id)
+                self.deployment_responses[task.id] = deployment_response
+                self.running_task_ids.append(str(task.id))
