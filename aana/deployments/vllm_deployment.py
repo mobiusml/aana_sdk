@@ -21,6 +21,7 @@ with contextlib.suppress(ImportError):
     from vllm.model_executor.utils import (
         set_random_seed,  # Ignore if we don't have GPU and only run on CPU with test cache
     )
+from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
 from vllm.utils import random_uuid
 
@@ -135,6 +136,15 @@ class VLLMDeployment(BaseTextGenerationDeployment):
             sampling_params = SamplingParams()
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
 
+        json_schema = sampling_params.json_schema
+        regex_string = sampling_params.regex_string
+        if json_schema is not None:
+            logits_processors = [JSONLogitsProcessor(json_schema, self.engine.engine)]
+        elif regex_string is not None:
+            logits_processors = [RegexLogitsProcessor(regex_string, self.engine.engine)]
+        else:
+            logits_processors = []
+
         request_id = None
         # tokenize the prompt
         prompt_token_ids = self.tokenizer.encode(prompt)
@@ -148,7 +158,10 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
-                **sampling_params.model_dump(exclude_unset=True)
+                **sampling_params.model_dump(
+                    exclude_unset=True, exclude=["json_schema", "regex_string"]
+                ),
+                logits_processors=logits_processors,
             )
             # start the request
             request_id = random_uuid()

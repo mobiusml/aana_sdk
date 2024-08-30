@@ -46,6 +46,12 @@ class SamplingParams(BaseModel):
     max_tokens: int | None = Field(
         default=None, ge=1, description="The maximum number of tokens to generate."
     )
+    json_schema: str | None = Field(
+        default=None, description="The schema to use for generation."
+    )
+    regex_string: str | None = Field(
+        default=None, description="The regex to use for generation."
+    )
 
     @field_validator("top_k")
     def check_top_k(cls, v: int):
