@@ -2,10 +2,9 @@ from datetime import datetime, timedelta
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import and_, desc, or_
+from sqlalchemy import and_, desc
 from sqlalchemy.orm import Session
 
-from aana.configs.settings import settings as aana_settings
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.models.task import TaskEntity
 from aana.storage.repository.base import BaseRepository
@@ -71,9 +70,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
     def get_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
         """Fetches all unprocessed tasks.
 
-        The task is considered unprocessed if it is in CREATED or NOT_FINISHED state or
-        in RUNNING or ASSIGNED state and the update timestamp is older
-        than the execution timeout (to handle stuck tasks).
+        The task is considered unprocessed if it is in CREATED or NOT_FINISHED state.
 
         Args:
             limit (int | None): The maximum number of tasks to fetch. If None, fetch all.
@@ -81,22 +78,10 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Returns:
             list[TaskEntity]: the unprocessed tasks.
         """
-        execution_timeout = aana_settings.task_queue.execution_timeout
-        cutoff_time = datetime.now() - timedelta(seconds=execution_timeout)  # noqa: DTZ005
         tasks = (
             self.session.query(TaskEntity)
             .filter(
-                or_(
-                    TaskEntity.status.in_(
-                        [TaskStatus.CREATED, TaskStatus.NOT_FINISHED]
-                    ),
-                    and_(
-                        TaskEntity.status.in_(
-                            [TaskStatus.RUNNING, TaskStatus.ASSIGNED]
-                        ),
-                        TaskEntity.updated_at <= cutoff_time,
-                    ),
-                )
+                TaskEntity.status.in_([TaskStatus.CREATED, TaskStatus.NOT_FINISHED])
             )
             .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
             .limit(limit)
@@ -120,10 +105,82 @@ class TaskRepository(BaseRepository[TaskEntity]):
             result (Any): The result.
         """
         task = self.read(task_id)
-        task.status = status
         if status == TaskStatus.COMPLETED or status == TaskStatus.FAILED:
             task.completed_at = datetime.now()  # noqa: DTZ005
+        if status == TaskStatus.ASSIGNED:
+            task.assigned_at = datetime.now()  # noqa: DTZ005
+            task.num_retries += 1
         if progress is not None:
             task.progress = progress
+        task.status = status
         task.result = result
         self.session.commit()
+
+    def get_active_tasks(self) -> list[TaskEntity]:
+        """Fetches all active tasks.
+
+        The task is considered active if it is in RUNNING or ASSIGNED state.
+
+        Returns:
+            list[TaskEntity]: the active tasks.
+        """
+        tasks = (
+            self.session.query(TaskEntity)
+            .filter(TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED]))
+            .all()
+        )
+        return tasks
+
+    def filter_incomplete_tasks(self, task_ids: list[str]) -> list[str]:
+        """Remove the task IDs that are already completed (COMPLETED or FAILED).
+
+        Args:
+            task_ids (list[str]): The task IDs to filter.
+
+        Returns:
+            list[str]: The task IDs that are not completed.
+        """
+        task_ids = [UUID(task_id) for task_id in task_ids]
+        tasks = (
+            self.session.query(TaskEntity)
+            .filter(
+                and_(
+                    TaskEntity.id.in_(task_ids),
+                    TaskEntity.status.not_in(
+                        [
+                            TaskStatus.COMPLETED,
+                            TaskStatus.FAILED,
+                            TaskStatus.NOT_FINISHED,
+                        ]
+                    ),
+                )
+            )
+            .all()
+        )
+        incomplete_task_ids = [str(task.id) for task in tasks]
+        return incomplete_task_ids
+
+    def get_expired_tasks(self, execution_timeout: float) -> list[TaskEntity]:
+        """Fetches all tasks that are expired.
+
+        The task is considered expired if it is in RUNNING or ASSIGNED state and the
+        updated_at time is older than the execution_timeout.
+
+        Args:
+            execution_timeout (float): The maximum execution time for a task in seconds
+
+        Returns:
+            list[TaskEntity]: the expired tasks.
+        """
+        cutoff_time = datetime.now() - timedelta(seconds=execution_timeout)  # noqa: DTZ005
+        tasks = (
+            self.session.query(TaskEntity)
+            .filter(
+                and_(
+                    TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED]),
+                    TaskEntity.updated_at <= cutoff_time,
+                ),
+            )
+            .all()
+        )
+        return tasks

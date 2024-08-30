@@ -19,7 +19,7 @@ from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.runtime import (
     MultipleFileUploadNotAllowed,
 )
-from aana.storage.services.task import create_task
+from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
 
 
@@ -313,11 +313,9 @@ class Endpoint:
                 if not aana_settings.task_queue.enabled:
                     raise RuntimeError("Task queue is not enabled.")  # noqa: TRY003
 
-                task_id = create_task(
-                    endpoint=bound_path,
-                    data=data_dict,
-                )
-                return AanaJSONResponse(content={"task_id": task_id})
+                task_repo = TaskRepository(self.session)
+                task = task_repo.save(endpoint=bound_path, data=data_dict)
+                return AanaJSONResponse(content={"task_id": str(task.id)})
 
             if isasyncgenfunction(self.run):
 
