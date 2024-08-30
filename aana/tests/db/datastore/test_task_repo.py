@@ -238,7 +238,7 @@ def test_remove_completed_tasks(db_session):
 
     # Remove completed tasks
     task_ids = [str(task.id) for task in all_tasks]
-    non_completed_task_ids = task_repo.remove_completed_tasks(task_ids)
+    non_completed_task_ids = task_repo.filter_incomplete_tasks(task_ids)
 
     # Assert that only the task IDs that are not completed are returned
     assert set(non_completed_task_ids) == {str(task.id) for task in unfinished_tasks}
