@@ -14,7 +14,7 @@ from aana.core.models.media import MediaId
 
 timestamp = Annotated[
     datetime.datetime,
-    mapped_column(DateTime(timezone=True), server_default=func.now()),
+    mapped_column(DateTime(timezone=True)),
 ]
 
 T = TypeVar("T", bound="InheritanceReuseMixin")
@@ -79,9 +79,11 @@ class TimeStampEntity:
     """Mixin for database entities that will have create/update timestamps."""
 
     created_at: Mapped[timestamp] = mapped_column(
+        server_default=func.now(),
         comment="Timestamp when row is inserted",
     )
     updated_at: Mapped[timestamp] = mapped_column(
         onupdate=func.now(),
+        server_default=func.now(),
         comment="Timestamp when row is updated",
     )
