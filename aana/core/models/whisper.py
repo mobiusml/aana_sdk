@@ -44,7 +44,7 @@ class WhisperParams(BaseModel):
         ),
     )
     word_timestamps: bool = Field(
-        default=False, description="Whether to extract word-level timestamps."
+        default=True, description="Whether to extract word-level timestamps."
     )
     vad_filter: bool = Field(
         default=True,
