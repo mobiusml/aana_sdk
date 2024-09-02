@@ -101,6 +101,7 @@ nav:
     - pages/model_hub/index.md
     - pages/model_hub/text_generation.md
     - pages/model_hub/image_to_text.md
+    - pages/model_hub/hqq.md
     - pages/model_hub/asr.md
     - pages/model_hub/speaker_recognition.md
     # - pages/model_hub/vad.md
