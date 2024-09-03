@@ -1,7 +1,5 @@
-import asyncio
 from collections.abc import AsyncGenerator
 from enum import Enum
-from queue import Empty
 from threading import Thread
 from typing import Any
 
@@ -33,16 +31,7 @@ from aana.deployments.base_text_generation_deployment import (
 )
 from aana.deployments.hf_pipeline_deployment import CustomConfig
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
-
-# class QuantizeConfig(BaseModel):
-#     nbits: int = 4,
-#     group_size: int = 64
-#     quant_zero: bool = False
-#     quant_scale: bool = False
-#     offload_meta: bool = False
-#     view_as_float: bool = False
-#     axis: int = 1
-
+from aana.utils.streamer import async_streamer_adapter
 
 
 class HQQBackend(str, Enum):
@@ -67,7 +56,10 @@ class HQQConfig(BaseModel):
 
     Attributes:
         model_id (str): The model ID on Hugging Face.
-        quantization_config:
+        quantize_on_fly: Whether to quantize the model or it is already pre-quantized
+        backend (HQQBackend): The backend lib for quantization the model
+        dtype (Dtype): The data type. Defaults to Dtype.BFLOAT16.
+        quantization_config (dict): The quantization params
         model_kwargs (CustomConfig): The extra model keyword arguments. Defaults to {}.
         default_sampling_params (SamplingParams): The default sampling parameters.
             Defaults to SamplingParams(temperature=0, max_tokens=256).
@@ -76,31 +68,18 @@ class HQQConfig(BaseModel):
     """
 
     model_id: str
+    quantize_on_fly: bool = False
     backend: HQQBackend
     dtype: Dtype = Field(default=Dtype.BFLOAT16)
-    quantize_on_fly: bool = False
     quantization_config: CustomConfig = BaseQuantizeConfig()
     model_kwargs: CustomConfig = {}
-    chat_template: str | None = None
 
     default_sampling_params: SamplingParams = SamplingParams(
         temperature=0, max_tokens=512
     )
+    chat_template: str | None = None
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
-
-
-async def async_streamer_adapter(streamer):
-    """Adapt the TextIteratorStreamer to an async generator."""
-    while True:
-        try:
-            for item in streamer:
-                yield item
-            break
-        except Empty:
-            # wait for the next item
-            await asyncio.sleep(0.01)
-
 
 @serve.deployment
 class HQQDeployment(BaseTextGenerationDeployment):
