@@ -1,6 +1,4 @@
-import asyncio
 from collections.abc import AsyncGenerator
-from queue import Empty
 from threading import Thread
 from typing import Any
 
@@ -24,18 +22,7 @@ from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment
 from aana.deployments.base_text_generation_deployment import ChatOutput, LLMOutput
 from aana.exceptions.runtime import InferenceException
-
-
-async def async_streamer_adapter(streamer):
-    """Adapt the TextIteratorStreamer to an async generator."""
-    while True:
-        try:
-            for item in streamer:
-                yield item
-            break
-        except Empty:
-            # wait for the next item
-            await asyncio.sleep(0.01)
+from aana.utils.streamer import async_streamer_adapter
 
 
 class Idefics2Config(BaseModel):

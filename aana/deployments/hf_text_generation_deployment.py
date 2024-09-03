@@ -1,6 +1,4 @@
-import asyncio
 from collections.abc import AsyncGenerator
-from queue import Empty
 from threading import Thread
 from typing import Any
 
@@ -44,19 +42,6 @@ class HfTextGenerationConfig(BaseModel):
     chat_template: str | None = None
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
-
-
-async def async_streamer_adapter(streamer):
-    """Adapt the TextIteratorStreamer to an async generator."""
-    while True:
-        try:
-            for item in streamer:
-                yield item
-            break
-        except Empty:
-            # wait for the next item
-            await asyncio.sleep(0.01)
-
 
 @serve.deployment
 class HfTextGenerationDeployment(BaseTextGenerationDeployment):
