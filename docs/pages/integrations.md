@@ -120,3 +120,34 @@ PyannoteSpeakerDiarizationDeployment.options(
     ).model_dump(mode="json"),
 )
 ```
+
+## Half-Quadratic Quantization
+
+HQQ deployment allows you quantize the largest models, without calibration data, in just a few minutes.
+You can use this deployment to load pre-quantized models like [HQQ Models](https://huggingface.co/mobiuslabsgmbh) as well as normal Huggingface [Hugging Face Hub](https://huggingface.co/models) models and quantiize them on the fly. 
+
+See [HQQDeployment](./../reference/deployments.md#aana.deployments.HQQDeployment) to learn more about the deployment capabilities.
+
+```python
+from aana.deployments.hqq_deployment import HQQConfig, HQQDeployment, HQQBackend, BaseQuantizeConfig, Dtype
+
+HQQDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.05},
+    user_config=HQQConfig(
+        model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
+        backend=HQQBackend.BITBLAS,
+        quantize_on_fly=True,
+        dtype=Dtype.FLOAT16,
+        quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
+        model_kwargs={
+            "attn_implementation": "sdpa"
+        },
+    ).model_dump(mode="json"),
+)
+
+```
+
+The HQQ supports backend libs like [Marlin](https://github.com/MarlinFirmware/Marlin), [Bitblas](https://github.com/microsoft/BitBLAS/tree/main) and [torchao_int4](https://pytorch.org/) but the libs would not be installed by default and you need to install them as needed.
+
+For more informatino about hqq you can check [HQQ github page](https://github.com/mobiusml/hqq/tree/master).
