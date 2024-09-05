@@ -20,6 +20,7 @@ from aana.deployments.base_text_generation_deployment import (
 )
 from aana.deployments.hf_pipeline_deployment import CustomConfig
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
+from aana.utils.streamer import async_streamer_adapter
 
 
 class HfTextGenerationConfig(BaseModel):

@@ -115,7 +115,9 @@ class HQQDeployment(BaseTextGenerationDeployment):
             patch_linearlayers(self.model, patch_add_quant_config, self.quantization_config)
 
         HQQLinear.set_backend(HQQBackendKernel.PYTORCH)
+        self.model.generation_config.cache_implementation = "static"
         prepare_for_inference(self.model, backend=self.backend)
+        self.model.forward = torch.compile(self.model.forward, mode="reduce-overhead", fullgraph=True)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
         self.chat_template_name = config_obj.chat_template
