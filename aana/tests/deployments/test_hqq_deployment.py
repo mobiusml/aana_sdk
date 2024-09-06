@@ -3,7 +3,6 @@ from importlib import resources
 
 import pytest
 
-from aana.core.models.chat import ChatDialog, ChatMessage
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
@@ -13,7 +12,6 @@ from aana.deployments.hqq_deployment import (
     HQQConfig,
     HQQDeployment,
 )
-from aana.exceptions.runtime import PromptTooLongException
 from aana.tests.utils import verify_deployment_results
 from aana.utils.core import get_object_hash
 
@@ -31,8 +29,8 @@ deployments = [
                     dtype=Dtype.FLOAT16,
                     quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
                     default_sampling_params=SamplingParams(
-                            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
-                        ),
+                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                    ),
                     model_kwargs={
                         "attn_implementation": "sdpa"
                     },
