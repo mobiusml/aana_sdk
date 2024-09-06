@@ -38,6 +38,6 @@ See [Tutorial](./../tutorial.md#deployments) for more information on how to use 
 
 - [Text Generation Models (LLMs)](./text_generation.md)
 - [Image-to-Text Models](./image_to_text.md)
-- [Half-Quadratic Quantization](./hqq.md)
+- [Half-Quadratic Quantization Models](./hqq.md)
 - [Automatic Speech Recognition (ASR) Models](./asr.md)
 - [Hugging Face Pipeline Models](./hf_pipeline.md)
