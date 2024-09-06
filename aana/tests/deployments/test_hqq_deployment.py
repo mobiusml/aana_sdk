@@ -26,16 +26,16 @@ deployments = [
                 ray_actor_options={"num_gpus": 0.5},
                 user_config=HQQConfig(
                     model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
-                backend=HQQBackend.BITBLAS,
-                quantize_on_fly=True,
-                dtype=Dtype.FLOAT16,
-                quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
-                default_sampling_params=SamplingParams(
-                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
-                    ),
-                model_kwargs={
-                    "attn_implementation": "sdpa"
-                },
+                    backend=HQQBackend.BITBLAS,
+                    quantize_on_fly=True,
+                    dtype=Dtype.FLOAT16,
+                    quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
+                    default_sampling_params=SamplingParams(
+                            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                        ),
+                    model_kwargs={
+                        "attn_implementation": "sdpa"
+                    },
                 ).model_dump(mode="json"),
             ),
         ),
