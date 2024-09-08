@@ -1,14 +1,42 @@
 from collections import defaultdict
+from typing import TypedDict
 
-from aana.core.models.asr import AsrSegment, AsrWord
+from aana.core.models.asr import (
+    AsrSegment,
+    AsrTranscription,
+    AsrTranscriptionInfo,
+    AsrWord,
+)
 from aana.core.models.speaker import SpeakerDiarizationSegment
 from aana.core.models.time import TimeInterval
-from aana.deployments.pyannote_speaker_diarization_deployment import (
-    SpeakerDiarizationOutput,
-)
-from aana.deployments.whisper_deployment import WhisperOutput
 
 # Utility functions for speaker-related processing
+
+
+# redefine SpeakerDiarizationOutput and WhisperOutput to prevent circular imports
+class SpeakerDiarizationOutput(TypedDict):
+    """The output of the Speaker Diarization model.
+
+    Attributes:
+        segments (list[SpeakerDiarizationSegment]): The Speaker Diarization segments.
+    """
+
+    segments: list[SpeakerDiarizationSegment]
+
+
+class WhisperOutput(TypedDict):
+    """The output of the whisper model.
+
+    Attributes:
+        segments (list[AsrSegment]): The ASR segments.
+        transcription_info (AsrTranscriptionInfo): The ASR transcription info.
+        transcription (AsrTranscription): The ASR transcription.
+    """
+
+    segments: list[AsrSegment]
+    transcription_info: AsrTranscriptionInfo
+    transcription: AsrTranscription
+
 
 # Define sentence ending punctuations:
 sentence_ending_punctuations = ".?!"
@@ -277,7 +305,7 @@ def create_speaker_segments(
             if current_segment:
                 # Update the current segment for continuous speaker
                 current_segment.time_interval.end = word_info.time_interval.end
-                current_segment.text += f" {word_info.word}"  # Add space between words
+                current_segment.text += f"{word_info.word}"  # Add space between words
                 current_segment.words.append(word_info)
 
     # Append the last segment if it exists
@@ -341,7 +369,7 @@ def merge_consecutive_speaker_segments(
     return merged_segments
 
 
-# Full method
+# Full Method
 def asr_postprocessing_for_diarization(
     diarized_output: SpeakerDiarizationOutput, transcription: WhisperOutput
 ) -> WhisperOutput:
@@ -368,3 +396,68 @@ def asr_postprocessing_for_diarization(
     updated_transcription = create_speaker_segments(word_speaker_mapping)
     transcription["segments"] = updated_transcription
     return transcription
+
+
+# speaker diarization model occationally produce overlapping chunks/ same speaker segments,
+# below function combines them properly
+
+
+def combine_homogeneous_speaker_segs(
+    diarized_output: SpeakerDiarizationOutput,
+) -> SpeakerDiarizationOutput:
+    """Combines segments with the same speaker into homogeneous speaker segments, ensuring no overlapping times.
+
+    Parameters:
+    - diarized_output (SpeakerDiarizationOutput): Input with segments that may have overlapping times.
+
+    Returns:
+    - SpeakerDiarizationOutput: Output with combined homogeneous speaker segments.
+    """
+    combined_segments: list = []
+    current_speaker = None
+    current_segment = None
+
+    for segment in sorted(
+        diarized_output["segments"], key=lambda x: x.time_interval.start
+    ):
+        speaker = segment.speaker
+
+        # If there's a speaker change or current_segment is None, finalize current and start a new one
+        if current_speaker != speaker:
+            # Finalize the current segment if it exists
+            if current_segment:
+                combined_segments.append(current_segment)
+
+            current_speaker = speaker
+
+            # Start a new segment for the current speaker
+            current_segment = SpeakerDiarizationSegment(
+                time_interval=TimeInterval(
+                    start=segment.time_interval.start, end=segment.time_interval.end
+                ),
+                speaker=current_speaker,
+            )
+        else:
+            if current_segment:
+                # Extend the current segment for the same speaker
+                # Ensure there is no overlap; take the maximum of current end and incoming end
+                current_segment.time_interval.end = max(
+                    current_segment.time_interval.end, segment.time_interval.end
+                )
+
+        # Adjust the start of the next segment if there's any overlap
+        if (
+            current_segment
+            and len(combined_segments) > 0
+            and combined_segments[-1].time_interval.end
+            > current_segment.time_interval.start
+        ):
+            current_segment.time_interval.start = combined_segments[
+                -1
+            ].time_interval.end
+
+    # Add the last segment if it exists
+    if current_segment:
+        combined_segments.append(current_segment)
+
+    return SpeakerDiarizationOutput(segments=combined_segments)
