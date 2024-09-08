@@ -1,7 +1,7 @@
 # ruff: noqa: S101
 from importlib import resources
 from pathlib import Path
-
+import json
 import pytest
 
 from aana.core.models.audio import Audio
@@ -21,7 +21,7 @@ deployments = [
             max_ongoing_requests=1000,
             ray_actor_options={"num_gpus": 0.05},
             user_config=PyannoteSpeakerDiarizationConfig(
-                model_name=("pyannote/speaker-diarization-3.1"),
+                model_id=("pyannote/speaker-diarization-3.1"),
                 sample_rate=16000,
             ).model_dump(mode="json"),
         ),
@@ -55,5 +55,7 @@ class TestPyannoteSpeakerDiarizationDeployment:
 
         output = await handle.diarize(audio=audio)
         output = pydantic_to_dict(output)
-
+        # save or print this, evenif it is different.
+        # with open(expected_output_path, "w") as json_file:
+        #     json.dump(output, json_file, indent=4)
         verify_deployment_results(expected_output_path, output)
