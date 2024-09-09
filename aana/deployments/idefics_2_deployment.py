@@ -45,15 +45,15 @@ class Idefics2Config(BaseModel):
         model_id (str): The model ID on HuggingFace.
         dtype (Dtype): The data type. Defaults to Dtype.AUTO.
         enable_flash_attention_2 (bool | None): Use Flash Attention 2. If None, Flash Attention 2 wii be enabled if available. Defaults to None.
-        do_image_splitting (bool): Do image splitting. Defaults to False.
         model_kwargs (CustomConfig): The extra model keyword arguments. Defaults to {}.
+        processor_kwargs (CustomConfig): The extra processor keyword arguments. Defaults to {}.
         default_sampling_params (SamplingParams): The default sampling parameters. Defaults to SamplingParams(temperature=1.0, max_tokens=256).
     """
 
     model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
     model_kwargs: CustomConfig = {}
+    processor_kwargs: CustomConfig = {}
     enable_flash_attention_2: bool | None = Field(default=None)
-    do_image_splitting: bool = Field(default=False)
     dtype: Dtype = Field(default=Dtype.AUTO)
     default_sampling_params: SamplingParams = SamplingParams(
         temperature=1.0, max_tokens=256
@@ -84,7 +84,7 @@ class Idefics2Deployment(BaseDeployment):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         self.processor = AutoProcessor.from_pretrained(
-            self.model_id, do_image_splitting=config_obj.do_image_splitting
+            self.model_id, **config_obj.processor_kwargs
         )
         self.model_kwargs.update(
             dict(
