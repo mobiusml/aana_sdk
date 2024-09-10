@@ -22,8 +22,8 @@ class SamplingParams(BaseModel):
         kwargs (dict): Extra keyword arguments to pass as sampling parameters.
     """
 
-    temperature: float | None = Field(
-        default=None,
+    temperature: float = Field(
+        default=1.0,
         ge=0.0,
         description=(
             "Float that controls the randomness of the sampling. "
@@ -32,8 +32,8 @@ class SamplingParams(BaseModel):
             "Zero means greedy sampling."
         ),
     )
-    top_p: float | None = Field(
-        default=None,
+    top_p: float = Field(
+        default=1.0,
         gt=0.0,
         le=1.0,
         description=(
@@ -51,8 +51,8 @@ class SamplingParams(BaseModel):
     max_tokens: int | None = Field(
         default=None, ge=1, description="The maximum number of tokens to generate."
     )
-    repetition_penalty: float | None = Field(
-        default=None,
+    repetition_penalty: float = Field(
+        default=1.0,
         description=(
             "Float that penalizes new tokens based on whether they appear in the "
             "prompt and the generated text so far. Values > 1 encourage the model "
