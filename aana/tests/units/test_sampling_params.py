@@ -15,13 +15,13 @@ def test_valid_sampling_params():
     assert params.max_tokens == 50
     assert params.repetition_penalty == 1.5
 
-    # Test valid params with default values (None)
+    # Test valid params with default values
     params = SamplingParams()
-    assert params.temperature is None
-    assert params.top_p is None
+    assert params.temperature == 1.0
+    assert params.top_p == 1.0
     assert params.top_k is None
     assert params.max_tokens is None
-    assert params.repetition_penalty is None
+    assert params.repetition_penalty == 1.0
 
 
 def test_invalid_temperature():
@@ -59,7 +59,7 @@ def test_kwargs():
     )
     assert params.kwargs == {"presence_penalty": 2.0, "frequency_penalty": 1.0}
     assert params.temperature == 0.5
-    assert params.top_p is None
+    assert params.top_p == 1.0
     assert params.top_k is None
     assert params.max_tokens is None
-    assert params.repetition_penalty is None
+    assert params.repetition_penalty == 1.0
