@@ -301,7 +301,7 @@ class AanaSDK:
                 if isinstance(demand, ResourceDemand) and demand.bundles_by_count:
                     error_message = f"Error: No available node types can fulfill resource request {demand.bundles_by_count[0].bundle}. "
                     if "GPU" in demand.bundles_by_count[0].bundle:
-                        error_message += "Might be due to insufficient or misconfigured GPU resources."
+                        error_message += "Might be due to insufficient or misconfigured CPU or GPU resources."
                 else:
                     error_message = f"Error: {demand}"
                 raise InsufficientResources(error_message)
@@ -343,7 +343,7 @@ class AanaSDK:
             print("Got KeyboardInterrupt, shutting down...")
             serve.shutdown()
             sys.exit()
-        except DeploymentException:
+        except DeploymentException as e:
             status = serve.status()
             serve.shutdown()
             for app_name, app_status in status.applications.items():
@@ -352,6 +352,8 @@ class AanaSDK:
                     or app_status.status == "UNHEALTHY"
                 ):
                     self.print_app_status(app_name, app_status)
+            if isinstance(e, InsufficientResources):
+                rprint(f"[red] {e} [/red]")
             raise
         except Exception:
             serve.shutdown()
