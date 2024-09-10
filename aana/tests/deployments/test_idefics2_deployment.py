@@ -23,7 +23,7 @@ deployments = [
                 model="HuggingFaceM4/idefics2-8b",
                 dtype=Dtype.FLOAT16,
                 default_sampling_params=SamplingParams(
-                    temperature=0.0, kwargs={"diversity_penalty": 0.0}
+                    temperature=1.0, max_tokens=256, kwargs={"diversity_penalty": 0.0}
                 ),
             ).model_dump(mode="json"),
         ),
