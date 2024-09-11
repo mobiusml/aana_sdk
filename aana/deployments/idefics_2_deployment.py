@@ -145,6 +145,7 @@ class Idefics2Deployment(BaseDeployment):
                     temperature=sampling_params.temperature,
                     num_return_sequences=1,
                     eos_token_id=self.processor.tokenizer.eos_token_id,
+                    **sampling_params.kwargs,
                 )
                 if sampling_params.temperature == 0:
                     generation_kwargs["do_sample"] = False
