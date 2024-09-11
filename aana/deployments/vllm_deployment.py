@@ -148,7 +148,8 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
-                **sampling_params.model_dump(exclude_unset=True)
+                **sampling_params.model_dump(exclude_unset=True, exclude=["kwargs"]),
+                **sampling_params.kwargs,
             )
             # start the request
             request_id = random_uuid()
