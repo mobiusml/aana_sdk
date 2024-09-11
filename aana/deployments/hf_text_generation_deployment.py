@@ -44,30 +44,9 @@ class HfTextGenerationConfig(BaseModel):
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
-@serve.deployment
-class HfTextGenerationDeployment(BaseTextGenerationDeployment):
-    """Deployment to serve Hugging Face text generation models."""
 
-    async def apply_config(self, config: dict[str, Any]):
-        """Apply the configuration.
-
-        The method is called when the deployment is created or updated.
-
-        It loads the model and tokenizer from HuggingFace.
-
-        The configuration should conform to the HfTextGenerationConfig schema.
-        """
-        config_obj = HfTextGenerationConfig(**config)
-        self.model_id = config_obj.model_id
-        self.model_kwargs = config_obj.model_kwargs
-        self.default_sampling_params = config_obj.default_sampling_params
-
-        self.model_kwargs["device_map"] = self.model_kwargs.get("device_map", "auto")
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_id, **self.model_kwargs
-        )
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
-        self.chat_template_name = config_obj.chat_template
+class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
+    """Base class for Hugging Face text generation deployments."""
 
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams | None = None
@@ -136,3 +115,29 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
                 del streamer
         except Exception as e:
             raise InferenceException(model_name=self.model_id) from e
+
+
+@serve.deployment
+class HfTextGenerationDeployment(BaseHfTextGenerationDeployment):
+    """Deployment to serve Hugging Face text generation models."""
+
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
+
+        The method is called when the deployment is created or updated.
+
+        It loads the model and tokenizer from HuggingFace.
+
+        The configuration should conform to the HfTextGenerationConfig schema.
+        """
+        config_obj = HfTextGenerationConfig(**config)
+        self.model_id = config_obj.model_id
+        self.model_kwargs = config_obj.model_kwargs
+        self.default_sampling_params = config_obj.default_sampling_params
+
+        self.model_kwargs["device_map"] = self.model_kwargs.get("device_map", "auto")
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.model_id, **self.model_kwargs
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
+        self.chat_template_name = config_obj.chat_template

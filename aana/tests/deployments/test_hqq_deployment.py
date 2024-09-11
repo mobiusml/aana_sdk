@@ -8,9 +8,9 @@ from aana.core.models.types import Dtype
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.hqq_deployment import (
     BaseQuantizeConfig,
-    HQQBackend,
-    HQQConfig,
-    HQQDeployment,
+    HqqBackend,
+    HqqTexGenerationConfig,
+    HqqTextGenerationDeployment,
 )
 from aana.tests.utils import verify_deployment_results
 from aana.utils.core import get_object_hash
@@ -19,21 +19,21 @@ deployments = [
     (
         (
             "meta-llama/Meta-Llama-3.1-8B-Instruct",
-            HQQDeployment.options(
+            HqqTextGenerationDeployment.options(
                 num_replicas=1,
                 ray_actor_options={"num_gpus": 0.5},
-                user_config=HQQConfig(
+                user_config=HqqTexGenerationConfig(
                     model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
-                    backend=HQQBackend.BITBLAS,
+                    backend=HqqBackend.BITBLAS,
                     quantize_on_fly=True,
                     dtype=Dtype.FLOAT16,
-                    quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
+                    quantization_config=BaseQuantizeConfig(
+                        nbits=4, group_size=64, axis=1
+                    ),
                     default_sampling_params=SamplingParams(
                         temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
                     ),
-                    model_kwargs={
-                        "attn_implementation": "sdpa"
-                    },
+                    model_kwargs={"attn_implementation": "sdpa"},
                 ).model_dump(mode="json"),
             ),
         ),
@@ -42,16 +42,22 @@ deployments = [
     (
         (
             "mobiuslabsgmbh/Llama-3.1-8b-instruct_4bitgs64_hqq_calib",
-            HQQDeployment.options(
+            HqqTextGenerationDeployment.options(
                 num_replicas=1,
                 max_ongoing_requests=1000,
                 ray_actor_options={"num_gpus": 0.5},
-                user_config=HQQConfig(
+                user_config=HqqTexGenerationConfig(
                     model_id="mobiuslabsgmbh/Llama-3.1-8b-instruct_4bitgs64_hqq_calib",
-                    backend=HQQBackend.BITBLAS,
+                    backend=HqqBackend.BITBLAS,
                     dtype=Dtype.FLOAT16,
                     quantize_on_fly=False,
-                    quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, quant_scale=False, quant_zero=False, axis=1),
+                    quantization_config=BaseQuantizeConfig(
+                        nbits=4,
+                        group_size=64,
+                        quant_scale=False,
+                        quant_zero=False,
+                        axis=1,
+                    ),
                     default_sampling_params=SamplingParams(
                         temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
                     ),
