@@ -18,7 +18,12 @@ As an example, let's see how to configure the Hugging Face pipeline deployment t
 !!! example "Meta-Llama-3.1-8B-Instruct"
     
     ```python
-    from aana.deployments.hqq_deployment import HQQConfig, HQQDeployment
+    from hqq.core.quantize import BaseQuantizeConfig
+    from aana.deployments.hqq_deployment import (
+        HqqBackend,
+        HqqTexGenerationConfig,
+        HqqTextGenerationDeployment,
+    )
 
     HQQDeployment.options(
         num_replicas=1,
@@ -27,7 +32,6 @@ As an example, let's see how to configure the Hugging Face pipeline deployment t
             model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
             backend=HQQBackend.BITBLAS,
             quantize_on_fly=True,
-            dtype=Dtype.FLOAT16,
             quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
             default_sampling_params=SamplingParams(
                 temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
