@@ -121,33 +121,54 @@ PyannoteSpeakerDiarizationDeployment.options(
 )
 ```
 
-## Half-Quadratic Quantization
+## Half-Quadratic Quantization (HQQ)
 
 HQQ deployment allows you quantize the largest models, without calibration data, in just a few minutes.
-You can use this deployment to load pre-quantized models like [HQQ Models](https://huggingface.co/mobiuslabsgmbh) as well as normal Huggingface [Hugging Face Hub](https://huggingface.co/models) models and quantiize them on the fly. 
 
-See [HQQDeployment](./../reference/deployments.md#aana.deployments.HQQDeployment) to learn more about the deployment capabilities.
+Aana SDK provides a deployment for quantizing and serving language models with the Half-Quadratic Quantization (HQQ) library. See [HqqTextGenerationDeployment](./../reference/deployments.md#aana.deployments.HqqTextGenerationDeployment) to learn more about the deployment capabilities.
+
+You can use this deployment to load pre-quantized models like [HQQ Models](https://huggingface.co/mobiuslabsgmbh) as well as models from [HuggingFace Hub](https://huggingface.co/models) and quantiize them on the fly. 
+
 
 ```python
-from aana.deployments.hqq_deployment import HQQConfig, HQQDeployment, HQQBackend, BaseQuantizeConfig, Dtype
+from hqq.core.quantize import BaseQuantizeConfig
+from aana.deployments.hqq_deployment import (
+    HqqBackend,
+    HqqTexGenerationConfig,
+    HqqTextGenerationDeployment,
+)
 
-HQQDeployment.options(
+HqqTextGenerationDeployment.options(
     num_replicas=1,
-    ray_actor_options={"num_gpus": 0.05},
-    user_config=HQQConfig(
+    ray_actor_options={"num_gpus": 0.5},
+    user_config=HqqTexGenerationConfig(
         model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
-        backend=HQQBackend.BITBLAS,
+        backend=HqqBackend.BITBLAS,
         quantize_on_fly=True,
-        dtype=Dtype.FLOAT16,
         quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
+        default_sampling_params=SamplingParams(
+            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+        ),
         model_kwargs={
             "attn_implementation": "sdpa"
         },
     ).model_dump(mode="json"),
 )
-
 ```
 
-The HQQ supports backend libs like [Marlin](https://github.com/MarlinFirmware/Marlin), [Bitblas](https://github.com/microsoft/BitBLAS/tree/main) and [torchao_int4](https://pytorch.org/) but the libs would not be installed by default and you need to install them as needed.
+The HQQ Text Generation deployment supports the following backends:
 
-For more informatino about hqq you can check [HQQ github page](https://github.com/mobiusml/hqq/tree/master).
+- `HqqBackend.BITBLAS` - BitBlas backend (default)
+- `HqqBackend.MARLIN` - Marlin backend
+- `HqqBackend.TORCHAO_INT4` - Torchao backend
+
+The backends are not installed by default and you need to install them as needed. 
+
+For BitBLAS, you can use following command to install the library:
+
+```bash
+pip install bitblas
+```
+Check the [BitBLAS GitHub page](https://github.com/microsoft/BitBLAS) for more information.
+
+For Marlin, check the [Marlin GitHub page](https://github.com/IST-DASLab/marlin) for more information.
