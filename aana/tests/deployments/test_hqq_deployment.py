@@ -2,12 +2,11 @@
 from importlib import resources
 
 import pytest
+from hqq.core.quantize import BaseQuantizeConfig
 
 from aana.core.models.sampling import SamplingParams
-from aana.core.models.types import Dtype
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.hqq_deployment import (
-    BaseQuantizeConfig,
     HqqBackend,
     HqqTexGenerationConfig,
     HqqTextGenerationDeployment,
@@ -24,9 +23,9 @@ deployments = [
                 ray_actor_options={"num_gpus": 0.5},
                 user_config=HqqTexGenerationConfig(
                     model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
-                    backend=HqqBackend.BITBLAS,
+                    # backend=HqqBackend.BITBLAS,
+                    backend=HqqBackend.TORCHAO_INT4,
                     quantize_on_fly=True,
-                    dtype=Dtype.FLOAT16,
                     quantization_config=BaseQuantizeConfig(
                         nbits=4, group_size=64, axis=1
                     ),
@@ -48,8 +47,8 @@ deployments = [
                 ray_actor_options={"num_gpus": 0.5},
                 user_config=HqqTexGenerationConfig(
                     model_id="mobiuslabsgmbh/Llama-3.1-8b-instruct_4bitgs64_hqq_calib",
-                    backend=HqqBackend.BITBLAS,
-                    dtype=Dtype.FLOAT16,
+                    # backend=HqqBackend.BITBLAS,
+                    backend=HqqBackend.TORCHAO_INT4,
                     quantize_on_fly=False,
                     quantization_config=BaseQuantizeConfig(
                         nbits=4,
