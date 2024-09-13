@@ -132,7 +132,7 @@ You can use this deployment to load pre-quantized models like [HQQ Models](https
 
 ```python
 from hqq.core.quantize import BaseQuantizeConfig
-from aana.deployments.hqq_deployment import (
+from aana.deployments.hqq_text_generation_deployment import (
     HqqBackend,
     HqqTexGenerationConfig,
     HqqTextGenerationDeployment,
@@ -155,20 +155,3 @@ HqqTextGenerationDeployment.options(
     ).model_dump(mode="json"),
 )
 ```
-
-The HQQ Text Generation deployment supports the following backends:
-
-- `HqqBackend.BITBLAS` - BitBlas backend (default)
-- `HqqBackend.MARLIN` - Marlin backend
-- `HqqBackend.TORCHAO_INT4` - Torchao backend
-
-The backends are not installed by default and you need to install them as needed. 
-
-For BitBLAS, you can use following command to install the library:
-
-```bash
-pip install bitblas
-```
-Check the [BitBLAS GitHub page](https://github.com/microsoft/BitBLAS) for more information.
-
-For Marlin, check the [Marlin GitHub page](https://github.com/IST-DASLab/marlin) for more information.

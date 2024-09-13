@@ -25,7 +25,7 @@ from aana.deployments.hf_text_generation_deployment import (
     HfTextGenerationConfig,
     HfTextGenerationDeployment,
 )
-from aana.deployments.hqq_deployment import (
+from aana.deployments.hqq_text_generation_deployment import (
     HqqBackend,
     HqqTexGenerationConfig,
     HqqTextGenerationDeployment,
