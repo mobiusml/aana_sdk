@@ -6,7 +6,7 @@ from hqq.core.quantize import BaseQuantizeConfig
 
 from aana.core.models.sampling import SamplingParams
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.deployments.hqq_deployment import (
+from aana.deployments.hqq_text_generation_deployment import (
     HqqBackend,
     HqqTexGenerationConfig,
     HqqTextGenerationDeployment,
@@ -25,6 +25,7 @@ deployments = [
                     model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
                     # backend=HqqBackend.BITBLAS,
                     backend=HqqBackend.TORCHAO_INT4,
+                    compile=True,
                     quantize_on_fly=True,
                     quantization_config=BaseQuantizeConfig(
                         nbits=4, group_size=64, axis=1
@@ -49,6 +50,7 @@ deployments = [
                     model_id="mobiuslabsgmbh/Llama-3.1-8b-instruct_4bitgs64_hqq_calib",
                     # backend=HqqBackend.BITBLAS,
                     backend=HqqBackend.TORCHAO_INT4,
+                    compile=False,
                     quantize_on_fly=False,
                     quantization_config=BaseQuantizeConfig(
                         nbits=4,

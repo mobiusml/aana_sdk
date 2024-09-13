@@ -202,6 +202,29 @@ It supports already quantized models as well as quantizing models on the fly. Th
         show_docstring_description: false
         docstring_section_style: list
 
+### HQQ Backends
+
+The HQQ Text Generation framework supports two primary backends, each optimized for specific scenarios:
+
+1. **HqqBackend.BITBLAS (Default)**
+    - **Library Installation**: Install via:
+     ```bash
+     pip install bitblas
+     ```
+     More details can be found on the [BitBLAS GitHub page](https://github.com/microsoft/BitBLAS).
+    - **Compatibility**: Works on a broader range of GPUs, including older models.
+    - **Precision Support**: Supports both 4-bit and 2-bit quantization, allowing for more compact models and efficient inference.
+    - **Strengths**: BitBLAS excels in handling large batch sizes, especially when properly configured. But HQQ is optimized for decoding with a batch size of 1 leading to slower inference times compared to the `TORCHAO_INT4` backend.
+     - **Limitations**: Slower initialization due to the need for per-shape and per-GPU compilation.
+
+2. **HqqBackend.TORCHAO_INT4**
+    - **Library Installation**: No additional installation required.
+    - **Compatibility**: Only works on Ampere and newer GPUs, limiting its usage to more recent hardware.
+    - **Precision Support**: Supports only 4-bit quantization.
+    - **Strengths**: Much faster to initialize compared to BitBLAS, making it a good choice for situations where quick startup times are crucial. Faster inference times compared to the `BITBLAS` backend.
+    - **Limitations**: It doesn't support 2-bit quantization.
+
+
 ### Example Configurations
 
 #### On-the-fly Quantization
@@ -212,7 +235,7 @@ As an example, let's see how to configure HQQ Text Generation deployment to quan
     
     ```python
     from hqq.core.quantize import BaseQuantizeConfig
-    from aana.deployments.hqq_deployment import (
+    from aana.deployments.hqq_text_generation_deployment import (
         HqqBackend,
         HqqTexGenerationConfig,
         HqqTextGenerationDeployment,
@@ -247,7 +270,7 @@ You can also deploy already quantized models with HQQ Text Generation deployment
     
     ```python
     from hqq.core.quantize import BaseQuantizeConfig
-    from aana.deployments.hqq_deployment import (
+    from aana.deployments.hqq_text_generation_deployment import (
         HqqBackend,
         HqqTexGenerationConfig,
         HqqTextGenerationDeployment,

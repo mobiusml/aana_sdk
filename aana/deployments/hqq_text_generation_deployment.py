@@ -5,6 +5,7 @@ import torch
 from hqq.core.quantize import BaseQuantizeConfig
 from hqq.core.quantize import HQQBackend as HQQBackendKernel
 from hqq.models.hf.base import AutoHQQHFModel
+from hqq.utils.generation_hf import patch_model_for_compiled_runtime
 from hqq.utils.patching import (
     HQQLinear,
     patch_add_quant_config,
@@ -30,17 +31,15 @@ from aana.deployments.hf_text_generation_deployment import (
 class HqqBackend(str, Enum):
     """HQQ Backend types.
 
-    Possible values are "torchao_int4", "bitblas" and "marlin".
+    Possible values are "torchao_int4" and "bitblas".
 
     Attributes:
         TORCHAO_INT4 (str): torchao_int4
         BITBLAS (str): bitblas
-        MARLIN (str): marlin
     """
 
     TORCHAO_INT4 = "torchao_int4"
     BITBLAS = "bitblas"
-    MARLIN = "marlin"
 
 
 class HqqTexGenerationConfig(BaseModel):
@@ -48,11 +47,11 @@ class HqqTexGenerationConfig(BaseModel):
 
     Attributes:
         model_id (str): The model ID on Hugging Face.
-        quantize_on_fly: Whether to quantize the model or it is already pre-quantized
-        backend (HqqBackend): The backend lib for quantization the model
+        quantize_on_fly: Whether to quantize the model or it is already pre-quantized. Defaults to False.
+        backend (HqqBackend): The backend library to use. Defaults to HqqBackend.BITBLAS.
         compile (bool): Whether to compile the model with torch.compile. Defaults to False.
         dtype (Dtype): The data type. Defaults to Dtype.AUTO.
-        quantization_config (dict): The quantization params
+        quantization_config (dict): The quantization configuration.
         model_kwargs (CustomConfig): The extra model keyword arguments. Defaults to {}.
         default_sampling_params (SamplingParams): The default sampling parameters.
             Defaults to SamplingParams(temperature=0, max_tokens=256).
@@ -63,7 +62,7 @@ class HqqTexGenerationConfig(BaseModel):
     model_id: str
     quantize_on_fly: bool = False
     backend: HqqBackend = HqqBackend.BITBLAS
-    compile: bool = False
+    compile: bool = True
     dtype: Dtype = Field(default=Dtype.AUTO)
     quantization_config: CustomConfig = BaseQuantizeConfig()
     model_kwargs: CustomConfig = {}
@@ -109,7 +108,7 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
                 self.dtype = Dtype.BFLOAT16
 
         if config_obj.quantize_on_fly:
-            self.model_kwargs["device_map"] = self.device
+            # self.model_kwargs["device_map"] = self.device
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id, torch_dtype=self.dtype.to_torch(), **self.model_kwargs
             )
@@ -120,7 +119,7 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
                 compute_dtype=self.dtype.to_torch(),
             )
         else:
-            self.model_kwargs["device"] = self.device
+            # self.model_kwargs["device"] = self.device
             self.model = AutoHQQHFModel.from_quantized(
                 self.model_id, compute_dtype=self.dtype.to_torch(), **self.model_kwargs
             )
@@ -131,10 +130,7 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
         HQQLinear.set_backend(HQQBackendKernel.PYTORCH)
         self.model.generation_config.cache_implementation = "static"
         prepare_for_inference(self.model, backend=self.backend)
-        if config_obj.compile:
-            self.model.forward = torch.compile(
-                self.model.forward, mode="reduce-overhead", fullgraph=True
-            )
-
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
         self.chat_template_name = config_obj.chat_template
+        if config_obj.compile:
+            patch_model_for_compiled_runtime(self.model, self.tokenizer, warmup=True)
