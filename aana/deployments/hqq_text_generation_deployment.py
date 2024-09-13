@@ -99,6 +99,16 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
         default_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.device = self.model_kwargs.get("device_map", default_device)
 
+        if self.backend == HqqBackend.BITBLAS:
+            try:
+                import bitblas
+            except ImportError as e:
+                raise ImportError(  # noqa: TRY003
+                    "Failed to import the BitBLAS but HQQ is configured to use BitBLAS backend. "
+                    "Check if BitBlas is correctly installed "
+                    "if you want to use the bitblas backend (https://github.com/microsoft/BitBLAS)."
+                ) from e
+
         if self.dtype == Dtype.AUTO:
             if self.backend == HqqBackend.TORCHAO_INT4:
                 self.dtype = Dtype.BFLOAT16
@@ -108,7 +118,7 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
                 self.dtype = Dtype.BFLOAT16
 
         if config_obj.quantize_on_fly:
-            # self.model_kwargs["device_map"] = self.device
+            self.model_kwargs["device_map"] = self.device
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id, torch_dtype=self.dtype.to_torch(), **self.model_kwargs
             )
@@ -119,7 +129,7 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
                 compute_dtype=self.dtype.to_torch(),
             )
         else:
-            # self.model_kwargs["device"] = self.device
+            self.model_kwargs["device"] = self.device
             self.model = AutoHQQHFModel.from_quantized(
                 self.model_id, compute_dtype=self.dtype.to_torch(), **self.model_kwargs
             )
