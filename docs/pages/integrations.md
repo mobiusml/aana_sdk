@@ -147,7 +147,7 @@ HqqTextGenerationDeployment.options(
         quantize_on_fly=True,
         quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
         default_sampling_params=SamplingParams(
-            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
         ),
         model_kwargs={
             "attn_implementation": "sdpa"

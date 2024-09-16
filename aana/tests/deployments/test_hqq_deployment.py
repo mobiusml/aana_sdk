@@ -23,7 +23,6 @@ deployments = [
                 ray_actor_options={"num_gpus": 0.5},
                 user_config=HqqTexGenerationConfig(
                     model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
-                    # backend=HqqBackend.BITBLAS,
                     backend=HqqBackend.TORCHAO_INT4,
                     compile=True,
                     quantize_on_fly=True,
@@ -31,7 +30,7 @@ deployments = [
                         nbits=4, group_size=64, axis=1
                     ),
                     default_sampling_params=SamplingParams(
-                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
                     ),
                     model_kwargs={"attn_implementation": "sdpa"},
                 ).model_dump(mode="json"),
@@ -48,7 +47,6 @@ deployments = [
                 ray_actor_options={"num_gpus": 0.5},
                 user_config=HqqTexGenerationConfig(
                     model_id="mobiuslabsgmbh/Llama-3.1-8b-instruct_4bitgs64_hqq_calib",
-                    # backend=HqqBackend.BITBLAS,
                     backend=HqqBackend.TORCHAO_INT4,
                     compile=False,
                     quantize_on_fly=False,
@@ -60,7 +58,57 @@ deployments = [
                         axis=1,
                     ),
                     default_sampling_params=SamplingParams(
-                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
+                    ),
+                ).model_dump(mode="json"),
+            ),
+        ),
+        "<s><|user|>\n{query}<|end|>\n<|assistant|>\n",
+    ),
+    (
+        (
+            "meta-llama/Meta-Llama-3.1-8B-Instruct",
+            HqqTextGenerationDeployment.options(
+                num_replicas=1,
+                ray_actor_options={"num_gpus": 0.5},
+                user_config=HqqTexGenerationConfig(
+                    model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
+                    backend=HqqBackend.BITBLAS,
+                    compile=True,
+                    quantize_on_fly=True,
+                    quantization_config=BaseQuantizeConfig(
+                        nbits=4, group_size=64, axis=1
+                    ),
+                    default_sampling_params=SamplingParams(
+                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
+                    ),
+                    model_kwargs={"attn_implementation": "sdpa"},
+                ).model_dump(mode="json"),
+            ),
+        ),
+        "<s><|user|>\n{query}<|end|>\n<|assistant|>\n",
+    ),
+    (
+        (
+            "mobiuslabsgmbh/Llama-3.1-8b-instruct_4bitgs64_hqq_calib",
+            HqqTextGenerationDeployment.options(
+                num_replicas=1,
+                max_ongoing_requests=1000,
+                ray_actor_options={"num_gpus": 0.5},
+                user_config=HqqTexGenerationConfig(
+                    model_id="mobiuslabsgmbh/Llama-3.1-8b-instruct_4bitgs64_hqq_calib",
+                    backend=HqqBackend.BITBLAS,
+                    compile=False,
+                    quantize_on_fly=False,
+                    quantization_config=BaseQuantizeConfig(
+                        nbits=4,
+                        group_size=64,
+                        quant_scale=False,
+                        quant_zero=False,
+                        axis=1,
+                    ),
+                    default_sampling_params=SamplingParams(
+                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
                     ),
                 ).model_dump(mode="json"),
             ),
