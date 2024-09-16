@@ -101,7 +101,7 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
 
         if self.backend == HqqBackend.BITBLAS:
             try:
-                import bitblas
+                import bitblas  # noqa: F401
             except ImportError as e:
                 raise ImportError(  # noqa: TRY003
                     "Failed to import the BitBLAS but HQQ is configured to use BitBLAS backend. "

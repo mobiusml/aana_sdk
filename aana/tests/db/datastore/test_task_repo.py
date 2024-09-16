@@ -160,6 +160,7 @@ def test_update_status(db_session):
 
 
 def test_get_active_tasks(db_session):
+    """Test fetching active tasks."""
     task_repo = TaskRepository(db_session)
 
     # Remove all existing tasks

@@ -204,7 +204,7 @@ It supports already quantized models as well as quantizing models on the fly. Th
 
 ### HQQ Backends
 
-The HQQ Text Generation framework supports two primary backends, each optimized for specific scenarios:
+The HQQ Text Generation framework supports two backends, each optimized for specific scenarios:
 
 1. **HqqBackend.BITBLAS (Default)**
     - **Library Installation**: Install via:
@@ -250,7 +250,7 @@ As an example, let's see how to configure HQQ Text Generation deployment to quan
             quantize_on_fly=True,
             quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
             default_sampling_params=SamplingParams(
-                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
             ),
             model_kwargs={
                 "attn_implementation": "sdpa"
@@ -259,7 +259,7 @@ As an example, let's see how to configure HQQ Text Generation deployment to quan
     )
     ```
 
-Model ID is the Hugging Face model ID. We set `quantize_on_fly=True` to quantize the model on the fly since the model is not pre-quantized. We deploy the model with 4-bit quantization by setting `quantization_config` in the `HQQConfig`. We use `HQQBackend.BITBLAS` as the backend for quantization, it is optional as BitBLAS is the default backend. You can pass extra arguments to the model in the `model_kwargs` dictionary.
+Model ID is the Hugging Face model ID. We set `quantize_on_fly=True` to quantize the model on the fly since the model is not pre-quantized. We deploy the model with 4-bit quantization by setting `quantization_config` in the `HqqConfig`. We use `HqqBackend.BITBLAS` as the backend for quantization, it is optional as BitBLAS is the default backend. You can pass extra arguments to the model in the `model_kwargs` dictionary.
 
 #### Pre-quantized Models
 
@@ -290,10 +290,10 @@ You can also deploy already quantized models with HQQ Text Generation deployment
                 axis=1,
             ),
             default_sampling_params=SamplingParams(
-                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
             ),
         ).model_dump(mode="json"),
     )
     ```
 
-Model ID is the Hugging Face model ID of a pre-quantized model. We use `HQQBackend.BITBLAS` as the backend for quantization, it is optional as BitBLAS is the default backend. We set the quantization configuration according to the model page.
+Model ID is the Hugging Face model ID of a pre-quantized model. We use `HqqBackend.BITBLAS` as the backend for quantization, it is optional as BitBLAS is the default backend. We set the quantization configuration according to the model page.

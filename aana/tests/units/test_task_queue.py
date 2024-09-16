@@ -111,7 +111,7 @@ endpoints = [
 ]
 
 
-def test_task_queue(create_app):
+def test_task_queue(create_app):  # noqa: C901
     """Test the Ray Serve app."""
     aana_app = create_app(deployments, endpoints)
 
