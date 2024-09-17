@@ -1,3 +1,4 @@
+import base64
 import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
@@ -8,7 +9,6 @@ from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
 from vllm.inputs import TokensPrompt
 
-from aana.core.chat.chat_template import apply_chat_template
 from aana.core.models.base import merged_options
 from aana.core.models.chat import ChatDialog, ChatMessage
 from aana.core.models.custom_config import CustomConfig
@@ -27,8 +27,13 @@ with contextlib.suppress(ImportError):
     from vllm.model_executor.utils import (
         set_random_seed,  # Ignore if we don't have GPU and only run on CPU with test cache
     )
-from vllm.entrypoints.chat_utils import parse_chat_messages
+from vllm.entrypoints.chat_utils import (
+    apply_hf_chat_template,
+    apply_mistral_chat_template,
+    parse_chat_messages,
+)
 from vllm.sampling_params import SamplingParams as VLLMSamplingParams
+from vllm.transformers_utils.tokenizer import MistralTokenizer
 from vllm.utils import random_uuid
 
 from aana.core.models.base import pydantic_protected_fields
@@ -124,59 +129,101 @@ class VLLMDeployment(BaseDeployment):
         self.tokenizer = self.engine.engine.tokenizer.tokenizer
         self.model_config = await self.engine.get_model_config()
 
-    def apply_chat_template_with_images(
-        self, dialog: ImageChatDialog
-    ) -> tuple[str, list[Image]]:
-        """Apply the chat template to the dialog with images."""
+    def apply_chat_template(
+        self, dialog: ChatDialog | ImageChatDialog
+    ) -> tuple[str | list[int], dict | None]:
+        """Apply the chat template to the dialog.
 
-        def replace_image_type(message):
+        Args:
+            dialog (ChatDialog | ImageChatDialog): the dialog (optionally with images)
+
+        Returns:
+            tuple[str | list[int], dict | None]: the prompt and the multimodal data
+        """
+
+        def image_to_base64(image: Image) -> str:
+            """Convert an image to a base64 string."""
+            image_data = image.get_content()
+            base64_encoded_image = base64.b64encode(image_data)
+            base64_string = "data:image;base64," + base64_encoded_image.decode("utf-8")
+            return base64_string
+
+        def replace_image_type(messages: list[dict], images: list[Image]) -> list[dict]:
             """Replace the image type with image_url for compatibility with vLLM chat utils.
 
             vLLM chat utils (parse_chat_messages) only support image_url type for images.
-            We handle images separately from the chat template, so if we want to reuse vLLM chat utils,
-            we need to replace the image type with image_url.
-
-            For the image content, we use 1x1 image as a placeholder. The actual image is passed separately.
+            We need to replace the image type with image_url and provide the actual image content as base64 string.
             """
-            for item in message["content"]:
-                if item["type"] == "image":
-                    item["type"] = "image_url"
-                    item["image_url"] = {
-                        "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NgAAIAAAUAAR4f7BQAAAAASUVORK5CYII="
-                    }
-            return message
+            i = 0
+            for message in messages:
+                for item in message["content"]:
+                    if item["type"] == "image":
+                        item["type"] = "image_url"
+                        if i >= len(images):
+                            raise ValueError(  # noqa: TRY003
+                                "Number of images does not match the number of image items in the message."
+                            )
+                        item["image_url"] = {"url": image_to_base64(images[i])}
+                        i += 1
+            if i != len(images):
+                raise ValueError(  # noqa: TRY003
+                    "Number of images does not match the number of image items in the message."
+                )
+            return messages
 
-        messages, images = dialog.to_objects()
-        messages = [replace_image_type(message) for message in messages]
-        messages, _ = parse_chat_messages(messages, self.model_config, self.tokenizer)
-        prompt = apply_chat_template(self.tokenizer, messages)
-        return prompt, images
+        if isinstance(dialog, ImageChatDialog):
+            messages, images = dialog.to_objects()
+            messages = replace_image_type(messages, images)
+        else:
+            messages = dialog.model_dump()["messages"]
+            images = None
+
+        conversation, mm_data = parse_chat_messages(
+            messages, self.model_config, self.tokenizer
+        )
+
+        if isinstance(self.tokenizer, MistralTokenizer):
+            prompt = apply_mistral_chat_template(
+                self.tokenizer,
+                messages=messages,
+                add_generation_prompt=True,
+            )
+        else:
+            prompt = apply_hf_chat_template(
+                self.tokenizer,
+                conversation=conversation,
+                chat_template=self.tokenizer.chat_template,
+                add_generation_prompt=True,
+                # tokenize=True
+            )
+        return prompt, mm_data
 
     async def generate_stream(
         self,
-        prompt: str,
-        images: list[Image] | None = None,
+        prompt: str | list[int],
+        mm_data: dict | None = None,
         sampling_params: SamplingParams | None = None,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate completion for the given prompt and stream the results.
 
         Args:
-            prompt (str): the prompt
-            images (list[Image] | None): optional list of images
+            prompt (str | list[int]): the prompt or the tokenized prompt
+            mm_data (dict | None): the multimodal data
             sampling_params (SamplingParams | None): the sampling parameters
 
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
-        prompt = str(prompt)
+        if isinstance(prompt, str):
+            prompt_token_ids = self.tokenizer.encode(prompt)
+        else:
+            prompt_token_ids = prompt
 
         if sampling_params is None:
             sampling_params = SamplingParams()
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
 
         request_id = None
-        # tokenize the prompt
-        prompt_token_ids = self.tokenizer.encode(prompt)
 
         if len(prompt_token_ids) > self.model_config.max_model_len:
             raise PromptTooLongException(
@@ -194,10 +241,10 @@ class VLLMDeployment(BaseDeployment):
             request_id = random_uuid()
             # set the random seed for reproducibility
             set_random_seed(42)
-            if images is not None:
+            if mm_data is not None:
                 inputs = TokensPrompt(
                     prompt_token_ids=prompt_token_ids,
-                    multi_modal_data={"image": [img.get_pil_image() for img in images]},
+                    multi_modal_data=mm_data,
                 )
             else:
                 inputs = TokensPrompt(prompt_token_ids=prompt_token_ids)
@@ -222,36 +269,36 @@ class VLLMDeployment(BaseDeployment):
 
     async def generate(
         self,
-        prompt: str,
-        images: list[Image] | None = None,
+        prompt: str | list[int],
+        mm_data: dict | None = None,
         sampling_params: SamplingParams | None = None,
     ) -> LLMOutput:
         """Generate completion for the given prompt.
 
         Args:
-            prompt (str): the prompt
-            images (list[Image] | None): optional list of images
+            prompt (str | list[int]): the prompt or the tokenized prompt
+            mm_data (dict | None): the multimodal data
             sampling_params (SamplingParams | None): the sampling parameters
 
         Returns:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         generated_text = ""
-        async for chunk in self.generate_stream(prompt, images, sampling_params):
+        async for chunk in self.generate_stream(prompt, mm_data, sampling_params):
             generated_text += chunk["text"]
         return LLMOutput(text=generated_text)
 
     async def generate_batch(
         self,
-        prompts: list[str],
-        images: list[list[Image]] | None = None,
+        prompts: list[str] | list[list[int]],
+        mm_data_list: list[dict] | None = None,
         sampling_params: SamplingParams | None = None,
     ) -> LLMBatchOutput:
         """Generate completion for the batch of prompts.
 
         Args:
-            prompts (List[str]): the prompts
-            images (list[list[Image]] | None): optional list of images
+            prompts (List[str] | List[List[int]]): the list of prompts or the tokenized prompts
+            mm_data_list (List[dict] | None): the list of multimodal data
             sampling_params (SamplingParams | None): the sampling parameters
 
         Returns:
@@ -260,8 +307,8 @@ class VLLMDeployment(BaseDeployment):
         """
         texts = []
         for i, prompt in enumerate(prompts):
-            if images is not None:
-                text = await self.generate(prompt, images[i], sampling_params)
+            if mm_data_list is not None:
+                text = await self.generate(prompt, mm_data_list[i], sampling_params)
             else:
                 text = await self.generate(prompt, sampling_params)
             texts.append(text["text"])
@@ -284,14 +331,8 @@ class VLLMDeployment(BaseDeployment):
                         and the response message with a role "assistant"
                         and the generated text as the content
         """
-        if isinstance(dialog, ImageChatDialog):
-            prompt, images = self.apply_chat_template_with_images(dialog)
-        else:
-            prompt = apply_chat_template(
-                self.tokenizer, dialog, self.chat_template_name
-            )
-            images = None
-        response = await self.generate(prompt, images, sampling_params)
+        prompt_ids, mm_data = self.apply_chat_template(dialog)
+        response = await self.generate(prompt_ids, mm_data, sampling_params)
         response_message = ChatMessage(content=response["text"], role="assistant")
         return ChatOutput(message=response_message)
 
@@ -309,12 +350,6 @@ class VLLMDeployment(BaseDeployment):
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
-        if isinstance(dialog, ImageChatDialog):
-            prompt, images = self.apply_chat_template_with_images(dialog)
-        else:
-            prompt = apply_chat_template(
-                self.tokenizer, dialog, self.chat_template_name
-            )
-            images = None
-        async for chunk in self.generate_stream(prompt, images, sampling_params):
+        prompt_ids, mm_data = self.apply_chat_template(dialog)
+        async for chunk in self.generate_stream(prompt_ids, mm_data, sampling_params):
             yield chunk
