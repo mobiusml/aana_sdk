@@ -24,9 +24,7 @@ from aana.deployments.base_text_generation_deployment import (
 from aana.utils.gpu import get_gpu_memory
 
 with contextlib.suppress(ImportError):
-    from vllm.model_executor.utils import (
-        set_random_seed,  # Ignore if we don't have GPU and only run on CPU with test cache
-    )
+    from vllm.model_executor.utils import set_random_seed
 from vllm.entrypoints.chat_utils import (
     apply_hf_chat_template,
     apply_mistral_chat_template,
@@ -201,8 +199,8 @@ class VLLMDeployment(BaseDeployment):
     async def generate_stream(
         self,
         prompt: str | list[int],
-        mm_data: dict | None = None,
         sampling_params: SamplingParams | None = None,
+        mm_data: dict | None = None,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate completion for the given prompt and stream the results.
 
@@ -270,8 +268,8 @@ class VLLMDeployment(BaseDeployment):
     async def generate(
         self,
         prompt: str | list[int],
-        mm_data: dict | None = None,
         sampling_params: SamplingParams | None = None,
+        mm_data: dict | None = None,
     ) -> LLMOutput:
         """Generate completion for the given prompt.
 
@@ -284,15 +282,17 @@ class VLLMDeployment(BaseDeployment):
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         generated_text = ""
-        async for chunk in self.generate_stream(prompt, mm_data, sampling_params):
+        async for chunk in self.generate_stream(
+            prompt, sampling_params=sampling_params, mm_data=mm_data
+        ):
             generated_text += chunk["text"]
         return LLMOutput(text=generated_text)
 
     async def generate_batch(
         self,
         prompts: list[str] | list[list[int]],
-        mm_data_list: list[dict] | None = None,
         sampling_params: SamplingParams | None = None,
+        mm_data_list: list[dict] | None = None,
     ) -> LLMBatchOutput:
         """Generate completion for the batch of prompts.
 
@@ -308,9 +308,11 @@ class VLLMDeployment(BaseDeployment):
         texts = []
         for i, prompt in enumerate(prompts):
             if mm_data_list is not None:
-                text = await self.generate(prompt, mm_data_list[i], sampling_params)
+                text = await self.generate(
+                    prompt, sampling_params=sampling_params, mm_data=mm_data_list[i]
+                )
             else:
-                text = await self.generate(prompt, sampling_params)
+                text = await self.generate(prompt, sampling_params=sampling_params)
             texts.append(text["text"])
 
         return LLMBatchOutput(texts=texts)
@@ -332,7 +334,9 @@ class VLLMDeployment(BaseDeployment):
                         and the generated text as the content
         """
         prompt_ids, mm_data = self.apply_chat_template(dialog)
-        response = await self.generate(prompt_ids, mm_data, sampling_params)
+        response = await self.generate(
+            prompt_ids, sampling_params=sampling_params, mm_data=mm_data
+        )
         response_message = ChatMessage(content=response["text"], role="assistant")
         return ChatOutput(message=response_message)
 
@@ -351,5 +355,7 @@ class VLLMDeployment(BaseDeployment):
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         prompt_ids, mm_data = self.apply_chat_template(dialog)
-        async for chunk in self.generate_stream(prompt_ids, mm_data, sampling_params):
+        async for chunk in self.generate_stream(
+            prompt_ids, sampling_params=sampling_params, mm_data=mm_data
+        ):
             yield chunk
