@@ -11,6 +11,7 @@ from aana.core.models.asr import (
     AsrTranscription,
     AsrTranscriptionInfo,
 )
+from aana.core.models.base import pydantic_to_dict
 from aana.core.models.speaker import SpeakerDiarizationSegment
 from aana.processors.speaker import (
     SpeakerDiarizationOutput,
@@ -23,7 +24,7 @@ from aana.tests.utils import verify_deployment_results
 @pytest.mark.parametrize("audio_file", ["sd_sample.wav"])
 def test_asr_diarization_post_process(audio_file: Literal["sd_sample.wav"]):
     """Test that the ASR output can be processed to generate diarized transcription."""
-    # load precomputed asr and diarization outputs
+    # load precomputed ASR and Diarization outputs
     asr_path = (
         resources.files("aana.tests.files.expected.whisper")
         / f"whisper_medium_{audio_file}.json"
@@ -36,8 +37,8 @@ def test_asr_diarization_post_process(audio_file: Literal["sd_sample.wav"]):
         resources.files("aana.tests.files.expected.whisper")
         / f"whisper_medium_{audio_file}_diar.json"
     )
-    # convert to WhisperOutput and SpeakerDiarizationOutput
 
+    # convert to WhisperOutput and SpeakerDiarizationOutput
     with Path.open(asr_path, "r") as json_file:
         asr_op = json.load(json_file)
 
@@ -63,5 +64,6 @@ def test_asr_diarization_post_process(audio_file: Literal["sd_sample.wav"]):
         diar_output,
         asr_output,
     )
+    processed_transcription = pydantic_to_dict(processed_transcription)
 
     verify_deployment_results(expected_results_path, processed_transcription)

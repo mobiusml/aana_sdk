@@ -6,8 +6,8 @@
                 "start": 6.38,
                 "end": 7.84
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " Hello.",
@@ -36,8 +36,8 @@
                 "start": 8.3,
                 "end": 9.68
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " Oh,",
@@ -120,8 +120,8 @@
                 "start": 9.98,
                 "end": 10.64
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " Neither",
@@ -159,8 +159,8 @@
                 "start": 10.64,
                 "end": 13.94
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " Okay,",
@@ -306,8 +306,8 @@
                 "start": 14.36,
                 "end": 17.42
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " And",
@@ -390,8 +390,8 @@
                 "start": 18.04,
                 "end": 21.34
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " Oh,",
@@ -510,8 +510,8 @@
                 "start": 21.74,
                 "end": 28.32
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " Well,",
@@ -729,8 +729,8 @@
                 "start": 28.38,
                 "end": 29.82
             },
-            "confidence": null,
-            "no_speech_confidence": null,
+            "confidence": 0.8329984157521475,
+            "no_speech_confidence": 0.012033582665026188,
             "words": [
                 {
                     "word": " Oh,",

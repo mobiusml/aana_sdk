@@ -1,7 +1,7 @@
 # ruff: noqa: S101
 from importlib import resources
 from pathlib import Path
-import json
+
 import pytest
 
 from aana.core.models.audio import Audio
@@ -55,7 +55,5 @@ class TestPyannoteSpeakerDiarizationDeployment:
 
         output = await handle.diarize(audio=audio)
         output = pydantic_to_dict(output)
-        # save or print this, evenif it is different.
-        # with open(expected_output_path, "w") as json_file:
-        #     json.dump(output, json_file, indent=4)
+
         verify_deployment_results(expected_output_path, output)
