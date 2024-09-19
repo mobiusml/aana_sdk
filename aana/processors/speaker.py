@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import TypedDict
+from typing import TypedDict, Union
 
 from aana.core.models.asr import (
     AsrSegment,
@@ -10,10 +10,10 @@ from aana.core.models.asr import (
 from aana.core.models.speaker import SpeakerDiarizationSegment
 from aana.core.models.time import TimeInterval
 
-# Utility functions for speaker-related processing
+# Utility functions for speaker-related processing in audio
 
 
-# redefine SpeakerDiarizationOutput and WhisperOutput to prevent circular imports
+# Redefine SpeakerDiarizationOutput and WhisperOutput to prevent circular imports
 class SpeakerDiarizationOutput(TypedDict):
     """The output of the Speaker Diarization model.
 
@@ -38,11 +38,10 @@ class WhisperOutput(TypedDict):
     transcription: AsrTranscription
 
 
-# Define sentence ending punctuations:
+# Define sentence ending punctuations to split segments at sentence endings:
 sentence_ending_punctuations = ".?!"
 
 
-# AsrSegment and AsrWord has a speaker label that defaults to None.
 def assign_word_speakers(
     diarized_output: SpeakerDiarizationOutput,
     transcription: WhisperOutput,
@@ -50,13 +49,13 @@ def assign_word_speakers(
 ) -> WhisperOutput:
     """Assigns speaker labels to each segment and word in the transcription based on diarized output.
 
-    Parameters:
-    - diarized_output (SpeakerDiarizationOutput): Contains speaker diarization segments.
-    - transcription (WhisperOutput): Transcription data with segments, text, and language_info.
-    - fill_nearest (bool): If True, assigns the closest speaker even if there's no positive overlap. Default is False.
+    Args:
+        diarized_output (SpeakerDiarizationOutput): Contains speaker diarization segments.
+        transcription (WhisperOutput): Transcription data with segments, text, and language_info.
+        fill_nearest (bool): If True, assigns the closest speaker even if there's no positive overlap. Default is False.
 
     Returns:
-    - transcription (WhisperOutput): Transcription updated in-place with the assigned speaker labels.
+        transcription (WhisperOutput): Transcription updated in-place with the assigned speaker labels.
     """
     for segment in transcription["segments"]:
         # Assign speaker to segment
@@ -88,14 +87,14 @@ def get_speaker_for_interval(
 ) -> str | None:
     """Determines the speaker for a given time interval based on diarized segments.
 
-    Parameters:
-    - sd_segments (list[SpeakerDiarizationSegment]): List of speaker diarization segments.
-    - start_time (float): Start time of the interval.
-    - end_time (float): End time of the interval.
-    - fill_nearest (bool): If True, selects the closest speaker even with no overlap.
+    Args:
+        sd_segments (list[SpeakerDiarizationSegment]): List of speaker diarization segments.
+        start_time (float): Start time of the interval.
+        end_time (float): End time of the interval.
+        fill_nearest (bool): If True, selects the closest speaker even with no overlap.
 
     Returns:
-    - str | None: The identified speaker label, or None if no speaker is found.
+        str | None: The identified speaker label, or None if no speaker is found.
     """
     overlaps = []
 
@@ -184,13 +183,13 @@ def find_nearest_speaker(
 ) -> str | None:
     """Find the nearest speaker label in the word_speaker_mapping either forward or backward.
 
-    Parameters:
-    - index (int): The index to start searching from.
-    - word_speaker_mapping (list[AsrWord]): List of word-speaker mappings.
-    - reverse (bool): Search backwards if True; forwards if False. Default is False.
+    Args:
+        index (int): The index to start searching from.
+        word_speaker_mapping (list[AsrWord]): List of word-speaker mappings.
+        reverse (bool): Search backwards if True; forwards if False. Default is False.
 
     Returns:
-    - str | None: The nearest speaker found or None if not found.
+        str | None: The nearest speaker found or None if not found.
     """
     step = -1 if reverse else 1
     for i in range(index, len(word_speaker_mapping) if not reverse else -1, step):
@@ -204,12 +203,12 @@ def align_with_punctuation(
 ) -> list[AsrWord]:
     """Aligns speaker labels with sentence boundaries defined by punctuation.
 
-    Parameters:
-    - transcription (WhisperOutput): transcription with speaker information.
-    - max_words_in_sentence (int): Maximum number of words allowed in a sentence.
+    Args:
+        transcription (WhisperOutput): transcription with speaker information.
+        max_words_in_sentence (int): Maximum number of words allowed in a sentence.
 
     Returns:
-    - list[AsrWord]: Realigned word-speaker mappings.
+        word_speaker_mapping: (list[AsrWord]): Realigned word-speaker mappings.
     """
     new_segments = [segment.words for segment in transcription["segments"]]
     word_speaker_mapping = [word for segment in new_segments for word in segment]
@@ -259,64 +258,220 @@ def align_with_punctuation(
     return word_speaker_mapping
 
 
-def create_speaker_segments(
-    word_list: list[AsrWord], merge: bool = False
-) -> list[AsrSegment]:
-    """Creates speaker segments from a list of words with speaker annotations and timing information.
+def create_new_segment(
+    word_info: AsrWord, speaker: str | None, is_empty: bool = False
+) -> AsrSegment:
+    """Creates a new segment based on word information.
 
-    Parameters:
-    - word_list (List[AsrWord]): A list of words with associated speaker and timing details.
-    - merge (bool): If True, merges consecutive segments from the same speaker into one segment.
+    Args:
+        word_info (AsrWord): The word information containing text, timing, etc.
+        speaker (str | None): The speaker associated with this word.
+        is_empty (bool): If True, creates an empty segment (for punctuation-only segments).
 
     Returns:
-    - List[AsrSegment]: A list of segments where each segment groups words spoken by the same speaker.
+        AsrSegment: A new segment with the provided word information and speaker details.
+    """
+    return AsrSegment(
+        time_interval=TimeInterval(
+            start=word_info.time_interval.start
+            if not is_empty
+            else word_info.time_interval.end,
+            end=word_info.time_interval.end,
+        ),
+        text=word_info.word if not is_empty else "",
+        speaker=speaker,
+        words=[word_info] if not is_empty else [],
+        confidence=None,
+        no_speech_confidence=None,
+    )
+
+
+def create_speaker_segments(
+    word_list: list[AsrWord], max_words_per_segment: int = 50
+) -> list[AsrSegment]:
+    """Creates speaker segments from a list of words with speaker annotations.
+
+    Args:
+        word_list (List[AsrWord]): A list of words with associated speaker and timing details.
+        max_words_per_segment (int): The maximum number of words per segment. If the segment exceeds this,
+                                     it will be split at previous or next sentence-ending punctuation.
+
+    Returns:
+        List[AsrSegment]: A list of segments where each segment groups words spoken by the same speaker.
     """
     if not word_list:
         return []
 
-    # Initialize variables to track current speaker and segment
     current_speaker = None
     current_segment = None
     final_segments: list[AsrSegment] = []
+    word_count = 0
 
     for word_info in word_list:
-        # Default speaker assignment to the last known speaker if missing
         speaker = word_info.speaker or current_speaker
 
-        # Check for speaker change or start of a new segment
+        # Handle speaker change
         if speaker != current_speaker:
             if current_segment:
                 final_segments.append(current_segment)
-
-            # Start a new segment
-            # TODO: Also get the original confidence measurements from segments and update it.
-            current_segment = AsrSegment(
-                time_interval=TimeInterval(
-                    start=word_info.time_interval.start, end=word_info.time_interval.end
-                ),
-                text=word_info.word,
-                speaker=speaker,
-                words=[word_info],
-                confidence=None,
-                no_speech_confidence=None,
-            )
+            current_segment = create_new_segment(word_info, speaker)
             current_speaker = speaker
+            word_count = 1
         else:
             if current_segment:
-                # Update the current segment for continuous speaker
-                current_segment.time_interval.end = word_info.time_interval.end
-                current_segment.text += f"{word_info.word}"  # Add space between words
-                current_segment.words.append(word_info)
+                # Handle word count and punctuation splitting
+                current_segment, word_count = split_segment_on_length_punctuation(
+                    current_segment,
+                    word_info,
+                    word_count,
+                    max_words_per_segment,
+                    final_segments,
+                )
 
-    # Append the last segment if it exists
-    if current_segment:
+    # Add the final segment if it exists
+    if current_segment and current_segment.words:
         final_segments.append(current_segment)
 
-    # Optional merging of consecutive segments by the same speaker
-    if merge:
-        final_segments = merge_consecutive_speaker_segments(final_segments)
-
     return final_segments
+
+
+def add_segment_variables(
+    segments: list[AsrSegment], transcription: WhisperOutput
+) -> list[AsrSegment]:
+    """Adds confidence and no_speech_confidence variables to each segment.
+
+    Args:
+        segments (List[AsrSegment]): A list of segments to which the confidence values will be added.
+        transcription (WhisperOutput): The transcription data to help determine segment confidence.
+
+    Returns:
+        List[AsrSegment]: Segments with confidence and no_speech_confidence added.
+    """
+    for segment in segments:
+        confidence, no_speech_confidence = determine_major_segment_confidence(
+            segment, transcription
+        )
+        segment.confidence = confidence
+        segment.no_speech_confidence = no_speech_confidence
+    return segments
+
+
+def split_segment_on_length_punctuation(
+    current_segment: AsrSegment,
+    word_info: AsrWord,
+    word_count: int,
+    max_words_per_segment: int,
+    final_segments: list[AsrSegment],
+) -> tuple[AsrSegment, int]:
+    """Splits segments based on length and sentence-ending punctuation.
+
+    Args:
+        current_segment (AsrSegment): The current speaker segment being processed.
+        word_info (AsrWord): Word information containing timing and text.
+        word_count (int): The current word count in the segment.
+        max_words_per_segment (int): Maximum number of words allowed in a segment before splitting.
+        final_segments (List[AsrSegment]): List of segments to which the completed segment will be added.
+
+    Returns:
+        Tuple[AsrSegment, int]: The updated segment and word count.
+    """
+    # Check if word count exceeds the limit and if punctuation exists to split
+    if word_count >= max_words_per_segment and any(
+        p in word_info.word for p in sentence_ending_punctuations
+    ):
+        # update current segment and then append it
+        current_segment.time_interval.end = word_info.time_interval.end
+        current_segment.text += f"{word_info.word}"
+        current_segment.words.append(word_info)
+        final_segments.append(current_segment)
+        current_segment = create_new_segment(
+            word_info, current_segment.speaker, is_empty=True
+        )
+        word_count = 0  # Reset word count
+
+    else:
+        # Append word to the current segment
+        current_segment.time_interval.end = word_info.time_interval.end
+        current_segment.text += f"{word_info.word}"
+        current_segment.words.append(word_info)
+        word_count += 1
+
+    # If sentence-ending punctuation is found, finalize the segment
+    # if any(p in word_info.word for p in sentence_ending_punctuations):
+    #    final_segments.append(current_segment)
+    #    current_segment = create_new_segment(
+    #        word_info, current_segment.speaker, is_empty=True
+    #    )
+    #    word_count = 0  # Reset word count after punctuation
+
+    return current_segment, word_count
+
+
+def determine_major_segment_confidence(
+    segment: AsrSegment, transcription: WhisperOutput
+) -> tuple[float | None, float | None]:
+    """Determines the confidence and no_speech_confidence based on the major segment (which contributes the most time or words).
+
+    Args:
+        segment (AsrSegment): New ASR segment.
+        transcription (WhisperOutput): Original transcription containing segments with confidence.
+
+    Returns:
+        tuple[Optional[float], Optional[float]]: Confidence and no_speech_confidence from the major segment.
+    """
+
+    def find_closest_segment(word_start: float, word_end: float) -> AsrSegment | None:
+        """Finds the closest segment in the transcription for the given word start and end times."""
+        closest_segment = min(
+            transcription["segments"],
+            key=lambda segment: abs(segment.time_interval.start - word_start)
+            + abs(segment.time_interval.end - word_end),
+            default=None,
+        )
+        return closest_segment
+
+    def update_segment_contribution(
+        contributions: dict, segment: AsrSegment, word_duration: float
+    ) -> None:
+        """Updates the contribution data for the given segment."""
+        segment_id = id(segment)
+        if segment_id not in contributions:
+            contributions[segment_id] = {
+                "segment": segment,
+                "contribution_time": 0.0,
+                "word_count": 0,
+            }
+        contributions[segment_id]["contribution_time"] += word_duration
+        contributions[segment_id]["word_count"] += 1
+
+    segment_contributions: defaultdict = defaultdict(
+        lambda: {"segment": None, "contribution_time": 0.0, "word_count": 0}
+    )
+
+    for word in segment.words:
+        word_start, word_end = word.time_interval.start, word.time_interval.end
+        word_duration = word_end - word_start
+
+        closest_segment = find_closest_segment(word_start, word_end)
+
+        if closest_segment:
+            update_segment_contribution(
+                segment_contributions, closest_segment, word_duration
+            )
+
+    if not segment_contributions:
+        return None, None
+
+    # Determine the segment with the highest word count or contribution time
+    major_segment_data = max(
+        segment_contributions.values(),
+        key=lambda data: data[
+            "word_count"
+        ],  # Change this to 'contribution_time' if needed
+    )
+
+    major_segment = major_segment_data["segment"]
+    return major_segment.confidence, major_segment.no_speech_confidence
 
 
 def merge_consecutive_speaker_segments(
@@ -324,11 +479,11 @@ def merge_consecutive_speaker_segments(
 ) -> list[AsrSegment]:
     """Merges consecutive segments that have the same speaker into a single segment.
 
-    Parameters:
-    - segments (List[AsrSegment]): The initial list of segments.
+    Args:
+        segments (List[AsrSegment]): The initial list of segments.
 
     Returns:
-    - List[AsrSegment]: A new list of merged segments.
+        merged_segments (List[AsrSegment]): A new list of merged segments.
     """
     if not segments:
         return []
@@ -371,16 +526,19 @@ def merge_consecutive_speaker_segments(
 
 # Full Method
 def asr_postprocessing_for_diarization(
-    diarized_output: SpeakerDiarizationOutput, transcription: WhisperOutput
+    diarized_output: SpeakerDiarizationOutput,
+    transcription: WhisperOutput,
+    merge: bool = False,
 ) -> WhisperOutput:
-    """Perform diarized transcription based on individual deployments.
+    """Perform diarized transcription by combining outputs from individual deployments.
 
-    Parameters:
-    - diarized_output (SpeakerDiarizationOutput): Contains speaker diarization segments.
-    - transcription (WhisperOutput): Transcription data with segments, text, and language_info.
+    Args:
+        diarized_output (SpeakerDiarizationOutput): Contains speaker diarization segments.
+        transcription (WhisperOutput): Transcription data with segments, text, and language_info.
+        merge (bool): Whether to merge the same speaker segments in the end.
 
     Returns:
-    - transcription (WhisperOutput): Updated transcription with diarized information per segment/word.
+        transcription (WhisperOutput): Updated transcription with speaker information per segment/word.
 
     """
     # 1. Assign speaker labels to each segment and each word in WhisperOutput based on SpeakerDiarizationOutput.
@@ -389,12 +547,26 @@ def asr_postprocessing_for_diarization(
         diarized_output, transcription
     )
     # 2. Aligns the speakers with the punctuations:
+
     word_speaker_mapping = align_with_punctuation(speaker_labelled_transcription)
 
     # 3. Create ASR segments by combining the AsrWord with speaker information
-    # and optionally combine segments based on speaker info.
-    updated_transcription = create_speaker_segments(word_speaker_mapping)
-    transcription["segments"] = updated_transcription
+
+    # a. Create speaker segments from new word_speaker_mapping
+    # b. Limits its length (default 50 words)
+
+    # a & b
+    segments = create_speaker_segments(word_speaker_mapping)
+
+    # c. Assign new confidence and no_speech_confidence to new segments
+
+    segments = add_segment_variables(segments, transcription)
+
+    # Optional: Merge consecutive speaker segments
+    if merge:
+        segments = merge_consecutive_speaker_segments(segments)
+
+    transcription["segments"] = segments
     return transcription
 
 
@@ -407,11 +579,11 @@ def combine_homogeneous_speaker_segs(
 ) -> SpeakerDiarizationOutput:
     """Combines segments with the same speaker into homogeneous speaker segments, ensuring no overlapping times.
 
-    Parameters:
-    - diarized_output (SpeakerDiarizationOutput): Input with segments that may have overlapping times.
+    Args:
+        diarized_output (SpeakerDiarizationOutput): Input with segments that may have overlapping times.
 
     Returns:
-    - SpeakerDiarizationOutput: Output with combined homogeneous speaker segments.
+        SpeakerDiarizationOutput: Output with combined homogeneous speaker segments.
     """
     combined_segments: list = []
     current_speaker = None
