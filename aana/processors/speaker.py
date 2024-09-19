@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import TypedDict, Union
+from typing import TypedDict
 
 from aana.core.models.asr import (
     AsrSegment,
@@ -108,8 +108,6 @@ def get_speaker_for_interval(
         overlap_duration = max(0.0, overlap_end - overlap_start)
 
         if overlap_duration > 0 or fill_nearest:
-            # Calculate union duration for potential future use
-            # union_duration = max(end_time, interval_end) - min(start_time, interval_start)
             distance = float(
                 min(abs(start_time - interval_end), abs(end_time - interval_start))
             )
