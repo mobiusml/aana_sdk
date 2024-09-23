@@ -1,14 +1,16 @@
 import hashlib
 from pathlib import Path
 
-import yt_dlp
-from yt_dlp.utils import DownloadError
-
 from aana.configs.settings import settings
 from aana.core.models.video import Video, VideoInput, VideoMetadata
 from aana.exceptions.io import (
     DownloadException,
 )
+from aana.utils.lazy_imports import LazyImport
+
+with LazyImport("Run 'pip install yt-dlp'") as yt_dlp_import:
+    import yt_dlp
+    from yt_dlp.utils import DownloadError
 
 __all__ = ["download_video", "get_video_metadata"]
 
@@ -25,6 +27,7 @@ def get_video_metadata(video_url: str) -> VideoMetadata:
     Raises:
         DownloadException: Request does not succeed.
     """
+    yt_dlp_import.check()
     ydl_options = {
         "extract_flat": True,
         "hls_prefer_native": True,
@@ -58,6 +61,7 @@ def download_video(video_input: VideoInput | Video) -> Video:
     Raises:
         DownloadException: Request does not succeed.
     """
+    yt_dlp_import.check()
     if isinstance(video_input, Video):
         return video_input
     if video_input.url is not None:

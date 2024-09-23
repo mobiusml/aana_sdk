@@ -1,20 +1,28 @@
+import typing
 from collections.abc import Generator
 from pathlib import Path
 
-import decord
 import numpy as np
-from decord import DECORDError
 from typing_extensions import TypedDict
 
-from aana.core.models.image import Image
-from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
+from aana.utils.lazy_imports import LazyImport
+
+with LazyImport("Run 'pip install decord'") as decord_import:
+    # import decord
+    import torch, decord  # noqa: F401, I001 # See https://github.com/dmlc/decord/issues/263
+    from decord import DECORDError
+
+if typing.TYPE_CHECKING:
+    from aana.core.models.image import Image
+    from aana.core.models.video import Video, VideoParams
 
 __all__ = [
     "extract_frames",
     "generate_frames",
     "get_video_duration",
     "is_audio",
+    "is_video",
     "FramesDict",
 ]
 
@@ -29,13 +37,13 @@ class FramesDict(TypedDict):
         frame_ids (list[int]): the ids of the extracted frames
     """
 
-    frames: list[Image]
+    frames: list["Image"]
     timestamps: list[float]
     duration: float
     frame_ids: list[int]
 
 
-def extract_frames(video: Video, params: VideoParams) -> FramesDict:
+def extract_frames(video: "Video", params: "VideoParams") -> FramesDict:
     """Extract frames from a video using decord.
 
     Args:
@@ -45,6 +53,7 @@ def extract_frames(video: Video, params: VideoParams) -> FramesDict:
     Returns:
         FramesDict: a dictionary containing the extracted frames, frame_ids, timestamps, and duration
     """
+    decord_import.check()
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
 
@@ -90,7 +99,7 @@ def extract_frames(video: Video, params: VideoParams) -> FramesDict:
     )
 
 
-def get_video_duration(video: Video) -> float:
+def get_video_duration(video: "Video") -> float:
     """Extract video duration using decord.
 
     Args:
@@ -102,6 +111,7 @@ def get_video_duration(video: Video) -> float:
     Raises:
         VideoReadingException: if the file is not readable or a valid multimedia file
     """
+    decord_import.check()
     device = decord.cpu(0)
     try:
         video_reader = decord.VideoReader(str(video.path), ctx=device, num_threads=1)
@@ -119,7 +129,7 @@ def get_video_duration(video: Video) -> float:
 
 
 def generate_frames(
-    video: Video, params: VideoParams, batch_size: int = 8
+    video: "Video", params: "VideoParams", batch_size: int = 8
 ) -> Generator[FramesDict, None, None]:
     """Generate frames from a video using decord.
 
@@ -134,6 +144,7 @@ def generate_frames(
     Raises:
         VideoReadingException: if the file is not readable or a valid multimedia file
     """
+    decord_import.check()
     device = decord.cpu(0)
     num_threads = 1  # TODO: see if we can use more threads
 
@@ -190,8 +201,22 @@ def generate_frames(
 
 def is_audio(path: Path) -> bool:
     """Checks if it's a valid audio."""
+    decord_import.check()
     try:
         decord.AudioReader(str(path))
     except DECORDError:
         return False
+    return True
+
+
+def is_video(path: Path) -> bool:
+    """Checks if it's a valid video."""
+    decord_import.check()
+    try:
+        decord.VideoReader(str(path))
+    except DECORDError:
+        try:
+            decord.AudioReader(str(path))
+        except DECORDError:
+            return False
     return True

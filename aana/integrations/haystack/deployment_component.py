@@ -2,11 +2,13 @@ from collections.abc import Callable
 from types import CoroutineType, NoneType
 from typing import get_type_hints
 
-from haystack import component
-
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.utils.asyncio import run_async
+from aana.utils.lazy_imports import LazyImport
 from aana.utils.typing import is_typed_dict
+
+with LazyImport("Run 'pip install haystack-ai'") as haystack_import:
+    from haystack import component
 
 
 def typehints_to_component_types(

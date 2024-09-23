@@ -5,10 +5,13 @@ import wave
 from collections.abc import Generator
 from pathlib import Path
 
-import av
 import numpy as np
 
 from aana.core.libraries.audio import AbstractAudioLibrary
+from aana.utils.lazy_imports import LazyImport
+
+with LazyImport("Run 'pip install av'") as av_import:
+    import av
 
 __all__ = ["load_audio", "pyAVWrapper"]
 
@@ -26,6 +29,7 @@ def load_audio(file: Path, sample_rate: int = 16000) -> bytes:
     Raises:
         RuntimeError: if ffmpeg fails to convert and load the audio.
     """
+    av_import.check()
     resampler = av.audio.resampler.AudioResampler(
         format="s16",
         layout="mono",
@@ -42,9 +46,9 @@ def load_audio(file: Path, sample_rate: int = 16000) -> bytes:
                 return b""
 
             frames = container.decode(audio=0)
-            frames = ignore_invalid_frames(frames)
-            frames = group_frames(frames, 500000)
-            frames = resample_frames(frames, resampler)
+            frames = _ignore_invalid_frames(frames)
+            frames = _group_frames(frames, 500000)
+            frames = _resample_frames(frames, resampler)
 
             for frame in frames:
                 array = frame.to_ndarray()
@@ -61,7 +65,7 @@ def load_audio(file: Path, sample_rate: int = 16000) -> bytes:
         raise RuntimeError(f"{e!s}") from e
 
 
-def ignore_invalid_frames(frames: Generator) -> Generator:
+def _ignore_invalid_frames(frames: Generator) -> Generator:
     """Filter out invalid frames from the input generator.
 
     Args:
@@ -84,7 +88,7 @@ def ignore_invalid_frames(frames: Generator) -> Generator:
             continue
 
 
-def group_frames(frames: Generator, num_samples: int | None = None) -> Generator:
+def _group_frames(frames: Generator, num_samples: int | None = None) -> Generator:
     """Group audio frames and yield groups of frames based on the specified number of samples.
 
     Args:
@@ -107,7 +111,7 @@ def group_frames(frames: Generator, num_samples: int | None = None) -> Generator
         yield fifo.read()
 
 
-def resample_frames(frames: Generator, resampler) -> Generator:
+def _resample_frames(frames: Generator, resampler) -> Generator:
     """Resample audio frames using the provided resampler.
 
     Args:
@@ -124,6 +128,11 @@ def resample_frames(frames: Generator, resampler) -> Generator:
 
 class pyAVWrapper(AbstractAudioLibrary):
     """Class for audio handling using PyAV library."""
+
+    def __init__(self):
+        """Initialize the class."""
+        av_import.check()
+        super().__init__()
 
     @classmethod
     def read_file(cls, path: Path, sample_rate: int = 16000) -> np.ndarray:
@@ -147,9 +156,9 @@ class pyAVWrapper(AbstractAudioLibrary):
 
         with av.open(str(path), mode="r", metadata_errors="ignore") as container:
             frames = container.decode(audio=0)
-            frames = ignore_invalid_frames(frames)
-            frames = group_frames(frames, 500000)
-            frames = resample_frames(frames, resampler)
+            frames = _ignore_invalid_frames(frames)
+            frames = _group_frames(frames, 500000)
+            frames = _resample_frames(frames, resampler)
 
             for frame in frames:
                 array = frame.to_ndarray()
@@ -191,9 +200,9 @@ class pyAVWrapper(AbstractAudioLibrary):
 
         with av.open(content_io, mode="r", metadata_errors="ignore") as container:
             frames = container.decode(audio=0)
-            frames = ignore_invalid_frames(frames)
-            frames = group_frames(frames, 500000)
-            frames = resample_frames(frames, resampler)
+            frames = _ignore_invalid_frames(frames)
+            frames = _group_frames(frames, 500000)
+            frames = _resample_frames(frames, resampler)
 
             for frame in frames:
                 array = frame.to_ndarray()

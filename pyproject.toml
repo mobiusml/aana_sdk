@@ -23,35 +23,28 @@ classifiers=[
 # Apart from python (1st) and other internal deps (2nd), please
 # keep this list alphabetized!
 python = ">=3.10,<4.0"
-accelerate = "^0.26.1"
 alembic = "^1.12.1"
-av = "==11.*"
-bitsandbytes = "^0.42.0"
-decord = "^0.6.0"
 fastapi = "^0.111.0"
-faster-whisper = ">=1.0.1"
-hf-transfer = "^0.1.6"
 numpy = ">=1.17,<2"
 opencv-python-headless = "^4.8.1.78"
 orjson = "^3.10.3"
-portpicker = "^1.6.0"
-pyannote-audio = "^3.1.1"
 pydantic = ">=2.0"
 pydantic-settings = "^2.1.0"
 python-multipart = "^0.0.9"
 psycopg = {extras = ["binary"], version = "^3.2.1"}
-qdrant-haystack = "^3.2.1"
 ray = {extras = ["serve"], version = ">=2.20"}
-rapidfuzz = "^3.4.0"
-scipy = "^1.11.3"
-sentence-transformers = "^2.6.1"
 sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
-transformers = ">=4.44.0"
 torch = ">=2.0.0"
-torchaudio = ">=2.0.0"
-torchvision = ">=0.15.0"
-vllm = "^0.5.0.post1"
-yt-dlp = ">=2024.08.06"
+lazy-imports = "^0.3.1"
+tqdm = "^4.66.5"
+# Optional dependencies
+av = { version = "==11.*", optional = true }
+decord = { version = "^0.6.0", optional = true }
+yt-dlp = { version = ">=2024.08.06", optional = true }
+
+[tool.poetry.extras]
+video = ["yt-dlp", "decord"]
+audio = ["av"]
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"

@@ -1,32 +1,30 @@
-import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
-from vllm.engine.arg_utils import AsyncEngineArgs
-from vllm.engine.async_llm_engine import AsyncLLMEngine
-from vllm.inputs import TokensPrompt
 
-from aana.core.models.base import merged_options
+from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.custom_config import CustomConfig
+from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
 )
+from aana.exceptions.runtime import InferenceException, PromptTooLongException
 from aana.utils.gpu import get_gpu_memory
+from aana.utils.lazy_imports import LazyImport
 
-with contextlib.suppress(ImportError):
+with LazyImport("Run 'pip install vllm'") as vllm_import:
+    from vllm.engine.arg_utils import AsyncEngineArgs
+    from vllm.engine.async_llm_engine import AsyncLLMEngine
+    from vllm.inputs import TokensPrompt
     from vllm.model_executor.utils import (
         set_random_seed,  # Ignore if we don't have GPU and only run on CPU with test cache
     )
-from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-from vllm.utils import random_uuid
-
-from aana.core.models.base import pydantic_protected_fields
-from aana.core.models.sampling import SamplingParams
-from aana.exceptions.runtime import InferenceException, PromptTooLongException
+    from vllm.sampling_params import SamplingParams as VLLMSamplingParams
+    from vllm.utils import random_uuid
 
 
 class VLLMConfig(BaseModel):
@@ -87,6 +85,7 @@ class VLLMDeployment(BaseTextGenerationDeployment):
         Args:
             config (dict): the configuration of the deployment
         """
+        vllm_import.check()
         config_obj = VLLMConfig(**config)
         self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()

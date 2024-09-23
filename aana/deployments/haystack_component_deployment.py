@@ -1,6 +1,5 @@
 from typing import Any
 
-from haystack import component
 from pydantic import BaseModel
 from ray import serve
 
@@ -8,6 +7,10 @@ from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.base_deployment import BaseDeployment
 from aana.utils.asyncio import run_async
 from aana.utils.core import import_from_path
+from aana.utils.lazy_imports import LazyImport
+
+with LazyImport("Run 'pip install haystack-ai'") as haystack_import:
+    from haystack import component
 
 
 @component
