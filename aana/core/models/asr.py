@@ -37,7 +37,7 @@ class AsrWord(BaseModel):
     """
 
     word: str = Field(description="The word text")
-    speaker: str | None = Field(description="Speaker label for the word")
+    speaker: str | None = Field(None, description="Speaker label for the word")
     time_interval: TimeInterval = Field(description="Time interval of the word")
     alignment_confidence: float = Field(
         ge=0.0, le=1.0, description="Alignment confidence of the word"
