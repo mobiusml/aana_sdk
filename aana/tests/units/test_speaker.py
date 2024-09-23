@@ -6,18 +6,9 @@ from typing import Literal
 
 import pytest
 
-from aana.core.models.asr import (
-    AsrSegment,
-    AsrTranscription,
-    AsrTranscriptionInfo,
-)
-from aana.core.models.base import pydantic_to_dict
+from aana.core.models.asr import AsrSegment
 from aana.core.models.speaker import SpeakerDiarizationSegment
-from aana.processors.speaker import (
-    SpeakerDiarizationOutput,
-    WhisperOutput,
-    asr_postprocessing_for_diarization,
-)
+from aana.processors.speaker import ASRPostProcessingForDiarization
 from aana.tests.utils import verify_deployment_results
 
 
@@ -42,28 +33,20 @@ def test_asr_diarization_post_process(audio_file: Literal["sd_sample.wav"]):
     with Path.open(asr_path, "r") as json_file:
         asr_op = json.load(json_file)
 
-    asr_output = WhisperOutput(
-        segments=[AsrSegment.model_validate(segment) for segment in asr_op["segments"]],
-        transcription_info=AsrTranscriptionInfo.model_validate(
-            asr_op["transcription_info"]
-        ),
-        transcription=AsrTranscription.model_validate(asr_op["transcription"]),
-    )
+    asr_segments = [
+        AsrSegment.model_validate(segment) for segment in asr_op["segments"]
+    ]
 
     with Path.open(diar_path, "r") as json_file:
         diar_op = json.load(json_file)
 
-    diar_output = SpeakerDiarizationOutput(
-        segments=[
-            SpeakerDiarizationSegment.model_validate(segment)
-            for segment in diar_op["segments"]
-        ],
+    diarized_segments = [
+        SpeakerDiarizationSegment.model_validate(segment)
+        for segment in diar_op["segments"]
+    ]
+    post_processor = ASRPostProcessingForDiarization(
+        diarized_segments=diarized_segments, transcription_segments=asr_segments
     )
+    asr_op["segments"] = post_processor.process()
 
-    processed_transcription = asr_postprocessing_for_diarization(
-        diar_output,
-        asr_output,
-    )
-    processed_transcription = pydantic_to_dict(processed_transcription)
-
-    verify_deployment_results(expected_results_path, processed_transcription)
+    verify_deployment_results(expected_results_path, asr_op)
