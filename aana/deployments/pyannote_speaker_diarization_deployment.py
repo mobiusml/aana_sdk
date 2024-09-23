@@ -1,7 +1,7 @@
-import logging
 from typing import Any, TypedDict
 
 import torch
+from huggingface_hub.utils import GatedRepoError
 from pyannote.audio import Pipeline
 from pyannote.core import Annotation
 from pydantic import BaseModel, ConfigDict, Field
@@ -16,7 +16,7 @@ from aana.core.models.speaker import (
 from aana.core.models.time import TimeInterval
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
-from aana.processors.speaker import combine_homogeneous_speaker_segs
+from aana.processors.speaker import combine_homogeneous_speaker_diarization_segments
 
 
 class SpeakerDiarizationOutput(TypedDict):
@@ -75,17 +75,11 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
             # load model using pyannote Pipeline
             self.diarize_model = Pipeline.from_pretrained(self.model_id)
 
-            # Check if model, log error if None.
-            if self.diarize_model is None:
-                logging.error(
-                    f"Accept user agreements at huggingface for the model: {self.model_id}"
-                )
-
-            else:
+            if self.diarize_model:
                 self.diarize_model.to(torch.device(self.device))
 
         except Exception as e:
-            raise InferenceException(self.model_id) from e
+            raise GatedRepoError from e
 
     async def __inference(
         self, audio: Audio, params: PyannoteSpeakerDiarizationParams
@@ -148,8 +142,10 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
                 )
             )
 
-        # Perform post-processing to combine homogeneous speaker segments.
-        processed_speaker_diarization_segments = combine_homogeneous_speaker_segs(
-            SpeakerDiarizationOutput(segments=speaker_diarization_segments)
+        # Combine homogeneous speaker segments.
+        processed_speaker_diarization_segments = (
+            combine_homogeneous_speaker_diarization_segments(
+                speaker_diarization_segments
+            )
         )
-        return processed_speaker_diarization_segments
+        return SpeakerDiarizationOutput(segments=processed_speaker_diarization_segments)
