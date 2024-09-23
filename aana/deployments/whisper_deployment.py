@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Any, cast
 
 import torch
-from faster_whisper import WhisperModel
 from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 from typing_extensions import TypedDict
@@ -20,6 +19,10 @@ from aana.core.models.whisper import (
 )
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
+from aana.utils.lazy_imports import LazyImport
+
+with LazyImport("Run 'pip install faster-whisper'") as whisper_import:
+    from faster_whisper import WhisperModel
 
 
 class WhisperComputeType(str, Enum):
@@ -138,6 +141,7 @@ class WhisperDeployment(BaseDeployment):
 
         The configuration should conform to the WhisperConfig schema.
         """
+        whisper_import.check()
         config_obj = WhisperConfig(**config)
         self.model_size = config_obj.model_size
         self.model_name = "whisper_" + self.model_size
