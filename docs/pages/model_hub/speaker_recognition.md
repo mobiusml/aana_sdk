@@ -35,7 +35,7 @@ The PyAnnote speaker diarization models are gated, requiring special access. To 
     To get your Hugging Face access token, visit the [Hugging Face Settings - Tokens](https://huggingface.co/settings/tokens).
 
 
-### Example Configurations
+## Example Configurations
 
 As an example, let's see how to configure the Pyannote Speaker Diarization deployment for the [Speaker Diarization-3.1 model](https://huggingface.co/pyannote/speaker-diarization-3.1).
 
@@ -55,7 +55,7 @@ As an example, let's see how to configure the Pyannote Speaker Diarization deplo
     )
     ```
 
-### Diarized ASR
+## Diarized ASR
 
-Speaker Diarization output can be combined with ASR to generate transcription with speaker information. Further details and code snippet are available in [ASR model hub](./asr.md).
+Speaker Diarization output can be combined with ASR to generate transcription with speaker information. Further details and code snippet are available in [ASR model hub](./asr.md/#diarized-asr).
 
