@@ -80,9 +80,9 @@ expected_output_path = (
 )
 ```
 
-### SAVE_EXPECTED_OUTPUT Environment Variable
+### TEST__SAVE_EXPECTED_OUTPUT Environment Variable
 
-`verify_deployment_results` has a built-in mechanism to save the actual output as the expected output. If you set the environment variable `SAVE_EXPECTED_OUTPUT` to `True` and `verify_deployment_results` does not find the expected output file, it will save the actual output as the expected output. It is useful when you are writing tests for a new deployment because you don't need to create the expected output files manually but only need to verify the output. But remember to set the environment variable back to `False` after you have created the expected output files and check created files manually to make sure they are correct.
+`verify_deployment_results` has a built-in mechanism to save the actual output as the expected output. If you set the environment variable `TEST__SAVE_EXPECTED_OUTPUT` to `True` and `verify_deployment_results` does not find the expected output file, it will save the actual output as the expected output. It is useful when you are writing tests for a new deployment because you don't need to create the expected output files manually but only need to verify the output. But remember to set the environment variable back to `False` after you have created the expected output files and check created files manually to make sure they are correct.
 
 
 ### GPU Availability
