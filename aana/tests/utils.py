@@ -108,6 +108,7 @@ def compare_results(
 def verify_deployment_results(
     expected_output_path: Path,
     results: dict[str, Any],
+    allowed_error_rate: float = ALLOWED_LEVENSTEIN_ERROR_RATE,
 ):
     """Verify the output of a deployment call against an expected output file.
 
@@ -118,6 +119,7 @@ def verify_deployment_results(
     Args:
         expected_output_path (Path): Path to the expected output file.
         results (dict): The actual results.
+        allowed_error_rate (float): The allowed error rate (default: ALLOWED_LEVENSTEIN_ERROR_RATE)
     """
     # Convert pydantic models to dictionaries before comparison
     results = pydantic_to_dict(results)
@@ -139,7 +141,8 @@ def verify_deployment_results(
     with expected_output_path.open() as f:
         expected_output = json.load(f)
 
-    compare_results(expected_output, results)
+    compare_results(expected_output, results, allowed_error_rate)
+
 
 def send_api_request(
     endpoint: Endpoint,
