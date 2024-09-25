@@ -63,6 +63,9 @@ You can simply define the model deployments and the endpoint to transcribe the v
 ```python
 from aana.processors.speaker import PostProcessingForDiarizedAsr
 
+# 1. create ASR and Speaker Diarization deployments
+# 2. Initilaize the endpoint with self.asr_handle and self.diar_handle
+
 # diarized transcript requires word_timestamps from ASR
 whisper_params.word_timestamps = True
 transcription = await self.asr_handle.transcribe(
@@ -71,14 +74,50 @@ transcription = await self.asr_handle.transcribe(
 diarized_output = await self.diar_handle.diarize(
     audio=audio, params=diar_params
 )
-updated_segments = PostProcessingForDiarizedAsr(
+updated_segments = PostProcessingForDiarizedAsr.process(
     diarized_segments=diarized_output["segments"],
     transcription_segments=transcription["segments"],
 )
-output_segments = [
-    s.model_dump(include=["text", "time_interval", "speaker"])
-    for s in updated_segments
-]
+
+# updated_segments will have speaker information as well:
+
+# "segments": [
+#        {
+#            "text": " Hello. Hello.",
+#            "time_interval": {
+#                "start": 6.38,
+#                "end": 7.84
+#            },
+#            "confidence": 0.8329984157521475,
+#            "no_speech_confidence": 0.012033582665026188,
+#            "words": [
+#                {
+#                    "word": " Hello.",
+#                    "speaker": "SPEAKER_01",
+#                    "time_interval": {
+#                        "start": 6.38,
+#                        "end": 7.0
+#                    },
+#                    "alignment_confidence": 0.6853185296058655
+#                },
+#                ...
+#                ],
+#            "speaker": "SPEAKER_01"
+#        },
+#        {
+#            "text": " Oh, hello. I didn't know you were there.",
+#            "time_interval": {
+#                "start": 8.3,
+#                "end": 9.68
+#            },
+#            "confidence": 0.8329984157521475,
+#            "no_speech_confidence": 0.012033582665026188,
+#           "words": [...
+#            ],
+#            "speaker": "SPEAKER_02"
+#        },
+#        ...]
+
 ```
 An example notebook on diarized transcription is available at [notebooks/diarized_transcription_example.ipynb](https://github.com/mobiusml/aana_sdk/tree/main/notebooks/diarized_transcription_example.ipynb).
 
