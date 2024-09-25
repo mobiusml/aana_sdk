@@ -79,7 +79,9 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
                 self.diarize_model.to(torch.device(self.device))
 
         except Exception as e:
-            raise GatedRepoError from e
+            raise GatedRepoError(
+                message=f"This repository is private and requires a token to accept user conditions and access models in {self.model_id} pipeline."
+            ) from e
 
     async def __inference(
         self, audio: Audio, params: PyannoteSpeakerDiarizationParams

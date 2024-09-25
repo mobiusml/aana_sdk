@@ -563,14 +563,13 @@ class PostProcessingForDiarizedAsr:
         return merged_segments
 
 
-# speaker diarization model occationally produce overlapping chunks/ same speaker segments,
-# below function combines them properly
-
-
 def combine_homogeneous_speaker_diarization_segments(
     diarized_segments: list[SpeakerDiarizationSegment],
 ) -> list[SpeakerDiarizationSegment]:
-    """Combines segments with the same speaker into homogeneous speaker segments, ensuring no overlapping times.
+    """Combines same speaker segments in a diarization output.
+
+    Speaker diarization model occationally produce overlapping chunks or segments belonging to the same speaker.
+    This method combines segments with the same speaker into homogeneous speaker segments, ensuring no overlapping times.
 
     Args:
         diarized_segments (list(SpeakerDiarizationSegment)): Input with segments that may have overlapping times.
