@@ -62,6 +62,7 @@ You can simply define the model deployments and the endpoint to transcribe the v
 
 ```python
 from aana.processors.speaker import PostProcessingForDiarizedAsr
+from aana.core.models.base import pydantic_to_dict
 
 # 1. create ASR and Speaker Diarization deployments
 # 2. Initilaize the endpoint with self.asr_handle and self.diar_handle
@@ -78,8 +79,9 @@ updated_segments = PostProcessingForDiarizedAsr.process(
     diarized_segments=diarized_output["segments"],
     transcription_segments=transcription["segments"],
 )
+output = pydantic_to_dict(updated_segments)
 
-# updated_segments will have speaker information as well:
+# output will have speaker information as well:
 
 # "segments": [
 #        {
