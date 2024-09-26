@@ -64,61 +64,44 @@ You can simply define the model deployments and the endpoint to transcribe the v
 from aana.processors.speaker import PostProcessingForDiarizedAsr
 from aana.core.models.base import pydantic_to_dict
 
-# 1. create ASR and Speaker Diarization deployments
-# 2. Initilaize the endpoint with self.asr_handle and self.diar_handle
 
 # diarized transcript requires word_timestamps from ASR
 whisper_params.word_timestamps = True
+
+# asr_handle is an AanaDeploymentHandle for WhisperDeployment
 transcription = await self.asr_handle.transcribe(
     audio=audio, params=whisper_params
 )
+
+# diar_handle is an AanaDeploymentHandle for PyannoteSpeakerDiarizationDeployment
 diarized_output = await self.diar_handle.diarize(
     audio=audio, params=diar_params
 )
+
 updated_segments = PostProcessingForDiarizedAsr.process(
     diarized_segments=diarized_output["segments"],
     transcription_segments=transcription["segments"],
 )
-output = pydantic_to_dict(updated_segments)
 
-# output will have speaker information as well:
+# updated_segments will have speaker information as well:
 
-# "segments": [
-#        {
-#            "text": " Hello. Hello.",
-#            "time_interval": {
-#                "start": 6.38,
-#                "end": 7.84
-#            },
-#            "confidence": 0.8329984157521475,
-#            "no_speech_confidence": 0.012033582665026188,
-#            "words": [
-#                {
-#                    "word": " Hello.",
-#                    "speaker": "SPEAKER_01",
-#                    "time_interval": {
-#                        "start": 6.38,
-#                        "end": 7.0
-#                    },
-#                    "alignment_confidence": 0.6853185296058655
-#                },
-#                ...
-#                ],
-#            "speaker": "SPEAKER_01"
-#        },
-#        {
-#            "text": " Oh, hello. I didn't know you were there.",
-#            "time_interval": {
-#                "start": 8.3,
-#                "end": 9.68
-#            },
-#            "confidence": 0.8329984157521475,
-#            "no_speech_confidence": 0.012033582665026188,
-#           "words": [...
-#            ],
-#            "speaker": "SPEAKER_02"
-#        },
-#        ...]
+# [AsrSegment(text=' Hello. Hello.', 
+#            time_interval=TimeInterval(start=6.38, end=7.84), 
+#            confidence=0.8329984157521475, 
+#            no_speech_confidence=0.012033582665026188, 
+#            words=[AsrWord(word=' Hello.', speaker='SPEAKER_01',time_interval=TimeInterval(start=6.38, end=7.0), alignment_confidence=0.6853185296058655), 
+#                   AsrWord(word=' Hello.', speaker='SPEAKER_01', time_interval=TimeInterval(start=7.5, end=7.84), alignment_confidence=0.7124693989753723)], 
+#           speaker='SPEAKER_01'), 
+#
+# AsrSegment(text=" Oh, hello. I didn't know you were there.", 
+#            time_interval=TimeInterval(start=8.3, end=9.68), 
+#            confidence=0.8329984157521475, 
+#            no_speech_confidence=0.012033582665026188, 
+#            words=[AsrWord(word=' Oh,', speaker='SPEAKER_02', time_interval=TimeInterval(start=8.3, end=8.48), alignment_confidence=0.8500092029571533), 
+#                   AsrWord(word=' hello.', speaker='SPEAKER_02', time_interval=TimeInterval(start=8.5, end=8.76), alignment_confidence=0.9408962726593018), ...], 
+#            speaker='SPEAKER_02'), 
+# ...
+# ]
 
 ```
 An example notebook on diarized transcription is available at [notebooks/diarized_transcription_example.ipynb](https://github.com/mobiusml/aana_sdk/tree/main/notebooks/diarized_transcription_example.ipynb).
