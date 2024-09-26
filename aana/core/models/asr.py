@@ -31,11 +31,13 @@ class AsrWord(BaseModel):
 
     Attributes:
         word (str): The word text.
+        speaker (str| None): Speaker label for the word.
         time_interval (TimeInterval): Time interval of the word.
         alignment_confidence (float): Alignment confidence of the word, >= 0.0 and <= 1.0.
     """
 
     word: str = Field(description="The word text")
+    speaker: str | None = Field(None, description="Speaker label for the word")
     time_interval: TimeInterval = Field(description="Time interval of the word")
     alignment_confidence: float = Field(
         ge=0.0, le=1.0, description="Alignment confidence of the word"
@@ -52,6 +54,7 @@ class AsrWord(BaseModel):
             AsrWord: The converted AsrWord.
         """
         return cls(
+            speaker=None,
             word=whisper_word.word,
             time_interval=TimeInterval(start=whisper_word.start, end=whisper_word.end),
             alignment_confidence=whisper_word.probability,
@@ -73,6 +76,7 @@ class AsrSegment(BaseModel):
         confidence (float | None): Confidence of the segment.
         no_speech_confidence (float | None): Chance of being a silence segment.
         words (list[AsrWord]): List of words in the segment. Default is [].
+        speaker (str | None): Speaker label. Default is None.
     """
 
     text: str = Field(description="The text of the segment (transcript/translation)")
@@ -86,6 +90,7 @@ class AsrSegment(BaseModel):
     words: list[AsrWord] = Field(
         description="List of words in the segment", default_factory=list
     )
+    speaker: str | None = Field(None, description="speaker label of the segment")
 
     @classmethod
     def from_whisper(cls, whisper_segment: WhisperSegment) -> "AsrSegment":
@@ -116,6 +121,7 @@ class AsrSegment(BaseModel):
             confidence=confidence,
             no_speech_confidence=no_speech_confidence,
             words=words,
+            speaker=None,
         )
 
     model_config = ConfigDict(
