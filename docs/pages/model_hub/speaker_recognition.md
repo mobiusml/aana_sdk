@@ -19,7 +19,7 @@
 The PyAnnote speaker diarization models are gated, requiring special access. To use these models:
 
 1. **Request Access**:  
-    Visit the [PyAnnote Speaker Diarization 3.1 model page](https://huggingface.co/pyannote/speaker-diarization-3.1) on Hugging Face. Log in, fil out the form, and request access.
+    Visit the [PyAnnote Speaker Diarization 3.1 model page](https://huggingface.co/pyannote/speaker-diarization-3.1) and [Pyannote Speaker Segmentation 3.0 model page](https://huggingface.co/pyannote/segmentation-3.0) on Hugging Face. Log in, fil out the forms, and request access.
 
 2. **Approval**:  
     - If automatic, access is granted immediately.
@@ -54,3 +54,8 @@ As an example, let's see how to configure the Pyannote Speaker Diarization deplo
         ).model_dump(mode="json"),
     )
     ```
+
+## Diarized ASR
+
+Speaker Diarization output can be combined with ASR to generate transcription with speaker information. Further details and code snippet are available in [ASR model hub](./asr.md/#diarized-asr).
+
