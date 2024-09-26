@@ -89,20 +89,8 @@ class FileInput(BaseModel):
             ValidationError: if the number file inputs and files aren't the same
         """
         if len(files) != 1:
-            raise ValidationError.from_exception_data(
-                title=self.__class__.__name__,
-                line_errors=[
-                    InitErrorDetails(
-                        loc=("images",),
-                        type="value_error",
-                        ctx={
-                            "error": ValueError(
-                                "The number of file inputs and files must be the same."
-                            )
-                        },
-                        input=None,
-                    )
-                ],
+            raise ValueError(  # noqa: TRY003
+                "The number of file inputs and files must be the same."
             )
         self.set_file(files[0])
 
