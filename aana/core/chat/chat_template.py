@@ -28,7 +28,7 @@ def load_chat_template(chat_template_name: str) -> str:
 
 def apply_chat_template(
     tokenizer: PreTrainedTokenizerBase,
-    dialog: ChatDialog,
+    dialog: ChatDialog | list[dict],
     chat_template_name: str | None = None,
 ) -> str:
     """Applies a chat template to a list of messages to generate a prompt for the model.
@@ -38,7 +38,7 @@ def apply_chat_template(
 
     Args:
         tokenizer (PreTrainedTokenizerBase): The tokenizer to use.
-        dialog (ChatDialog): The dialog to generate a prompt for.
+        dialog (ChatDialog | list[dict]): The dialog to generate a prompt for.
         chat_template_name (str, optional): The name of the chat template to use. Defaults to None, which uses the tokenizer's default chat template.
 
     Returns:
@@ -48,7 +48,10 @@ def apply_chat_template(
         ValueError: If the tokenizer does not have a chat template.
         ValueError: If the chat template does not exist.
     """
-    messages = dialog.model_dump()["messages"]
+    if isinstance(dialog, ChatDialog):
+        messages = dialog.model_dump()["messages"]
+    else:
+        messages = dialog
 
     if chat_template_name is not None:
         chat_template = load_chat_template(chat_template_name)

@@ -262,8 +262,12 @@ class AanaSDK:
         if name in self.endpoints:
             del self.endpoints[name]
 
-    def wait_for_deployment(self):
+    def wait_for_deployment(self):  # noqa: C901
         """Wait for the deployment to complete."""
+        consecutive_resource_unavailable = 0
+        # Number of consecutive checks before raising an resource unavailable error
+        resource_unavailable_threshold = 5
+
         while True:
             status = serve.status()
             if all(
@@ -290,6 +294,7 @@ class AanaSDK:
                                 f"Error: {deployment_name} ({app_name}): {deployment_status.message}"
                             )
                 raise FailedDeployment("\n".join(error_messages))
+
             gcs_address = ray.get_runtime_context().gcs_address
             cluster_status = get_cluster_status(gcs_address)
             demands = (
@@ -297,14 +302,25 @@ class AanaSDK:
                 + cluster_status.resource_demands.ray_task_actor_demand
                 + cluster_status.resource_demands.placement_group_demand
             )
+
+            resource_unavailable = False
             for demand in demands:
                 if isinstance(demand, ResourceDemand) and demand.bundles_by_count:
                     error_message = f"Error: No available node types can fulfill resource request {demand.bundles_by_count[0].bundle}. "
                     if "GPU" in demand.bundles_by_count[0].bundle:
-                        error_message += "Might be due to insufficient or misconfigured GPU resources."
+                        error_message += "Might be due to insufficient or misconfigured CPU or GPU resources."
+                    resource_unavailable = True
                 else:
                     error_message = f"Error: {demand}"
-                raise InsufficientResources(error_message)
+                    resource_unavailable = True
+
+            if resource_unavailable:
+                consecutive_resource_unavailable += 1
+                if consecutive_resource_unavailable >= resource_unavailable_threshold:
+                    raise InsufficientResources(error_message)
+            else:
+                consecutive_resource_unavailable = 0
+
             time.sleep(1)  # Wait for 1 second before checking again
 
     def deploy(self, blocking: bool = False):
@@ -343,7 +359,7 @@ class AanaSDK:
             print("Got KeyboardInterrupt, shutting down...")
             serve.shutdown()
             sys.exit()
-        except DeploymentException:
+        except DeploymentException as e:
             status = serve.status()
             serve.shutdown()
             for app_name, app_status in status.applications.items():
@@ -352,6 +368,8 @@ class AanaSDK:
                     or app_status.status == "UNHEALTHY"
                 ):
                     self.print_app_status(app_name, app_status)
+            if isinstance(e, InsufficientResources):
+                rprint(f"[red] {e} [/red]")
             raise
         except Exception:
             serve.shutdown()

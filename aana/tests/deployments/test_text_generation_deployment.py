@@ -28,6 +28,9 @@ deployments = [
                     model_kwargs={
                         "trust_remote_code": True,
                     },
+                    default_sampling_params=SamplingParams(
+                        temperature=0.0, kwargs={"diversity_penalty": 0.0}
+                    ),
                 ).model_dump(mode="json"),
             ),
         ),
@@ -46,7 +49,11 @@ deployments = [
                     gpu_memory_reserved=10000,
                     enforce_eager=True,
                     default_sampling_params=SamplingParams(
-                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                        temperature=0.0,
+                        top_p=1.0,
+                        top_k=-1,
+                        max_tokens=1024,
+                        kwargs={"frequency_penalty": 0.0},
                     ),
                     engine_args={
                         "trust_remote_code": True,
