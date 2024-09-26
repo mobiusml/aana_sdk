@@ -2,7 +2,7 @@
 
 Aana SDK has three deployments to serve text generation models (LLMs):
 
-- [VLLMDeployment](./../../reference/deployments.md#aana.deployments.VLLMDeployment): allows you to efficiently serve Large Language Model (LLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
+- [VLLMDeployment](./../../reference/deployments.md#aana.deployments.VLLMDeployment): allows you to efficiently serve Large Language Models (LLM) and Vision Language Models (VLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
 
 - [HfTextGenerationDeployment](./../../reference/deployments.md#aana.deployments.HfTextGenerationDeployment): uses the [Hugging Face Transformers](https://huggingface.co/transformers/) library to deploy text generation models.
 
@@ -11,6 +11,8 @@ Aana SDK has three deployments to serve text generation models (LLMs):
 All deployments have the same interface and provide similar capabilities. 
 
 ## vLLM Deployment
+
+vLLM deployment allows you to efficiently serve Large Language Models (LLM) and Vision Language Models (VLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
 
 [VLLMConfig](./../../reference/deployments.md#aana.deployments.VLLMConfig) is used to configure the vLLM deployment.
 
@@ -50,6 +52,33 @@ As an example, let's see how to configure the vLLM deployment for the [Meta Llam
 
 Model name is the Hugging Face model ID. We use `Dtype.AUTO` to let the deployment choose the best data type for the model. We reserve 30GB of GPU memory for the model. We set `enforce_eager=True` to helps to reduce memory usage but may harm performance. We also set the default sampling parameters for the model.
 
+VLLM deployment also supports Vision Language Models (VLM). Here is an example configuration for the [Phi 3.5 Vision Instruct model](https://huggingface.co/microsoft/Phi-3.5-vision-instruct).
+
+!!! example "Phi 3.5 Vision Instruct"
+
+    ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
+    VLLMDeployment.options(
+        num_replicas=1,
+        ray_actor_options={"num_gpus": 1.0},
+        user_config=VLLMConfig(
+            model_id="microsoft/Phi-3.5-vision-instruct",
+            gpu_memory_reserved=12000,
+            enforce_eager=True,
+            default_sampling_params=SamplingParams(
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+            ),
+            max_model_len=2048,
+            engine_args=dict(
+                trust_remote_code=True,
+                max_num_seqs=32,
+                limit_mm_per_prompt={"image": 3},
+            ),
+        ).model_dump(mode="json"),
+    )
+    ```
 
 Here are some other example configurations for the VLLM deployment. Keep in mind that the list is not exhaustive. You can deploy any model that is [supported by the vLLM library](https://docs.vllm.ai/en/latest/models/supported_models.html).
 
@@ -124,6 +153,63 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
             engine_args={
                 "trust_remote_code": True,
             },
+        ).model_dump(mode="json"),
+    )
+    ```
+
+??? example "Qwen2-VL 7B Instruct"
+
+    For LLaVA-NeXT-Video and Qwen2-VL, the latest release of huggingface/transformers doesn’t work yet (as of 18 September 2024), so we need to use a developer version (21fac7abba2a37fae86106f87fcf9974fd1e3830) for now. This can be installed by running the following command:
+
+    ```bash
+    pip install git+https://github.com/huggingface/transformers.git@21fac7abba2a37fae86106f87fcf9974fd1e3830
+    ```
+
+    ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
+    VLLMDeployment.options(
+        num_replicas=1,
+        ray_actor_options={"num_gpus": 1.0},
+        user_config=VLLMConfig(
+            model_id="Qwen/Qwen2-VL-7B-Instruct",
+            gpu_memory_reserved=40000,
+            enforce_eager=True,
+            default_sampling_params=SamplingParams(
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+            ),
+            max_model_len=4096,
+            engine_args=dict(
+                limit_mm_per_prompt={"image": 3},
+            ),
+        ).model_dump(mode="json"),
+    )
+    ```
+
+??? example "Pixtral 12B 2409"
+
+    The model is gated so you need to the [model page](https://huggingface.co/mistralai/Pixtral-12B-2409), request access to the model and set `HF_TOKEN` environment variable to your Hugging Face API token.
+
+    ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+
+    VLLMDeployment.options(
+        num_replicas=1,
+        ray_actor_options={"num_gpus": 1.0},
+        user_config=VLLMConfig(
+            model_id="mistralai/Pixtral-12B-2409",
+            gpu_memory_reserved=40000,
+            enforce_eager=True,
+            default_sampling_params=SamplingParams(
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+            ),
+            max_model_len=4096,
+            engine_args=dict(
+                tokenizer_mode="mistral",
+                limit_mm_per_prompt={"image": 3},
+            ),
         ).model_dump(mode="json"),
     )
     ```

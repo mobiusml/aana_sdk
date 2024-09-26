@@ -1,6 +1,7 @@
 from typing import Any, TypedDict
 
 import torch
+from huggingface_hub.utils import GatedRepoError
 from pyannote.audio import Pipeline
 from pyannote.core import Annotation
 from pydantic import BaseModel, ConfigDict, Field
@@ -15,6 +16,7 @@ from aana.core.models.speaker import (
 from aana.core.models.time import TimeInterval
 from aana.deployments.base_deployment import BaseDeployment
 from aana.exceptions.runtime import InferenceException
+from aana.processors.speaker import combine_homogeneous_speaker_diarization_segments
 
 
 class SpeakerDiarizationOutput(TypedDict):
@@ -69,9 +71,17 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(42)
 
-        # load model using pyannote Pipeline
-        self.diarize_model = Pipeline.from_pretrained(self.model_id)
-        self.diarize_model.to(torch.device(self.device))
+        try:
+            # load model using pyannote Pipeline
+            self.diarize_model = Pipeline.from_pretrained(self.model_id)
+
+            if self.diarize_model:
+                self.diarize_model.to(torch.device(self.device))
+
+        except Exception as e:
+            raise GatedRepoError(
+                message=f"This repository is private and requires a token to accept user conditions and access models in {self.model_id} pipeline."
+            ) from e
 
     async def __inference(
         self, audio: Audio, params: PyannoteSpeakerDiarizationParams
@@ -134,4 +144,10 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
                 )
             )
 
-        return SpeakerDiarizationOutput(segments=speaker_diarization_segments)
+        # Combine homogeneous speaker segments.
+        processed_speaker_diarization_segments = (
+            combine_homogeneous_speaker_diarization_segments(
+                speaker_diarization_segments
+            )
+        )
+        return SpeakerDiarizationOutput(segments=processed_speaker_diarization_segments)
