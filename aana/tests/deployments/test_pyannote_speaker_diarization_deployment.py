@@ -21,7 +21,7 @@ deployments = [
             max_ongoing_requests=1000,
             ray_actor_options={"num_gpus": 0.05},
             user_config=PyannoteSpeakerDiarizationConfig(
-                model_name=("pyannote/speaker-diarization-3.1"),
+                model_id=("pyannote/speaker-diarization-3.1"),
                 sample_rate=16000,
             ).model_dump(mode="json"),
         ),
