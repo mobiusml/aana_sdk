@@ -300,6 +300,10 @@ class Endpoint:
             if file_upload_field and files:
                 files_as_bytes = [await file.read() for file in files]
                 getattr(data, file_upload_field.name).set_files(files_as_bytes)
+            elif files and not file_upload_field:
+                raise ValueError(  # noqa: TRY003
+                    "This endpoint does not accept file uploads."
+                )
 
             # We have to do this instead of data.dict() because
             # data.dict() will convert all nested models to dicts
@@ -342,11 +346,13 @@ class Endpoint:
         if file_upload_field:
             files = File(None, description=file_upload_field.description)
         else:
-            files = None
+            files = File(
+                None, description="This endpoint does not accept file uploads."
+            )
 
         async def route_func(
             body: str = Form(...),
-            files=files,
+            files: list[UploadFile] = files,
             defer: bool = Query(
                 description="Defer execution of the endpoint to the task queue.",
                 default=False,
