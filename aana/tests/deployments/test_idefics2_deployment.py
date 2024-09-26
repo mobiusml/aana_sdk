@@ -6,6 +6,7 @@ import pytest
 from aana.core.models.chat import ChatMessage
 from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
+from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
@@ -21,6 +22,9 @@ deployments = [
             user_config=Idefics2Config(
                 model="HuggingFaceM4/idefics2-8b",
                 dtype=Dtype.FLOAT16,
+                default_sampling_params=SamplingParams(
+                    temperature=1.0, max_tokens=256, kwargs={"diversity_penalty": 0.0}
+                ),
             ).model_dump(mode="json"),
         ),
     )

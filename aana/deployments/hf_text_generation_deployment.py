@@ -98,6 +98,8 @@ class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
                     num_return_sequences=1,
                     eos_token_id=self.tokenizer.eos_token_id,
                     cache_implementation="static",
+                    repetition_penalty=sampling_params.repetition_penalty,
+                    **sampling_params.kwargs,
                 )
                 if sampling_params.temperature == 0:
                     generation_kwargs["do_sample"] = False
