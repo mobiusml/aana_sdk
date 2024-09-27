@@ -1,0 +1,8 @@
+type: volume
+
+name: test-models-cache
+
+backend: runpod
+region: EU-SE-1
+
+size: 150GB

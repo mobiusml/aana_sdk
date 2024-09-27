@@ -1,0 +1,32 @@
+type: task
+
+name: aana-tests
+
+backends: [runpod]
+
+image: nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
+
+env:
+  - HF_TOKEN
+
+commands:
+  - apt-get update
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+  - apt-get install -y libgl1 libglib2.0-0 ffmpeg python3 python3-dev postgresql sudo
+  - locale-gen en_US.UTF-8
+  - export LANG="en_US.UTF-8" LANGUAGE="en_US:en" LC_ALL="en_US.UTF-8"
+  - curl -sSL https://install.python-poetry.org | python3 -
+  - export PATH=$PATH:/root/.local/bin
+  - poetry install
+  - HF_HUB_CACHE="/models_cache" CUDA_VISIBLE_DEVICES="0" poetry run pytest -vv
+
+volumes:
+  - name: test-models-cache
+    path: /models_cache
+
+max_price: 1.0
+
+resources:
+  cpu: 9..
+  memory: 32GB..
+  gpu: 40GB..
