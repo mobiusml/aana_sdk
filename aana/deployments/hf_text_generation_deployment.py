@@ -97,7 +97,6 @@ class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
                     temperature=sampling_params.temperature,
                     num_return_sequences=1,
                     eos_token_id=self.tokenizer.eos_token_id,
-                    cache_implementation="static",
                     repetition_penalty=sampling_params.repetition_penalty,
                     **sampling_params.kwargs,
                 )
