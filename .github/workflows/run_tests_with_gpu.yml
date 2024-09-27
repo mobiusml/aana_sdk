@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Set SSH permissions
+      run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        sudo chown $USER:$USER ~/.ssh
+
     - name: Checkout code
       uses: actions/checkout@v3
 
