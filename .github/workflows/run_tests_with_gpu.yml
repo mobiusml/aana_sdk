@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Allows for manual triggering
 
 jobs:
-  publish:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,7 @@ jobs:
       run: |
         pip install dstack
         dstack config --url https://sky.dstack.ai --project ${{ secrets.DSTACK_PROJECT }} --token ${{ secrets.DSTACK_TOKEN }}
+        dstack init
     
     - name: Run tests with GPU
       run: |
