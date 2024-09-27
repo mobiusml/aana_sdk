@@ -1,9 +1,6 @@
 name: Run Tests with GPU
 
 on:
-  push:
-    branches:
-      - '**'  # Runs on push to any branch
   workflow_dispatch: # Allows for manual triggering
 
 jobs:
