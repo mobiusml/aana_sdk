@@ -1,0 +1,29 @@
+name: Run Tests with GPU
+
+on:
+  push:
+    branches:
+      - '**'  # Runs on push to any branch
+  workflow_dispatch: # Allows for manual triggering
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install and configure dstack
+      run: |
+        pip install dstack
+        dstack config --url https://sky.dstack.ai --project ${{ secrets.DSTACK_PROJECT }} --token ${{ secrets.DSTACK_TOKEN }}
+    
+    - name: Run tests with GPU
+      run: |
+        HF_TOKEN=${{ HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
