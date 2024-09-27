@@ -3,6 +3,10 @@ name: Run Tests with GPU
 on:
   workflow_dispatch: # Allows for manual triggering
 
+concurrency:
+  group: run-tests-gpu # Fixed group name to ensure only one instance runs
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-latest
