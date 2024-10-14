@@ -1,19 +1,29 @@
 import base64
-import contextlib
 from collections.abc import AsyncGenerator
 from typing import Any
 
+from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
+from vllm.entrypoints.chat_utils import (
+    apply_hf_chat_template,
+    apply_mistral_chat_template,
+    parse_chat_messages,
+)
 from vllm.inputs import TokensPrompt
+from vllm.model_executor.utils import set_random_seed
+from vllm.sampling_params import SamplingParams as VLLMSamplingParams
+from vllm.transformers_utils.tokenizer import MistralTokenizer
+from vllm.utils import random_uuid
 
-from aana.core.models.base import merged_options
+from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.chat import ChatDialog, ChatMessage
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
+from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment
 from aana.deployments.base_text_generation_deployment import (
@@ -21,22 +31,8 @@ from aana.deployments.base_text_generation_deployment import (
     LLMBatchOutput,
     LLMOutput,
 )
-from aana.utils.gpu import get_gpu_memory
-
-with contextlib.suppress(ImportError):
-    from vllm.model_executor.utils import set_random_seed
-from vllm.entrypoints.chat_utils import (
-    apply_hf_chat_template,
-    apply_mistral_chat_template,
-    parse_chat_messages,
-)
-from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-from vllm.transformers_utils.tokenizer import MistralTokenizer
-from vllm.utils import random_uuid
-
-from aana.core.models.base import pydantic_protected_fields
-from aana.core.models.sampling import SamplingParams
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
+from aana.utils.gpu import get_gpu_memory
 
 
 class VLLMConfig(BaseModel):
@@ -196,7 +192,7 @@ class VLLMDeployment(BaseDeployment):
             )
         return prompt, mm_data
 
-    async def generate_stream(
+    async def generate_stream(  # noqa: C901
         self,
         prompt: str | list[int],
         sampling_params: SamplingParams | None = None,
@@ -221,6 +217,15 @@ class VLLMDeployment(BaseDeployment):
             sampling_params = SamplingParams()
         sampling_params = merged_options(self.default_sampling_params, sampling_params)
 
+        json_schema = sampling_params.json_schema
+        regex_string = sampling_params.regex_string
+        if json_schema is not None:
+            logits_processors = [JSONLogitsProcessor(json_schema, self.engine.engine)]
+        elif regex_string is not None:
+            logits_processors = [RegexLogitsProcessor(regex_string, self.engine.engine)]
+        else:
+            logits_processors = []
+
         request_id = None
 
         if len(prompt_token_ids) > self.model_config.max_model_len:
@@ -232,8 +237,12 @@ class VLLMDeployment(BaseDeployment):
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
-                **sampling_params.model_dump(exclude_unset=True, exclude=["kwargs"]),
+                **sampling_params.model_dump(
+                    exclude_unset=True,
+                    exclude=["kwargs", "json_schema", "regex_string"],
+                ),
                 **sampling_params.kwargs,
+                logits_processors=logits_processors,
             )
             # start the request
             request_id = random_uuid()

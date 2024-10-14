@@ -51,6 +51,12 @@ class SamplingParams(BaseModel):
     max_tokens: int | None = Field(
         default=None, ge=1, description="The maximum number of tokens to generate."
     )
+    json_schema: str | None = Field(
+        default=None, description="The schema to use for generation."
+    )
+    regex_string: str | None = Field(
+        default=None, description="The regex to use for generation."
+    )
     repetition_penalty: float = Field(
         default=1.0,
         description=(

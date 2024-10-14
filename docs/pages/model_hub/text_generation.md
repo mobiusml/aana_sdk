@@ -214,6 +214,43 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
     )
     ```
 
+### Structured Generation
+
+Structured generation is a feature that allows you to generate structured data using the vLLM deployment forcing LLM to adhere to a specific JSON schema or regular expression pattern.
+
+Structured generation is supported only for the vLLM deployment at the moment. 
+
+To enable structured generation, you need to pass JSON schema or regular expression pattern to `SamplingParams` object.
+
+```python
+# For JSON schema set json_schema parameter to the JSON schema string
+sampling_params = SamplingParams(json_schema=schema, temperature=0.0, max_tokens=512)
+
+# For regular expression set regex_string parameter to the regular expression pattern
+sampling_params = SamplingParams(regex_string=regex_pattern, temperature=0.0, max_tokens=512)
+
+# Pass the sampling_params to one of the vLLM deployment methods like chat or chat_stream
+# Here handle is an AanaDeploymentHandle for the vLLM deployment.
+response = await handle.chat(dialog, sampling_params=sampling_params)
+```
+
+You can use Pydantic models to generate JSON schema.
+
+```python
+import json
+from pydantic import BaseModel
+
+class CityDescription(BaseModel):
+    city: str
+    country: str
+    description: str
+
+schema = json.dumps(CityDescription.model_json_schema())
+# {"properties": {"city": {"title": "City", "type": "string"}, "country": {"title": "Country", "type": "string"}, "description": {"title": "Description", "type": "string"}}, "required": ["city", "country", "description"], "title": "CityDescription", "type": "object"}
+```
+
+You can find detailed tutorials on how to use structured generation in the [Structured Generation notebook](https://github.com/mobiusml/aana_sdk/blob/main/notebooks/structured_generation.ipynb).
+
 ## Hugging Face Text Generation Deployment
 
 [HfTextGenerationConfig](./../../reference/deployments.md#aana.deployments.HfTextGenerationConfig) is used to configure the vLLM deployment. 
