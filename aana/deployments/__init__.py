@@ -25,6 +25,11 @@ from aana.deployments.hf_text_generation_deployment import (
     HfTextGenerationConfig,
     HfTextGenerationDeployment,
 )
+from aana.deployments.hqq_text_generation_deployment import (
+    HqqBackend,
+    HqqTexGenerationConfig,
+    HqqTextGenerationDeployment,
+)
 from aana.deployments.idefics_2_deployment import Idefics2Config, Idefics2Deployment
 from aana.deployments.pyannote_speaker_diarization_deployment import (
     PyannoteSpeakerDiarizationConfig,
@@ -52,6 +57,9 @@ __all__ = [
     "BaseTextGenerationDeployment",
     "HfTextGenerationConfig",
     "HfTextGenerationDeployment",
+    "HqqTexGenerationConfig",
+    "HqqTextGenerationDeployment",
+    "HqqBackend",
     "Idefics2Config",
     "Idefics2Deployment",
     "VLLMConfig",

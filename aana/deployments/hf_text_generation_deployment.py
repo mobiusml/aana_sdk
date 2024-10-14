@@ -1,6 +1,4 @@
-import asyncio
 from collections.abc import AsyncGenerator
-from queue import Empty
 from threading import Thread
 from typing import Any
 
@@ -22,6 +20,7 @@ from aana.deployments.base_text_generation_deployment import (
 )
 from aana.deployments.hf_pipeline_deployment import CustomConfig
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
+from aana.utils.streamer import async_streamer_adapter
 
 
 class HfTextGenerationConfig(BaseModel):
@@ -46,42 +45,8 @@ class HfTextGenerationConfig(BaseModel):
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
-async def async_streamer_adapter(streamer):
-    """Adapt the TextIteratorStreamer to an async generator."""
-    while True:
-        try:
-            for item in streamer:
-                yield item
-            break
-        except Empty:
-            # wait for the next item
-            await asyncio.sleep(0.01)
-
-
-@serve.deployment
-class HfTextGenerationDeployment(BaseTextGenerationDeployment):
-    """Deployment to serve Hugging Face text generation models."""
-
-    async def apply_config(self, config: dict[str, Any]):
-        """Apply the configuration.
-
-        The method is called when the deployment is created or updated.
-
-        It loads the model and tokenizer from HuggingFace.
-
-        The configuration should conform to the HfTextGenerationConfig schema.
-        """
-        config_obj = HfTextGenerationConfig(**config)
-        self.model_id = config_obj.model_id
-        self.model_kwargs = config_obj.model_kwargs
-        self.default_sampling_params = config_obj.default_sampling_params
-
-        self.model_kwargs["device_map"] = self.model_kwargs.get("device_map", "auto")
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_id, **self.model_kwargs
-        )
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
-        self.chat_template_name = config_obj.chat_template
+class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
+    """Base class for Hugging Face text generation deployments."""
 
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams | None = None
@@ -152,3 +117,29 @@ class HfTextGenerationDeployment(BaseTextGenerationDeployment):
                 del streamer
         except Exception as e:
             raise InferenceException(model_name=self.model_id) from e
+
+
+@serve.deployment
+class HfTextGenerationDeployment(BaseHfTextGenerationDeployment):
+    """Deployment to serve Hugging Face text generation models."""
+
+    async def apply_config(self, config: dict[str, Any]):
+        """Apply the configuration.
+
+        The method is called when the deployment is created or updated.
+
+        It loads the model and tokenizer from HuggingFace.
+
+        The configuration should conform to the HfTextGenerationConfig schema.
+        """
+        config_obj = HfTextGenerationConfig(**config)
+        self.model_id = config_obj.model_id
+        self.model_kwargs = config_obj.model_kwargs
+        self.default_sampling_params = config_obj.default_sampling_params
+
+        self.model_kwargs["device_map"] = self.model_kwargs.get("device_map", "auto")
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.model_id, **self.model_kwargs
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
+        self.chat_template_name = config_obj.chat_template
