@@ -120,3 +120,38 @@ PyannoteSpeakerDiarizationDeployment.options(
     ).model_dump(mode="json"),
 )
 ```
+
+## Half-Quadratic Quantization (HQQ)
+
+HQQ deployment allows you quantize the largest models, without calibration data, in just a few minutes.
+
+Aana SDK provides a deployment for quantizing and serving language models with the Half-Quadratic Quantization (HQQ) library. See [HqqTextGenerationDeployment](./../reference/deployments.md#aana.deployments.HqqTextGenerationDeployment) to learn more about the deployment capabilities.
+
+You can use this deployment to load pre-quantized models like [HQQ Models](https://huggingface.co/mobiuslabsgmbh) as well as models from [HuggingFace Hub](https://huggingface.co/models) and quantiize them on the fly. 
+
+
+```python
+from hqq.core.quantize import BaseQuantizeConfig
+from aana.deployments.hqq_text_generation_deployment import (
+    HqqBackend,
+    HqqTexGenerationConfig,
+    HqqTextGenerationDeployment,
+)
+
+HqqTextGenerationDeployment.options(
+    num_replicas=1,
+    ray_actor_options={"num_gpus": 0.5},
+    user_config=HqqTexGenerationConfig(
+        model_id="meta-llama/Meta-Llama-3.1-8B-Instruct",
+        backend=HqqBackend.BITBLAS,
+        quantize_on_fly=True,
+        quantization_config=BaseQuantizeConfig(nbits=4, group_size=64, axis=1),
+        default_sampling_params=SamplingParams(
+            temperature=0.0, top_p=1.0, top_k=-1, max_tokens=512
+        ),
+        model_kwargs={
+            "attn_implementation": "sdpa"
+        },
+    ).model_dump(mode="json"),
+)
+```
