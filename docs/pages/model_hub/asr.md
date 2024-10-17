@@ -32,9 +32,28 @@ As an example, let's see how to configure the Whisper deployment for the [Whispe
     )
     ```
 
-Model size is the one of the Whisper model sizes available in the `faster-whisper` library. `compute_type` is the data type to be used for the model.
+Model size is the one of the Whisper model sizes available in the `faster-whisper` library or HuggingFace model hub in [Ctranslate2](https://github.com/OpenNMT/CTranslate2) format.
+`compute_type` is the data type to be used for the model.
 
 Here are some other possible configurations for the Whisper deployment:
+
+
+??? example "Whisper Turbo on GPU"
+    
+    ```python
+    from aana.deployments.whisper_deployment import WhisperDeployment, WhisperConfig, WhisperModelSize, WhisperComputeType
+
+    # for CPU do not specify num_gpus and use FLOAT32 compute type
+    WhisperDeployment.options(
+        num_replicas=1,
+        max_ongoing_requests=1000,
+        ray_actor_options={"num_gpus": 0.25},
+        user_config=WhisperConfig(
+            model_size=WhisperModelSize.TURBO,
+            compute_type=WhisperComputeType.FLOAT16,
+        ).model_dump(mode="json"),
+    )
+    ```
 
 ??? example "Whisper Tiny on CPU"
     
