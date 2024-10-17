@@ -38,6 +38,17 @@ deployments = [
             ).model_dump(mode="json"),
         ),
     ),
+    (
+        "whisper_turbo",
+        WhisperDeployment.options(
+            num_replicas=1,
+            ray_actor_options={"num_gpus": 0.25},
+            user_config=WhisperConfig(
+                model_size=WhisperModelSize.TURBO,
+                compute_type=WhisperComputeType.FLOAT16,
+            ).model_dump(mode="json"),
+        ),
+    ),
 ]
 
 
@@ -67,6 +78,7 @@ class TestWhisperDeployment:
         output = await handle.transcribe(
             audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
         )
+
         verify_deployment_results(expected_output_path, output)
 
         # Test transcribe_stream method
