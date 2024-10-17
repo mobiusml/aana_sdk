@@ -80,7 +80,7 @@ class WhisperModelSize(str, Enum):
     LARGE_V2 = "large-v2"
     LARGE_V3 = "large-v3"
     LARGE = "large"
-    TURBO = "mobiuslabsgmbh/faster-whisper-large-v3-turbo"
+    TURBO = "mobiuslabsgmbh/faster-whisper-large-v3-turbo"  # SYSTRAN/faster-whisper do not have turbo model in HF.
 
 
 class WhisperConfig(BaseModel):

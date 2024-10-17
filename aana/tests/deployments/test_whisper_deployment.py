@@ -78,13 +78,6 @@ class TestWhisperDeployment:
         output = await handle.transcribe(
             audio=audio, params=WhisperParams(word_timestamps=True, temperature=0.0)
         )
-        # import json
-
-        # print(expected_output_path)
-        # print(output)
-        # output = pydantic_to_dict(output)
-        # with open(expected_output_path, "w") as file:
-        #    json.dump(output, file, indent=4)
 
         verify_deployment_results(expected_output_path, output)
 
