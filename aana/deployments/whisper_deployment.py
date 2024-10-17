@@ -65,6 +65,7 @@ class WhisperModelSize(str, Enum):
         - LARGE_V2
         - LARGE_V3
         - LARGE
+        - TURBO
     """
 
     TINY = "tiny"
@@ -79,18 +80,20 @@ class WhisperModelSize(str, Enum):
     LARGE_V2 = "large-v2"
     LARGE_V3 = "large-v3"
     LARGE = "large"
+    TURBO = "mobiuslabsgmbh/faster-whisper-large-v3-turbo"  # SYSTRAN/faster-whisper do not have turbo model in HF.
 
 
 class WhisperConfig(BaseModel):
     """The configuration for the whisper deployment from faster-whisper.
 
     Attributes:
-        model_size (WhisperModelSize): The whisper model size. Defaults to WhisperModelSize.BASE.
+        model_size (WhisperModelSize | str): The whisper model size. Defaults to WhisperModelSize.TURBO.
         compute_type (WhisperComputeType): The compute type. Defaults to WhisperComputeType.FLOAT16.
     """
 
-    model_size: WhisperModelSize = Field(
-        default=WhisperModelSize.BASE, description="The whisper model size."
+    model_size: WhisperModelSize | str = Field(
+        default=WhisperModelSize.TURBO,
+        description="The whisper model size. Either one of WhisperModelSize or HuggingFace model ID in Ctranslate2 format.",
     )
     compute_type: WhisperComputeType = Field(
         default=WhisperComputeType.FLOAT16, description="The compute type."
