@@ -12,7 +12,12 @@ from aana.utils.json import jsonify
 
 
 class DbType(str, Enum):
-    """Engine types for relational database."""
+    """Engine types for relational database.
+
+    Attributes:
+        POSTGRESQL: PostgreSQL database.
+        SQLITE: SQLite database.
+    """
 
     POSTGRESQL = "postgresql"
     SQLITE = "sqlite"

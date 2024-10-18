@@ -45,47 +45,52 @@ def test_get_unprocessed_tasks(db_session):
     """Test fetching unprocessed tasks."""
     task_repo = TaskRepository(db_session)
 
-    # Remove all existing tasks
-    db_session.query(TaskEntity).delete()
-    db_session.commit()
+    def _create_sample_tasks():
+        # Remove all existing tasks
+        db_session.query(TaskEntity).delete()
+        db_session.commit()
 
-    # Create sample tasks with different statuses
-    now = datetime.now()  # noqa: DTZ005
+        # Create sample tasks with different statuses
+        now = datetime.now()  # noqa: DTZ005
 
-    task1 = TaskEntity(
-        endpoint="/test1",
-        data={"test": "data1"},
-        status=TaskStatus.CREATED,
-        priority=1,
-        created_at=now - timedelta(hours=10),
-    )
-    task2 = TaskEntity(
-        endpoint="/test2",
-        data={"test": "data2"},
-        status=TaskStatus.NOT_FINISHED,
-        priority=2,
-        created_at=now - timedelta(hours=1),
-    )
-    task3 = TaskEntity(
-        endpoint="/test3",
-        data={"test": "data3"},
-        status=TaskStatus.COMPLETED,
-        priority=3,
-        created_at=now - timedelta(hours=2),
-    )
-    task4 = TaskEntity(
-        endpoint="/test4",
-        data={"test": "data4"},
-        status=TaskStatus.CREATED,
-        priority=2,
-        created_at=now - timedelta(hours=3),
-    )
+        task1 = TaskEntity(
+            endpoint="/test1",
+            data={"test": "data1"},
+            status=TaskStatus.CREATED,
+            priority=1,
+            created_at=now - timedelta(hours=10),
+        )
+        task2 = TaskEntity(
+            endpoint="/test2",
+            data={"test": "data2"},
+            status=TaskStatus.NOT_FINISHED,
+            priority=2,
+            created_at=now - timedelta(hours=1),
+        )
+        task3 = TaskEntity(
+            endpoint="/test3",
+            data={"test": "data3"},
+            status=TaskStatus.COMPLETED,
+            priority=3,
+            created_at=now - timedelta(hours=2),
+        )
+        task4 = TaskEntity(
+            endpoint="/test4",
+            data={"test": "data4"},
+            status=TaskStatus.CREATED,
+            priority=2,
+            created_at=now - timedelta(hours=3),
+        )
 
-    db_session.add_all([task1, task2, task3, task4])
-    db_session.commit()
+        db_session.add_all([task1, task2, task3, task4])
+        db_session.commit()
+        return task1, task2, task3, task4
+
+    # Create sample tasks
+    task1, task2, task3, task4 = _create_sample_tasks()
 
     # Fetch unprocessed tasks without any limit
-    unprocessed_tasks = task_repo.get_unprocessed_tasks()
+    unprocessed_tasks = task_repo.fetch_unprocessed_tasks()
 
     # Assert that only tasks with CREATED and NOT_FINISHED status are returned
     assert len(unprocessed_tasks) == 3
@@ -98,8 +103,11 @@ def test_get_unprocessed_tasks(db_session):
     assert unprocessed_tasks[1].id == task2.id  # Same priority, but a newer task
     assert unprocessed_tasks[2].id == task1.id  # Lowest priority
 
+    # Create sample tasks
+    task1, task2, task3, task4 = _create_sample_tasks()
+
     # Fetch unprocessed tasks with a limit
-    limited_tasks = task_repo.get_unprocessed_tasks(limit=2)
+    limited_tasks = task_repo.fetch_unprocessed_tasks(limit=2)
 
     # Assert that only the specified number of tasks is returned
     assert len(limited_tasks) == 2
@@ -245,8 +253,8 @@ def test_remove_completed_tasks(db_session):
     assert set(non_completed_task_ids) == {str(task.id) for task in unfinished_tasks}
 
 
-def test_get_expired_tasks(db_session):
-    """Test fetching expired tasks."""
+def test_update_expired_tasks(db_session):
+    """Test updating expired tasks."""
     task_repo = TaskRepository(db_session)
 
     # Remove all existing tasks
@@ -293,7 +301,9 @@ def test_get_expired_tasks(db_session):
     db_session.commit()
 
     # Fetch expired tasks
-    expired_tasks = task_repo.get_expired_tasks(execution_timeout)
+    expired_tasks = task_repo.update_expired_tasks(
+        execution_timeout=execution_timeout, max_retries=3
+    )
 
     # Assert that only tasks with RUNNING or ASSIGNED status and an updated_at older than the cutoff are returned
     expected_task_ids = {str(task1.id)}
