@@ -20,7 +20,11 @@ class TaskQueueConfig(BaseModel):
 
 @serve.deployment
 class TaskQueueDeployment(BaseDeployment):
-    """Deployment to serve the task queue."""
+    """Deployment to serve the task queue.
+
+    IMPORTANT: If you are using SQLite, make sure to run only one instance
+    of this deployment to avoid database race conditions.
+    """
 
     def __init__(self):
         """Initialize the task queue deployment."""
@@ -76,17 +80,6 @@ class TaskQueueDeployment(BaseDeployment):
         """
         handle = None
 
-        active_tasks = self.task_repo.get_active_tasks()
-        for task in active_tasks:
-            if task.status == TaskStatus.RUNNING:
-                self.running_task_ids.append(str(task.id))
-            if task.status == TaskStatus.ASSIGNED:
-                self.task_repo.update_status(
-                    task_id=task.id,
-                    status=TaskStatus.NOT_FINISHED,
-                    progress=0,
-                )
-
         while True:
             if not self._configured:
                 # Wait for the deployment to be configured.
@@ -100,44 +93,17 @@ class TaskQueueDeployment(BaseDeployment):
 
             # Check for expired tasks
             execution_timeout = aana_settings.task_queue.execution_timeout
-            expired_tasks = self.task_repo.get_expired_tasks(execution_timeout)
+            max_retries = aana_settings.task_queue.max_retries
+            expired_tasks = self.task_repo.update_expired_tasks(
+                execution_timeout=execution_timeout, max_retries=max_retries
+            )
             for task in expired_tasks:
                 deployment_response = self.deployment_responses.get(task.id)
                 if deployment_response:
                     deployment_response.cancel()
-                if task.num_retries >= aana_settings.task_queue.max_retries:
-                    self.task_repo.update_status(
-                        task_id=task.id,
-                        status=TaskStatus.FAILED,
-                        progress=0,
-                        result={
-                            "error": "TimeoutError",
-                            "message": (
-                                f"Task execution timed out after {execution_timeout} seconds and "
-                                f"exceeded the maximum number of retries ({aana_settings.task_queue.max_retries})"
-                            ),
-                        },
-                    )
-                else:
-                    self.task_repo.update_status(
-                        task_id=task.id,
-                        status=TaskStatus.NOT_FINISHED,
-                        progress=0,
-                    )
 
             # If the queue is full, wait and retry
             if len(self.running_task_ids) >= aana_settings.task_queue.num_workers:
-                await asyncio.sleep(0.1)
-                continue
-
-            # Get new tasks from the database
-            num_tasks_to_assign = aana_settings.task_queue.num_workers - len(
-                self.running_task_ids
-            )
-            tasks = self.task_repo.get_unprocessed_tasks(limit=num_tasks_to_assign)
-
-            # If there are no tasks, wait and retry
-            if not tasks:
                 await asyncio.sleep(0.1)
                 continue
 
@@ -159,13 +125,19 @@ class TaskQueueDeployment(BaseDeployment):
                     # (if it fails, the deployment will be unhealthy, and restart will be attempted)
                     handle = serve.get_app_handle(self.app_name)
 
+            # Get new tasks from the database
+            num_tasks_to_assign = aana_settings.task_queue.num_workers - len(
+                self.running_task_ids
+            )
+            tasks = self.task_repo.fetch_unprocessed_tasks(limit=num_tasks_to_assign)
+
+            # If there are no tasks, wait and retry
+            if not tasks:
+                await asyncio.sleep(0.1)
+                continue
+
             # Start processing the tasks
             for task in tasks:
-                self.task_repo.update_status(
-                    task_id=task.id,
-                    status=TaskStatus.ASSIGNED,
-                    progress=0,
-                )
                 deployment_response = handle.execute_task.remote(task_id=task.id)
                 self.deployment_responses[task.id] = deployment_response
                 self.running_task_ids.append(str(task.id))
