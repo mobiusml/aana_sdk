@@ -67,10 +67,17 @@ class TaskRepository(BaseRepository[TaskEntity]):
         self.session.commit()
         return task
 
-    def get_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
-        """Fetches all unprocessed tasks.
+    def fetch_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
+        """Fetches unprocessed tasks and marks them as ASSIGNED.
 
         The task is considered unprocessed if it is in CREATED or NOT_FINISHED state.
+
+        The function runs in a transaction and locks the rows to prevent race condition
+        if multiple task queue deployments are running concurrently.
+
+        IMPORTANT: The lock doesn't work with SQLite. If you are using SQLite, you should
+        only run one task queue deployment at a time. Otherwise, you may encounter
+        race conditions.
 
         Args:
             limit (int | None): The maximum number of tasks to fetch. If None, fetch all.
@@ -85,8 +92,18 @@ class TaskRepository(BaseRepository[TaskEntity]):
             )
             .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
             .limit(limit)
+            .populate_existing()
+            .with_for_update(skip_locked=True)
             .all()
         )
+        for task in tasks:
+            self.update_status(
+                task_id=task.id,
+                status=TaskStatus.ASSIGNED,
+                progress=0,
+                commit=False,
+            )
+        self.session.commit()
         return tasks
 
     def update_status(
@@ -95,6 +112,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         status: TaskStatus,
         progress: int | None = None,
         result: Any = None,
+        commit: bool = True,
     ):
         """Update the status of a task.
 
@@ -103,6 +121,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
             status (TaskStatus): The new status.
             progress (int | None): The progress. If None, the progress will not be updated.
             result (Any): The result.
+            commit (bool): Whether to commit the transaction.
         """
         task = self.read(task_id)
         if status == TaskStatus.COMPLETED or status == TaskStatus.FAILED:
@@ -114,7 +133,8 @@ class TaskRepository(BaseRepository[TaskEntity]):
             task.progress = progress
         task.status = status
         task.result = result
-        self.session.commit()
+        if commit:
+            self.session.commit()
 
     def get_active_tasks(self) -> list[TaskEntity]:
         """Fetches all active tasks.
@@ -160,14 +180,28 @@ class TaskRepository(BaseRepository[TaskEntity]):
         incomplete_task_ids = [str(task.id) for task in tasks]
         return incomplete_task_ids
 
-    def get_expired_tasks(self, execution_timeout: float) -> list[TaskEntity]:
-        """Fetches all tasks that are expired.
+    def update_expired_tasks(
+        self, execution_timeout: float, max_retries: int
+    ) -> list[TaskEntity]:
+        """Fetches all tasks that are expired and updates their status.
 
         The task is considered expired if it is in RUNNING or ASSIGNED state and the
         updated_at time is older than the execution_timeout.
 
+        If the task has exceeded the maximum number of retries, it will be marked as FAILED.
+        If the task has not exceeded the maximum number of retries, it will be marked as NOT_FINISHED and
+        be retried again.
+
+        The function runs in a transaction and locks the rows to prevent race condition
+        if multiple task queue deployments are running concurrently.
+
+        IMPORTANT: The lock doesn't work with SQLite. If you are using SQLite, you should
+        only run one task queue deployment at a time. Otherwise, you may encounter
+        race conditions.
+
         Args:
             execution_timeout (float): The maximum execution time for a task in seconds
+            max_retries (int): The maximum number of retries for a task
 
         Returns:
             list[TaskEntity]: the expired tasks.
@@ -181,6 +215,31 @@ class TaskRepository(BaseRepository[TaskEntity]):
                     TaskEntity.updated_at <= cutoff_time,
                 ),
             )
+            .populate_existing()
+            .with_for_update(skip_locked=True)
             .all()
         )
+        for task in tasks:
+            if task.num_retries >= max_retries:
+                self.update_status(
+                    task_id=task.id,
+                    status=TaskStatus.FAILED,
+                    progress=0,
+                    result={
+                        "error": "TimeoutError",
+                        "message": (
+                            f"Task execution timed out after {execution_timeout} seconds and "
+                            f"exceeded the maximum number of retries ({max_retries})"
+                        ),
+                    },
+                    commit=False,
+                )
+            else:
+                self.update_status(
+                    task_id=task.id,
+                    status=TaskStatus.NOT_FINISHED,
+                    progress=0,
+                    commit=False,
+                )
+        self.session.commit()
         return tasks
