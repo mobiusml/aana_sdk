@@ -92,7 +92,8 @@ class TaskRepository(BaseRepository[TaskEntity]):
             )
             .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
             .limit(limit)
-            .with_for_update()
+            .populate_existing()
+            .with_for_update(skip_locked=True)
             .all()
         )
         for task in tasks:
@@ -214,7 +215,8 @@ class TaskRepository(BaseRepository[TaskEntity]):
                     TaskEntity.updated_at <= cutoff_time,
                 ),
             )
-            .with_for_update()
+            .populate_existing()
+            .with_for_update(skip_locked=True)
             .all()
         )
         for task in tasks:
