@@ -1,3 +1,4 @@
+import typing
 from enum import Enum
 from pathlib import Path
 
@@ -9,6 +10,9 @@ from sqlalchemy import create_engine
 from aana.exceptions.runtime import EmptyMigrationsException
 from aana.utils.core import get_module_dir
 from aana.utils.json import jsonify
+
+if typing.TYPE_CHECKING:
+    from aana.configs.db import DbSettings
 
 
 class DbType(str, Enum):
@@ -23,45 +27,60 @@ class DbType(str, Enum):
     SQLITE = "sqlite"
 
 
-def create_postgresql_engine(config):
+def create_postgresql_engine(db_config: "DbSettings"):
     """Create PostgreSQL engine based on the provided configuration.
 
     Args:
-        config (PostgreSQLConfig): Configuration for PostgreSQL.
+        db_config (DbSettings): Database configuration.
 
     Returns:
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
     """
-    connection_string = f"postgresql+psycopg://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}"
+    datastore_config = db_config.datastore_config
+    user = datastore_config["user"]
+    password = datastore_config["password"]
+    host = datastore_config["host"]
+    port = datastore_config["port"]
+    database = datastore_config["database"]
+    connection_string = (
+        f"postgresql+psycopg://{user}:{password}@{host}:{port}/{database}"
+    )
     return create_engine(
         connection_string,
         json_serializer=lambda obj: jsonify(obj),
         json_deserializer=orjson.loads,
+        pool_size=db_config.pool_size,
+        max_overflow=db_config.max_overflow,
+        pool_recycle=db_config.pool_recycle,
     )
 
 
-def create_sqlite_engine(config):
+def create_sqlite_engine(db_config: "DbSettings"):
     """Create an SQLite SQLAlchemy engine based on the provided configuration.
 
     Args:
-        config (SQLite config): Configuration for SQLite.
+        db_config (DbSettings): Database configuration.
 
     Returns:
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
     """
-    connection_string = f"sqlite:///{config['path']}"
+    datastore_config = db_config.datastore_config
+    connection_string = f"sqlite:///{datastore_config['path']}"
     return create_engine(
         connection_string,
         json_serializer=lambda obj: jsonify(obj),
         json_deserializer=orjson.loads,
+        pool_size=db_config.pool_size,
+        max_overflow=db_config.max_overflow,
+        pool_recycle=db_config.pool_recycle,
     )
 
 
-def create_database_engine(db_config):
+def create_database_engine(db_config: "DbSettings"):
     """Create SQLAlchemy engine based on the provided configuration.
 
     Args:
-        db_config (DbConfig): Database configuration.
+        db_config (DbSettings): Database configuration.
 
     Returns:
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
@@ -69,9 +88,9 @@ def create_database_engine(db_config):
     db_type = getattr(db_config, "datastore_type", "").lower()
 
     if db_type == DbType.POSTGRESQL:
-        return create_postgresql_engine(db_config.datastore_config)
+        return create_postgresql_engine(db_config)
     elif db_type == DbType.SQLITE:
-        return create_sqlite_engine(db_config.datastore_config)
+        return create_sqlite_engine(db_config)
     else:
         raise ValueError(f"Unsupported database type: {db_type}")  # noqa: TRY003
 

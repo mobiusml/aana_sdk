@@ -8,7 +8,6 @@ from fastapi import FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import ConfigDict, Field, ValidationError, create_model
 from pydantic.main import BaseModel
-from sqlalchemy.orm import Session
 
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
@@ -62,7 +61,6 @@ class Endpoint:
     summary: str
     initialized: bool = False
     event_handlers: list[EventHandler] | None = None
-    session: Session | None = None
 
     async def initialize(self):
         """Initialize the endpoint.
@@ -77,7 +75,6 @@ class Endpoint:
                 self.asr_handle = await AanaDeploymentHandle.create("whisper_deployment")
             ```
         """
-        self.session = get_session()
         self.initialized = True
 
     async def run(self, *args, **kwargs):
@@ -313,9 +310,11 @@ class Endpoint:
                 if not aana_settings.task_queue.enabled:
                     raise RuntimeError("Task queue is not enabled.")  # noqa: TRY003
 
-                task_repo = TaskRepository(self.session)
-                task = task_repo.save(endpoint=bound_path, data=data_dict)
-                return AanaJSONResponse(content={"task_id": str(task.id)})
+                with get_session() as session:
+                    task = TaskRepository(session).save(
+                        endpoint=bound_path, data=data_dict
+                    )
+                    return AanaJSONResponse(content={"task_id": str(task.id)})
 
             if isasyncgenfunction(self.run):
 
