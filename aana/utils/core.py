@@ -87,8 +87,8 @@ async def sleep_exponential_backoff(
     """Sleep for an exponentially increasing amount of time.
 
     Args:
-        initial_delay (float): The initial delay.
-        max_delay (float): The maximum delay.
+        initial_delay (float): The initial delay in seconds.
+        max_delay (float): The maximum delay in seconds.
         attempts (int): The number of attempts so far.
     """
     delay = min(initial_delay * (2**attempts), max_delay)

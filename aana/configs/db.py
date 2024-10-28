@@ -43,7 +43,7 @@ class DbSettings(BaseSettings):
         datastore_config (SQLiteConfig | PostgreSQLConfig): The configuration for the datastore.
             Default is SQLiteConfig(path="/var/lib/aana_data").
         pool_size (int): The number of connections to keep in the pool. Default is 5.
-        max_overflow (int): The number of connections to allow that can be created when the pool is exhausted.
+        max_overflow (int): The number of connections that can be created when the pool is exhausted.
             Default is 10.
         pool_recycle (int): The number of seconds a connection can be idle in the pool before it is invalidated.
             Default is 3600.
