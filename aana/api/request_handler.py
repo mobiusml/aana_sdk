@@ -104,14 +104,14 @@ class RequestHandler:
         Returns:
             Any: The response from the endpoint.
         """
-        session = get_session()
-        task_repo = TaskRepository(session)
         try:
-            task = task_repo.read(task_id)
-            path = task.endpoint
-            kwargs = task.data
+            with get_session() as session:
+                task_repo = TaskRepository(session)
+                task = task_repo.read(task_id)
+                path = task.endpoint
+                kwargs = task.data
 
-            task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
+                task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
 
             for e in self.endpoints:
                 if e.path == path:
@@ -128,11 +128,17 @@ class RequestHandler:
             else:
                 out = await endpoint.run(**kwargs)
 
-            task_repo.update_status(task_id, TaskStatus.COMPLETED, 100, out)
+            with get_session() as session:
+                TaskRepository(session).update_status(
+                    task_id, TaskStatus.COMPLETED, 100, out
+                )
         except Exception as e:
             error_response = custom_exception_handler(None, e)
             error = orjson.loads(error_response.body)
-            task_repo.update_status(task_id, TaskStatus.FAILED, 0, error)
+            with get_session() as session:
+                TaskRepository(session).update_status(
+                    task_id, TaskStatus.FAILED, 0, error
+                )
         else:
             return out
 

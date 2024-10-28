@@ -10,6 +10,7 @@ from aana.deployments.base_deployment import BaseDeployment
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
+from aana.utils.core import sleep_exponential_backoff
 
 
 class TaskQueueConfig(BaseModel):
@@ -34,8 +35,6 @@ class TaskQueueDeployment(BaseDeployment):
         self.loop_task.add_done_callback(
             lambda fut: fut.result() if not fut.cancelled() else None
         )
-        self.session = get_session()
-        self.task_repo = TaskRepository(self.session)
         self.running_task_ids: list[str] = []
         self.deployment_responses = {}
 
@@ -57,11 +56,12 @@ class TaskQueueDeployment(BaseDeployment):
             deployment_response = self.deployment_responses.get(task_id)
             if deployment_response:
                 deployment_response.cancel()
-            self.task_repo.update_status(
-                task_id=task_id,
-                status=TaskStatus.NOT_FINISHED,
-                progress=0,
-            )
+            with get_session() as session:
+                TaskRepository(session).update_status(
+                    task_id=task_id,
+                    status=TaskStatus.NOT_FINISHED,
+                    progress=0,
+                )
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
@@ -79,33 +79,43 @@ class TaskQueueDeployment(BaseDeployment):
         The loop will check the queue and assign tasks to workers.
         """
         handle = None
+        configuration_attempts = 0
+        full_queue_attempts = 0
+        no_tasks_attempts = 0
 
         while True:
             if not self._configured:
                 # Wait for the deployment to be configured.
-                await asyncio.sleep(1)
+                await sleep_exponential_backoff(1.0, 5.0, configuration_attempts)
+                configuration_attempts += 1
                 continue
+            else:
+                configuration_attempts = 0
 
-            # Remove completed tasks from the list of running tasks
-            self.running_task_ids = self.task_repo.filter_incomplete_tasks(
-                self.running_task_ids
-            )
+            with get_session() as session:
+                # Remove completed tasks from the list of running tasks
+                self.running_task_ids = TaskRepository(session).filter_incomplete_tasks(
+                    self.running_task_ids
+                )
 
-            # Check for expired tasks
-            execution_timeout = aana_settings.task_queue.execution_timeout
-            max_retries = aana_settings.task_queue.max_retries
-            expired_tasks = self.task_repo.update_expired_tasks(
-                execution_timeout=execution_timeout, max_retries=max_retries
-            )
-            for task in expired_tasks:
-                deployment_response = self.deployment_responses.get(task.id)
-                if deployment_response:
-                    deployment_response.cancel()
+                # Check for expired tasks
+                execution_timeout = aana_settings.task_queue.execution_timeout
+                max_retries = aana_settings.task_queue.max_retries
+                expired_tasks = TaskRepository(session).update_expired_tasks(
+                    execution_timeout=execution_timeout, max_retries=max_retries
+                )
+                for task in expired_tasks:
+                    deployment_response = self.deployment_responses.get(task.id)
+                    if deployment_response:
+                        deployment_response.cancel()
 
             # If the queue is full, wait and retry
             if len(self.running_task_ids) >= aana_settings.task_queue.num_workers:
-                await asyncio.sleep(0.1)
+                await sleep_exponential_backoff(0.1, 5.0, full_queue_attempts)
+                full_queue_attempts += 1
                 continue
+            else:
+                full_queue_attempts = 0
 
             if not handle:
                 # Sometimes the app isn't available immediately after the deployment is created
@@ -126,18 +136,24 @@ class TaskQueueDeployment(BaseDeployment):
                     handle = serve.get_app_handle(self.app_name)
 
             # Get new tasks from the database
-            num_tasks_to_assign = aana_settings.task_queue.num_workers - len(
-                self.running_task_ids
-            )
-            tasks = self.task_repo.fetch_unprocessed_tasks(limit=num_tasks_to_assign)
+            with get_session() as session:
+                num_tasks_to_assign = aana_settings.task_queue.num_workers - len(
+                    self.running_task_ids
+                )
+                tasks = TaskRepository(session).fetch_unprocessed_tasks(
+                    limit=num_tasks_to_assign
+                )
 
-            # If there are no tasks, wait and retry
-            if not tasks:
-                await asyncio.sleep(0.1)
-                continue
+                # If there are no tasks, wait and retry
+                if not tasks:
+                    await sleep_exponential_backoff(0.1, 5.0, no_tasks_attempts)
+                    no_tasks_attempts += 1
+                    continue
+                else:
+                    no_tasks_attempts = 0
 
-            # Start processing the tasks
-            for task in tasks:
-                deployment_response = handle.execute_task.remote(task_id=task.id)
-                self.deployment_responses[task.id] = deployment_response
-                self.running_task_ids.append(str(task.id))
+                # Start processing the tasks
+                for task in tasks:
+                    deployment_response = handle.execute_task.remote(task_id=task.id)
+                    self.deployment_responses[task.id] = deployment_response
+                    self.running_task_ids.append(str(task.id))

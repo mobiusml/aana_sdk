@@ -31,18 +31,20 @@ session = get_session()
 
 <!-- ::: aana.storage.session.get_session -->
 
-If you are using Endpoint, you can use the `session` attribute that is available after the endpoint is initialized:
+If you are using Endpoint, please use `get_session` function with the context manager:
 
 ```python
 from aana.api import Endpoint
+from aana.storage.session import get_session
 
 class TranscribeVideoEndpoint(Endpoint):
-    async def initialize(self):
-        await super().initialize()
-        # self.session is available here after the endpoint is initialized
 
     async def run(self, video: VideoInput) -> WhisperOutput:
-        # self.session is available here as well
+        with get_session() as session:
+            repo = SomeRepository(session)
+            repo.some_method(...)
+            # or 
+            SomeRepository(session).some_method(...)
 ```
 
 
@@ -71,14 +73,14 @@ Or, if you are using Endpoint, you can create a repository object in the `initia
 
 ```python
 from aana.api import Endpoint
+from aana.storage.repository import VideoRepository
+from aana.storage.session import get_session
 
 class TranscribeVideoEndpoint(Endpoint):
-    async def initialize(self):
-        await super().initialize()
-        self.video_repository = VideoRepository(self.session)
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         video_obj: Video = await run_remote(download_video)(video_input=video)
-        self.video_repository.save(video_obj)
+        with get_session() as session:
+            VideoRepository(session).save(video_obj)
         # ...
 ``` 
