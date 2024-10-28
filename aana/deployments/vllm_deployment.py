@@ -256,9 +256,9 @@ class VLLMDeployment(BaseDeployment):
             else:
                 inputs = TokensPrompt(prompt_token_ids=prompt_token_ids)
             results_generator = self.engine.generate(
+                inputs,
                 sampling_params=sampling_params_vllm,
                 request_id=request_id,
-                inputs=inputs,
             )
 
             num_returned = 0
