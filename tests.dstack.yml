@@ -4,7 +4,7 @@ name: aana-tests
 
 backends: [runpod]
 
-image: nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
+image: nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
 
 env:
   - HF_TOKEN
