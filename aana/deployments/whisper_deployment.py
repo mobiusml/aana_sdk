@@ -17,7 +17,7 @@ from aana.core.models.audio import Audio
 from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.vad import VadSegment
 from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 
 
@@ -152,6 +152,7 @@ class WhisperDeployment(BaseDeployment):
             model=self.model,
         )
 
+    @exception_handler
     async def transcribe(
         self, audio: Audio, params: WhisperParams | None = None
     ) -> WhisperOutput:
@@ -201,6 +202,7 @@ class WhisperDeployment(BaseDeployment):
             transcription=asr_transcription,
         )
 
+    @exception_handler
     async def transcribe_stream(
         self, audio: Audio, params: WhisperParams | None = None
     ) -> AsyncGenerator[WhisperOutput, None]:
@@ -248,6 +250,7 @@ class WhisperDeployment(BaseDeployment):
                     transcription=asr_transcription,
                 )
 
+    @exception_handler
     async def transcribe_batch(
         self, audio_batch: list[Audio], params: WhisperParams | None = None
     ) -> WhisperBatchOutput:

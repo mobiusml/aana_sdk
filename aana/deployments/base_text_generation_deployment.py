@@ -9,7 +9,7 @@ with contextlib.suppress(ImportError):
 from aana.core.chat.chat_template import apply_chat_template
 from aana.core.models.chat import ChatDialog, ChatMessage
 from aana.core.models.sampling import SamplingParams
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 
 
 class LLMOutput(TypedDict):
@@ -57,6 +57,7 @@ class BaseTextGenerationDeployment(BaseDeployment):
     You can also override these methods to implement custom inference logic.
     """
 
+    @exception_handler
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:
@@ -71,6 +72,7 @@ class BaseTextGenerationDeployment(BaseDeployment):
         """
         raise NotImplementedError
 
+    @exception_handler
     async def generate(
         self, prompt: str, sampling_params: SamplingParams | None = None
     ) -> LLMOutput:
@@ -88,6 +90,7 @@ class BaseTextGenerationDeployment(BaseDeployment):
             generated_text += chunk["text"]
         return LLMOutput(text=generated_text)
 
+    @exception_handler
     async def generate_batch(
         self, prompts: list[str], sampling_params: SamplingParams | None = None
     ) -> LLMBatchOutput:
@@ -108,6 +111,7 @@ class BaseTextGenerationDeployment(BaseDeployment):
 
         return LLMBatchOutput(texts=texts)
 
+    @exception_handler
     async def chat(
         self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
     ) -> ChatOutput:
@@ -127,6 +131,7 @@ class BaseTextGenerationDeployment(BaseDeployment):
         response_message = ChatMessage(content=response["text"], role="assistant")
         return ChatOutput(message=response_message)
 
+    @exception_handler
     async def chat_stream(
         self, dialog: ChatDialog, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:

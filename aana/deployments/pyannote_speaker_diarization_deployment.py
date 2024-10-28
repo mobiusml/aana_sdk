@@ -14,7 +14,7 @@ from aana.core.models.speaker import (
     SpeakerDiarizationSegment,
 )
 from aana.core.models.time import TimeInterval
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.processors.speaker import combine_homogeneous_speaker_diarization_segments
 
@@ -116,6 +116,7 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
 
         return speaker_segments
 
+    @exception_handler
     async def diarize(
         self, audio: Audio, params: PyannoteSpeakerDiarizationParams | None = None
     ) -> SpeakerDiarizationOutput:
