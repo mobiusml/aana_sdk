@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 from typing_extensions import TypedDict
 
 from aana.core.models.base import pydantic_protected_fields
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
 
@@ -70,6 +70,7 @@ class SentenceTransformerDeployment(BaseDeployment):
 
         self.model = SentenceTransformer(self.model_id)
 
+    @exception_handler
     async def embed_batch(self, **kwargs) -> np.ndarray:
         """Embed the given sentences.
 
