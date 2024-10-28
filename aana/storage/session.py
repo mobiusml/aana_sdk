@@ -1,8 +1,10 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 from aana.storage.engine import engine
 
 __all__ = ["get_session"]
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_session() -> Session:
@@ -11,4 +13,4 @@ def get_session() -> Session:
     Returns:
         Session: SQLAlchemy Session object.
     """
-    return Session(engine)
+    return SessionLocal()

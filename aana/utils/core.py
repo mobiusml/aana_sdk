@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import importlib
 from pathlib import Path
@@ -78,3 +79,17 @@ def get_module_dir(module_name: str) -> Path:
         raise ImportError(f"Module {module_name} not found")  # noqa: TRY003
     module_path = spec.origin
     return Path(module_path).parent
+
+
+async def sleep_exponential_backoff(
+    initial_delay: float, max_delay: float, attempts: int
+):
+    """Sleep for an exponentially increasing amount of time.
+
+    Args:
+        initial_delay (float): The initial delay in seconds.
+        max_delay (float): The maximum delay in seconds.
+        attempts (int): The number of attempts so far.
+    """
+    delay = min(initial_delay * (2**attempts), max_delay)
+    await asyncio.sleep(delay)
