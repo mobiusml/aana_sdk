@@ -9,7 +9,7 @@ from transformers import pipeline
 from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 
 
 class HfPipelineConfig(BaseModel):
@@ -80,6 +80,7 @@ class HfPipelineDeployment(BaseDeployment):
                 else:
                     raise
 
+    @exception_handler
     async def call(self, *args, **kwargs):
         """Call the pipeline.
 

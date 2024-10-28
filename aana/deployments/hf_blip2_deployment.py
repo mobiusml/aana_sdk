@@ -11,7 +11,7 @@ from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.captions import Caption, CaptionsList
 from aana.core.models.image import Image
 from aana.core.models.types import Dtype
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
 
@@ -106,6 +106,7 @@ class HFBlip2Deployment(BaseDeployment):
         self.processor = Blip2Processor.from_pretrained(self.model_id)
         self.model.to(self.device)
 
+    @exception_handler
     async def generate(self, image: Image) -> CaptioningOutput:
         """Generate captions for the given image.
 
@@ -124,6 +125,7 @@ class HFBlip2Deployment(BaseDeployment):
         )
         return CaptioningOutput(caption=captions["captions"][0])
 
+    @exception_handler
     async def generate_batch(self, **kwargs) -> CaptioningBatchOutput:
         """Generate captions for the given images.
 
