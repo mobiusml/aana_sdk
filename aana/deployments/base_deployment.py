@@ -63,6 +63,31 @@ class BaseDeployment:
         self.config = config
         await self.apply_config(config)
         self._configured = True
+        if "restart_exceptions" in config:
+            self.restart_exceptions = config["restart_exceptions"]
+
+    async def check_health(self):
+        """Check the health of the deployment.
+
+        Raises:
+            Raises the exception that caused the deployment to be unhealthy.
+        """
+        raised_restart_exceptions = [
+            exception
+            for exception in self.raised_exceptions
+            if exception.__class__ in self.restart_exceptions
+        ]
+        # Restart the deployment if more than 50% of the requests raised restart exceptions
+        if self.num_requests_since_last_health_check != 0:
+            ratio_restart_exceptions = (
+                len(raised_restart_exceptions)
+                / self.num_requests_since_last_health_check
+            )
+            if ratio_restart_exceptions > 0.5:
+                raise raised_restart_exceptions[0]
+
+        self.raised_exceptions = []
+        self.num_requests_since_last_health_check = 0
 
     async def check_health(self):
         """Check the health of the deployment.

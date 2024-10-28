@@ -287,6 +287,7 @@ class VLLMDeployment(BaseDeployment):
         except Exception as e:
             raise InferenceException(model_name=self.model_id) from e
 
+    @exception_handler
     async def generate(
         self,
         prompt: str | list[int],
@@ -310,6 +311,7 @@ class VLLMDeployment(BaseDeployment):
             generated_text += chunk["text"]
         return LLMOutput(text=generated_text)
 
+    @exception_handler
     async def generate_batch(
         self,
         prompts: list[str] | list[list[int]],
@@ -339,6 +341,7 @@ class VLLMDeployment(BaseDeployment):
 
         return LLMBatchOutput(texts=texts)
 
+    @exception_handler
     async def chat(
         self,
         dialog: ChatDialog | ImageChatDialog,
@@ -362,6 +365,7 @@ class VLLMDeployment(BaseDeployment):
         response_message = ChatMessage(content=response["text"], role="assistant")
         return ChatOutput(message=response_message)
 
+    @exception_handler
     async def chat_stream(
         self,
         dialog: ChatDialog | ImageChatDialog,

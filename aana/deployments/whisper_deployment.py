@@ -250,6 +250,7 @@ class WhisperDeployment(BaseDeployment):
                     transcription=asr_transcription,
                 )
 
+    @exception_handler
     async def transcribe_batch(
         self, audio_batch: list[Audio], params: WhisperParams | None = None
     ) -> WhisperBatchOutput:
