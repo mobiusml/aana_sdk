@@ -11,7 +11,7 @@ __all__ = ["WhisperParams", "BatchedWhisperParams"]
 
 
 class WhisperParams(BaseModel):
-    """A model for the Whisper audio-to-text model parameters.
+    """A model for the Whisper speech-to-text model parameters.
 
     Attributes:
         language (str): Optional language code such as "en" or "fr".
@@ -77,13 +77,13 @@ class WhisperParams(BaseModel):
 
     model_config = MyConfig(
         json_schema_extra={
-            "description": "Parameters for the Whisper audio-to-text model."
+            "description": "Parameters for the Whisper speech-to-text model."
         }
     )
 
 
 class BatchedWhisperParams(BaseModel):
-    """A model for the Batched version of Whisper audio-to-text model parameters.
+    """A model for the Batched version of Whisper speech-to-text model parameters.
 
     Attributes:
         language (str): Optional language code such as "en" or "fr".
@@ -141,6 +141,6 @@ class BatchedWhisperParams(BaseModel):
 
     model_config = MyConfig(
         json_schema_extra={
-            "description": "Parameters for the Batched Whisper audio-to-text model."
+            "description": "Parameters for the Batched Whisper speech-to-text model."
         }
     )
