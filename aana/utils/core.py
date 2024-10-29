@@ -1,6 +1,7 @@
 import asyncio
 import hashlib
 import importlib
+import random
 from pathlib import Path
 from typing import Any
 
@@ -84,7 +85,7 @@ def get_module_dir(module_name: str) -> Path:
 async def sleep_exponential_backoff(
     initial_delay: float, max_delay: float, attempts: int
 ):
-    """Sleep for an exponentially increasing amount of time.
+    """Sleep for an exponentially increasing amount of time with jitter.
 
     Args:
         initial_delay (float): The initial delay in seconds.
@@ -92,4 +93,6 @@ async def sleep_exponential_backoff(
         attempts (int): The number of attempts so far.
     """
     delay = min(initial_delay * (2**attempts), max_delay)
-    await asyncio.sleep(delay)
+    # Full jitter
+    delay_with_jitter = random.uniform(0, delay)  # noqa: S311
+    await asyncio.sleep(delay_with_jitter)
