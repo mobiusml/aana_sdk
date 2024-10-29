@@ -14,6 +14,7 @@ from transformers import (
 
 from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.sampling import SamplingParams
+from aana.deployments.base_deployment import exception_handler
 from aana.deployments.base_text_generation_deployment import (
     BaseTextGenerationDeployment,
     LLMOutput,
@@ -48,6 +49,7 @@ class HfTextGenerationConfig(BaseModel):
 class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
     """Base class for Hugging Face text generation deployments."""
 
+    @exception_handler
     async def generate_stream(
         self, prompt: str, sampling_params: SamplingParams | None = None
     ) -> AsyncGenerator[LLMOutput, None]:
