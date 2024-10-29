@@ -113,9 +113,10 @@ class TestWhisperDeployment:
         audio_file_name = audio_file.removesuffix(".wav")
 
         # Get expected vad segments
-        vad_path = resources.path(
-            "aana.tests.files.expected.vad", f"{audio_file_name}.json"
+        vad_path = (
+            resources.files("aana.tests.files.expected.vad") / f"{audio_file_name}.json"
         )
+
         assert vad_path.exists(), f"vad expected predictions not found: {vad_path}"
 
         with Path(vad_path) as path, path.open() as f:
