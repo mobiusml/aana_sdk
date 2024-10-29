@@ -34,4 +34,4 @@ jobs:
     
     - name: Run tests with GPU
       run: |
-        HF_TOKEN=${{ secrets.HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
+        DSTACK_CLI_LOG_LEVEL=DEBUG HF_TOKEN=${{ secrets.HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
