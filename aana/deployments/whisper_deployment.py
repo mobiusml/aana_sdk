@@ -284,6 +284,7 @@ class WhisperDeployment(BaseDeployment):
             segments=segments, transcription_info=infos, transcription=transcriptions
         )
 
+    @exception_handler
     async def transcribe_in_chunks(
         self,
         audio: Audio,
