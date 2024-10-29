@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from ray import serve
 
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.utils.asyncio import run_async
 from aana.utils.core import import_from_path
 
@@ -84,6 +84,7 @@ class HaystackComponentDeployment(BaseDeployment):
 
         self.component.warm_up()
 
+    @exception_handler
     async def run(self, **data: dict[str, Any]) -> dict[str, Any]:
         """Run the model on the input data."""
         return self.component.run(**data)

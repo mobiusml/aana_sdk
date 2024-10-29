@@ -25,7 +25,7 @@ from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
-from aana.deployments.base_deployment import BaseDeployment
+from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.deployments.base_text_generation_deployment import (
     ChatOutput,
     LLMBatchOutput,
@@ -71,6 +71,11 @@ class VLLMConfig(BaseModel):
 @serve.deployment
 class VLLMDeployment(BaseDeployment):
     """Deployment to serve large language models using vLLM."""
+
+    def __init__(self):
+        """Initialize the deployment."""
+        super().__init__()
+        self.engine = None
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
@@ -122,6 +127,13 @@ class VLLMDeployment(BaseDeployment):
         self.engine = AsyncLLMEngine.from_engine_args(args)
         self.tokenizer = self.engine.engine.tokenizer.tokenizer
         self.model_config = await self.engine.get_model_config()
+
+    async def check_health(self):
+        """Check the health of the deployment."""
+        if self.engine:
+            await self.engine.check_health()
+
+        await super().check_health()
 
     def apply_chat_template(
         self, dialog: ChatDialog | ImageChatDialog
@@ -192,6 +204,7 @@ class VLLMDeployment(BaseDeployment):
             )
         return prompt, mm_data
 
+    @exception_handler
     async def generate_stream(  # noqa: C901
         self,
         prompt: str | list[int],
