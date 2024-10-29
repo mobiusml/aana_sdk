@@ -17,6 +17,8 @@ from aana.core.models.audio import Audio
 from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.vad import VadSegment
 from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
+from aana.core.models.vad import VadSegment
+from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 
