@@ -63,8 +63,6 @@ class BaseDeployment:
         self.config = config
         await self.apply_config(config)
         self._configured = True
-        if "restart_exceptions" in config:
-            self.restart_exceptions = config["restart_exceptions"]
 
     async def check_health(self):
         """Check the health of the deployment.

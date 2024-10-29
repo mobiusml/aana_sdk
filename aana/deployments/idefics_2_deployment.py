@@ -154,7 +154,6 @@ class Idefics2Deployment(BaseDeployment):
         except Exception as e:
             raise InferenceException(model_name=self.model_id) from e
 
-    @exception_handler
     async def chat(
         self, dialog: ImageChatDialog, sampling_params: SamplingParams | None = None
     ) -> ChatOutput:
