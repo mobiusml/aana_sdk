@@ -34,4 +34,8 @@ jobs:
     
     - name: Run tests with GPU
       run: |
-        DSTACK_CLI_LOG_LEVEL=DEBUG HF_TOKEN=${{ secrets.HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
+        HF_TOKEN=${{ secrets.HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
+
+    - name: Extract pytest logs
+      run: |
+        dstack logs aana-tests | sed -n '/============================= test session starts ==============================/,$p'
