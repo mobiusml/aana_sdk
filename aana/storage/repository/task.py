@@ -96,6 +96,13 @@ class TaskRepository(BaseRepository[TaskEntity]):
             # Convert the list of exceptions to a string for the query:
             # e.g., ["InferenceException", "ValueError"] -> "'InferenceException', 'ValueError'"
             exceptions_str = ", ".join([f"'{ex}'" for ex in retryable_exceptions])
+            if self.session.bind.dialect.name == "postgresql":
+                exception_name_query = f"result->>'error' IN ({exceptions_str})"
+            elif self.session.bind.dialect.name == "sqlite":
+                exception_name_query = (
+                    f"json_extract(result, '$.error') IN ({exceptions_str})"
+                )
+
             tasks = (
                 self.session.query(TaskEntity)
                 .filter(
@@ -105,7 +112,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
                         ),
                         and_(
                             TaskEntity.status == TaskStatus.FAILED,
-                            text(f"result->>'error' IN ({exceptions_str})"),
+                            text(exception_name_query),
                             TaskEntity.num_retries < max_retries,
                         ),
                     )
