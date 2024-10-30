@@ -118,7 +118,7 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
                 self.dtype = Dtype.BFLOAT16
 
         if config_obj.quantize_on_fly:
-            self.model_kwargs["device_map"] = "cpu"
+            self.model_kwargs.pop("device_map", None)
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id, torch_dtype=self.dtype.to_torch(), **self.model_kwargs
             )
