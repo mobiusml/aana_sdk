@@ -23,6 +23,7 @@ from aana.exceptions.runtime import (
     DeploymentException,
     EmptyMigrationsException,
     FailedDeployment,
+    InferenceException,
     InsufficientResources,
 )
 from aana.storage.op import run_alembic_migrations
@@ -32,17 +33,35 @@ from aana.utils.core import import_from_path
 class AanaSDK:
     """Aana SDK to deploy and manage Aana deployments and endpoints."""
 
-    def __init__(self, name: str = "app", migration_func: Callable | None = None):
+    def __init__(
+        self,
+        name: str = "app",
+        migration_func: Callable | None = None,
+        retryable_exceptions: list[Exception, str] | None = None,
+    ):
         """Aana SDK to deploy and manage Aana deployments and endpoints.
 
         Args:
             name (str, optional): The name of the application. Defaults to "app".
             migration_func (Callable | None): The migration function to run. Defaults to None.
+            retryable_exceptions (list[Exception, str] | None): The exceptions that can be retried in the task queue.
+                                                                Defaults to ['InferenceException'].
         """
         self.name = name
         self.migration_func = migration_func
         self.endpoints: dict[str, Endpoint] = {}
         self.deployments: dict[str, Deployment] = {}
+
+        if retryable_exceptions is None:
+            self.retryable_exceptions = [InferenceException]
+        else:
+            self.retryable_exceptions = retryable_exceptions
+        # Convert exceptions to string if they are not already
+        # to avoid serialization issues
+        self.retryable_exceptions = [
+            exc if isinstance(exc, str) else exc.__name__
+            for exc in self.retryable_exceptions
+        ]
 
         if aana_settings.task_queue.enabled:
             self.add_task_queue(deploy=False)
@@ -151,6 +170,7 @@ class AanaSDK:
             num_replicas=1,
             user_config=TaskQueueConfig(
                 app_name=self.name,
+                retryable_exceptions=self.retryable_exceptions,
             ).model_dump(mode="json"),
         )
         self.register_deployment(

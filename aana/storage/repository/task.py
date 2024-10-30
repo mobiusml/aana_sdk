@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import and_, desc
+from sqlalchemy import and_, desc, or_, text
 from sqlalchemy.orm import Session
 
 from aana.storage.models.task import Status as TaskStatus
@@ -67,7 +67,12 @@ class TaskRepository(BaseRepository[TaskEntity]):
         self.session.commit()
         return task
 
-    def fetch_unprocessed_tasks(self, limit: int | None = None) -> list[TaskEntity]:
+    def fetch_unprocessed_tasks(
+        self,
+        limit: int | None = None,
+        max_retries: int = 1,
+        retryable_exceptions: list[str] | None = None,
+    ) -> list[TaskEntity]:
         """Fetches unprocessed tasks and marks them as ASSIGNED.
 
         The task is considered unprocessed if it is in CREATED or NOT_FINISHED state.
@@ -81,21 +86,58 @@ class TaskRepository(BaseRepository[TaskEntity]):
 
         Args:
             limit (int | None): The maximum number of tasks to fetch. If None, fetch all.
+            max_retries (int): The maximum number of retries for a task.
+            retryable_exceptions (list[str] | None): The list of exceptions that should be retried.
 
         Returns:
             list[TaskEntity]: the unprocessed tasks.
         """
-        tasks = (
-            self.session.query(TaskEntity)
-            .filter(
-                TaskEntity.status.in_([TaskStatus.CREATED, TaskStatus.NOT_FINISHED])
+        if retryable_exceptions:
+            # Convert the list of exceptions to a string for the query:
+            # e.g., ["InferenceException", "ValueError"] -> "'InferenceException', 'ValueError'"
+            exceptions_str = ", ".join([f"'{ex}'" for ex in retryable_exceptions])
+            if self.session.bind.dialect.name == "postgresql":
+                exception_name_query = f"result->>'error' IN ({exceptions_str})"
+            elif self.session.bind.dialect.name == "sqlite":
+                exception_name_query = (
+                    f"json_extract(result, '$.error') IN ({exceptions_str})"
+                )
+
+            tasks = (
+                self.session.query(TaskEntity)
+                .filter(
+                    or_(
+                        TaskEntity.status.in_(
+                            [TaskStatus.CREATED, TaskStatus.NOT_FINISHED]
+                        ),
+                        and_(
+                            TaskEntity.status == TaskStatus.FAILED,
+                            text(exception_name_query),
+                            TaskEntity.num_retries < max_retries,
+                        ),
+                    )
+                )
+                .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
+                .limit(limit)
+                .populate_existing()
+                .with_for_update(skip_locked=True)
+                .all()
             )
-            .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
-            .limit(limit)
-            .populate_existing()
-            .with_for_update(skip_locked=True)
-            .all()
-        )
+        else:
+            tasks = (
+                self.session.query(TaskEntity)
+                .filter(
+                    TaskEntity.status.in_(
+                        [TaskStatus.CREATED, TaskStatus.NOT_FINISHED]
+                    ),
+                )
+                .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
+                .limit(limit)
+                .populate_existing()
+                .with_for_update(skip_locked=True)
+                .all()
+            )
+
         for task in tasks:
             self.update_status(
                 task_id=task.id,
