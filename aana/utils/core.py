@@ -83,7 +83,7 @@ def get_module_dir(module_name: str) -> Path:
 
 
 async def sleep_exponential_backoff(
-    initial_delay: float, max_delay: float, attempts: int
+    initial_delay: float, max_delay: float, attempts: int, jitter: bool = True
 ):
     """Sleep for an exponentially increasing amount of time with jitter.
 
@@ -91,8 +91,9 @@ async def sleep_exponential_backoff(
         initial_delay (float): The initial delay in seconds.
         max_delay (float): The maximum delay in seconds.
         attempts (int): The number of attempts so far.
+        jitter (bool): Whether to add jitter to the delay. Default is True.
     """
     delay = min(initial_delay * (2**attempts), max_delay)
     # Full jitter
-    delay_with_jitter = random.uniform(0, delay)  # noqa: S311
+    delay_with_jitter = random.uniform(0, delay) if jitter else delay  # noqa: S311
     await asyncio.sleep(delay_with_jitter)
