@@ -17,6 +17,9 @@ class TaskQueueConfig(BaseModel):
     """The configuration for the task queue deployment."""
 
     app_name: str = Field(description="The name of the Aana app")
+    retryable_exceptions: list[str] = Field(
+        description="The list of exceptions that should be retried"
+    )
 
 
 @serve.deployment
@@ -72,6 +75,7 @@ class TaskQueueDeployment(BaseDeployment):
         """
         config_obj = TaskQueueConfig(**config)
         self.app_name = config_obj.app_name
+        self.retryable_exceptions = config_obj.retryable_exceptions
 
     async def loop(self):  # noqa: C901
         """The main loop for the task queue deployment.
@@ -141,7 +145,9 @@ class TaskQueueDeployment(BaseDeployment):
                     self.running_task_ids
                 )
                 tasks = TaskRepository(session).fetch_unprocessed_tasks(
-                    limit=num_tasks_to_assign
+                    limit=num_tasks_to_assign,
+                    max_retries=aana_settings.task_queue.max_retries,
+                    retryable_exceptions=self.retryable_exceptions,
                 )
 
                 # If there are no tasks, wait and retry
