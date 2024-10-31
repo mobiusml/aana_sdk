@@ -285,3 +285,20 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 )
         self.session.commit()
         return tasks
+
+    def heartbeat(self, task_ids: list[str] | set[str]):
+        """Updates the updated_at timestamp for multiple tasks.
+
+        Args:
+            task_ids (list[str] | set[str]): List or set of task IDs to update
+        """
+        print(f"Heartbeat: {task_ids}")
+        task_ids = [
+            UUID(task_id) if isinstance(task_id, str) else task_id
+            for task_id in task_ids
+        ]
+        self.session.query(TaskEntity).filter(TaskEntity.id.in_(task_ids)).update(
+            {TaskEntity.updated_at: datetime.now()},  # noqa: DTZ005
+            synchronize_session=False,
+        )
+        self.session.commit()
