@@ -93,7 +93,9 @@ async def sleep_exponential_backoff(
         attempts (int): The number of attempts so far.
         jitter (bool): Whether to add jitter to the delay. Default is True.
     """
-    delay = min(initial_delay * (2**attempts), max_delay)
+    # Prevent overflow by using min(attempt, 32) since 2^32 is already huge
+    capped_attempt = min(attempts, 32)
+    delay = min(initial_delay * (2**capped_attempt), max_delay)
     # Full jitter
     delay_with_jitter = random.uniform(0, delay) if jitter else delay  # noqa: S311
     await asyncio.sleep(delay_with_jitter)

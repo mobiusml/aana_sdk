@@ -45,7 +45,7 @@ class AanaSDK:
             name (str, optional): The name of the application. Defaults to "app".
             migration_func (Callable | None): The migration function to run. Defaults to None.
             retryable_exceptions (list[Exception, str] | None): The exceptions that can be retried in the task queue.
-                                                                Defaults to ['InferenceException'].
+                                                                Defaults to ['InferenceException', 'ActorDiedError', 'OutOfMemoryError'].
         """
         self.name = name
         self.migration_func = migration_func
@@ -53,7 +53,11 @@ class AanaSDK:
         self.deployments: dict[str, Deployment] = {}
 
         if retryable_exceptions is None:
-            self.retryable_exceptions = [InferenceException]
+            self.retryable_exceptions = [
+                "InferenceException",
+                "ActorDiedError",
+                "OutOfMemoryError",
+            ]
         else:
             self.retryable_exceptions = retryable_exceptions
         # Convert exceptions to string if they are not already
