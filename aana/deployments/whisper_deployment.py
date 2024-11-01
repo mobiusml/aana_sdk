@@ -303,16 +303,19 @@ class WhisperDeployment(BaseDeployment):
         params: BatchedWhisperParams | None = None,
     ) -> AsyncGenerator[WhisperOutput, None]:
         """Transcribe a single audio by segmenting it into chunks (4x faster) in streaming mode.
+
         Args:
             audio (Audio): The audio to transcribe.
             vad_segments (list[VadSegment]| None): List of vad segments to guide batching of the audio data.
             batch_size (int): Maximum batch size for the batched inference.
             params (BatchedWhisperParams | None): The parameters for the batched inference with whisper model.
+
         Yields:
             WhisperOutput: The transcription output as a dictionary:
                 segments (list[AsrSegment]): The ASR segments.
                 transcription_info (AsrTranscriptionInfo): The ASR transcription info.
                 transcription (AsrTranscription): The ASR transcription.
+
         Raises:
             InferenceException: If the inference fails.
         """
