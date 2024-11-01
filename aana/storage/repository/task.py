@@ -257,7 +257,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 and_(
                     TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED]),
                     or_(
-                        TaskEntity.updated_at <= timeout_cutoff,
+                        TaskEntity.assigned_at <= timeout_cutoff,
                         TaskEntity.updated_at <= heartbeat_cutoff,
                     ),
                 ),
@@ -268,7 +268,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         )
         for task in tasks:
             if task.num_retries >= max_retries:
-                if task.updated_at <= timeout_cutoff:
+                if task.assigned_at <= timeout_cutoff:
                     result = {
                         "error": "TimeoutError",
                         "message": (
