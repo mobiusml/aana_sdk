@@ -113,7 +113,6 @@ class RequestHandler:
             Any: The response from the endpoint.
         """
         try:
-            print(f"Executing task {task_id}, type: {type(task_id)}")
             self.running_tasks.add(task_id)
             with get_session() as session:
                 task_repo = TaskRepository(session)

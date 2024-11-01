@@ -23,7 +23,6 @@ from aana.exceptions.runtime import (
     DeploymentException,
     EmptyMigrationsException,
     FailedDeployment,
-    InferenceException,
     InsufficientResources,
 )
 from aana.storage.op import run_alembic_migrations
