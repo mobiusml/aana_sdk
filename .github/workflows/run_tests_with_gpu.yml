@@ -37,5 +37,6 @@ jobs:
         HF_TOKEN=${{ secrets.HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
 
     - name: Extract pytest logs
+      if: ${{ always() }}
       run: |
         dstack logs aana-tests | sed -n '/============================= test session starts ==============================/,$p'
