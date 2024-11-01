@@ -70,54 +70,47 @@ Here are some other possible configurations for the Whisper deployment:
     )
     ```
 
-### Examples of Transcription from Video
+### Available Transcription Methods in Aana SDK
 
-Let's see different transcribe methods in the transcription endpoint class. 
+Below are the different transcription methods available in the Aana SDK:
 
-!!! example "Transcribe methods in Aana SDK"
-    
-    ```python
-    from aana.core.models.video import VideoInput
-    from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
-    from aana.deployments.whisper_deployment import WhisperOutput
+1. **`transcribe` Method**
+     - **Description**: This method is used to get the complete transcription output at once after processing the entire audio.
+     - **Usage Example**:
+     ```python
+     transcription = await self.asr_handle.transcribe(audio=audio, params=whisper_params)
+     # Further processing...
+     ```
 
-    async def run(
-        self,
-        video: VideoInput,
-        whisper_params: WhisperParams,
-        ) -> WhisperOutput:
+2. **`transcribe_stream` Method**
+    - **Description**: This method allows for segment-by-segment transcription as they become available.
+    - **Usage Example**:
+     ```python
+     stream = handle.transcribe_stream(audio=audio, params=whisper_params)
+     async for chunk in stream:
+         # Further processing...
+     ```
 
-        #Download video and extract audio
-        video_obj = await run_remote(download_video)(video_input=video)
-        audio = extract_audio(video=video_obj)
-        
-        #1. Method "transcribe": 
-        # Use to get the full transcription output at the end all at once.
-        transcription = await self.asr_handle.transcribe(
-            audio=audio, params=whisper_params
-        )
-        #further processing...
+3. **`transcribe_in_chunks` Method**
+    - **Description**: This method performs batched inference, returning one batch of segments at a time. It is up to 4x faster than sequential methods.
+    - **Usage Example**:
+     ```python
+     batched_stream = handle.transcribe_in_chunks(audio=audio, params=batched_whisper_params)
+     async for chunk in batched_stream:
+         # Further processing...
+     ```
 
+#### Differences Between `WhisperParams` and `BatchedWhisperParams`
 
-        #2. Method "transcribe_stream": 
-        # Use to get transcription segment-by-segment as they become available.
-        stream = handle.transcribe_stream(
-                audio=audio, params=WhisperParams
-            )
-        async for chunk in stream:
-            #further processing...
+Both `WhisperParams` and `BatchedWhisperParams` are used to configure the Whisper speech-to-text model in sequential and batched inferences respectively.
 
+- **Common Parameters**:
+  Both classes share common attributes such as `language`, `beam_size`, `best_of`, and `temperature`.
 
-        #3. Method "transcribe_in_chunks": 
-        # Perform batched inference and returns one batch of segments at a time. 
-        # 4x faster than sequential methods.
-        batched_stream = handle.transcribe_in_chunks(
-            audio=audio,
-            params=BatchedWhisperParams(),
-            )
-        async for chunk in batched_stream:
-            #further processing...
-    ```
+- **Key Differences**:
+  WhisperParams includes additional attributes such as `word_timestamps` and `vad_filter`, which provide word-level timestamp extraction and voice activity detection filtering.
+
+Refer to the respective [class documentation](../../reference/models/whisper.md) for detailed attributes and usage.
 
 ### Diarized ASR
 
