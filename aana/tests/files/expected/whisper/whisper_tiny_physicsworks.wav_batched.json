@@ -1,0 +1,99 @@
+{
+    "segments": [
+        {
+            "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms, and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10, it's about 150 joules. If I let it fall,",
+            "time_interval": {
+                "start": 0.0,
+                "end": 27.789
+            },
+            "confidence": 0.8900576637530443,
+            "no_speech_confidence": 8.493400673614815e-05,
+            "words": [],
+            "speaker": null
+        },
+        {
+            "text": " then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices to call a record ball, they use them to demolish buildings. You lift up a very heavy object, even heavier than this,",
+            "time_interval": {
+                "start": 28.112,
+                "end": 54.198
+            },
+            "confidence": 0.8824645134738218,
+            "no_speech_confidence": 0.00019971330766566098,
+            "words": [],
+            "speaker": null
+        },
+        {
+            "text": " And then you let it go, you swing it thereby converting gravitational potential energy into kinetic energy and that way you can demolish a building. You just let it hit and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy.",
+            "time_interval": {
+                "start": 54.353,
+                "end": 83.173
+            },
+            "confidence": 0.9030846484357529,
+            "no_speech_confidence": 0.0006614253506995738,
+            "words": [],
+            "speaker": null
+        },
+        {
+            "text": " Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that Bob from a certain height, then that Bob can never come back to a point where the height is any larger. If I release it from this height,",
+            "time_interval": {
+                "start": 83.867,
+                "end": 113.767
+            },
+            "confidence": 0.966081474892032,
+            "no_speech_confidence": 0.003007479477673769,
+            "words": [],
+            "speaker": null
+        },
+        {
+            "text": " And it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher. Provide it that I do not give this object an initial speed when I stand here. I trust",
+            "time_interval": {
+                "start": 114.175,
+                "end": 140.953
+            },
+            "confidence": 0.8942666593959279,
+            "no_speech_confidence": 0.0008694207645021379,
+            "words": [],
+            "speaker": null
+        },
+        {
+            "text": " The conservation of nuclear energy for 100%. I may not trust myself. I'm going to release this object, and I hope I will be able to do it at zero speed. So that when it comes back, it may touch my chin, but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed,",
+            "time_interval": {
+                "start": 141.276,
+                "end": 170.045
+            },
+            "confidence": 0.8853910642383671,
+            "no_speech_confidence": 0.0006208881386555731,
+            "words": [],
+            "speaker": null
+        },
+        {
+            "text": " Then this will be my last lecture. I'll close my eyes. I don't want to see this. So please be very quiet. I almost didn't sleep all night. Three, two, one, zero.",
+            "time_interval": {
+                "start": 170.183,
+                "end": 187.899
+            },
+            "confidence": 0.9018202278684714,
+            "no_speech_confidence": 0.009517688304185867,
+            "words": [],
+            "speaker": null
+        },
+        {
+            "text": " physics works and I'm still alive.",
+            "time_interval": {
+                "start": 200.727,
+                "end": 202.901
+            },
+            "confidence": 0.7211022470261487,
+            "no_speech_confidence": 0.029024533927440643,
+            "words": [],
+            "speaker": null
+        }
+    ],
+    "transcription": {
+        "text": " Now I want to return to the conservation of mechanical energy. I have here a pendulum. I have an object that weighs 15 kilograms, and I can lift it up one meter, which I have done now. That means I've done work. MGH is the work I have done, believe me. I've increased the potential energy of this object. 15 times 10, it's about 150 joules. If I let it fall, then that will be converted to kinetic energy. If I would let it swing from one meter height and you would be there and it would hit you, you'd be dead. 150 joules is enough to kill you. They use these devices to call a record ball, they use them to demolish buildings. You lift up a very heavy object, even heavier than this, And then you let it go, you swing it thereby converting gravitational potential energy into kinetic energy and that way you can demolish a building. You just let it hit and it breaks a building. And that's the whole idea of wrecking. So you're using then the conversion of gravitational potential energy to kinetic energy. Now, I am such a strong believer of the conservation of mechanical energy that I am willing to put my life on the line. If I release that Bob from a certain height, then that Bob can never come back to a point where the height is any larger. If I release it from this height, And it swings, then when it reaches here, it could not be higher. There is a conversion from gravitational potential energy to kinetic energy back to gravitational potential energy and it will come to a stop here. And when it swings back, it should not be able to reach any higher. Provide it that I do not give this object an initial speed when I stand here. I trust The conservation of nuclear energy for 100%. I may not trust myself. I'm going to release this object, and I hope I will be able to do it at zero speed. So that when it comes back, it may touch my chin, but it may not crush my chin. I want you to be extremely quiet because this is no joke. If I don't succeed in giving it zero speed, Then this will be my last lecture. I'll close my eyes. I don't want to see this. So please be very quiet. I almost didn't sleep all night. Three, two, one, zero. physics works and I'm still alive."
+    },
+    "transcription_info": {
+        "language": "en",
+        "language_confidence": 0.7906108498573303
+    }
+}
