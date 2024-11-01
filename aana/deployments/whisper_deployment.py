@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator  # noqa: I001
 from enum import Enum
 from typing import Any, cast
 
@@ -19,6 +19,16 @@ from aana.core.models.vad import VadSegment
 from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
+
+# Workaround for CUDNN issue with cTranslate2:
+import os
+import nvidia.cudnn.lib
+from pathlib import Path
+
+cudnn_path = str(Path(nvidia.cudnn.lib.__file__).parent)
+os.environ["LD_LIBRARY_PATH"] = (
+    cudnn_path + "/:" + os.environ.get("LD_LIBRARY_PATH", "")
+)
 
 
 class WhisperComputeType(str, Enum):
