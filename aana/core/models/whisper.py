@@ -43,6 +43,10 @@ class WhisperParams(BaseModel):
             "Temperature for sampling. A single value or a sequence indicating fallback temperatures."
         ),
     )
+    without_timestamps: bool = Field(
+        default=False,
+        description="Whether to sample only text tokens in decoding.",
+    )
     word_timestamps: bool = Field(
         default=False, description="Whether to extract word-level timestamps."
     )
@@ -113,6 +117,13 @@ class BatchedWhisperParams(BaseModel):
         description=(
             "Temperature for sampling. A single value or a sequence indicating fallback temperatures."
         ),
+    )
+    without_timestamps: bool = Field(
+        default=True,
+        description="Whether to sample only text tokens in decoding. Set to 'False' to get phrase-level time stamps (eg. for subtitles)",
+    )
+    word_timestamps: bool = Field(
+        default=False, description="Whether to extract word-level timestamps."
     )
 
     @field_validator("temperature")
