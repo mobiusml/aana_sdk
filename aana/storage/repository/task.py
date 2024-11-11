@@ -223,7 +223,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         return incomplete_task_ids
 
     def update_expired_tasks(
-        self, execution_timeout: float, max_retries: int
+        self, execution_timeout: float, heartbeat_timeout: float, max_retries: int
     ) -> list[TaskEntity]:
         """Fetches all tasks that are expired and updates their status.
 
@@ -243,18 +243,23 @@ class TaskRepository(BaseRepository[TaskEntity]):
 
         Args:
             execution_timeout (float): The maximum execution time for a task in seconds
+            heartbeat_timeout (float): The maximum time since the last heartbeat in seconds
             max_retries (int): The maximum number of retries for a task
 
         Returns:
             list[TaskEntity]: the expired tasks.
         """
-        cutoff_time = datetime.now() - timedelta(seconds=execution_timeout)  # noqa: DTZ005
+        timeout_cutoff = datetime.now() - timedelta(seconds=execution_timeout)  # noqa: DTZ005
+        heartbeat_cutoff = datetime.now() - timedelta(seconds=heartbeat_timeout)  # noqa: DTZ005
         tasks = (
             self.session.query(TaskEntity)
             .filter(
                 and_(
                     TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED]),
-                    TaskEntity.updated_at <= cutoff_time,
+                    or_(
+                        TaskEntity.assigned_at <= timeout_cutoff,
+                        TaskEntity.updated_at <= heartbeat_cutoff,
+                    ),
                 ),
             )
             .populate_existing()
@@ -263,17 +268,28 @@ class TaskRepository(BaseRepository[TaskEntity]):
         )
         for task in tasks:
             if task.num_retries >= max_retries:
-                self.update_status(
-                    task_id=task.id,
-                    status=TaskStatus.FAILED,
-                    progress=0,
-                    result={
+                if task.assigned_at <= timeout_cutoff:
+                    result = {
                         "error": "TimeoutError",
                         "message": (
                             f"Task execution timed out after {execution_timeout} seconds and "
                             f"exceeded the maximum number of retries ({max_retries})"
                         ),
-                    },
+                    }
+                else:
+                    result = {
+                        "error": "HeartbeatTimeoutError",
+                        "message": (
+                            f"The task has not received a heartbeat for {heartbeat_timeout} seconds and "
+                            f"exceeded the maximum number of retries ({max_retries})"
+                        ),
+                    }
+
+                self.update_status(
+                    task_id=task.id,
+                    status=TaskStatus.FAILED,
+                    progress=0,
+                    result=result,
                     commit=False,
                 )
             else:
@@ -285,3 +301,19 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 )
         self.session.commit()
         return tasks
+
+    def heartbeat(self, task_ids: list[str] | set[str]):
+        """Updates the updated_at timestamp for multiple tasks.
+
+        Args:
+            task_ids (list[str] | set[str]): List or set of task IDs to update
+        """
+        task_ids = [
+            UUID(task_id) if isinstance(task_id, str) else task_id
+            for task_id in task_ids
+        ]
+        self.session.query(TaskEntity).filter(TaskEntity.id.in_(task_ids)).update(
+            {TaskEntity.updated_at: datetime.now()},  # noqa: DTZ005
+            synchronize_session=False,
+        )
+        self.session.commit()

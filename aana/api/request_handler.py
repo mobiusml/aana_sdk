@@ -1,7 +1,7 @@
 import json
 import time
 from typing import Annotated, Any
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import orjson
 import ray
@@ -68,6 +68,7 @@ class RequestHandler:
 
         app.openapi = self.custom_openapi
         self.ready = True
+        self.running_tasks = set()
 
     def custom_openapi(self) -> dict[str, Any]:
         """Returns OpenAPI schema, generating it if necessary."""
@@ -95,16 +96,24 @@ class RequestHandler:
         """
         return AanaJSONResponse(content={"ready": self.ready})
 
-    async def execute_task(self, task_id: str) -> Any:
+    async def check_health(self):
+        """Check the health of the application."""
+        # Heartbeat for the running tasks
+        with get_session() as session:
+            task_repo = TaskRepository(session)
+            task_repo.heartbeat(self.running_tasks)
+
+    async def execute_task(self, task_id: str | UUID) -> Any:
         """Execute a task.
 
         Args:
-            task_id (str): The task ID.
+            task_id (str | UUID): The ID of the task.
 
         Returns:
             Any: The response from the endpoint.
         """
         try:
+            self.running_tasks.add(task_id)
             with get_session() as session:
                 task_repo = TaskRepository(session)
                 task = task_repo.read(task_id)
@@ -139,8 +148,9 @@ class RequestHandler:
                 TaskRepository(session).update_status(
                     task_id, TaskStatus.FAILED, 0, error
                 )
-        else:
-            return out
+        finally:
+            self.running_tasks.remove(task_id)
+        return out
 
     @app.get(
         "/tasks/get/{task_id}",

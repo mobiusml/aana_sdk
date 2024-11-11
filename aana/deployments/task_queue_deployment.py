@@ -137,10 +137,10 @@ class TaskQueueDeployment(BaseDeployment):
                 )
 
                 # Check for expired tasks
-                execution_timeout = aana_settings.task_queue.execution_timeout
-                max_retries = aana_settings.task_queue.max_retries
                 expired_tasks = TaskRepository(session).update_expired_tasks(
-                    execution_timeout=execution_timeout, max_retries=max_retries
+                    execution_timeout=aana_settings.task_queue.execution_timeout,
+                    heartbeat_timeout=aana_settings.task_queue.heartbeat_timeout,
+                    max_retries=aana_settings.task_queue.max_retries,
                 )
                 for task in expired_tasks:
                     deployment_response = self.deployment_responses.get(task.id)
