@@ -139,7 +139,7 @@ class WhisperBatchOutput(TypedDict):
     transcription: list[AsrTranscription]
 
 
-@serve.deployment
+@serve.deployment(max_ongoing_requests=1)
 class WhisperDeployment(BaseDeployment):
     """Deployment to serve Whisper models from faster-whisper."""
 
