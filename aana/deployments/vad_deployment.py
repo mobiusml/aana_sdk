@@ -83,7 +83,7 @@ class VadConfig(BaseModel):
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
-@serve.deployment
+@serve.deployment(health_check_timeout_s=180)
 class VadDeployment(BaseDeployment):
     """Deployment to serve VAD models."""
 

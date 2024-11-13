@@ -1,7 +1,11 @@
-from collections.abc import AsyncGenerator  # noqa: I001
+import asyncio
+import os
+from collections.abc import AsyncGenerator
 from enum import Enum
+from pathlib import Path
 from typing import Any, cast
 
+import nvidia.cudnn.lib
 import torch
 from faster_whisper import BatchedInferencePipeline, WhisperModel
 from pydantic import BaseModel, ConfigDict, Field
@@ -21,10 +25,6 @@ from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 
 # Workaround for CUDNN issue with cTranslate2:
-import os
-import nvidia.cudnn.lib
-from pathlib import Path
-
 cudnn_path = str(Path(nvidia.cudnn.lib.__file__).parent)
 os.environ["LD_LIBRARY_PATH"] = (
     cudnn_path + "/:" + os.environ.get("LD_LIBRARY_PATH", "")
@@ -139,7 +139,7 @@ class WhisperBatchOutput(TypedDict):
     transcription: list[AsrTranscription]
 
 
-@serve.deployment
+@serve.deployment(max_ongoing_requests=1)
 class WhisperDeployment(BaseDeployment):
     """Deployment to serve Whisper models from faster-whisper."""
 
@@ -162,7 +162,6 @@ class WhisperDeployment(BaseDeployment):
             model=self.model,
         )
 
-    @exception_handler
     async def transcribe(
         self, audio: Audio, params: WhisperParams | None = None
     ) -> WhisperOutput:
@@ -182,27 +181,12 @@ class WhisperDeployment(BaseDeployment):
         Raises:
             InferenceException: If the inference fails.
         """
-        if not params:
-            params = WhisperParams()
+        asr_segments = []
+        asr_transcription_info = None
+        async for output in self.transcribe_stream(audio, params):
+            asr_segments.extend(output["segments"])
+            asr_transcription_info = output["transcription_info"]
 
-        audio_array = audio.get_numpy()
-        if not audio_array.any():
-            # For silent audios/no audio tracks, return empty output with language as silence
-            return WhisperOutput(
-                segments=[],
-                transcription_info=AsrTranscriptionInfo(
-                    language="silence", language_confidence=1.0
-                ),
-                transcription=AsrTranscription(text=""),
-            )
-
-        try:
-            segments, info = self.model.transcribe(audio_array, **params.model_dump())
-        except Exception as e:
-            raise InferenceException(self.model_name) from e
-
-        asr_segments = [AsrSegment.from_whisper(seg) for seg in segments]
-        asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
         transcription = "".join([seg.text for seg in asr_segments])
         asr_transcription = AsrTranscription(text=transcription)
 
@@ -251,6 +235,7 @@ class WhisperDeployment(BaseDeployment):
 
             asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
             for segment in segments:
+                await asyncio.sleep(0)
                 asr_segments = [AsrSegment.from_whisper(segment)]
                 asr_transcription = AsrTranscription(text=segment.text)
 
@@ -345,6 +330,7 @@ class WhisperDeployment(BaseDeployment):
                 raise InferenceException(self.model_name) from e
             asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
             for segment in segments:
+                await asyncio.sleep(0)
                 asr_segments = [AsrSegment.from_whisper(segment)]
                 asr_transcription = AsrTranscription(text=segment.text)
                 yield WhisperOutput(

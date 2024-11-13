@@ -47,7 +47,7 @@ class PyannoteSpeakerDiarizationConfig(BaseModel):
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
 
 
-@serve.deployment
+@serve.deployment(health_check_timeout_s=180)
 class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
     """Deployment to serve Pyannote Speaker Diarization (SD) models."""
 
