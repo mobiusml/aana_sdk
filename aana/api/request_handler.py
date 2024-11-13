@@ -148,9 +148,10 @@ class RequestHandler:
                 TaskRepository(session).update_status(
                     task_id, TaskStatus.FAILED, 0, error
                 )
+        else:
+            return out
         finally:
             self.running_tasks.remove(task_id)
-        return out
 
     @app.get(
         "/tasks/get/{task_id}",
