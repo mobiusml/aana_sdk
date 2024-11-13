@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID
 
@@ -137,7 +137,6 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 .with_for_update(skip_locked=True)
                 .all()
             )
-
         for task in tasks:
             self.update_status(
                 task_id=task.id,
@@ -167,9 +166,9 @@ class TaskRepository(BaseRepository[TaskEntity]):
         """
         task = self.read(task_id)
         if status == TaskStatus.COMPLETED or status == TaskStatus.FAILED:
-            task.completed_at = datetime.now()  # noqa: DTZ005
+            task.completed_at = datetime.now(timezone.utc)
         if status == TaskStatus.ASSIGNED:
-            task.assigned_at = datetime.now()  # noqa: DTZ005
+            task.assigned_at = datetime.now(timezone.utc)
             task.num_retries += 1
         if progress is not None:
             task.progress = progress
@@ -249,8 +248,12 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Returns:
             list[TaskEntity]: the expired tasks.
         """
-        timeout_cutoff = datetime.now() - timedelta(seconds=execution_timeout)  # noqa: DTZ005
-        heartbeat_cutoff = datetime.now() - timedelta(seconds=heartbeat_timeout)  # noqa: DTZ005
+        timeout_cutoff = datetime.now(timezone.utc) - timedelta(
+            seconds=execution_timeout
+        )
+        heartbeat_cutoff = datetime.now(timezone.utc) - timedelta(
+            seconds=heartbeat_timeout
+        )
         tasks = (
             self.session.query(TaskEntity)
             .filter(
@@ -268,7 +271,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         )
         for task in tasks:
             if task.num_retries >= max_retries:
-                if task.assigned_at <= timeout_cutoff:
+                if task.assigned_at.astimezone(timezone.utc) <= timeout_cutoff:
                     result = {
                         "error": "TimeoutError",
                         "message": (
@@ -313,7 +316,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
             for task_id in task_ids
         ]
         self.session.query(TaskEntity).filter(TaskEntity.id.in_(task_ids)).update(
-            {TaskEntity.updated_at: datetime.now()},  # noqa: DTZ005
+            {TaskEntity.updated_at: datetime.now(timezone.utc)},
             synchronize_session=False,
         )
         self.session.commit()
