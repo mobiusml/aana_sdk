@@ -1,7 +1,7 @@
 # ruff: noqa: S101
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -51,7 +51,7 @@ def test_get_unprocessed_tasks(db_session):
         db_session.commit()
 
         # Create sample tasks with different statuses
-        now = datetime.now()  # noqa: DTZ005
+        now = datetime.now(timezone.utc)
 
         task1 = TaskEntity(
             endpoint="/test1",
@@ -291,7 +291,7 @@ def test_update_expired_tasks(db_session):
     db_session.commit()
 
     # Set up current time and a cutoff time
-    current_time = datetime.now()  # noqa: DTZ005
+    current_time = datetime.now(timezone.utc)
     execution_timeout = 3600  # 1 hour in seconds
     heartbeat_timeout = 60  # 1 minute in seconds
 
