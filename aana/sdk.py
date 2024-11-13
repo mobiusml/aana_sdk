@@ -225,7 +225,7 @@ class AanaSDK:
             KeyError: If the deployment is not found.
         """
         if name in self.deployments:
-            return self.deployments[name].options(route_prefix=f"/{name}").bind()
+            return self.deployments[name].bind()
         else:
             raise KeyError(f"Deployment {name} not found.")  # noqa: TRY003
 
