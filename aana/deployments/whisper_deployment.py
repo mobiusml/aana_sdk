@@ -161,6 +161,12 @@ class WhisperDeployment(BaseDeployment):
         self.batched_model = BatchedInferencePipeline(
             model=self.model,
         )
+        self.healthy = True
+
+    async def check_health(self):
+        """Check the health of the deployment."""
+        if not self.healthy:
+            raise RuntimeError(f"Whisper model {self.model_name} is unhealthy.")  # noqa: TRY003
 
     async def transcribe(
         self, audio: Audio, params: WhisperParams | None = None
@@ -230,6 +236,9 @@ class WhisperDeployment(BaseDeployment):
                 segments, info = self.model.transcribe(
                     audio_array, **params.model_dump()
                 )
+            except torch.OutOfMemoryError as e:
+                self.healthy = False
+                raise InferenceException(self.model_name) from e
             except Exception as e:
                 raise InferenceException(self.model_name) from e
 
@@ -326,6 +335,9 @@ class WhisperDeployment(BaseDeployment):
                     batch_size=batch_size,
                     **params.model_dump(),
                 )
+            except torch.OutOfMemoryError as e:
+                self.healthy = False
+                raise InferenceException(self.model_name) from e
             except Exception as e:
                 raise InferenceException(self.model_name) from e
             asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
