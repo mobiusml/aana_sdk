@@ -230,20 +230,19 @@ class WhisperDeployment(BaseDeployment):
                 segments, info = self.model.transcribe(
                     audio_array, **params.model_dump()
                 )
+                asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
+                for segment in segments:
+                    await asyncio.sleep(0)
+                    asr_segments = [AsrSegment.from_whisper(segment)]
+                    asr_transcription = AsrTranscription(text=segment.text)
+
+                    yield WhisperOutput(
+                        segments=asr_segments,
+                        transcription_info=asr_transcription_info,
+                        transcription=asr_transcription,
+                    )
             except Exception as e:
                 raise InferenceException(self.model_name) from e
-
-            asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
-            for segment in segments:
-                await asyncio.sleep(0)
-                asr_segments = [AsrSegment.from_whisper(segment)]
-                asr_transcription = AsrTranscription(text=segment.text)
-
-                yield WhisperOutput(
-                    segments=asr_segments,
-                    transcription_info=asr_transcription_info,
-                    transcription=asr_transcription,
-                )
 
     async def transcribe_batch(
         self, audio_batch: list[Audio], params: WhisperParams | None = None
@@ -284,7 +283,7 @@ class WhisperDeployment(BaseDeployment):
         self,
         audio: Audio,
         vad_segments: list[VadSegment] | None = None,
-        batch_size: int = 16,
+        batch_size: int = 4,
         params: BatchedWhisperParams | None = None,
     ) -> AsyncGenerator[WhisperOutput, None]:
         """Transcribe a single audio by segmenting it into chunks (4x faster) in streaming mode.
@@ -326,15 +325,15 @@ class WhisperDeployment(BaseDeployment):
                     batch_size=batch_size,
                     **params.model_dump(),
                 )
+                asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
+                for segment in segments:
+                    await asyncio.sleep(0)
+                    asr_segments = [AsrSegment.from_whisper(segment)]
+                    asr_transcription = AsrTranscription(text=segment.text)
+                    yield WhisperOutput(
+                        segments=asr_segments,
+                        transcription_info=asr_transcription_info,
+                        transcription=asr_transcription,
+                    )
             except Exception as e:
                 raise InferenceException(self.model_name) from e
-            asr_transcription_info = AsrTranscriptionInfo.from_whisper(info)
-            for segment in segments:
-                await asyncio.sleep(0)
-                asr_segments = [AsrSegment.from_whisper(segment)]
-                asr_transcription = AsrTranscription(text=segment.text)
-                yield WhisperOutput(
-                    segments=asr_segments,
-                    transcription_info=asr_transcription_info,
-                    transcription=asr_transcription,
-                )
