@@ -283,7 +283,7 @@ class WhisperDeployment(BaseDeployment):
         self,
         audio: Audio,
         vad_segments: list[VadSegment] | None = None,
-        batch_size: int = 16,
+        batch_size: int = 4,
         params: BatchedWhisperParams | None = None,
     ) -> AsyncGenerator[WhisperOutput, None]:
         """Transcribe a single audio by segmenting it into chunks (4x faster) in streaming mode.
