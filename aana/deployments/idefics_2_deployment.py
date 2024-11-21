@@ -105,8 +105,11 @@ class Idefics2Deployment(BaseDeployment):
         transformers.set_seed(42)
 
         if sampling_params is None:
-            sampling_params = SamplingParams()
-        sampling_params = merged_options(self.default_sampling_params, sampling_params)
+            sampling_params = self.default_sampling_params
+        else:
+            sampling_params = merged_options(
+                self.default_sampling_params, sampling_params
+            )
 
         messages, images = dialog.to_objects()
         text = self.processor.apply_chat_template(messages, add_generation_prompt=True)
@@ -191,8 +194,11 @@ class Idefics2Deployment(BaseDeployment):
         transformers.set_seed(42)
 
         if sampling_params is None:
-            sampling_params = SamplingParams()
-        sampling_params = merged_options(self.default_sampling_params, sampling_params)
+            sampling_params = self.default_sampling_params
+        else:
+            sampling_params = merged_options(
+                self.default_sampling_params, sampling_params
+            )
 
         text_batch = []
         image_batch = []
