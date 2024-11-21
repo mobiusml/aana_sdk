@@ -74,6 +74,8 @@ class AanaSDK:
         port: int = 8000,
         host: str = "127.0.0.1",
         address: str = "auto",
+        dashboard_host: str = "127.0.0.1",
+        dashboard_port: int = 8265,
         show_logs: bool = False,
         num_cpus: int | None = None,
         num_gpus: int | None = None,
@@ -84,6 +86,10 @@ class AanaSDK:
             port (int, optional): The port to run the Aana server on. Defaults to 8000.
             host (str, optional): The host to run the Aana server on. Defaults to "127.0.0.1".
             address (str, optional): The address of the Ray cluster. Defaults to "auto".
+            dashboard_host (str, optional):  The host to bind the dashboard server to. Can either be
+                localhost (127.0.0.1) or 0.0.0.0 (available from all interfaces).
+                By default, this is set to localhost to prevent access from external machines.
+            dashboard_port (int, optional): The port to bind the dashboard server to. Defaults to 8265.
             show_logs (bool, optional): If True, the logs will be shown, otherwise
                 they will be hidden but can be accessed in the Ray dashboard. Defaults to False.
             num_cpus (int, optional): Number of CPUs the user wishes to assign to each
@@ -100,6 +106,9 @@ class AanaSDK:
                 address=address,
                 ignore_reinit_error=True,
                 log_to_driver=show_logs,
+                include_dashboard=True,
+                dashboard_host=dashboard_host,
+                dashboard_port=dashboard_port,
             )
         except ConnectionError:
             # If connection fails, start a new Ray cluster and serve instance
