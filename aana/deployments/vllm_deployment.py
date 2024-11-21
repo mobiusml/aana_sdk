@@ -227,8 +227,11 @@ class VLLMDeployment(BaseDeployment):
             prompt_token_ids = prompt
 
         if sampling_params is None:
-            sampling_params = SamplingParams()
-        sampling_params = merged_options(self.default_sampling_params, sampling_params)
+            sampling_params = self.default_sampling_params
+        else:
+            sampling_params = merged_options(
+                self.default_sampling_params, sampling_params
+            )
 
         json_schema = sampling_params.json_schema
         regex_string = sampling_params.regex_string
