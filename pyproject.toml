@@ -50,9 +50,9 @@ sentence-transformers = ">=2.6.1"
 sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
 transformers = ">=4.44.2"
 torch = "^2.4.0"
-torchvision = "^0.19.0"
-torchaudio = "^2.4.0"
-vllm = ">=0.6.1"
+torchvision = ">=0.19.0"
+torchaudio = ">=2.4.0"
+vllm = ">=0.6.1, <0.6.4" # See https://github.com/vllm-project/vllm/issues/10451
 yt-dlp = ">=2024.08.06"
 outlines = {extras = ["serve"], version = "^0.0.46"}
 
