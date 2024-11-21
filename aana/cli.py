@@ -51,7 +51,7 @@ def load_app(app_path: str):
     help="Address of the Ray cluster (default: auto)",
 )
 @click.option(
-    "--ray-dashboard-address",
+    "--ray-dashboard-host",
     default="127.0.0.1",
     type=str,
     help=(
@@ -77,7 +77,7 @@ def deploy(
     port: int,
     hide_logs: bool,
     ray_address: str,
-    ray_dashboard_address: str,
+    ray_dashboard_host: str,
     ray_dashboard_port: int,
     skip_migrations: bool,
 ):
@@ -94,7 +94,7 @@ def deploy(
         host=host,
         show_logs=show_logs,
         address=ray_address,
-        dashboard_address=ray_dashboard_address,
+        dashboard_host=ray_dashboard_host,
         dashboard_port=ray_dashboard_port,
     )
     with contextlib.suppress(
