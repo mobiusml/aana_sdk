@@ -12,6 +12,7 @@ class MyOptions(BaseModel):
     field1: str
     field2: int | None = None
     field3: bool
+    field4: str = "default"
 
 
 def test_merged_options_same_type():
@@ -46,3 +47,17 @@ def test_merged_options_type_mismatch():
 
     with pytest.raises(ValueError):
         merged_options(default, to_merge)
+
+
+def test_merged_options_unset():
+    """Test merged_options with unset fields."""
+    default = MyOptions(field1="default1", field2=2, field3=True, field4="new_default")
+    to_merge = MyOptions(field1="merge1", field3=False)  # field4 is not set
+    merged = merged_options(default, to_merge)
+
+    assert merged.field1 == "merge1"
+    assert merged.field2 == 2
+    assert merged.field3 == False
+    assert (
+        merged.field4 == "new_default"
+    )  # Should retain value from default_options as it's not set in options

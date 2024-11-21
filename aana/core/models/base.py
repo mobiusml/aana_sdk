@@ -58,7 +58,7 @@ def merged_options(default_options: OptionType, options: OptionType) -> OptionTy
     if type(default_options) != type(options):
         raise ValueError("Option type mismatch.")  # noqa: TRY003
     default_options_dict = default_options.model_dump()
-    for k, v in options.model_dump().items():
+    for k, v in options.model_dump(exclude_unset=True).items():
         if v is not None:
             default_options_dict[k] = v
     return options.__class__.model_validate(default_options_dict)

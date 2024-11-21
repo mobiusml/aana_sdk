@@ -68,8 +68,11 @@ class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
         prompt = str(prompt)
 
         if sampling_params is None:
-            sampling_params = SamplingParams()
-        sampling_params = merged_options(self.default_sampling_params, sampling_params)
+            sampling_params = self.default_sampling_params
+        else:
+            sampling_params = merged_options(
+                self.default_sampling_params, sampling_params
+            )
 
         prompt_input = self.tokenizer(
             prompt, return_tensors="pt", add_special_tokens=False
