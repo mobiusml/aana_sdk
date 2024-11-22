@@ -106,9 +106,6 @@ class AanaSDK:
                 address=address,
                 ignore_reinit_error=True,
                 log_to_driver=show_logs,
-                include_dashboard=True,
-                dashboard_host=dashboard_host,
-                dashboard_port=dashboard_port,
             )
         except ConnectionError:
             # If connection fails, start a new Ray cluster and serve instance
@@ -117,6 +114,9 @@ class AanaSDK:
                 log_to_driver=show_logs,
                 num_cpus=num_cpus,
                 num_gpus=num_gpus,
+                include_dashboard=True,
+                dashboard_host=dashboard_host,
+                dashboard_port=dashboard_port,
             )
 
         serve_status = serve.status()
