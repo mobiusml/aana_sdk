@@ -51,6 +51,22 @@ def load_app(app_path: str):
     help="Address of the Ray cluster (default: auto)",
 )
 @click.option(
+    "--ray-dashboard-host",
+    default="127.0.0.1",
+    type=str,
+    help=(
+        "The host to bind the dashboard server to. Can either be "
+        "localhost (127.0.0.1) or 0.0.0.0 (available from all interfaces). "
+        "By default, this is set to localhost to prevent access from external machines."
+    ),
+)
+@click.option(
+    "--ray-dashboard-port",
+    default=8265,
+    type=int,
+    help="The port to bind the dashboard server to (default: 8265)",
+)
+@click.option(
     "--skip-migrations",
     is_flag=True,
     help="Skip migrations before deploying",
@@ -61,6 +77,8 @@ def deploy(
     port: int,
     hide_logs: bool,
     ray_address: str,
+    ray_dashboard_host: str,
+    ray_dashboard_port: int,
     skip_migrations: bool,
 ):
     """Deploy the application.
@@ -71,7 +89,14 @@ def deploy(
     if not skip_migrations:
         aana_app.migrate()
     show_logs = not hide_logs
-    aana_app.connect(port=port, host=host, show_logs=show_logs, address=ray_address)
+    aana_app.connect(
+        port=port,
+        host=host,
+        show_logs=show_logs,
+        address=ray_address,
+        dashboard_host=ray_dashboard_host,
+        dashboard_port=ray_dashboard_port,
+    )
     with contextlib.suppress(
         DeploymentException
     ):  # we have a nice error message for this
