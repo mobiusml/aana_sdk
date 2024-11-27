@@ -71,6 +71,11 @@ def load_app(app_path: str):
     is_flag=True,
     help="Skip migrations before deploying",
 )
+@click.option(
+    "--sequential-deploy",
+    is_flag=True,
+    help="Deploy the application's deployments sequentially",
+)
 def deploy(
     app_path: str,
     host: str,
@@ -80,6 +85,7 @@ def deploy(
     ray_dashboard_host: str,
     ray_dashboard_port: int,
     skip_migrations: bool,
+    sequential_deploy: bool,
 ):
     """Deploy the application.
 
@@ -100,7 +106,7 @@ def deploy(
     with contextlib.suppress(
         DeploymentException
     ):  # we have a nice error message for this
-        aana_app.deploy(blocking=True)
+        aana_app.deploy(blocking=True, sequential=sequential_deploy)
 
 
 @cli.command()

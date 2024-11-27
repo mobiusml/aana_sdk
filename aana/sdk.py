@@ -355,11 +355,12 @@ class AanaSDK:
 
             time.sleep(1)  # Wait for 1 second before checking again
 
-    def deploy(self, blocking: bool = False):
+    def deploy(self, blocking: bool = False, sequential: bool = False):
         """Deploy the application with the registered endpoints and deployments.
 
         Args:
             blocking (bool, optional): If True, the function will block until interrupted. Defaults to False.
+            sequential (bool, optional): If True, the deployments will be deployed sequentially. Defaults to False.
         """
         try:
             for deployment_name in self.deployments:
@@ -369,6 +370,8 @@ class AanaSDK:
                     route_prefix=f"/{deployment_name}",
                     _blocking=False,
                 )
+                if sequential:
+                    self.wait_for_deployment()
 
             serve.api._run(
                 self.get_main_app(),
