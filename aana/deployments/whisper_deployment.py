@@ -162,6 +162,11 @@ class WhisperDeployment(BaseDeployment):
             model=self.model,
         )
 
+    async def check_health(self):
+        """Check the health of the deployment and clear torch cache to prevent memory leaks."""
+        torch.cuda.empty_cache()
+        await super().check_health()
+
     async def transcribe(
         self, audio: Audio, params: WhisperParams | None = None
     ) -> WhisperOutput:
