@@ -110,6 +110,7 @@ class TaskQueueDeployment(BaseDeployment):
         configuration_attempts = 0
         full_queue_attempts = 0
         no_tasks_attempts = 0
+        no_app_attempts = 0
 
         while True:
             # Check the health of the app
@@ -156,22 +157,14 @@ class TaskQueueDeployment(BaseDeployment):
                 full_queue_attempts = 0
 
             if not handle:
-                # Sometimes the app isn't available immediately after the deployment is created
-                # so we need to wait for it to become available
-                for _ in range(10):
-                    try:
-                        handle = serve.get_app_handle(self.app_name)
-                        break
-                    except ray.serve.exceptions.RayServeException as e:
-                        print(
-                            f"App {self.app_name} not available yet: {e}, retrying..."
-                        )
-                        await asyncio.sleep(1)
-                else:
-                    # If the app is not available after all retries, try again
-                    # but without catching the exception
-                    # (if it fails, the deployment will be unhealthy, and restart will be attempted)
+                # Try to get the app handle, if it fails, wait and retry later
+                try:
                     handle = serve.get_app_handle(self.app_name)
+                except ray.serve.exceptions.RayServeException as e:
+                    print(f"App {self.app_name} not available yet: {e}, retrying...")
+                    await sleep_exponential_backoff(1.0, 5.0, no_app_attempts)
+                    no_app_attempts += 1
+                    continue
 
             # Get new tasks from the database
             with get_session() as session:
