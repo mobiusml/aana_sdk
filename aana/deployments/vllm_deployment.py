@@ -2,6 +2,7 @@ import base64
 from collections.abc import AsyncGenerator
 from typing import Any
 
+import torch
 from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
@@ -129,9 +130,10 @@ class VLLMDeployment(BaseDeployment):
         self.model_config = await self.engine.get_model_config()
 
     async def check_health(self):
-        """Check the health of the deployment."""
+        """Check the health of the deployment and clear torch cache to prevent memory leaks."""
         if self.engine:
             await self.engine.check_health()
+            torch.cuda.empty_cache()
 
         await super().check_health()
 
