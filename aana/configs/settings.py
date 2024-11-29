@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from aana.configs.db import DbSettings
@@ -69,8 +69,8 @@ class Settings(BaseSettings):
     test: TestSettings = TestSettings()
 
     @model_validator(mode="after")
-    def set_dependent_paths(self):
-        """Set default paths for directories if not explicitly provided."""
+    def setup_resource_directories(self):
+        """Create the resource directories if they do not exist."""
         if self.image_dir is None:
             self.image_dir = self.tmp_data_dir / "images"
         if self.video_dir is None:
@@ -79,13 +79,13 @@ class Settings(BaseSettings):
             self.audio_dir = self.tmp_data_dir / "audios"
         if self.model_dir is None:
             self.model_dir = self.tmp_data_dir / "models"
-        return self
 
-    @field_validator("tmp_data_dir", mode="after")
-    def create_tmp_data_dir(cls, path: Path) -> Path:
-        """Create the tmp_data_dir if it doesn't exist."""
-        path.mkdir(parents=True, exist_ok=True)
-        return path
+        self.tmp_data_dir.mkdir(parents=True, exist_ok=True)
+        self.image_dir.mkdir(parents=True, exist_ok=True)
+        self.video_dir.mkdir(parents=True, exist_ok=True)
+        self.audio_dir.mkdir(parents=True, exist_ok=True)
+        self.model_dir.mkdir(parents=True, exist_ok=True)
+        return self
 
     model_config = SettingsConfigDict(
         protected_namespaces=("settings", *pydantic_protected_fields),
