@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from aana.configs.db import DbSettings
@@ -55,10 +55,11 @@ class Settings(BaseSettings):
     """
 
     tmp_data_dir: Path = Path("/tmp/aana_data")  # noqa: S108
-    image_dir: Path = tmp_data_dir / "images"
-    video_dir: Path = tmp_data_dir / "videos"
-    audio_dir: Path = tmp_data_dir / "audios"
-    model_dir: Path = tmp_data_dir / "models"
+    image_dir: Path | None = None
+    video_dir: Path | None = None
+    audio_dir: Path | None = None
+    model_dir: Path | None = None
+
     num_workers: int = 2
 
     task_queue: TaskQueueSettings = TaskQueueSettings()
@@ -66,6 +67,19 @@ class Settings(BaseSettings):
     db_config: DbSettings = DbSettings()
 
     test: TestSettings = TestSettings()
+
+    @model_validator(mode="after")
+    def set_dependent_paths(self):
+        """Set default paths for directories if not explicitly provided."""
+        if self.image_dir is None:
+            self.image_dir = self.tmp_data_dir / "images"
+        if self.video_dir is None:
+            self.video_dir = self.tmp_data_dir / "videos"
+        if self.audio_dir is None:
+            self.audio_dir = self.tmp_data_dir / "audios"
+        if self.model_dir is None:
+            self.model_dir = self.tmp_data_dir / "models"
+        return self
 
     @field_validator("tmp_data_dir", mode="after")
     def create_tmp_data_dir(cls, path: Path) -> Path:
