@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from aana.configs.db import DbSettings
@@ -55,10 +55,11 @@ class Settings(BaseSettings):
     """
 
     tmp_data_dir: Path = Path("/tmp/aana_data")  # noqa: S108
-    image_dir: Path = tmp_data_dir / "images"
-    video_dir: Path = tmp_data_dir / "videos"
-    audio_dir: Path = tmp_data_dir / "audios"
-    model_dir: Path = tmp_data_dir / "models"
+    image_dir: Path | None = None
+    video_dir: Path | None = None
+    audio_dir: Path | None = None
+    model_dir: Path | None = None
+
     num_workers: int = 2
 
     task_queue: TaskQueueSettings = TaskQueueSettings()
@@ -67,11 +68,24 @@ class Settings(BaseSettings):
 
     test: TestSettings = TestSettings()
 
-    @field_validator("tmp_data_dir", mode="after")
-    def create_tmp_data_dir(cls, path: Path) -> Path:
-        """Create the tmp_data_dir if it doesn't exist."""
-        path.mkdir(parents=True, exist_ok=True)
-        return path
+    @model_validator(mode="after")
+    def setup_resource_directories(self):
+        """Create the resource directories if they do not exist."""
+        if self.image_dir is None:
+            self.image_dir = self.tmp_data_dir / "images"
+        if self.video_dir is None:
+            self.video_dir = self.tmp_data_dir / "videos"
+        if self.audio_dir is None:
+            self.audio_dir = self.tmp_data_dir / "audios"
+        if self.model_dir is None:
+            self.model_dir = self.tmp_data_dir / "models"
+
+        self.tmp_data_dir.mkdir(parents=True, exist_ok=True)
+        self.image_dir.mkdir(parents=True, exist_ok=True)
+        self.video_dir.mkdir(parents=True, exist_ok=True)
+        self.audio_dir.mkdir(parents=True, exist_ok=True)
+        self.model_dir.mkdir(parents=True, exist_ok=True)
+        return self
 
     model_config = SettingsConfigDict(
         protected_namespaces=("settings", *pydantic_protected_fields),
