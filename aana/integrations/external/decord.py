@@ -176,13 +176,13 @@ def generate_frames(
         batch_frames_array = video_reader.get_batch(batch).asnumpy()
         batch_frames = []
         for frame_id, frame in enumerate(batch_frames_array):
-            img = Image(numpy=frame, media_id=f"{video.media_id}_frame_{frame_id}")
+            img = Image(numpy=frame, media_id=f"{video.media_id}_frame_{i+frame_id}")
             batch_frames.append(img)
 
         batch_timestamps = timestamps[i : i + batch_size]
         yield FramesDict(
             frames=batch_frames,
-            frame_ids=list(range(len(batch_frames))),
+            frame_ids=list(range(i, i + len(batch_frames))),
             timestamps=batch_timestamps,
             duration=duration,
         )
