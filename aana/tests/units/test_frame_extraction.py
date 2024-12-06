@@ -95,6 +95,7 @@ def test_generate_frames_success(
     gen_frame = generate_frames(video=video, params=params, batch_size=1)
     total_frames = 0
     frame_ids = []
+    frames_media_ids = []
     for result in gen_frame:
         assert "frames" in result
         assert "timestamps" in result
@@ -110,8 +111,12 @@ def test_generate_frames_success(
             total_frames += 1
         assert result["duration"] == expected_duration
         frame_ids.extend(result["frame_ids"])
+        frames_media_ids.extend([frame.media_id for frame in result["frames"]])
 
     assert frame_ids == list(range(expected_num_frames))
+    assert frames_media_ids == [
+        f"{video.media_id}_frame_{frame_id}" for frame_id in range(expected_num_frames)
+    ]
     assert total_frames == expected_num_frames
 
 
