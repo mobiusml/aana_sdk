@@ -182,7 +182,7 @@ def generate_frames(
         batch_timestamps = timestamps[i : i + batch_size]
         yield FramesDict(
             frames=batch_frames,
-            frame_ids=list(range(len(batch_frames))),
+            frame_ids=list(range(i, i + len(batch_frames))),
             timestamps=batch_timestamps,
             duration=duration,
         )
