@@ -1,10 +1,16 @@
 from logging.config import fileConfig
 
 from alembic import context
+from alembic.ddl.impl import DefaultImpl
 from sqlalchemy import engine_from_config, pool
 
 from aana.configs.settings import settings
 from aana.storage.models.base import BaseEntity
+
+
+class SnowflakeImpl(DefaultImpl):
+    __dialect__ = "snowflake"
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
