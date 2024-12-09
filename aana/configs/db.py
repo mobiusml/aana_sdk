@@ -35,12 +35,34 @@ class PostgreSQLConfig(TypedDict):
     database: str
 
 
+class SnowflakeConfig(TypedDict):
+    """Config values for Snowflake.
+
+    Attributes:
+        account (str): The account name.
+        user (str): The user to connect to the Snowflake server.
+        password (str): The password to connect to the Snowflake server.
+        database (str): The database name.
+        schema (str): The schema name.
+        warehouse (str): The warehouse name.
+        role (str): The role name.
+    """
+
+    account: str
+    user: str
+    password: str
+    database: str
+    schema: str
+    warehouse: str
+    role: str
+
+
 class DbSettings(BaseSettings):
     """Database configuration.
 
     Attributes:
         datastore_type (DbType | str): The type of the datastore. Default is DbType.SQLITE.
-        datastore_config (SQLiteConfig | PostgreSQLConfig): The configuration for the datastore.
+        datastore_config (SQLiteConfig | PostgreSQLConfig | SnowflakeConfig): The configuration for the datastore.
             Default is SQLiteConfig(path="/var/lib/aana_data").
         pool_size (int): The number of connections to keep in the pool. Default is 5.
         max_overflow (int): The number of connections that can be created when the pool is exhausted.
@@ -50,7 +72,7 @@ class DbSettings(BaseSettings):
     """
 
     datastore_type: DbType | str = DbType.SQLITE
-    datastore_config: SQLiteConfig | PostgreSQLConfig = SQLiteConfig(
+    datastore_config: SQLiteConfig | PostgreSQLConfig | SnowflakeConfig = SQLiteConfig(
         path="/var/lib/aana_data"
     )
     pool_size: int = 5

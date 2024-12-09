@@ -10,6 +10,8 @@ from collections.abc import Sequence
 import sqlalchemy as sa
 from alembic import op
 
+from aana.storage.custom_types import JSON, VARIANT
+
 # revision identifiers, used by Alembic.
 revision: str = "5ad873484aa3"
 down_revision: str | None = None
@@ -90,7 +92,7 @@ def upgrade() -> None:
     )
     op.create_table(
         "tasks",
-        sa.Column("id", sa.UUID(), nullable=False, comment="Task ID"),
+        sa.Column("id", sa.String(), nullable=False, comment="Task ID"),
         sa.Column(
             "endpoint",
             sa.String(),
@@ -140,7 +142,7 @@ def upgrade() -> None:
         ),
         sa.Column(
             "result",
-            sa.JSON(),
+            JSON(),
             nullable=True,
             comment="Result of the task in JSON format",
         ),
@@ -176,7 +178,7 @@ def upgrade() -> None:
             comment="Full text transcript of media",
         ),
         sa.Column(
-            "segments", sa.JSON(), nullable=False, comment="Segments of the transcript"
+            "segments", JSON(), nullable=False, comment="Segments of the transcript"
         ),
         sa.Column(
             "language",
