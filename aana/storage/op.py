@@ -10,6 +10,7 @@ from snowflake.sqlalchemy import URL as SNOWFLAKE_URL
 from sqlalchemy import create_engine, event
 
 from aana.exceptions.runtime import EmptyMigrationsException
+from aana.storage.custom_types import JSON
 from aana.utils.core import get_module_dir
 from aana.utils.json import jsonify
 
@@ -112,10 +113,10 @@ def create_snowflake_engine(db_config: "DbSettings"):
             for key, value in parameters.items():
                 # Convert VARIANT type to JSON string
                 if (
-                    isinstance(value, dict)
+                    isinstance(value, dict | list)
                     and context.compiled
                     and key in context.compiled.binds
-                    and isinstance(context.compiled.binds["result"].type, VARIANT)
+                    and isinstance(context.compiled.binds[key].type, JSON)
                 ):
                     parameters[key] = jsonify(value)
 

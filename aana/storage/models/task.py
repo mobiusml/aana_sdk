@@ -32,6 +32,7 @@ class TaskEntity(BaseEntity, TimeStampEntity):
     """Table for task items."""
 
     __tablename__ = "tasks"
+    __table_args__ = {"prefixes": ["HYBRID"]}
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID, primary_key=True, default=uuid.uuid4, comment="Task ID"
