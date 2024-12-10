@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
     from aana.core.models.captions import Caption
 
 
-caption_id_seq = Sequence("caption_id_seq", start=1, increment=1)
+caption_id_seq = Sequence("caption_id_seq", start=1, increment=1, optional=True)
 
 
 class CaptionEntity(BaseEntity, TimeStampEntity):
@@ -28,7 +28,9 @@ class CaptionEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "caption"
 
-    id: Mapped[int] = mapped_column(caption_id_seq, primary_key=True)
+    id: Mapped[int] = mapped_column(
+        caption_id_seq, autoincrement=True, primary_key=True
+    )
     model: Mapped[str] = mapped_column(
         nullable=False, comment="Name of model used to generate the caption"
     )

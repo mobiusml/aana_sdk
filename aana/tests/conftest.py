@@ -1,5 +1,6 @@
 # This file is used to define fixtures that are used in the integration tests.
 # ruff: noqa: S101
+import json
 import os
 import tempfile
 from pathlib import Path
@@ -10,7 +11,7 @@ import pytest
 from pytest_postgresql import factories
 from sqlalchemy.orm import Session
 
-from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
+from aana.configs.db import DbSettings, PostgreSQLConfig, SnowflakeConfig, SQLiteConfig
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
 from aana.storage.op import DbType, run_alembic_migrations
@@ -211,7 +212,36 @@ def postgres_db_session(postgresql):
         yield session
 
 
-@pytest.fixture(params=["sqlite_db_session", "postgres_db_session"])
+@pytest.fixture(scope="function")
+def snowflake_db_session():
+    """Creates a new snowflake database and session for each test."""
+    SNOWFLAKE_TEST_PARAMETERS = os.environ.get("SNOWFLAKE_TEST_PARAMETERS")
+    if not SNOWFLAKE_TEST_PARAMETERS:
+        pytest.skip("Snowflake test parameters not found")
+
+    SNOWFLAKE_TEST_PARAMETERS = json.loads(SNOWFLAKE_TEST_PARAMETERS)
+
+    aana_settings.db_config.datastore_type = DbType.SNOWFLAKE
+    aana_settings.db_config.datastore_config = SnowflakeConfig(
+        **SNOWFLAKE_TEST_PARAMETERS
+    )
+    os.environ["DB_CONFIG"] = jsonify(aana_settings.db_config)
+
+    # Reset the engine
+    aana_settings.db_config._engine = None
+
+    # Run migrations to set up the schema
+    run_alembic_migrations(aana_settings)
+
+    # Create a new session
+    engine = aana_settings.db_config.get_engine()
+    with Session(engine) as session:
+        yield session
+
+
+@pytest.fixture(
+    params=["sqlite_db_session", "postgres_db_session", "snowflake_db_session"]
+)
 def db_session(request):
     """Iterate over different database type for db tests."""
     return request.getfixturevalue(request.param)

@@ -1,4 +1,3 @@
-import json
 import typing
 from enum import Enum
 from pathlib import Path
@@ -19,7 +18,6 @@ if typing.TYPE_CHECKING:
 
 import re
 
-from snowflake.sqlalchemy.custom_types import OBJECT, VARIANT
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.sql import Insert
 
