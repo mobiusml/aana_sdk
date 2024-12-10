@@ -2,13 +2,16 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 
 import typing
 
-from sqlalchemy import CheckConstraint
+from sqlalchemy import CheckConstraint, Sequence
 from sqlalchemy.orm import Mapped, mapped_column
 
 from aana.storage.models.base import BaseEntity, TimeStampEntity
 
 if typing.TYPE_CHECKING:
     from aana.core.models.captions import Caption
+
+
+caption_id_seq = Sequence("caption_id_seq", start=1, increment=1)
 
 
 class CaptionEntity(BaseEntity, TimeStampEntity):
@@ -25,7 +28,7 @@ class CaptionEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "caption"
 
-    id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
+    id: Mapped[int] = mapped_column(caption_id_seq, primary_key=True)
     model: Mapped[str] = mapped_column(
         nullable=False, comment="Name of model used to generate the caption"
     )

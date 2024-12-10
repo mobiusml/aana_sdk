@@ -2,9 +2,10 @@ from __future__ import annotations  # Let classes use themselves in type annotat
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import JSON, CheckConstraint
+from sqlalchemy import CheckConstraint, Sequence
 from sqlalchemy.orm import Mapped, mapped_column
 
+from aana.storage.custom_types import JSON
 from aana.storage.models.base import BaseEntity, TimeStampEntity
 
 if TYPE_CHECKING:
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
         AsrTranscription,
         AsrTranscriptionInfo,
     )
+
+transcript_id_seq = Sequence("transcript_id_seq", start=1, increment=1)
 
 
 class TranscriptEntity(BaseEntity, TimeStampEntity):
@@ -30,7 +33,7 @@ class TranscriptEntity(BaseEntity, TimeStampEntity):
 
     __tablename__ = "transcript"
 
-    id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
+    id: Mapped[int] = mapped_column(transcript_id_seq, primary_key=True)
     model: Mapped[str] = mapped_column(
         nullable=False, comment="Name of model used to generate transcript"
     )
