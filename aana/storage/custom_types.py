@@ -26,35 +26,15 @@ class VARIANT(SnowflakeVariantType):
         return process
 
 
-JSON = VARIANT
+class JSON(TypeDecorator):
+    """Custom JSON type that supports Snowflake-specific and standard dialects."""
 
-# class JSON(TypeDecorator):
-#     """Custom JSON type that supports Snowflake-specific and standard dialects."""
+    impl = SqlAlchemyJSON  # Default to standard SQLAlchemy JSON
+    # impl = VARIANT  # Default to Snowflake VARIANT
 
-#     impl = SqlAlchemyJSON  # Default to standard SQLAlchemy JSON
-
-#     def load_dialect_impl(self, dialect):
-#         """Load dialect-specific implementation."""
-#         if dialect.name == "snowflake":
-#             return SnowflakeVariantType()
-#         return self.impl
-
-#     def bind_expression(self, bindvalue):
-#         """Handle binding expressions dynamically."""
-#         if hasattr(
-#             bindvalue.type, "bind_expression"
-#         ):  # Check if impl has bind_expression
-#             return bindvalue.type.bind_expression(bindvalue)
-#         return bindvalue  # Default binding behavior
-
-#     def process_result_value(self, value, dialect):
-#         """Process the result based on dialect."""
-#         if dialect.name == "snowflake":
-#             if value is None:
-#                 return None
-#             try:
-#                 return orjson.loads(value)
-#             except (ValueError, TypeError):
-#                 return value  # Return raw value if not valid JSON
-#         # For other dialects, call the default implementation
-#         return self.impl.process_result_value(value, dialect)
+    def load_dialect_impl(self, dialect):
+        """Load dialect-specific implementation."""
+        if dialect.name == "snowflake":
+            return VARIANT()
+        else:
+            return SqlAlchemyJSON()

@@ -9,6 +9,8 @@ from aana.storage.models.base import BaseEntity
 
 
 class SnowflakeImpl(DefaultImpl):
+    """Custom implementation for Snowflake."""
+
     __dialect__ = "snowflake"
 
 

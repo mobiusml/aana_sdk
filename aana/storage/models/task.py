@@ -1,17 +1,11 @@
-import re
 import uuid
 from enum import Enum
 
 from sqlalchemy import (
     UUID,
     PickleType,
-    event,
-    insert,
-    select,
 )
-from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.sql import Insert
 
 from aana.storage.custom_types import JSON
 from aana.storage.models.base import BaseEntity, TimeStampEntity, timestamp
@@ -32,7 +26,6 @@ class TaskEntity(BaseEntity, TimeStampEntity):
     """Table for task items."""
 
     __tablename__ = "tasks"
-    __table_args__ = {"prefixes": ["HYBRID"]}
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID, primary_key=True, default=uuid.uuid4, comment="Task ID"
