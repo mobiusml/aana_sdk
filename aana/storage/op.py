@@ -84,7 +84,7 @@ def create_sqlite_engine(db_config: "DbSettings"):
     )
 
 
-def create_snowflake_engine(db_config: "DbSettings"):
+def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
     """Create a Snowflake SQLAlchemy engine based on the provided configuration.
 
     Args:
@@ -94,6 +94,17 @@ def create_snowflake_engine(db_config: "DbSettings"):
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
     """
     datastore_config = db_config.datastore_config
+
+    # If token is not provided, check if token file exists
+    SNOWFLAKE_TOKEN_PATH = Path("/snowflake/session/token")
+    if SNOWFLAKE_TOKEN_PATH.exists() and "token" not in datastore_config:
+        token = SNOWFLAKE_TOKEN_PATH.read_text()
+        datastore_config["token"] = token
+
+    # Set authenticator to oauth if token is provided
+    if "token" in datastore_config:
+        datastore_config["authenticator"] = "oauth"
+
     connection_string = SNOWFLAKE_URL(**datastore_config)
     engine = create_engine(
         connection_string,
