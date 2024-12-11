@@ -8,6 +8,7 @@ from typing import Any
 
 import portpicker
 import pytest
+from filelock import FileLock
 from pytest_postgresql import factories
 from sqlalchemy.orm import Session
 
@@ -230,13 +231,15 @@ def snowflake_db_session():
     # Reset the engine
     aana_settings.db_config._engine = None
 
-    # Run migrations to set up the schema
-    run_alembic_migrations(aana_settings)
+    # Use the lock to ensure only one test uses the Snowflake session at a time
+    with FileLock("/tmp/snowflake_test.lock"):  # noqa: S108
+        # Run migrations to set up the schema
+        run_alembic_migrations(aana_settings)
 
-    # Create a new session
-    engine = aana_settings.db_config.get_engine()
-    with Session(engine) as session:
-        yield session
+        # Create a new session
+        engine = aana_settings.db_config.get_engine()
+        with Session(engine) as session:
+            yield session
 
 
 @pytest.fixture(
