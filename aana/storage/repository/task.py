@@ -102,6 +102,12 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 exception_name_query = (
                     f"json_extract(result, '$.error') IN ({exceptions_str})"
                 )
+            elif self.session.bind.dialect.name == "snowflake":
+                exception_name_query = f"result:error IN ({exceptions_str})"
+            else:
+                raise NotImplementedError(
+                    f"Retryable exceptions are not supported for {self.session.bind.dialect.name}"
+                )
 
             tasks = (
                 self.session.query(TaskEntity)
