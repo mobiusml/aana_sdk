@@ -20,6 +20,7 @@ deployments = [
             ray_actor_options={"num_gpus": 1},
             user_config=HfPipelineConfig(
                 model_id="Salesforce/blip2-opt-2.7b",
+                task = "image-to-text",
                 model_kwargs={
                     "quantization_config": BitsAndBytesConfig(
                         load_in_8bit=False, load_in_4bit=True
