@@ -43,4 +43,4 @@ jobs:
     - name: Test with pytest
       env:
         SNOWFLAKE_TEST_PARAMETERS: ${{ secrets.SNOWFLAKE_TEST_PARAMETERS }}
-      run: poetry run pytest -vv -n 1
+      run: poetry run pytest -vv

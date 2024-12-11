@@ -3,13 +3,14 @@
 import json
 import os
 import tempfile
+import uuid
 from pathlib import Path
 from typing import Any
 
 import portpicker
 import pytest
-from filelock import FileLock
 from pytest_postgresql import factories
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from aana.configs.db import DbSettings, PostgreSQLConfig, SnowflakeConfig, SQLiteConfig
@@ -215,13 +216,18 @@ def postgres_db_session(postgresql):
 
 @pytest.fixture(scope="function")
 def snowflake_db_session():
-    """Creates a new snowflake database and session for each test."""
+    """Creates a new Snowflake database session with a unique schema for each test."""
     SNOWFLAKE_TEST_PARAMETERS = os.environ.get("SNOWFLAKE_TEST_PARAMETERS")
     if not SNOWFLAKE_TEST_PARAMETERS:
         pytest.skip("Snowflake test parameters not found")
 
     SNOWFLAKE_TEST_PARAMETERS = json.loads(SNOWFLAKE_TEST_PARAMETERS)
 
+    # Generate a unique schema name
+    unique_schema = f"test_schema_{uuid.uuid4().hex[:8]}"
+
+    # Update the configuration
+    SNOWFLAKE_TEST_PARAMETERS["schema"] = unique_schema
     aana_settings.db_config.datastore_type = DbType.SNOWFLAKE
     aana_settings.db_config.datastore_config = SnowflakeConfig(
         **SNOWFLAKE_TEST_PARAMETERS
@@ -231,15 +237,25 @@ def snowflake_db_session():
     # Reset the engine
     aana_settings.db_config._engine = None
 
-    # Use the lock to ensure only one test uses the Snowflake session at a time
-    with FileLock("/tmp/snowflake_test.lock"):  # noqa: S108
-        # Run migrations to set up the schema
-        run_alembic_migrations(aana_settings)
+    # Create the schema explicitly using raw SQL
+    engine = aana_settings.db_config.get_engine()
+    with engine.connect() as connection:
+        connection.execute(text(f"CREATE SCHEMA IF NOT EXISTS {unique_schema}"))
+        connection.execute(text(f"USE SCHEMA {unique_schema}"))
 
-        # Create a new session
-        engine = aana_settings.db_config.get_engine()
-        with Session(engine) as session:
+    # Run migrations in the schema
+    run_alembic_migrations(aana_settings)
+
+    # Create a new session
+    with Session(engine) as session:
+        try:
             yield session
+        finally:
+            # Cleanup: drop the schema after the test
+            with engine.connect() as connection:
+                connection.execute(
+                    text(f"DROP SCHEMA IF EXISTS {unique_schema} CASCADE")
+                )
 
 
 @pytest.fixture(
