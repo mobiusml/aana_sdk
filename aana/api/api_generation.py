@@ -4,10 +4,11 @@ from dataclasses import dataclass
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
-from fastapi import FastAPI, File, Form, Query, UploadFile
+from fastapi import FastAPI, File, Form, Query, Request, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import ConfigDict, Field, ValidationError, create_model
 from pydantic.main import BaseModel
+from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
@@ -282,7 +283,7 @@ class Endpoint:
         bound_path = self.path
 
         async def route_func_body(  # noqa: C901
-            body: str, files: list[UploadFile] | None = None, defer=False
+            body: str, files: dict[str, StarletteUploadFile] | None = None, defer=False
         ):
             if not self.initialized:
                 await self.initialize()
@@ -294,9 +295,19 @@ class Endpoint:
             data = RequestModel.model_validate_json(body)
 
             # if the input requires file upload, add the files to the data
-            if file_upload_field and files:
-                files_as_bytes = [await file.read() for file in files]
-                getattr(data, file_upload_field.name).set_files(files_as_bytes)
+            if files:
+                # files_as_bytes = [await file.read() for file in files]
+                # getattr(data, file_upload_field.name).set_files(files)
+                # breakpoint()
+                # Check if any field have set_files method
+                for field_name in data.model_fields:
+                    field_value = getattr(data, field_name)
+                    if hasattr(field_value, "set_files"):
+                        await field_value.set_files(files)
+            elif files and not file_upload_field:
+                raise ValueError(  # noqa: TRY003
+                    "This endpoint does not accept file uploads."
+                )
 
             # We have to do this instead of data.dict() because
             # data.dict() will convert all nested models to dicts
@@ -339,17 +350,41 @@ class Endpoint:
         if file_upload_field:
             files = File(None, description=file_upload_field.description)
         else:
-            files = None
+            files = File(
+                None, description="This endpoint does not accept file uploads."
+            )
 
         async def route_func(
+            request: Request,
             body: str = Form(...),
-            files=files,
+            # files: list[UploadFile] = files,
             defer: bool = Query(
                 description="Defer execution of the endpoint to the task queue.",
                 default=False,
                 include_in_schema=aana_settings.task_queue.enabled,
             ),
         ):
+            # Log the headers
+            print(f"Headers: {request.headers}")
+
+            # Log the form data body
+            form_data = await request.form()
+            print(f"Form Data: {form_data}")
+
+            # Extract the files from the form data (fields with type UploadFile)
+            files = {}
+            for field_name, field_value in form_data.items():
+                if isinstance(field_value, StarletteUploadFile):
+                    files[field_name] = field_value
+
+            print(f"Files: {files}")
+
+            # breakpoint()
+
+            # # Log the uploaded files
+            # uploaded_files = [file.filename for file in files]
+            # print(f"Uploaded Files: {uploaded_files}")
+
             return await route_func_body(body=body, files=files, defer=defer)
 
         return route_func

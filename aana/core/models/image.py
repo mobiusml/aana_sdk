@@ -17,6 +17,7 @@ from pydantic import (
     model_validator,
 )
 from pydantic_core import InitErrorDetails
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from typing_extensions import Self
 
 from aana.configs.settings import settings
@@ -268,74 +269,71 @@ class ImageInput(BaseModel):
         AfterValidator(lambda x: str(x) if x else None),
         Field(None, description="The URL of the image."),
     ]
-    content: bytes | None = Field(
+    content: str | None = Field(
         None,
         description=(
             "The content of the image in bytes. "
-            "Set this field to 'file' to upload files to the endpoint."
+            "Set this field to the name of the file uploaded to the endpoint."
         ),
     )
-    numpy: bytes | None = Field(
+    numpy: str | None = Field(
         None,
         description=(
             "The image as a numpy array. "
-            "Set this field to 'file' to upload files to the endpoint."
+            "Set this field to the name of the file uploaded to the endpoint."
         ),
     )
     media_id: MediaId = Field(
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
+    files: dict[str, bytes] | None = Field(None, exclude=True)
 
-    def set_file(self, file: bytes):
-        """Sets the instance internal file data.
-
-        If 'content' or 'numpy' is set to 'file',
-        the image will be loaded from the file uploaded to the endpoint.
-
-        set_file() should be called after the files are uploaded to the endpoint.
-
-        Args:
-            file (bytes): the file uploaded to the endpoint
-
-        Raises:
-            ValueError: if the content or numpy isn't set to 'file'
-        """
-        if self.content == b"file":
-            self.content = file
-        elif self.numpy == b"file":
-            self.numpy = file
-        else:
-            raise ValueError(  # noqa: TRY003
-                "The content or numpy of the image must be 'file' to set files."
-            )
-
-    def set_files(self, files: list[bytes]):
+    async def set_files(self, files: dict[str, StarletteUploadFile]):
         """Set the files for the image.
 
         Args:
-            files (List[bytes]): the files uploaded to the endpoint
+            files (dict[str, StarletteUploadFile]): the files uploaded to the endpoint
 
         Raises:
             ValidationError: if the number of images and files aren't the same
         """
-        if len(files) != 1:
-            raise ValidationError.from_exception_data(
-                title=self.__class__.__name__,
-                line_errors=[
-                    InitErrorDetails(
-                        loc=("images",),
-                        type="value_error",
-                        ctx={
-                            "error": ValueError(
-                                "The number of images and files must be the same."
-                            )
-                        },
-                        input=None,
-                    )
-                ],
-            )
-        self.set_file(files[0])
+        file_name = self.content or self.numpy
+        if file_name:
+            if file_name not in files:
+                raise ValueError(f"File {file_name} not found.")  # noqa: TRY003
+            self.files = {file_name: await files[file_name].read()}
+
+        # breakpoint()
+        # if self.content:
+        #     file_name = self.content
+        #     if file_name not in files:
+        #         raise ValueError(f"File {file_name} not found.")
+        #     self.content = await files[file_name].read()
+
+        # if self.numpy:
+        #     file_name = self.numpy
+        #     if file_name not in files:
+        #         raise ValueError(f"File {file_name} not found.")
+        #     self.numpy = await files[file_name].read()
+
+        # if len(files) != 1:
+        #     raise ValidationError.from_exception_data(
+        #         title=self.__class__.__name__,
+        #         line_errors=[
+        #             InitErrorDetails(
+        #                 loc=("images",),
+        #                 type="value_error",
+        #                 ctx={
+        #                     "error": ValueError(
+        #                         "The number of images and files must be the same."
+        #                     )
+        #                 },
+        #                 input=None,
+        #             )
+        #         ],
+        #     )
+        # self.set_file(files[0])
 
     @model_validator(mode="after")
     def check_only_one_field(self) -> Self:
@@ -365,21 +363,28 @@ class ImageInput(BaseModel):
 
         Raises:
             ValueError: if the numpy file isn't set
+            ValueError: if the file isn't found
         """
-        if self.numpy and self.numpy != b"file":
-            try:
-                numpy = np.load(io.BytesIO(self.numpy), allow_pickle=False)
-            except ValueError:
-                raise ValueError("The numpy file isn't valid.")  # noqa: TRY003, TRY200, B904 TODO
-        elif self.numpy == b"file":
-            raise ValueError("The numpy file isn't set. Call set_files() to set it.")  # noqa: TRY003
-        else:
-            numpy = None
+        file_name = self.content or self.numpy
+        if file_name and file_name not in self.files:
+            raise ValueError(f"File {file_name} not found.")  # noqa: TRY003
+
+        content = None
+        numpy = None
+        if self.files:
+            if self.content:
+                content = self.files[self.content]
+            elif self.numpy:
+                file_bytes = self.files[self.numpy]
+                try:
+                    numpy = np.load(io.BytesIO(file_bytes), allow_pickle=False)
+                except ValueError as e:
+                    raise ValueError("The numpy file isn't valid.") from e  # noqa: TRY003
 
         return Image(
             path=Path(self.path) if self.path else None,
             url=self.url,
-            content=self.content,
+            content=content,
             numpy=numpy,
             media_id=self.media_id,
         )
