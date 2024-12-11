@@ -1,7 +1,10 @@
 # ruff: noqa: S101
+import json
+import os
+
 import pytest
 
-from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
+from aana.configs.db import DbSettings, PostgreSQLConfig, SnowflakeConfig, SQLiteConfig
 
 
 @pytest.fixture
@@ -28,6 +31,20 @@ def sqlite_settings():
     )
 
 
+@pytest.fixture
+def snowflake_settings():
+    """Fixture for working Snowflake settings."""
+    SNOWFLAKE_TEST_PARAMETERS = os.environ.get("SNOWFLAKE_TEST_PARAMETERS")
+    if not SNOWFLAKE_TEST_PARAMETERS:
+        pytest.skip("Snowflake test parameters not found")
+    SNOWFLAKE_TEST_PARAMETERS = json.loads(SNOWFLAKE_TEST_PARAMETERS)
+
+    return DbSettings(
+        datastore_type="snowflake",
+        datastore_config=SnowflakeConfig(**SNOWFLAKE_TEST_PARAMETERS),
+    )
+
+
 def test_get_engine_idempotent(pg_settings, sqlite_settings):
     """Tests that get_engine returns the same engine on subsequent calls."""
     for db_settings in (pg_settings, sqlite_settings):
@@ -50,6 +67,13 @@ def test_sqlite_datastore_config(sqlite_settings):
 
     assert engine.name == "sqlite"
     assert str(engine.url) == f"sqlite:///{sqlite_settings.datastore_config['path']}"
+
+
+def test_snowflake_datastore_config(snowflake_settings):
+    """Tests datastore config for Snowflake."""
+    engine = snowflake_settings.get_engine()
+
+    assert engine.name == "snowflake"
 
 
 def test_nonexistent_datastore_config():
