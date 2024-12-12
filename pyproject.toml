@@ -53,7 +53,7 @@ transformers = ">=4.47.0"
 torch = "^2.4.0"
 torchvision = ">=0.19.0"
 torchaudio = ">=2.4.0"
-vllm = ">=0.6.1, <0.6.4" # See https://github.com/vllm-project/vllm/issues/10451
+vllm = {url = "https://vllm-wheels.s3.us-west-2.amazonaws.com/b63ba848323efd88207b12d7582501d525503b8a/vllm-1.0.0.dev-cp38-abi3-manylinux1_x86_64.whl"} # Note: this issue exists in vllm 0.6.4 See https://github.com/vllm-project/vllm/issues/10451 . However it is required for hqq implementation. 
 yt-dlp = ">=2024.08.06"
 outlines = {extras = ["serve"], version = "^0.0.46"}
 
