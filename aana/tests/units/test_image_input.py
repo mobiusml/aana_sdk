@@ -216,7 +216,6 @@ def test_imagelistinput():
 
 def test_imagelistinput_set_files():
     """Test that the files can be set for the images."""
-    # files = [b"image data 1", b"image data 2"]
     files = {
         "file": b"image data 1",
         "numpy_file": b"image data 2",
