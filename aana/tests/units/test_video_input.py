@@ -6,6 +6,7 @@ import pytest
 from pydantic import ValidationError
 
 from aana.core.models.video import VideoInput, VideoInputList
+from aana.exceptions.runtime import UploadedFileNotFound
 
 
 @pytest.fixture
@@ -26,8 +27,8 @@ def test_new_videoinput_success():
     video_input = VideoInput(url="http://example.com/video.mp4")
     assert video_input.url == "http://example.com/video.mp4"
 
-    video_input = VideoInput(content=b"file")
-    assert video_input.content == b"file"
+    video_input = VideoInput(content="file")
+    assert video_input.content == "file"
 
 
 def test_videoinput_invalid_media_id():
@@ -78,44 +79,28 @@ def test_videoinput_check_only_one_field():
         VideoInput()
 
 
-def test_videoinput_set_file():
-    """Test that the file can be set for the video."""
-    file_content = b"video data"
-    video_input = VideoInput(content=b"file")
-    video_input.set_file(file_content)
-    assert video_input.content == file_content
-
-    # If 'content' is not set to 'file',
-    # an error should be raised.
-    video_input = VideoInput(path="video.mp4")
-    with pytest.raises(ValueError):
-        video_input.set_file(file_content)
-
-
 def test_videoinput_set_files():
     """Test that the files can be set for the video."""
-    files = [b"video data"]
-
-    video_input = VideoInput(content=b"file")
+    files = {"file": b"video data"}
+    video_input = VideoInput(content="file")
     video_input.set_files(files)
-    assert video_input.content == files[0]
+    assert video_input.content == "file"
+    assert video_input._file == files["file"]
 
     # If 'content' is not set to 'file',
-    # an error should be raised.
+    # the file will be ignored.
     video_input = VideoInput(path="video.mp4")
-    with pytest.raises(ValueError):
-        video_input.set_files(files)
+    video_input.set_files(files)
 
-    # If the number of files is not 1,
-    # an error should be raised.
-    files = [b"video data", b"another video data"]
-    video_input = VideoInput(content=b"file")
-    with pytest.raises(ValidationError):
-        video_input.set_files(files)
+    files = {"file": b"video data", "another_file": b"another video data"}
+    video_input = VideoInput(content="file")
+    video_input.set_files(files)
+    assert video_input.content == "file"
+    assert video_input._file == files["file"]
 
-    files = []
-    video_input = VideoInput(content=b"file")
-    with pytest.raises(ValidationError):
+    files = {"file": b"video data"}
+    video_input = VideoInput(content="unknown_file")
+    with pytest.raises(UploadedFileNotFound):
         video_input.set_files(files)
 
 
@@ -138,7 +123,9 @@ def test_videoinput_convert_input_to_object(mock_download_file):
         video_object.cleanup()
 
     content = Path(path).read_bytes()
-    video_input = VideoInput(content=content)
+    files = {"file": content}
+    video_input = VideoInput(content="file")
+    video_input.set_files(files)
     try:
         video_object = video_input.convert_input_to_object()
         assert video_object.content == content
@@ -164,28 +151,37 @@ def test_videoinputlist():
 
 def test_videoinputlist_set_files():
     """Test that the files can be set for the video list."""
-    files = [b"video data", b"another video data"]
+    files = {
+        "file": b"video data",
+        "another_file": b"another video data",
+    }
 
     videos = [
-        VideoInput(content=b"file"),
-        VideoInput(content=b"file"),
+        VideoInput(content="file"),
+        VideoInput(content="another_file"),
     ]
 
     video_list_input = VideoInputList(root=videos)
     video_list_input.set_files(files)
-    assert video_list_input[0].content == files[0]
-    assert video_list_input[1].content == files[1]
+    assert video_list_input[0].content == "file"
+    assert video_list_input[1].content == "another_file"
+    assert video_list_input[0]._file == files["file"]
+    assert video_list_input[1]._file == files["another_file"]
 
-    # If the number of files is not the same as the number of videos,
-    # an error should be raised.
-    files = [b"video data", b"another video data", b"yet another video data"]
+    # If there are more files than videos,
+    # the extra files will be ignored.
+    files = {
+        "file": b"video data",
+        "another_file": b"another video data",
+        "yet_another_file": b"yet another video data",
+    }
     video_list_input = VideoInputList(root=videos)
-    with pytest.raises(ValidationError):
-        video_list_input.set_files(files)
+    video_list_input.set_files(files)
 
+    # If files are missing, an error should be raised.
     files = []
     video_list_input = VideoInputList(root=videos)
-    with pytest.raises(ValidationError):
+    with pytest.raises(UploadedFileNotFound):
         video_list_input.set_files(files)
 
 

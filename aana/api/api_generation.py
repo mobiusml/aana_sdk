@@ -4,10 +4,11 @@ from dataclasses import dataclass
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
-from fastapi import FastAPI, File, Form, Query, UploadFile
+from fastapi import FastAPI, Form, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import ConfigDict, Field, ValidationError, create_model
 from pydantic.main import BaseModel
+from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
@@ -15,9 +16,6 @@ from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.exception import ExceptionResponseModel
-from aana.exceptions.runtime import (
-    MultipleFileUploadNotAllowed,
-)
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
 
@@ -30,19 +28,6 @@ def get_default_values(func):
         for k, v in signature.parameters.items()
         if v.default is not inspect.Parameter.empty
     }
-
-
-@dataclass
-class FileUploadField:
-    """Class used to represent a file upload field.
-
-    Attributes:
-        name (str): Name of the field.
-        description (str): Description of the field.
-    """
-
-    name: str
-    description: str
 
 
 @dataclass
@@ -105,14 +90,12 @@ class Endpoint:
         RequestModel = self.get_request_model()
         ResponseModel = self.get_response_model()
 
-        file_upload_field = self.__get_file_upload_field()
         if self.event_handlers:
             for handler in self.event_handlers:
                 event_manager.register_handler_for_events(handler, [self.path])
 
         route_func = self.__create_endpoint_func(
             RequestModel=RequestModel,
-            file_upload_field=file_upload_field,
             event_manager=event_manager,
         )
 
@@ -229,39 +212,6 @@ class Endpoint:
             model_name, **output_fields, __config__=ConfigDict(extra="forbid")
         )
 
-    def __get_file_upload_field(self) -> FileUploadField | None:
-        """Get the file upload field for the endpoint.
-
-        Returns:
-            Optional[FileUploadField]: File upload field or None if not found.
-
-        Raises:
-            MultipleFileUploadNotAllowed: If multiple inputs require file upload.
-        """
-        file_upload_field = None
-        for arg_name, arg_type in self.run.__annotations__.items():
-            if arg_name == "return":
-                continue
-
-            # check if pydantic model has file_upload field and it's set to True
-            if isinstance(arg_type, type) and issubclass(arg_type, BaseModel):
-                file_upload_enabled = arg_type.model_config.get("file_upload", False)
-                file_upload_description = arg_type.model_config.get(
-                    "file_upload_description", ""
-                )
-            else:
-                file_upload_enabled = False
-                file_upload_description = ""
-
-            if file_upload_enabled and file_upload_field is None:
-                file_upload_field = FileUploadField(
-                    name=arg_name, description=file_upload_description
-                )
-            elif file_upload_enabled and file_upload_field is not None:
-                # raise an exception if multiple inputs require file upload
-                raise MultipleFileUploadNotAllowed(arg_name)
-        return file_upload_field
-
     @classmethod
     def is_streaming_response(cls) -> bool:
         """Check if the endpoint returns a streaming response.
@@ -274,7 +224,6 @@ class Endpoint:
     def __create_endpoint_func(  # noqa: C901
         self,
         RequestModel: type[BaseModel],
-        file_upload_field: FileUploadField | None = None,
         event_manager: EventManager | None = None,
     ) -> Callable:
         """Create a function for routing an endpoint."""
@@ -282,7 +231,7 @@ class Endpoint:
         bound_path = self.path
 
         async def route_func_body(  # noqa: C901
-            body: str, files: list[UploadFile] | None = None, defer=False
+            body: str, files: dict[str, bytes] | None = None, defer=False
         ):
             if not self.initialized:
                 await self.initialize()
@@ -294,9 +243,11 @@ class Endpoint:
             data = RequestModel.model_validate_json(body)
 
             # if the input requires file upload, add the files to the data
-            if file_upload_field and files:
-                files_as_bytes = [await file.read() for file in files]
-                getattr(data, file_upload_field.name).set_files(files_as_bytes)
+            if files:
+                for field_name in data.model_fields:
+                    field_value = getattr(data, field_name)
+                    if hasattr(field_value, "set_files"):
+                        field_value.set_files(files)
 
             # We have to do this instead of data.dict() because
             # data.dict() will convert all nested models to dicts
@@ -336,20 +287,21 @@ class Endpoint:
                     return custom_exception_handler(None, e)
                 return AanaJSONResponse(content=output)
 
-        if file_upload_field:
-            files = File(None, description=file_upload_field.description)
-        else:
-            files = None
-
         async def route_func(
+            request: Request,
             body: str = Form(...),
-            files=files,
             defer: bool = Query(
                 description="Defer execution of the endpoint to the task queue.",
                 default=False,
                 include_in_schema=aana_settings.task_queue.enabled,
             ),
         ):
+            form_data = await request.form()
+
+            files: dict[str, bytes] = {}
+            for field_name, field_value in form_data.items():
+                if isinstance(field_value, StarletteUploadFile):
+                    files[field_name] = await field_value.read()
             return await route_func_body(body=body, files=files, defer=defer)
 
         return route_func

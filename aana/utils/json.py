@@ -36,15 +36,22 @@ def json_serializer_default(obj: object) -> object:
         return str(obj)
     if isinstance(obj, type):
         return str(type)
+    if isinstance(obj, bytes):
+        return obj.decode()
 
     from aana.core.models.media import Media
+
     if isinstance(obj, Media):
         return str(obj)
 
     raise TypeError(type(obj))
 
 
-def jsonify(data: Any, option: int | None = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_SORT_KEYS, as_bytes: bool = False) -> str | bytes:
+def jsonify(
+    data: Any,
+    option: int | None = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_SORT_KEYS,
+    as_bytes: bool = False,
+) -> str | bytes:
     """Serialize content using orjson.
 
     Args:

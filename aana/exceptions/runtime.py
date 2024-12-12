@@ -2,12 +2,16 @@ from aana.exceptions.core import BaseException
 
 __all__ = [
     "InferenceException",
-    "MultipleFileUploadNotAllowed",
     "PromptTooLongException",
     "EndpointNotFoundException",
     "TooManyRequestsException",
     "HandlerAlreadyRegisteredException",
     "HandlerNotRegisteredException",
+    "UploadedFileNotFound",
+    "DeploymentException",
+    "InsufficientResources",
+    "FailedDeployment",
+    "EmptyMigrationsException",
 ]
 
 
@@ -35,27 +39,6 @@ class InferenceException(BaseException):
         """
         # TODO: check if there is a better way to do this
         return (self.__class__, (self.model_name,))
-
-
-class MultipleFileUploadNotAllowed(BaseException):
-    """Exception raised when multiple inputs require file upload.
-
-    Attributes:
-        input_name -- name of the input
-    """
-
-    def __init__(self, input_name: str):
-        """Initialize the exception.
-
-        Args:
-            input_name (str): name of the input that caused the exception
-        """
-        super().__init__(input_name=input_name)
-        self.input_name = input_name
-
-    def __reduce__(self):
-        """Used for pickling."""
-        return (self.__class__, (self.input_name,))
 
 
 class PromptTooLongException(BaseException):
@@ -176,3 +159,20 @@ class FailedDeployment(DeploymentException):
     """Exception raised when there is an error during deployment."""
 
     pass
+
+
+class UploadedFileNotFound(Exception):
+    """Exception raised when the uploaded file is not found."""
+
+    def __init__(self, filename: str):
+        """Initialize the exception.
+
+        Args:
+            filename (str): the name of the file that was not found
+        """
+        super().__init__()
+        self.filename = filename
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.filename,))
