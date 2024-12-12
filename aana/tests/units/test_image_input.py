@@ -8,6 +8,7 @@ import pytest
 from pydantic import ValidationError
 
 from aana.core.models.image import ImageInput, ImageInputList
+from aana.exceptions.runtime import UploadedFileNotFound
 
 
 @pytest.fixture
@@ -28,11 +29,11 @@ def test_new_imageinput_success():
     image_input = ImageInput(url="http://image.png")
     assert image_input.url == "http://image.png/"
 
-    image_input = ImageInput(content=b"file")
-    assert image_input.content == b"file"
+    image_input = ImageInput(content="file")
+    assert image_input.content == "file"
 
-    image_input = ImageInput(numpy=b"file")
-    assert image_input.numpy == b"file"
+    image_input = ImageInput(numpy="file")
+    assert image_input.numpy == "file"
 
 
 def test_imageinput_invalid_media_id():
@@ -98,61 +99,36 @@ def test_imageinput_check_only_one_field():
         ImageInput()
 
 
-def test_imageinput_set_file():
-    """Test that the file can be set for the image."""
-    file_content = b"image data"
-
-    # If 'content' is set to 'file',
-    # the image can be set from the file uploaded to the endpoint.
-    image_input = ImageInput(content=b"file")
-    image_input.set_file(file_content)
-    assert image_input.content == file_content
-
-    # If 'numpy' is set to 'file',
-    # the image can be set from the file uploaded to the endpoint.
-    image_input = ImageInput(numpy=b"file")
-    image_input.set_file(file_content)
-    assert image_input.numpy == file_content
-
-    # If neither 'content' nor 'numpy' is set to 'file',
-    # an error should be raised.
-    image_input = ImageInput(path="image.png")
-    with pytest.raises(ValueError):
-        image_input.set_file(file_content)
-
-
 def test_imageinput_set_files():
     """Test that the files can be set for the image."""
-    files = [b"image data"]
+    files = {
+        "file": b"image data",
+        "numpy_file": b"numpy data",
+    }
 
-    # If 'content' is set to 'file',
+    # If 'content' is set to filename,
     # the image can be set from the file uploaded to the endpoint.
-    image_input = ImageInput(content=b"file")
+    image_input = ImageInput(content="file")
     image_input.set_files(files)
-    assert image_input.content == files[0]
+    assert image_input.content == "file"
+    assert image_input._file == files["file"]
 
-    # If 'numpy' is set to 'file',
+    # If 'numpy' is set to filename,
     # the image can be set from the file uploaded to the endpoint.
-    image_input = ImageInput(numpy=b"file")
+    image_input = ImageInput(numpy="numpy_file")
     image_input.set_files(files)
-    assert image_input.numpy == files[0]
+    assert image_input.numpy == "numpy_file"
+    assert image_input._file == files["numpy_file"]
 
-    # If neither 'content' nor 'numpy' is set to 'file',
-    # an error should be raised.
+    # If neither 'content' nor 'numpy' is set to 'file'
+    # set_files doesn't do anything.
     image_input = ImageInput(path="image.png")
-    with pytest.raises(ValueError):
-        image_input.set_files(files)
+    image_input.set_files(files)
+    assert image_input._file is None
 
-    # If the number of images and files aren't the same,
-    # an error should be raised.
-    files = [b"image data", b"another image data"]
-    image_input = ImageInput(content=b"file")
-    with pytest.raises(ValidationError):
-        image_input.set_files(files)
-
-    files = []
-    image_input = ImageInput(content=b"file")
-    with pytest.raises(ValidationError):
+    # If the file is not found, an error should be raised.
+    image_input = ImageInput(content="unknown_file")
+    with pytest.raises(UploadedFileNotFound):
         image_input.set_files(files)
 
 
@@ -175,7 +151,9 @@ def test_imageinput_convert_input_to_object(mock_download_file):
         image_object.cleanup()
 
     content = Path(path).read_bytes()
-    image_input = ImageInput(content=content)
+    files = {"file": content}
+    image_input = ImageInput(content="file")
+    image_input.set_files(files)
     try:
         image_object = image_input.convert_input_to_object()
         assert image_object.content == content
@@ -187,7 +165,8 @@ def test_imageinput_convert_input_to_object(mock_download_file):
     buffer = io.BytesIO()
     np.save(buffer, numpy)
     numpy_bytes = buffer.getvalue()
-    image_input = ImageInput(numpy=numpy_bytes)
+    image_input = ImageInput(numpy="numpy_file")
+    image_input.set_files({"numpy_file": numpy_bytes})
     try:
         image_object = image_input.convert_input_to_object()
         assert np.array_equal(image_object.numpy, numpy)
@@ -204,15 +183,16 @@ def test_imageinput_convert_input_to_object_invalid_numpy():
     numpy_bytes = buffer.getvalue()
     # remove the last byte
     numpy_bytes = numpy_bytes[:-1]
-    image_input = ImageInput(numpy=numpy_bytes)
+    image_input = ImageInput(numpy="numpy_file")
+    image_input.set_files({"numpy_file": numpy_bytes})
     with pytest.raises(ValueError):
         image_input.convert_input_to_object()
 
 
 def test_imageinput_convert_input_to_object_numpy_not_set():
     """Test that ImageInput can't be converted to Image if numpy file isn't set with set_file()."""
-    image_input = ImageInput(numpy=b"file")
-    with pytest.raises(ValueError):
+    image_input = ImageInput(numpy="numpy_file")
+    with pytest.raises(UploadedFileNotFound):
         image_input.convert_input_to_object()
 
 
@@ -236,18 +216,24 @@ def test_imagelistinput():
 
 def test_imagelistinput_set_files():
     """Test that the files can be set for the images."""
-    files = [b"image data 1", b"image data 2"]
+    # files = [b"image data 1", b"image data 2"]
+    files = {
+        "file": b"image data 1",
+        "numpy_file": b"image data 2",
+    }
 
     images = [
-        ImageInput(content=b"file"),
-        ImageInput(numpy=b"file"),
+        ImageInput(content="file"),
+        ImageInput(numpy="numpy_file"),
     ]
 
     image_list_input = ImageInputList(images)
     image_list_input.set_files(files)
 
-    assert image_list_input[0].content == files[0]
-    assert image_list_input[1].numpy == files[1]
+    assert image_list_input[0].content == "file"
+    assert image_list_input[1].numpy == "numpy_file"
+    assert image_list_input[0]._file == files["file"]
+    assert image_list_input[1]._file == files["numpy_file"]
 
 
 def test_imagelistinput_non_empty():

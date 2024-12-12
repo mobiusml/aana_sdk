@@ -23,6 +23,7 @@ from typing_extensions import Self
 
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import MediaId
+from aana.exceptions.runtime import UploadedFileNotFound
 
 __all__ = ["VideoMetadata", "VideoParams"]
 
@@ -196,17 +197,17 @@ class VideoInput(BaseModel):
         AfterValidator(lambda x: str(x) if x else None),
         Field(None, description="The URL of the video (supports YouTube videos)."),
     ]
-    content: bytes | None = Field(
+    content: str | None = Field(
         None,
         description=(
-            "The content of the video in bytes. "
-            "Set this field to 'file' to upload files to the endpoint."
+            "The name of the file uploaded to the endpoint. The content of the video will be loaded automatically."
         ),
     )
     media_id: MediaId = Field(
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the video. If not provided, it will be generated automatically.",
     )
+    _file: bytes | None = None
 
     @model_validator(mode="after")
     def check_only_one_field(self) -> Self:
@@ -225,66 +226,38 @@ class VideoInput(BaseModel):
             )
         return self
 
-    def set_file(self, file: bytes):
-        """Sets the file.
-
-        If 'content' is set to 'file',
-        the video will be loaded from the file uploaded to the endpoint.
-
-        set_file() should be called after the files are uploaded to the endpoint.
-
-        Args:
-            file (bytes): the file uploaded to the endpoint
-
-        Raises:
-            ValueError: if the content isn't set to 'file'
-        """
-        if self.content == b"file":
-            self.content = file
-        else:
-            raise ValueError("The content of the video must be 'file' to set files.")  # noqa: TRY003
-
-    def set_files(self, files: list[bytes]):
+    def set_files(self, files: dict[str, bytes]):
         """Set the files for the video.
 
         Args:
-            files (List[bytes]): the files uploaded to the endpoint
+            files (Dict[str, bytes]): the files uploaded to the endpoint
 
         Raises:
-            ValidationError: if the number of files isn't 1
+            UploadedFileNotFound: if the file is not found
         """
-        if len(files) != 1:
-            raise ValidationError.from_exception_data(
-                title=self.__class__.__name__,
-                line_errors=[
-                    InitErrorDetails(
-                        loc=("video",),
-                        type="value_error",
-                        ctx={
-                            "error": ValueError(
-                                "The number of videos and files must be the same."
-                            )
-                        },
-                        input=None,
-                    )
-                ],
-            )
-        self.set_file(files[0])
+        if self.content:
+            file_name = self.content
+            if file_name not in files:
+                raise UploadedFileNotFound(filename=file_name)
+            self._file = files[file_name]
 
     def convert_input_to_object(self) -> Video:
         """Convert the video input to a video object.
 
         Returns:
             Video: the video object corresponding to the video input
+
+        Raises:
+            UploadedFileNotFound: if the file is not found
         """
-        if self.content == b"file":
-            raise ValueError(  # noqa: TRY003
-                "The content of the video isn't set. Please upload files and call set_files()."
-            )
+        if self.content and not self._file:
+            raise UploadedFileNotFound(filename=self.content)
+        content = self._file if self.content else None
+
         return Video(
             path=Path(self.path) if self.path is not None else None,
             url=self.url,
-            content=self.content,
+            content=content,
             media_id=self.media_id,
         )
 
@@ -296,12 +269,10 @@ class VideoInput(BaseModel):
                 "If 'path' is provided, the video will be loaded from the path. \n"
                 "If 'url' is provided, the video will be downloaded from the url. \n"
                 "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                "if files are uploaded to the endpoint and 'content' is set to the filename."
             )
         },
         validate_assignment=True,
-        file_upload=True,
-        file_upload_description="Upload video file.",
     )
 
 
@@ -329,33 +300,17 @@ class VideoInputList(BaseListModel):
             raise ValueError("The list of videos must not be empty.")  # noqa: TRY003
         return self
 
-    def set_files(self, files: list[bytes]):
+    def set_files(self, files: dict[str, bytes]):
         """Set the files for the videos.
 
         Args:
-            files (List[bytes]): the files uploaded to the endpoint
+            files (dict[str, bytes]): the files uploaded to the endpoint
 
         Raises:
-            ValidationError: if the number of videos and files aren't the same
+            UploadedFileNotFound: if the file is not found
         """
-        if len(self.root) != len(files):
-            raise ValidationError.from_exception_data(
-                title=self.__class__.__name__,
-                line_errors=[
-                    InitErrorDetails(
-                        loc=("videos",),
-                        type="value_error",
-                        ctx={
-                            "error": ValueError(
-                                "The number of videos and files must be the same."
-                            )
-                        },
-                        input=None,
-                    )
-                ],
-            )
-        for video, file in zip(self.root, files, strict=False):
-            video.set_file(file)
+        for video in self.root:
+            video.set_files(files)
 
     def convert_input_to_object(self) -> list[VideoInput]:
         """Convert the VideoInputList to a list of video inputs.
@@ -373,9 +328,7 @@ class VideoInputList(BaseListModel):
                 "If 'path' is provided, the video will be loaded from the path. \n"
                 "If 'url' is provided, the video will be downloaded from the url. \n"
                 "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                "if files are uploaded to the endpoint and 'content' is set to the filename."
             )
         },
-        file_upload=True,
-        file_upload_description="Upload video files.",
     )
