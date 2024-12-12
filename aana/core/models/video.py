@@ -15,10 +15,8 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    ValidationError,
     model_validator,
 )
-from pydantic_core import InitErrorDetails
 from typing_extensions import Self
 
 from aana.core.models.base import BaseListModel

@@ -13,11 +13,8 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    ValidationError,
     model_validator,
 )
-from pydantic_core import InitErrorDetails
-from starlette.datastructures import UploadFile as StarletteUploadFile
 from typing_extensions import Self
 
 from aana.configs.settings import settings
