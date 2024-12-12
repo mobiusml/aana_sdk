@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseModel, ConfigDict, Field
 
 from aana.api.api_generation import Endpoint
-from aana.exceptions.runtime import MultipleFileUploadNotAllowed
+from aana.exceptions.runtime import UploadedFileNotFound
 
 
 class InputModel(BaseModel):
@@ -19,21 +19,19 @@ class InputModel(BaseModel):
 class FileUploadModel(BaseModel):
     """Model for a file upload input."""
 
-    content: bytes | None = Field(
+    content: str | None = Field(
         None,
-        description="The content in bytes. Set this field to 'file' to upload files to the endpoint.",
+        description="The name of the file to upload.",
     )
+    _file: bytes | None = None
 
-    def set_files(self, files):
+    def set_files(self, files: dict[str, bytes]):
         """Set files."""
-        if files:
-            if isinstance(files, list):
-                files = files[0]
-            self.content = files
+        if self.content and not self._file:
+            raise UploadedFileNotFound(self.content)
+        self._file = files[self.content]
 
-    model_config = ConfigDict(
-        extra="forbid", file_upload=True, file_upload_description="Upload image files."
-    )
+    model_config = ConfigDict(extra="forbid")
 
 
 class TestEndpointOutput(TypedDict):
@@ -51,7 +49,7 @@ class TestEndpoint(Endpoint):
 
 
 class TestFileUploadEndpoint(Endpoint):
-    """Test endpoint for __get_file_upload_field."""
+    """Test endpoint for file uploads."""
 
     async def run(self, input_data: FileUploadModel) -> TestEndpointOutput:
         """Run the endpoint."""
@@ -59,7 +57,7 @@ class TestFileUploadEndpoint(Endpoint):
 
 
 class TestMultipleFileUploadEndpoint(Endpoint):
-    """Test endpoint for __get_file_upload_field with multiple file uploads."""
+    """Test endpoint for multiple file uploads."""
 
     async def run(
         self, input_data: FileUploadModel, input_data2: FileUploadModel
@@ -123,33 +121,13 @@ def test_get_response_model():
     assert ResponseModel.model_fields["output"].annotation == str
 
 
-def test_get_file_upload_field():
-    """Test the __get_file_upload_field function."""
-    endpoint = TestFileUploadEndpoint(
-        name="test_endpoint",
-        summary="Test endpoint",
-        path="/test_endpoint",
-    )
-
-    file_upload_field = endpoint._Endpoint__get_file_upload_field()
-
-    # Check that the file upload field named correctly
-    assert file_upload_field.name == "input_data"
-
-    # Check that the file upload field has the correct description
-    assert file_upload_field.description == "Upload image files."
-
-
-def test_get_file_upload_field_multiple_file_uploads():
-    """Test the __get_file_upload_field function with multiple file uploads."""
-    endpoint = TestMultipleFileUploadEndpoint(
-        name="test_endpoint",
-        summary="Test endpoint",
-        path="/test_endpoint",
-    )
-
-    with pytest.raises(MultipleFileUploadNotAllowed):
-        endpoint._Endpoint__get_file_upload_field()
+# def test_get_file_upload_field_multiple_file_uploads():
+#     """Test the __get_file_upload_field function with multiple file uploads."""
+#     endpoint = TestMultipleFileUploadEndpoint(
+#         name="test_endpoint",
+#         summary="Test endpoint",
+#         path="/test_endpoint",
+#     )
 
 
 def test_get_response_model_missing_return():

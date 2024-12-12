@@ -25,6 +25,7 @@ from aana.core.libraries.image import AbstractImageLibrary
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import Media, MediaId
 from aana.exceptions.io import ImageReadingException
+from aana.exceptions.runtime import UploadedFileNotFound
 from aana.integrations.external.opencv import OpenCVWrapper
 from aana.utils.download import download_file
 
@@ -272,68 +273,33 @@ class ImageInput(BaseModel):
     content: str | None = Field(
         None,
         description=(
-            "The content of the image in bytes. "
-            "Set this field to the name of the file uploaded to the endpoint."
+            "The name of the file uploaded to the endpoint. The image will be loaded from the file automatically."
         ),
     )
     numpy: str | None = Field(
         None,
-        description=(
-            "The image as a numpy array. "
-            "Set this field to the name of the file uploaded to the endpoint."
-        ),
+        description="The name of the file uploaded to the endpoint. The image will be loaded from the file automatically.",
     )
     media_id: MediaId = Field(
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
-    files: dict[str, bytes] | None = Field(None, exclude=True)
+    _file: bytes | None = None
 
-    async def set_files(self, files: dict[str, StarletteUploadFile]):
+    def set_files(self, files: dict[str, bytes]):
         """Set the files for the image.
 
         Args:
-            files (dict[str, StarletteUploadFile]): the files uploaded to the endpoint
+            files (dict[str, bytes]): the files uploaded to the endpoint
 
         Raises:
-            ValidationError: if the number of images and files aren't the same
+            UploadedFileNotFound: if the file isn't found
         """
         file_name = self.content or self.numpy
         if file_name:
             if file_name not in files:
-                raise ValueError(f"File {file_name} not found.")  # noqa: TRY003
-            self.files = {file_name: await files[file_name].read()}
-
-        # breakpoint()
-        # if self.content:
-        #     file_name = self.content
-        #     if file_name not in files:
-        #         raise ValueError(f"File {file_name} not found.")
-        #     self.content = await files[file_name].read()
-
-        # if self.numpy:
-        #     file_name = self.numpy
-        #     if file_name not in files:
-        #         raise ValueError(f"File {file_name} not found.")
-        #     self.numpy = await files[file_name].read()
-
-        # if len(files) != 1:
-        #     raise ValidationError.from_exception_data(
-        #         title=self.__class__.__name__,
-        #         line_errors=[
-        #             InitErrorDetails(
-        #                 loc=("images",),
-        #                 type="value_error",
-        #                 ctx={
-        #                     "error": ValueError(
-        #                         "The number of images and files must be the same."
-        #                     )
-        #                 },
-        #                 input=None,
-        #             )
-        #         ],
-        #     )
-        # self.set_file(files[0])
+                raise UploadedFileNotFound(filename=file_name)
+            self._file = files[file_name]
 
     @model_validator(mode="after")
     def check_only_one_field(self) -> Self:
@@ -362,24 +328,23 @@ class ImageInput(BaseModel):
             Image: the image object corresponding to the image input
 
         Raises:
-            ValueError: if the numpy file isn't set
+            UploadedFileNotFound: if the file isn't found
             ValueError: if the file isn't found
         """
         file_name = self.content or self.numpy
-        if file_name and file_name not in self.files:
-            raise ValueError(f"File {file_name} not found.")  # noqa: TRY003
+        if file_name and not self._file:
+            raise UploadedFileNotFound(filename=file_name)
 
         content = None
         numpy = None
-        if self.files:
-            if self.content:
-                content = self.files[self.content]
-            elif self.numpy:
-                file_bytes = self.files[self.numpy]
-                try:
-                    numpy = np.load(io.BytesIO(file_bytes), allow_pickle=False)
-                except ValueError as e:
-                    raise ValueError("The numpy file isn't valid.") from e  # noqa: TRY003
+        if self._file and self.content:
+            content = self._file
+        elif self._file and self.numpy:
+            file_bytes = self._file
+            try:
+                numpy = np.load(io.BytesIO(file_bytes), allow_pickle=False)
+            except ValueError as e:
+                raise ValueError("The numpy file isn't valid.") from e  # noqa: TRY003
 
         return Image(
             path=Path(self.path) if self.path else None,
@@ -393,16 +358,14 @@ class ImageInput(BaseModel):
         json_schema_extra={
             "description": (
                 "An image. \n"
-                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided. \n"
                 "If 'path' is provided, the image will be loaded from the path. \n"
                 "If 'url' is provided, the image will be downloaded from the url. \n"
-                "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                "The 'content' and 'numpy' will be loaded automatically "
+                "if files are uploaded to the endpoint and the corresponding field is set to the file name."
             )
         },
         validate_assignment=True,
-        file_upload=True,
-        file_upload_description="Upload image file.",
     )
 
 
@@ -429,21 +392,17 @@ class ImageInputList(BaseListModel):
             raise ValueError("The list of images must not be empty.")  # noqa: TRY003
         return self
 
-    def set_files(self, files: list[bytes]):
+    def set_files(self, files: dict[str, bytes]):
         """Set the files for the images.
 
         Args:
-            files (List[bytes]): the files uploaded to the endpoint
+            files (dict[str, bytes]): the files uploaded to the endpoint
 
         Raises:
-            ValidationError: if the number of images and files aren't the same
+            UploadedFileNotFound: if the file isn't found
         """
-        if len(self.root) != len(files):
-            error = ValueError("The number of images and files must be the same.")
-            # raise ValidationError(error,
-            raise error
-        for image, file in zip(self.root, files, strict=False):
-            image.set_file(file)
+        for image in self.root:
+            image.set_files(files)
 
     def convert_input_to_object(self) -> list[Image]:
         """Convert the list of image inputs to a list of image objects.
@@ -457,13 +416,11 @@ class ImageInputList(BaseListModel):
         json_schema_extra={
             "description": (
                 "A list of images. \n"
-                "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
+                "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided for each image. \n"
                 "If 'path' is provided, the image will be loaded from the path. \n"
                 "If 'url' is provided, the image will be downloaded from the url. \n"
-                "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                "The 'content' and 'numpy' will be loaded automatically "
+                "if files are uploaded to the endpoint and the corresponding field is set to the file name."
             )
         },
-        file_upload=True,
-        file_upload_description="Upload image files.",
     )
