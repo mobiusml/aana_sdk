@@ -9,7 +9,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.schema import CreateSequence, Sequence
 
-from aana.storage.custom_types import JSON
+from aana.storage.types import JSON
 
 # revision identifiers, used by Alembic.
 revision: str = "5ad873484aa3"

@@ -9,7 +9,7 @@ from snowflake.sqlalchemy import URL as SNOWFLAKE_URL
 from sqlalchemy import create_engine, event
 
 from aana.exceptions.runtime import EmptyMigrationsException
-from aana.storage.custom_types import JSON
+from aana.storage.types import JSON
 from aana.utils.core import get_module_dir
 from aana.utils.json import jsonify
 
