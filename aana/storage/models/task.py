@@ -7,8 +7,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
-from aana.storage.custom_types import JSON
 from aana.storage.models.base import BaseEntity, TimeStampEntity, timestamp
+from aana.storage.types import JSON
 
 
 class Status(str, Enum):

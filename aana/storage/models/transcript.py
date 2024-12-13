@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from sqlalchemy import CheckConstraint, Sequence
 from sqlalchemy.orm import Mapped, mapped_column
 
-from aana.storage.custom_types import JSON
 from aana.storage.models.base import BaseEntity, TimeStampEntity
+from aana.storage.types import JSON
 
 if TYPE_CHECKING:
     from aana.core.models.asr import (
