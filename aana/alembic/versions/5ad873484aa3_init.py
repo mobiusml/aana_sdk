@@ -10,6 +10,7 @@ from alembic import op
 from sqlalchemy.schema import CreateSequence, Sequence
 
 from aana.storage.types import JSON
+from aana.storage.utcnow import utcnow
 
 # revision identifiers, used by Alembic.
 revision: str = "5ad873484aa3"
@@ -57,14 +58,14 @@ def upgrade() -> None:
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
             "updated_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is updated",
         ),
@@ -84,14 +85,14 @@ def upgrade() -> None:
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
             "updated_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is updated",
         ),
@@ -135,14 +136,14 @@ def upgrade() -> None:
         sa.Column(
             "assigned_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=True,
             comment="Timestamp when the task was assigned",
         ),
         sa.Column(
             "completed_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=True,
             comment="Timestamp when the task was completed",
         ),
@@ -161,14 +162,14 @@ def upgrade() -> None:
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
             "updated_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is updated",
         ),
@@ -216,14 +217,14 @@ def upgrade() -> None:
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is inserted",
         ),
         sa.Column(
             "updated_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            server_default=utcnow(),
             nullable=False,
             comment="Timestamp when row is updated",
         ),
