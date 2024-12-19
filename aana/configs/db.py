@@ -1,5 +1,6 @@
 import os
 from os import PathLike
+from typing import Literal
 
 from pydantic import model_validator
 from pydantic_settings import BaseSettings
@@ -40,27 +41,37 @@ class PostgreSQLConfig(TypedDict):
 class SnowflakeConfig(TypedDict, total=False):
     """Config values for Snowflake.
 
+    For now two connection methods are supported: user/password and OAuth token from session file.
+
+    For user/password connection method you need to provide: account, user, password.
+    For OAuth connection method you need to provide: account, host and set authenticator to "oauth".
+
+    For OAuth connection method, we only support getting the token from the session file for now since
+    this is what we need to deploy the app in Snowflake cloud.
+
+    Other attributes (database, schema, warehouse, role) are optional and can be set for both connection methods.
+
     Attributes:
         account (str): The account name.
-        user (str): The user to connect to the Snowflake server.
-        host (str): The host of the Snowflake server.
-        token (str): The token to connect to the Snowflake server.
-        password (str): The password to connect to the Snowflake server.
-        database (str): The database name.
-        schema (str): The schema name.
-        warehouse (str): The warehouse name.
-        role (str): The role name.
+        user (str | None): The user to connect to the Snowflake server.
+        host (str | None): The host of the Snowflake server.
+        authenticator (str | None): The authenticator to use to connect to the Snowflake server (only "oauth" or None are supported).
+        password (str | None): The password to connect to the Snowflake server.
+        database (str | None): The database name.
+        schema (str | None): The schema name.
+        warehouse (str | None): The warehouse name.
+        role (str | None): The role name.
     """
 
     account: str
-    user: str
-    host: str
-    token: str
-    password: str
-    database: str
-    schema: str
-    warehouse: str
-    role: str
+    user: str | None
+    host: str | None
+    authenticator: Literal["oauth"] | None
+    password: str | None
+    database: str | None
+    schema: str | None
+    warehouse: str | None
+    role: str | None
 
 
 class DbSettings(BaseSettings):
@@ -121,6 +132,7 @@ class DbSettings(BaseSettings):
                 "SNOWFLAKE_WAREHOUSE": "warehouse",
                 "SNOWFLAKE_ROLE": "role",
                 "SNOWFLAKE_TOKEN": "token",
+                "SNOWFLAKE_AUTHENTICATOR": "authenticator",
             }
             for env_var, key in mapping.items():
                 if not self.datastore_config.get(key) and os.environ.get(env_var):

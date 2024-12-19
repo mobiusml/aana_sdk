@@ -93,17 +93,24 @@ def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
     Returns:
         sqlalchemy.engine.Engine: SQLAlchemy engine instance.
     """
+    SNOWFLAKE_TOKEN_PATH = Path("/snowflake/session/token")
+
+    def get_token():
+        return SNOWFLAKE_TOKEN_PATH.read_text()
+
     datastore_config = db_config.datastore_config
 
-    # If token is not provided, check if token file exists
-    SNOWFLAKE_TOKEN_PATH = Path("/snowflake/session/token")
-    if SNOWFLAKE_TOKEN_PATH.exists() and "token" not in datastore_config:
-        token = SNOWFLAKE_TOKEN_PATH.read_text()
-        datastore_config["token"] = token
-
-    # Set authenticator to oauth if token is provided
-    if "token" in datastore_config:
-        datastore_config["authenticator"] = "oauth"
+    # If authenticator is oauth, we get the token from the session file.
+    # For now we only support oauth authenticator and token from the session file since
+    # this is what we need to deploy the app in snowflake cloud.
+    # Here we just check if the token file exists.
+    if "authenticator" in datastore_config:
+        if datastore_config["authenticator"] != "oauth":
+            raise ValueError(  # noqa: TRY003
+                f"Unsupported authenticator: {datastore_config['authenticator']}"
+            )
+        if not SNOWFLAKE_TOKEN_PATH.exists():
+            raise FileNotFoundError(f"Token file not found: {SNOWFLAKE_TOKEN_PATH}")  # noqa: TRY003
 
     connection_string = SNOWFLAKE_URL(**datastore_config)
     engine = create_engine(
@@ -112,6 +119,15 @@ def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
         max_overflow=db_config.max_overflow,
         pool_recycle=db_config.pool_recycle,
     )
+
+    @event.listens_for(engine, "do_connect")
+    def receive_do_connect(dialect, conn_rec, cargs, cparams):
+        """Handle connection parameters before connecting to Snowflake."""
+        # If we are using oauth authenticator,
+        # we need to refresh the token before each connection.
+        # Otherwise, the token will expire and the connection will fail.
+        if cparams.get("authenticator") == "oauth":
+            cparams["token"] = get_token()
 
     @event.listens_for(engine, "before_cursor_execute")
     def preprocess_parameters(
