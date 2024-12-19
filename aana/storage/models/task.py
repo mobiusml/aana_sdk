@@ -2,13 +2,13 @@ import uuid
 from enum import Enum
 
 from sqlalchemy import (
-    JSON,
     UUID,
     PickleType,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
 from aana.storage.models.base import BaseEntity, TimeStampEntity, timestamp
+from aana.storage.types import JSON
 
 
 class Status(str, Enum):

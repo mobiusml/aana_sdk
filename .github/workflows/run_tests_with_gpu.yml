@@ -34,7 +34,7 @@ jobs:
     
     - name: Run tests with GPU
       run: |
-        HF_TOKEN=${{ secrets.HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
+        SNOWFLAKE_TEST_PARAMETERS=${{ secrets.SNOWFLAKE_TEST_PARAMETERS }} HF_TOKEN=${{ secrets.HF_TOKEN }} dstack apply -f tests.dstack.yml --force -y
 
     - name: Extract pytest logs
       if: ${{ always() }}

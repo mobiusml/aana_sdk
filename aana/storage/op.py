@@ -5,14 +5,21 @@ from pathlib import Path
 import orjson
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import create_engine
+from snowflake.sqlalchemy import URL as SNOWFLAKE_URL
+from sqlalchemy import create_engine, event
 
 from aana.exceptions.runtime import EmptyMigrationsException
+from aana.storage.types import JSON
 from aana.utils.core import get_module_dir
 from aana.utils.json import jsonify
 
 if typing.TYPE_CHECKING:
     from aana.configs.db import DbSettings
+
+import re
+
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.sql import Insert
 
 
 class DbType(str, Enum):
@@ -25,6 +32,7 @@ class DbType(str, Enum):
 
     POSTGRESQL = "postgresql"
     SQLITE = "sqlite"
+    SNOWFLAKE = "snowflake"
 
 
 def create_postgresql_engine(db_config: "DbSettings"):
@@ -76,6 +84,96 @@ def create_sqlite_engine(db_config: "DbSettings"):
     )
 
 
+def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
+    """Create a Snowflake SQLAlchemy engine based on the provided configuration.
+
+    Args:
+        db_config (DbSettings): Database configuration.
+
+    Returns:
+        sqlalchemy.engine.Engine: SQLAlchemy engine instance.
+    """
+    SNOWFLAKE_TOKEN_PATH = Path("/snowflake/session/token")
+
+    def get_token():
+        return SNOWFLAKE_TOKEN_PATH.read_text()
+
+    datastore_config = db_config.datastore_config
+
+    # If authenticator is oauth, we get the token from the session file.
+    # For now we only support oauth authenticator and token from the session file since
+    # this is what we need to deploy the app in snowflake cloud.
+    # Here we just check if the token file exists.
+    if "authenticator" in datastore_config:
+        if datastore_config["authenticator"] != "oauth":
+            raise ValueError(  # noqa: TRY003
+                f"Unsupported authenticator: {datastore_config['authenticator']}"
+            )
+        if not SNOWFLAKE_TOKEN_PATH.exists():
+            raise FileNotFoundError(f"Token file not found: {SNOWFLAKE_TOKEN_PATH}")  # noqa: TRY003
+
+    connection_string = SNOWFLAKE_URL(**datastore_config)
+    engine = create_engine(
+        connection_string,
+        pool_size=db_config.pool_size,
+        max_overflow=db_config.max_overflow,
+        pool_recycle=db_config.pool_recycle,
+    )
+
+    @event.listens_for(engine, "do_connect")
+    def receive_do_connect(dialect, conn_rec, cargs, cparams):
+        """Handle connection parameters before connecting to Snowflake."""
+        # If we are using oauth authenticator,
+        # we need to refresh the token before each connection.
+        # Otherwise, the token will expire and the connection will fail.
+        if cparams.get("authenticator") == "oauth":
+            cparams["token"] = get_token()
+
+    @event.listens_for(engine, "before_cursor_execute")
+    def preprocess_parameters(
+        conn, cursor, statement, parameters, context, executemany
+    ):
+        """Preprocess parameters before executing a query."""
+        if isinstance(parameters, dict):  # Handle dict-style parameters
+            for key, value in parameters.items():
+                # Convert VARIANT type to JSON string
+                if (
+                    isinstance(value, dict | list)
+                    and context.compiled
+                    and key in context.compiled.binds
+                    and isinstance(context.compiled.binds[key].type, JSON)
+                ):
+                    parameters[key] = jsonify(value)
+
+    @compiles(Insert, "default")
+    def compile_insert(insert_stmt, compiler, **kwargs):
+        """Compile INSERT statements to use SELECT instead of VALUES for Snowflake PARSE_JSON."""
+        sql = compiler.visit_insert(insert_stmt, **kwargs)
+
+        # Only transform if PARSE_JSON is present in the SQL
+        if "PARSE_JSON" not in sql:
+            return sql
+
+        # Locate the VALUES clause and replace it
+        def replace_values_with_select(sql):
+            # Regex to find `VALUES (...)` ensuring balanced parentheses
+            pattern = r"VALUES\s*(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\))"
+            match = re.search(pattern, sql)
+            if match:
+                values_clause = match.group(1)  # Captures the `(...)` after VALUES
+                # Replace VALUES (...) with SELECT ...
+                return sql.replace(
+                    f"VALUES {values_clause}", f"SELECT {values_clause[1:-1]}"
+                )
+            return sql
+
+        # Replace the VALUES clause with SELECT
+        sql = replace_values_with_select(sql)
+        return sql
+
+    return engine
+
+
 def create_database_engine(db_config: "DbSettings"):
     """Create SQLAlchemy engine based on the provided configuration.
 
@@ -91,6 +189,8 @@ def create_database_engine(db_config: "DbSettings"):
         return create_postgresql_engine(db_config)
     elif db_type == DbType.SQLITE:
         return create_sqlite_engine(db_config)
+    elif db_type == DbType.SNOWFLAKE:
+        return create_snowflake_engine(db_config)
     else:
         raise ValueError(f"Unsupported database type: {db_type}")  # noqa: TRY003
 

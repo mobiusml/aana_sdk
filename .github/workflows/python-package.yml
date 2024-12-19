@@ -42,5 +42,5 @@ jobs:
       uses: ikalnytskyi/action-setup-postgres@v6 
     - name: Test with pytest
       env:
-        USE_DEPLOYMENT_CACHE: True
+        SNOWFLAKE_TEST_PARAMETERS: ${{ secrets.SNOWFLAKE_TEST_PARAMETERS }}
       run: poetry run pytest -vv
