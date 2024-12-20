@@ -13,10 +13,8 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    ValidationError,
     model_validator,
 )
-from pydantic_core import InitErrorDetails
 from typing_extensions import Self
 
 from aana.configs.settings import settings
@@ -24,6 +22,7 @@ from aana.core.libraries.image import AbstractImageLibrary
 from aana.core.models.base import BaseListModel
 from aana.core.models.media import Media, MediaId
 from aana.exceptions.io import ImageReadingException
+from aana.exceptions.runtime import UploadedFileNotFound
 from aana.integrations.external.opencv import OpenCVWrapper
 from aana.utils.download import download_file
 
@@ -268,74 +267,36 @@ class ImageInput(BaseModel):
         AfterValidator(lambda x: str(x) if x else None),
         Field(None, description="The URL of the image."),
     ]
-    content: bytes | None = Field(
+    content: str | None = Field(
         None,
         description=(
-            "The content of the image in bytes. "
-            "Set this field to 'file' to upload files to the endpoint."
+            "The name of the file uploaded to the endpoint. The image will be loaded from the file automatically."
         ),
     )
-    numpy: bytes | None = Field(
+    numpy: str | None = Field(
         None,
-        description=(
-            "The image as a numpy array. "
-            "Set this field to 'file' to upload files to the endpoint."
-        ),
+        description="The name of the file uploaded to the endpoint. The image will be loaded from the file automatically.",
     )
     media_id: MediaId = Field(
         default_factory=lambda: str(uuid.uuid4()),
         description="The ID of the image. If not provided, it will be generated automatically.",
     )
+    _file: bytes | None = None
 
-    def set_file(self, file: bytes):
-        """Sets the instance internal file data.
-
-        If 'content' or 'numpy' is set to 'file',
-        the image will be loaded from the file uploaded to the endpoint.
-
-        set_file() should be called after the files are uploaded to the endpoint.
-
-        Args:
-            file (bytes): the file uploaded to the endpoint
-
-        Raises:
-            ValueError: if the content or numpy isn't set to 'file'
-        """
-        if self.content == b"file":
-            self.content = file
-        elif self.numpy == b"file":
-            self.numpy = file
-        else:
-            raise ValueError(  # noqa: TRY003
-                "The content or numpy of the image must be 'file' to set files."
-            )
-
-    def set_files(self, files: list[bytes]):
+    def set_files(self, files: dict[str, bytes]):
         """Set the files for the image.
 
         Args:
-            files (List[bytes]): the files uploaded to the endpoint
+            files (dict[str, bytes]): the files uploaded to the endpoint
 
         Raises:
-            ValidationError: if the number of images and files aren't the same
+            UploadedFileNotFound: if the file isn't found
         """
-        if len(files) != 1:
-            raise ValidationError.from_exception_data(
-                title=self.__class__.__name__,
-                line_errors=[
-                    InitErrorDetails(
-                        loc=("images",),
-                        type="value_error",
-                        ctx={
-                            "error": ValueError(
-                                "The number of images and files must be the same."
-                            )
-                        },
-                        input=None,
-                    )
-                ],
-            )
-        self.set_file(files[0])
+        file_name = self.content or self.numpy
+        if file_name:
+            if file_name not in files:
+                raise UploadedFileNotFound(filename=file_name)
+            self._file = files[file_name]
 
     @model_validator(mode="after")
     def check_only_one_field(self) -> Self:
@@ -364,22 +325,28 @@ class ImageInput(BaseModel):
             Image: the image object corresponding to the image input
 
         Raises:
-            ValueError: if the numpy file isn't set
+            UploadedFileNotFound: if the file isn't found
+            ValueError: if the file isn't found
         """
-        if self.numpy and self.numpy != b"file":
+        file_name = self.content or self.numpy
+        if file_name and not self._file:
+            raise UploadedFileNotFound(filename=file_name)
+
+        content = None
+        numpy = None
+        if self._file and self.content:
+            content = self._file
+        elif self._file and self.numpy:
+            file_bytes = self._file
             try:
-                numpy = np.load(io.BytesIO(self.numpy), allow_pickle=False)
-            except ValueError:
-                raise ValueError("The numpy file isn't valid.")  # noqa: TRY003, TRY200, B904 TODO
-        elif self.numpy == b"file":
-            raise ValueError("The numpy file isn't set. Call set_files() to set it.")  # noqa: TRY003
-        else:
-            numpy = None
+                numpy = np.load(io.BytesIO(file_bytes), allow_pickle=False)
+            except ValueError as e:
+                raise ValueError("The numpy file isn't valid.") from e  # noqa: TRY003
 
         return Image(
             path=Path(self.path) if self.path else None,
             url=self.url,
-            content=self.content,
+            content=content,
             numpy=numpy,
             media_id=self.media_id,
         )
@@ -388,16 +355,14 @@ class ImageInput(BaseModel):
         json_schema_extra={
             "description": (
                 "An image. \n"
-                "Exactly one of 'path', 'url', or 'content' must be provided. \n"
+                "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided. \n"
                 "If 'path' is provided, the image will be loaded from the path. \n"
                 "If 'url' is provided, the image will be downloaded from the url. \n"
-                "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                "The 'content' and 'numpy' will be loaded automatically "
+                "if files are uploaded to the endpoint and the corresponding field is set to the file name."
             )
         },
         validate_assignment=True,
-        file_upload=True,
-        file_upload_description="Upload image file.",
     )
 
 
@@ -424,21 +389,17 @@ class ImageInputList(BaseListModel):
             raise ValueError("The list of images must not be empty.")  # noqa: TRY003
         return self
 
-    def set_files(self, files: list[bytes]):
+    def set_files(self, files: dict[str, bytes]):
         """Set the files for the images.
 
         Args:
-            files (List[bytes]): the files uploaded to the endpoint
+            files (dict[str, bytes]): the files uploaded to the endpoint
 
         Raises:
-            ValidationError: if the number of images and files aren't the same
+            UploadedFileNotFound: if the file isn't found
         """
-        if len(self.root) != len(files):
-            error = ValueError("The number of images and files must be the same.")
-            # raise ValidationError(error,
-            raise error
-        for image, file in zip(self.root, files, strict=False):
-            image.set_file(file)
+        for image in self.root:
+            image.set_files(files)
 
     def convert_input_to_object(self) -> list[Image]:
         """Convert the list of image inputs to a list of image objects.
@@ -452,13 +413,11 @@ class ImageInputList(BaseListModel):
         json_schema_extra={
             "description": (
                 "A list of images. \n"
-                "Exactly one of 'path', 'url', or 'content' must be provided for each image. \n"
+                "Exactly one of 'path', 'url', 'content' or 'numpy' must be provided for each image. \n"
                 "If 'path' is provided, the image will be loaded from the path. \n"
                 "If 'url' is provided, the image will be downloaded from the url. \n"
-                "The 'content' will be loaded automatically "
-                "if files are uploaded to the endpoint (should be set to 'file' for that)."
+                "The 'content' and 'numpy' will be loaded automatically "
+                "if files are uploaded to the endpoint and the corresponding field is set to the file name."
             )
         },
-        file_upload=True,
-        file_upload_description="Upload image files.",
     )

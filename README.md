@@ -278,6 +278,75 @@ aana_app.deploy()   # Deploys the application.
 
 All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
 
+
+## API
+
+Aana SDK uses form data for API requests, which allows sending both binary data and structured fields in a single request. The request body is sent as a JSON string in the `body` field, and any binary data is sent as files.
+
+### Making API Requests
+
+You can send requests to the SDK endpoints with only structured data or a combination of structured data and binary data.
+
+#### Only Structured Data
+When your request includes only structured data, you can send it as a JSON string in the `body` field.
+
+- **cURL Example:**
+    ```bash
+    curl http://127.0.0.1:8000/endpoint \
+        -F body='{"input": "data", "param": "value"}'
+    ```
+
+- **Python Example:**
+    ```python
+    import json, requests
+
+    url = "http://127.0.0.1:8000/endpoint"
+    body = {
+        "input": "data",
+        "param": "value"
+    }
+
+    response = requests.post(
+        url,
+        data={"body": json.dumps(body)}
+    )
+
+    print(response.json())
+    ```
+
+#### With Binary Data
+When your request includes binary files (images, audio, etc.), you can send them as files in the request and include the names of the files in the `body` field as a reference.
+
+For example, if you want to send an image, you can use [`aana.core.models.image.ImageInput`](https://mobiusml.github.io/aana_sdk/reference/models/media/#aana.core.models.ImageInput) as the input type that supports binary data upload. The `content` field in the input type should be set to the name of the file you are sending. 
+
+- **cURL Example:**
+    ```bash
+    curl http://127.0.0.1:8000/process_images \
+        -H "Content-Type: multipart/form-data" \
+        -F body='{"image": {"content": "file1"}}' \
+        -F file1="@image.jpeg"
+    ```
+
+- **Python Example:**
+    ```python
+    import json, requests 
+
+    url = "http://127.0.0.1:8000/process_images"
+    body = {
+        "image": {"content": "file1"}
+    }
+    with open("image.jpeg", "rb") as file:
+        files = {"file1": file}
+
+        response = requests.post(
+            url,
+            data={"body": json.dumps(body)},
+            files=files
+        )
+
+        print(response.text)
+    ```
+
 ## Serve Config Files
 
 The [Serve Config Files](https://docs.ray.io/en/latest/serve/production-guide/config.html#serve-config-files) is the recommended way to deploy and update your applications in production. Aana SDK provides a way to build the Serve Config Files for the Aana applications. See the [Serve Config Files documentation](https://mobiusml.github.io/aana_sdk/pages/serve_config_files/) on how to build and deploy the applications using the Serve Config Files.
