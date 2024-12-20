@@ -162,7 +162,7 @@ def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
         # Locate the VALUES clause and replace it
         def replace_values_with_select(sql):
             # Regex to find `VALUES (...)` ensuring balanced parentheses
-            pattern = r"VALUES\s*\(((?:[^()]+|\([^()]*\))*)\)"
+            pattern = r"VALUES\s*(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\))"
             match = re.search(pattern, sql)
             if match:
                 values_clause = match.group(1)  # Captures the `(...)` after VALUES
