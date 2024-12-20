@@ -111,8 +111,11 @@ def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
             )
         if not SNOWFLAKE_TOKEN_PATH.exists():
             raise FileNotFoundError(f"Token file not found: {SNOWFLAKE_TOKEN_PATH}")  # noqa: TRY003
+        datastore_config["token"] = get_token()
 
+    print("datastore_config", datastore_config)
     connection_string = SNOWFLAKE_URL(**datastore_config)
+    print("connection_string", connection_string)
     engine = create_engine(
         connection_string,
         pool_size=db_config.pool_size,
@@ -126,8 +129,10 @@ def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
         # If we are using oauth authenticator,
         # we need to refresh the token before each connection.
         # Otherwise, the token will expire and the connection will fail.
+        print("cparams before", cparams)
         if cparams.get("authenticator") == "oauth":
             cparams["token"] = get_token()
+        print("cparams after", cparams)
 
     @event.listens_for(engine, "before_cursor_execute")
     def preprocess_parameters(
@@ -157,7 +162,7 @@ def create_snowflake_engine(db_config: "DbSettings"):  # noqa: C901
         # Locate the VALUES clause and replace it
         def replace_values_with_select(sql):
             # Regex to find `VALUES (...)` ensuring balanced parentheses
-            pattern = r"VALUES\s*(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\))"
+            pattern = r"VALUES\s*\(((?:[^()]+|\([^()]*\))*)\)"
             match = re.search(pattern, sql)
             if match:
                 values_clause = match.group(1)  # Captures the `(...)` after VALUES

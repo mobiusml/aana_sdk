@@ -56,6 +56,7 @@ class SnowflakeConfig(TypedDict, total=False):
         user (str | None): The user to connect to the Snowflake server.
         host (str | None): The host of the Snowflake server.
         authenticator (str | None): The authenticator to use to connect to the Snowflake server (only "oauth" or None are supported).
+        token (str | None): The OAuth token to connect to the Snowflake (don't set it manually, it's read from the session file).
         password (str | None): The password to connect to the Snowflake server.
         database (str | None): The database name.
         schema (str | None): The schema name.
@@ -67,6 +68,7 @@ class SnowflakeConfig(TypedDict, total=False):
     user: str | None
     host: str | None
     authenticator: Literal["oauth"] | None
+    token: str | None
     password: str | None
     database: str | None
     schema: str | None
