@@ -1,7 +1,7 @@
 import datetime
 from typing import Annotated, Any, TypeVar
 
-from sqlalchemy import DateTime, MetaData, String, func
+from sqlalchemy import DateTime, MetaData, String
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -11,6 +11,7 @@ from sqlalchemy.orm import (
 )
 
 from aana.core.models.media import MediaId
+from aana.storage.utcnow import utcnow
 
 timestamp = Annotated[
     datetime.datetime,
@@ -79,11 +80,11 @@ class TimeStampEntity:
     """Mixin for database entities that will have create/update timestamps."""
 
     created_at: Mapped[timestamp] = mapped_column(
-        server_default=func.now(),
+        server_default=utcnow(),
         comment="Timestamp when row is inserted",
     )
     updated_at: Mapped[timestamp] = mapped_column(
-        onupdate=func.now(),
-        server_default=func.now(),
+        onupdate=utcnow(),
+        server_default=utcnow(),
         comment="Timestamp when row is updated",
     )
