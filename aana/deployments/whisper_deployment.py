@@ -251,7 +251,7 @@ class WhisperDeployment(BaseDeployment):
                         transcription=asr_transcription,
                     )
             except Exception as e:
-                raise InferenceException(self.model_name) from e
+                raise InferenceException(self.model_name, str(e)) from e
 
     async def transcribe_batch(
         self, audio_batch: list[Audio], params: WhisperParams | None = None
@@ -345,4 +345,4 @@ class WhisperDeployment(BaseDeployment):
                         transcription=asr_transcription,
                     )
             except Exception as e:
-                raise InferenceException(self.model_name) from e
+                raise InferenceException(self.model_name, str(e)) from e

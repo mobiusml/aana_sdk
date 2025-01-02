@@ -22,14 +22,20 @@ class InferenceException(BaseException):
         model_name -- name of the model
     """
 
-    def __init__(self, model_name):
+    def __init__(self, model_name: str, message: str | None = None):
         """Initialize the exception.
 
         Args:
             model_name (str): name of the model that caused the exception
+            message (str): the message to display
         """
-        super().__init__(model_name=model_name)
+        message = message or f"Inference failed for model: {model_name}"
+        super().__init__(
+            model_name=model_name,
+            message=message,
+        )
         self.model_name = model_name
+        self.message = message
 
     def __reduce__(self):
         """Called when the exception is pickled.
@@ -38,7 +44,7 @@ class InferenceException(BaseException):
         See https://bugs.python.org/issue32696#msg310963 for more info.
         """
         # TODO: check if there is a better way to do this
-        return (self.__class__, (self.model_name,))
+        return (self.__class__, (self.model_name, self.message))
 
 
 class PromptTooLongException(BaseException):

@@ -121,7 +121,7 @@ class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
                 prompt_input.to("cpu")
                 del streamer
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
 
 @serve.deployment
