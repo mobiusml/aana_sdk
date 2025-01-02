@@ -33,7 +33,7 @@ fastapi = ">=0.111.0"
 haystack-ai = ">=2.1.0"
 hf-transfer = "^0.1.6"
 hqq = "^0.2.2"
-mobius-faster-whisper = ">=1.1.1"
+
 numpy = ">=1.17,<2"
 opencv-python-headless = "^4.8.1.78"
 orjson = "^3.10.3"
@@ -53,7 +53,6 @@ transformers = ">=4.47.0"
 torch = "^2.4.0"
 torchvision = ">=0.19.0"
 torchaudio = ">=2.4.0"
-vllm = ">=0.6.1, <0.6.4" # See https://github.com/vllm-project/vllm/issues/10451
 yt-dlp = ">=2024.08.06"
 outlines = {extras = ["serve"], version = "^0.0.46"}
 
@@ -75,6 +74,10 @@ sqlalchemy-utils = "^0.41.1"
 mkdocs-material = "^9.5.29"
 mkdocstrings = {extras = ["python"], version = "^0.25.1"}
 mkdocs = "^1.6.0"
+
+[tool.poetry.group.tests.dependencies]
+mobius-faster-whisper = ">=1.1.1"
+vllm = ">=0.6.1, <0.6.4" # See https://github.com/vllm-project/vllm/issues/10451
 
 [build-system]
 requires = ["poetry-core"]
