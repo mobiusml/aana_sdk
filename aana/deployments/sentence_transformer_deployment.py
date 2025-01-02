@@ -107,4 +107,4 @@ class SentenceTransformerDeployment(BaseDeployment):
             embeddings = self.model.encode(sentences)
             return SentenceTransformerOutput(embedding=embeddings)
         except Exception as e:
-            raise InferenceException(self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e

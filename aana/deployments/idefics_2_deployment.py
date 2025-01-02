@@ -155,7 +155,7 @@ class Idefics2Deployment(BaseDeployment):
                 del streamer
                 del inputs
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
     async def chat(
         self, dialog: ImageChatDialog, sampling_params: SamplingParams | None = None
@@ -245,6 +245,6 @@ class Idefics2Deployment(BaseDeployment):
                     ChatOutput(message=ChatMessage(content=text, role="assistant"))
                 )
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
         else:
             return chat_outputs

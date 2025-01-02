@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Any, TypedDict
 
 import torch
-from pyannote.audio import Model
 from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 
@@ -12,8 +11,13 @@ from aana.core.models.time import TimeInterval
 from aana.core.models.vad import VadParams, VadSegment
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
-from aana.processors.vad import BinarizeVadScores, VoiceActivitySegmentation
 from aana.utils.download import download_model
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport("Run 'pip install pyannote-audio'") as pyannote_imports:
+    from pyannote.audio import Model
+
+    from aana.processors.vad import BinarizeVadScores, VoiceActivitySegmentation
 
 
 @dataclass
@@ -97,6 +101,7 @@ class VadDeployment(BaseDeployment):
         The configuration should conform to the VadConfig schema.
 
         """
+        pyannote_imports.check()
         config_obj = VadConfig(**config)
         self.hyperparameters = {
             "onset": config_obj.onset,
@@ -207,7 +212,7 @@ class VadDeployment(BaseDeployment):
         try:
             vad_segments = self.vad_pipeline(vad_input)
         except Exception as e:
-            raise InferenceException(self.filepath.name) from e
+            raise InferenceException(self.filepath.name, str(e)) from e
 
         return vad_segments
 

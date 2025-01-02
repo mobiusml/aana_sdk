@@ -180,4 +180,4 @@ class HFBlip2Deployment(BaseDeployment):
             ]
             return CaptioningBatchOutput(captions=generated_texts)
         except Exception as e:
-            raise InferenceException(self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e

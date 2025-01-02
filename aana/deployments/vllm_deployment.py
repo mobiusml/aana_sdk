@@ -3,7 +3,6 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 import torch
-from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
 
@@ -25,6 +24,7 @@ from aana.utils.gpu import get_gpu_memory
 from aana.utils.lazy_import import LazyImport
 
 with LazyImport("Run 'pip install vllm'") as vllm_imports:
+    from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
     from vllm.engine.arg_utils import AsyncEngineArgs
     from vllm.engine.async_llm_engine import AsyncLLMEngine
     from vllm.entrypoints.chat_utils import (
@@ -294,7 +294,7 @@ class VLLMDeployment(BaseDeployment):
                 await self.engine.abort(request_id)
             raise
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
     async def generate(
         self,
