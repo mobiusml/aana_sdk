@@ -2,22 +2,8 @@ from enum import Enum
 from typing import Any
 
 import torch
-from hqq.core.quantize import BaseQuantizeConfig
-from hqq.core.quantize import HQQBackend as HQQBackendKernel
-from hqq.models.hf.base import AutoHQQHFModel
-from hqq.utils.generation_hf import patch_model_for_compiled_runtime
-from hqq.utils.patching import (
-    HQQLinear,
-    patch_add_quant_config,
-    patch_linearlayers,
-    prepare_for_inference,
-)
 from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-)
 
 from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.sampling import SamplingParams
@@ -26,6 +12,25 @@ from aana.deployments.hf_pipeline_deployment import CustomConfig
 from aana.deployments.hf_text_generation_deployment import (
     BaseHfTextGenerationDeployment,
 )
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport("Run 'pip install hqq'") as hqq_imports:
+    # from hqq.core.quantize import BaseQuantizeConfig
+    from hqq.core.quantize import HQQBackend as HQQBackendKernel
+    from hqq.models.hf.base import AutoHQQHFModel
+    from hqq.utils.generation_hf import patch_model_for_compiled_runtime
+    from hqq.utils.patching import (
+        HQQLinear,
+        patch_add_quant_config,
+        patch_linearlayers,
+        prepare_for_inference,
+    )
+
+with LazyImport("Run 'pip install transformers'") as transformers_imports:
+    from transformers import (
+        AutoModelForCausalLM,
+        AutoTokenizer,
+    )
 
 
 class HqqBackend(str, Enum):
@@ -64,7 +69,7 @@ class HqqTexGenerationConfig(BaseModel):
     backend: HqqBackend = HqqBackend.BITBLAS
     compile: bool = True
     dtype: Dtype = Field(default=Dtype.AUTO)
-    quantization_config: CustomConfig = BaseQuantizeConfig()
+    quantization_config: CustomConfig = {}
     model_kwargs: CustomConfig = {}
 
     default_sampling_params: SamplingParams = SamplingParams(
@@ -88,6 +93,8 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
 
         The configuration should conform to the HqqTexGenerationConfig schema.
         """
+        transformers_imports.check()
+        hqq_imports.check()
         config_obj = HqqTexGenerationConfig(**config)
         self.model_id = config_obj.model_id
         self.backend = config_obj.backend

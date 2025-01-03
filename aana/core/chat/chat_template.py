@@ -1,9 +1,11 @@
+import typing
 from functools import lru_cache
 from importlib import resources
 
-from transformers.tokenization_utils_base import PreTrainedTokenizerBase
-
 from aana.core.models.chat import ChatDialog
+
+if typing.TYPE_CHECKING:
+    from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 
 @lru_cache(maxsize=128)
@@ -27,7 +29,7 @@ def load_chat_template(chat_template_name: str) -> str:
 
 
 def apply_chat_template(
-    tokenizer: PreTrainedTokenizerBase,
+    tokenizer: "PreTrainedTokenizerBase",
     dialog: ChatDialog | list[dict],
     chat_template_name: str | None = None,
 ) -> str:
