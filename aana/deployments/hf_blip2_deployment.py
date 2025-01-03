@@ -1,10 +1,8 @@
 from typing import Any
 
 import torch
-import transformers
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
-from transformers import Blip2ForConditionalGeneration, Blip2Processor
 from typing_extensions import TypedDict
 
 from aana.core.models.base import pydantic_protected_fields
@@ -14,6 +12,11 @@ from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport("Run 'pip install transformers'") as transformers_imports:
+    import transformers
+    from transformers import Blip2ForConditionalGeneration, Blip2Processor
 
 
 class HFBlip2Config(BaseModel):
@@ -69,6 +72,7 @@ class HFBlip2Deployment(BaseDeployment):
 
         The configuration should conform to the HFBlip2Config schema.
         """
+        transformers_imports.check()
         config_obj = HFBlip2Config(**config)
 
         # Create the batch processor to split the requests into batches

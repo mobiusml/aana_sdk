@@ -3,15 +3,8 @@ from threading import Thread
 from typing import Any
 
 import torch
-import transformers
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
-from transformers import (
-    AutoModelForVision2Seq,
-    AutoProcessor,
-    TextIteratorStreamer,
-)
-from transformers.utils.import_utils import is_flash_attn_2_available
 
 from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.chat import ChatMessage
@@ -22,7 +15,17 @@ from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.deployments.base_text_generation_deployment import ChatOutput, LLMOutput
 from aana.exceptions.runtime import InferenceException
+from aana.utils.lazy_import import LazyImport
 from aana.utils.streamer import async_streamer_adapter
+
+with LazyImport("Run 'pip install transformers'") as transformers_imports:
+    import transformers
+    from transformers import (
+        AutoModelForVision2Seq,
+        AutoProcessor,
+        TextIteratorStreamer,
+    )
+    from transformers.utils.import_utils import is_flash_attn_2_available
 
 
 class Idefics2Config(BaseModel):
@@ -61,6 +64,7 @@ class Idefics2Deployment(BaseDeployment):
 
         The configuration should conform to the Idefics2Config schema.
         """
+        transformers_imports.check()
         config_obj = Idefics2Config(**config)
 
         self.model_id = config_obj.model_id

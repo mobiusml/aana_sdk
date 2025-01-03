@@ -3,13 +3,18 @@ from typing import Any
 import numpy as np
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
-from sentence_transformers import SentenceTransformer
 from typing_extensions import TypedDict
 
 from aana.core.models.base import pydantic_protected_fields
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport(
+    "Run 'pip install sentence-transformers'"
+) as sentence_transformers_import:
+    from sentence_transformers import SentenceTransformer
 
 
 class SentenceTransformerConfig(BaseModel):
@@ -51,6 +56,7 @@ class SentenceTransformerDeployment(BaseDeployment):
 
         The configuration should conform to the SentenceTransformerConfig schema.
         """
+        sentence_transformers_import.check()
         config_obj = SentenceTransformerConfig(**config)
 
         # Create the batch processor to split the requests into batches
