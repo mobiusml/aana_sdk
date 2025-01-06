@@ -42,4 +42,5 @@ jobs:
     - name: Test with pytest
       env:
         USE_DEPLOYMENT_CACHE: True
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: poetry run pytest -vv
