@@ -1,10 +1,12 @@
+import asyncio
 import inspect
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
-from fastapi import FastAPI, Form, Query, Request
+import orjson
+from fastapi import Body, FastAPI, Form, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import ConfigDict, Field, ValidationError, create_model
 from pydantic.main import BaseModel
@@ -18,6 +20,7 @@ from aana.configs.settings import settings as aana_settings
 from aana.core.models.exception import ExceptionResponseModel
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
+from aana.utils.json import jsonify
 
 
 def get_default_values(func):
@@ -231,16 +234,13 @@ class Endpoint:
         bound_path = self.path
 
         async def route_func_body(  # noqa: C901
-            body: str, files: dict[str, bytes] | None = None, defer=False
+            data: type[BaseModel], files: dict[str, bytes] | None = None, defer=False
         ):
             if not self.initialized:
                 await self.initialize()
 
             if event_manager:
                 event_manager.handle(bound_path, defer=defer)
-
-            # parse form data as a pydantic model and validate it
-            data = RequestModel.model_validate_json(body)
 
             # if the input requires file upload, add the files to the data
             if files:
@@ -289,20 +289,93 @@ class Endpoint:
 
         async def route_func(
             request: Request,
-            body: str = Form(...),
-            defer: bool = Query(
-                description="Defer execution of the endpoint to the task queue.",
-                default=False,
-                include_in_schema=aana_settings.task_queue.enabled,
-            ),
+            # body: str = Form(...),
+            # json_body: dict = Body(...),
+            # defer: bool = Query(
+            #     description="Defer execution of the endpoint to the task queue.",
+            #     default=False,
+            #     include_in_schema=aana_settings.task_queue.enabled,
+            # ),
         ):
-            form_data = await request.form()
+            print("headers", request.headers)
+            content_type = request.headers.get("content-type")
+            print("content_type", content_type)
+
+            json_body = None
+            form_data = None
+            if content_type == "application/json":
+                json_body = await request.json()
+            else:
+                form_data = await request.form()
+
+            defer = request.query_params.get("defer", False)
+
+            print("form_data", form_data)
+            print("json_body", json_body)
 
             files: dict[str, bytes] = {}
-            for field_name, field_value in form_data.items():
-                if isinstance(field_value, StarletteUploadFile):
-                    files[field_name] = await field_value.read()
-            return await route_func_body(body=body, files=files, defer=defer)
+            if form_data:
+                body = form_data.get("body")
+                if not body:
+                    raise ValueError("body key not found in form data")
+                for field_name, field_value in form_data.items():
+                    if isinstance(field_value, StarletteUploadFile):
+                        files[field_name] = await field_value.read()
+
+                # parse form data as a pydantic model and validate it
+                data = RequestModel.model_validate_json(body)
+                return await route_func_body(data=data, files=files, defer=defer)
+            else:
+                # body = json_body
+                body = jsonify(json_body)
+
+                if "data" not in json_body:
+                    raise ValueError("data key not found in json_data")
+
+                if not isinstance(json_body["data"], list):
+                    raise ValueError("data key must be a list")
+
+                data = {}
+                futures = {}
+                responses = {}
+                for row in json_body["data"]:
+                    if not isinstance(row, list):
+                        raise ValueError("data row must be a list")
+                    if len(row) < 2:
+                        raise ValueError("data row must have at least 2 elements")
+                    if not isinstance(row[0], int):
+                        raise ValueError("data row first element must be an integer")
+                    row_id = row[0]
+
+                    try:
+                        data[row_id] = RequestModel.model_validate(
+                            dict(
+                                zip(
+                                    RequestModel.model_fields.keys(),
+                                    row[1:],
+                                    strict=False,
+                                )
+                            )
+                        )
+                        futures[row_id] = asyncio.create_task(
+                            route_func_body(data=data[row_id], files=files, defer=defer)
+                        )
+                    except Exception as e:
+                        # custom_exception_handler(None, e)
+                        responses[row_id] = custom_exception_handler(None, e)
+
+                # Wait for all futures to complete
+                for row_id, future in futures.items():
+                    response = await future
+                    responses[row_id] = response
+
+                responses_rows = []
+                for row_id, response in responses.items():
+                    if not isinstance(response, AanaJSONResponse):
+                        raise ValueError("Unsupported response type")
+                    response_data = orjson.loads(response.body)
+                    responses_rows.append([row_id, response_data])
+                return AanaJSONResponse(content={"data": responses_rows})
 
         return route_func
 
@@ -333,12 +406,24 @@ def add_custom_schemas_to_openapi_schema(
     """
     if "$defs" not in openapi_schema:
         openapi_schema["$defs"] = {}
-    for schema_name, schema in custom_schemas.items():
-        # if we have a definitions then we need to move them out to the top level of the schema
-        if "$defs" in schema:
-            openapi_schema["$defs"].update(schema["$defs"])
-            del schema["$defs"]
-        openapi_schema["components"]["schemas"][f"Body_{schema_name}"]["properties"][
-            "body"
-        ] = schema
+    # for schema_name, schema in custom_schemas.items():
+
+    # "requestBody": {
+    #     "required": true,
+    #     "content": {
+    #         "multipart/form-data": {
+    #             "schema": {
+    #                 "$ref": "#/components/schemas/Body_episodic_summary"
+    #             }
+    #         }
+    #     }
+    # },
+
+    #     # if we have a definitions then we need to move them out to the top level of the schema
+    #     if "$defs" in schema:
+    #         openapi_schema["$defs"].update(schema["$defs"])
+    #         del schema["$defs"]
+    #     openapi_schema["components"]["schemas"][f"Body_{schema_name}"]["properties"][
+    #         "body"
+    #     ] = schema
     return openapi_schema
