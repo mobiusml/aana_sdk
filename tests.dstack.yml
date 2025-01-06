@@ -8,6 +8,7 @@ image: nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
 
 env:
   - HF_TOKEN
+  - SNOWFLAKE_TEST_PARAMETERS
 
 commands:
   - apt-get update
