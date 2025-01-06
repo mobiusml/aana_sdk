@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, TypedDict
 
 import torch
+from huggingface_hub.utils import GatedRepoError
 from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 
@@ -11,7 +12,6 @@ from aana.core.models.time import TimeInterval
 from aana.core.models.vad import VadParams, VadSegment
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
-from aana.utils.download import download_model
 from aana.utils.lazy_import import LazyImport
 
 with LazyImport("Run 'pip install pyannote-audio'") as pyannote_imports:
@@ -49,7 +49,7 @@ class VadConfig(BaseModel):
     """The configuration for the vad deployment.
 
     Attributes:
-        model (str): The model url.
+        model_id (str): The model id.
         onset (float): The onset threshold. Defaults to 0.500.
         offset (float): The offset threshold. Defaults to 0.363.
         min_duration_on (float): The minimum duration for voice activity. Defaults to 0.1.
@@ -57,8 +57,9 @@ class VadConfig(BaseModel):
         sample_rate (int): The sample rate of the audio. Defaults to 16000.
     """
 
-    model: str = Field(
-        description="The VAD model url.",
+    model_id: str = Field(
+        default="pyannote/segmentation",
+        description="The VAD model id.",
     )
 
     # default_parameters for the model on initialization:
@@ -116,15 +117,20 @@ class VadDeployment(BaseDeployment):
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(42)
 
-        # model hash for vad_model
-        model_hash = str(config_obj.model).split("/")[-2]
-        self.filepath = download_model(config_obj.model, model_hash)
+        self.model_id = config_obj.model_id
+        try:
+            # load model using pyannote Pipeline
+            self.segmentation_model = Model.from_pretrained(
+                self.model_id, use_auth_token=None
+            )
+            self.vad_pipeline = VoiceActivitySegmentation(
+                segmentation=self.segmentation_model, device=torch.device(self.device)
+            )
 
-        self.vad_model = Model.from_pretrained(self.filepath, use_auth_token=None)
-        # vad_pipeline
-        self.vad_pipeline = VoiceActivitySegmentation(
-            segmentation=self.vad_model, device=torch.device(self.device)
-        )
+        except Exception as e:
+            raise GatedRepoError(
+                message=f"This repository is private and requires a token to accept user conditions and access models in {self.model_id} pipeline."
+            ) from e
         self.vad_pipeline.instantiate(self.hyperparameters)
 
     async def __merge(
@@ -212,7 +218,7 @@ class VadDeployment(BaseDeployment):
         try:
             vad_segments = self.vad_pipeline(vad_input)
         except Exception as e:
-            raise InferenceException(self.filepath.name, str(e)) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
         return vad_segments
 
