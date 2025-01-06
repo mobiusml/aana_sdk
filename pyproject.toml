@@ -1,8 +1,8 @@
-[tool.poetry]
+[project]
 name = "aana"
 version = "0.2.3"
 description = "Multimodal SDK"
-authors = ["Mobius Labs GmbH <dev@mobiuslabs.com>"]
+authors = [{name="Mobius Labs GmbH", email="dev@mobiuslabs.com"}]
 homepage = "https://www.mobiuslabs.com"
 repository = "https://github.com/mobiusml/aana_sdk"
 documentation = "https://mobiusml.github.io/aana_sdk"
@@ -83,6 +83,40 @@ torchaudio = ">=2.4.0"
 torchvision = ">=0.19.0"
 transformers = ">=4.47.0"
 vllm = ">=0.6.1, <0.6.4" # See https://github.com/vllm-project/vllm/issues/10451
+
+[project.optional-dependencies]
+vllm = [
+    "vllm>=0.6.1,<0.6.4",
+    "accelerate>=0.34.2",
+    "bitsandbytes>=0.42.0",
+    "transformers>=4.47.0"
+]
+
+whisper = [
+    "mobius-faster-whisper>=1.1.1",
+    "pyannote-audio>=3.1.1"
+]
+
+hqq = [
+    "hqq>=0.2.2",
+    "bitsandbytes>=0.42.0",
+    "transformers>=4.47.0"
+]
+
+embeddings = [
+    "sentence-transformers>=2.6.1"
+]
+
+all = [
+    "vllm>=0.6.1,<0.6.4",
+    "mobius-faster-whisper>=1.1.1", 
+    "pyannote-audio>=3.1.1",
+    "hqq>=0.2.2",
+    "sentence-transformers>=2.6.1",
+    "accelerate>=0.34.2",
+    "bitsandbytes>=0.42.0",
+    "transformers>=4.47.0"
+]
 
 [build-system]
 requires = ["poetry-core"]
