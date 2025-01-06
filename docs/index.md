@@ -315,3 +315,73 @@ aana_app.deploy()   # Deploys the application.
 
 All you need to do is define the deployments and endpoints you want to use in your application, and Aana SDK will take care of the rest.
 
+
+## API
+
+Aana SDK uses form data for API requests, which allows sending both binary data and structured fields in a single request. The request body is sent as a JSON string in the `body` field, and any binary data is sent as files.
+
+### Making API Requests
+
+You can send requests to the SDK endpoints with only structured data or a combination of structured data and binary data.
+
+#### Only Structured Data
+When your request includes only structured data, you can send it as a JSON string in the `body` field.
+
+- **cURL Example:**
+    ```bash
+    curl http://127.0.0.1:8000/endpoint \
+        -F body='{"input": "data", "param": "value"}'
+    ```
+
+- **Python Example:**
+    ```python
+    import json, requests
+
+    url = "http://127.0.0.1:8000/endpoint"
+    body = {
+        "input": "data",
+        "param": "value"
+    }
+
+    response = requests.post(
+        url,
+        data={"body": json.dumps(body)}
+    )
+
+    print(response.json())
+    ```
+
+#### With Binary Data
+When your request includes binary files (images, audio, etc.), you can send them as files in the request and include the names of the files in the `body` field as a reference.
+
+For example, if you want to send an image, you can use [`aana.core.models.image.ImageInput`](reference/models/media.md#aana.core.models.ImageInput) as the input type that supports binary data upload. The `content` field in the input type should be set to the name of the file you are sending.
+
+You can send multiple files in a single request by including multiple files in the request and referencing them in the `body` field even if they are of different types.
+
+- **cURL Example:**
+    ```bash
+    curl http://127.0.0.1:8000/process_images \
+        -H "Content-Type: multipart/form-data" \
+        -F body='{"image": {"content": "file1"}}' \
+        -F file1="@image.jpeg"
+    ```
+
+- **Python Example:**
+    ```python
+    import json, requests 
+
+    url = "http://127.0.0.1:8000/process_images"
+    body = {
+        "image": {"content": "file1"}
+    }
+    with open("image.jpeg", "rb") as file:
+        files = {"file1": file}
+
+        response = requests.post(
+            url,
+            data={"body": json.dumps(body)},
+            files=files
+        )
+
+        print(response.text)
+    ```
