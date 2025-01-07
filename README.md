@@ -89,12 +89,18 @@ Some models use Flash Attention. Install Flash Attention library for better perf
 
 3. Install the package with poetry.
 
-The project is managed with [Poetry](https://python-poetry.org/docs/). See the [Poetry installation instructions](https://python-poetry.org/docs/#installation) on how to install it on your system.
+The project is managed with [Poetry](https://python-poetry.org/docs/). See the [Poetry installation instructions](https://python-poetry.org/docs/#installation) on how to install it on your system. Use poetry >= 2.0 for the best experience.
 
-It will install the package and all dependencies in a virtual environment.
+It will install the package. Add `--extras all` to install all extra dependencies.
 
 ```bash
-sh install.sh
+poetry install --extras all
+```
+
+For the development environment, it is recommended to install all extras and tests and dev dependencies. You can do this by running the following command:
+
+```bash
+poetry install --extras all --with dev,tests
 ```
 
 ## Getting Started

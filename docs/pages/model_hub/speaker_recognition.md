@@ -2,11 +2,11 @@
 
 ## Speaker Diarization (SD) Models
 
-[PyannoteSpeakerDiarizationDeployment](./../../reference/deployments.md#aana.deployments.PyannoteSpeakerDiarizationDeployment) allows you to diarize the audio for speakers audio with pyannote models. The deployment is based on the [pyannote.audio](https://github.com/pyannote/pyannote-audio) library.
+[PyannoteSpeakerDiarizationDeployment](./../../reference/deployments.md#aana.deployments.pyannote_speaker_diarization_deployment.PyannoteSpeakerDiarizationDeployment) allows you to diarize the audio for speakers audio with pyannote models. The deployment is based on the [pyannote.audio](https://github.com/pyannote/pyannote-audio) library.
 
-[PyannoteSpeakerDiarizationConfig](./../../reference/deployments.md#aana.deployments.SpeakerDiarizationConfig) is used to configure the Speaker Diarization deployment.
+[PyannoteSpeakerDiarizationConfig](./../../reference/deployments.md#aana.deployments.pyannote_speaker_diarization_deployment.PyannoteSpeakerDiarizationConfig) is used to configure the Speaker Diarization deployment.
 
-::: aana.deployments.PyannoteSpeakerDiarizationConfig
+::: aana.deployments.pyannote_speaker_diarization_deployment.PyannoteSpeakerDiarizationConfig
     options:
         show_bases: false
         heading_level: 4
