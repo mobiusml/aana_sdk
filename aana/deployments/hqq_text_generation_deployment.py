@@ -14,7 +14,9 @@ from aana.deployments.hf_text_generation_deployment import (
 )
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install hqq'") as hqq_imports:
+with LazyImport(
+    "Run 'pip install hqq transformers' or 'pip install aana[hqq]'"
+) as hqq_imports:
     # from hqq.core.quantize import BaseQuantizeConfig
     from hqq.core.quantize import HQQBackend as HQQBackendKernel
     from hqq.models.hf.base import AutoHQQHFModel
@@ -25,8 +27,6 @@ with LazyImport("Run 'pip install hqq'") as hqq_imports:
         patch_linearlayers,
         prepare_for_inference,
     )
-
-with LazyImport("Run 'pip install transformers'") as transformers_imports:
     from transformers import (
         AutoModelForCausalLM,
         AutoTokenizer,
@@ -93,7 +93,6 @@ class HqqTextGenerationDeployment(BaseHfTextGenerationDeployment):
 
         The configuration should conform to the HqqTexGenerationConfig schema.
         """
-        transformers_imports.check()
         hqq_imports.check()
         config_obj = HqqTexGenerationConfig(**config)
         self.model_id = config_obj.model_id

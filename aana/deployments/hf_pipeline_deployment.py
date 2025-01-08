@@ -11,7 +11,9 @@ from aana.core.models.image import Image
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install transformers'") as transformers_imports:
+with LazyImport(
+    "Run 'pip install transformers' or 'pip install aana[transformers]'"
+) as transformers_imports:
     from transformers import pipeline
 
 

@@ -23,7 +23,7 @@ from aana.exceptions.runtime import InferenceException, PromptTooLongException
 from aana.utils.gpu import get_gpu_memory
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install vllm'") as vllm_imports:
+with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_imports:
     from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
     from vllm.engine.arg_utils import AsyncEngineArgs
     from vllm.engine.async_llm_engine import AsyncLLMEngine

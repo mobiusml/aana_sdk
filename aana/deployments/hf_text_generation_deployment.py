@@ -18,7 +18,9 @@ from aana.exceptions.runtime import InferenceException, PromptTooLongException
 from aana.utils.lazy_import import LazyImport
 from aana.utils.streamer import async_streamer_adapter
 
-with LazyImport("Run 'pip install transformers'") as transformers_imports:
+with LazyImport(
+    "Run 'pip install transformers' or 'pip install aana[transformers]'"
+) as transformers_imports:
     import transformers
     from transformers import (
         AutoModelForCausalLM,

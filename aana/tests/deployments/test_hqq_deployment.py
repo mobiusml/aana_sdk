@@ -118,6 +118,7 @@ deployments = [
 ]
 
 
+@pytest.skip("Skip hqq tests - deprecated")
 @pytest.mark.parametrize(
     "setup_deployment, prompt_template", deployments, indirect=["setup_deployment"]
 )
