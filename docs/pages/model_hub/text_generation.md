@@ -321,12 +321,15 @@ Here are other example configurations for the Hugging Face Text Generation deplo
     ```
 
 
-## Half-Quadratic Quantization (HQQ) Text Generation Deployment
+## Half-Quadratic Quantization (HQQ) Text Generation Deployment (Deprecated)
 
 [HqqTexGenerationDeployment](./../../reference/deployments.md#aana.deployments.hqq_text_generation_deployment.HqqTextGenerationDeployment) uses [Half-Quadratic Quantization (HQQ)](https://github.com/mobiusml/hqq) to quantize and deploy text generation models from the [Hugging Face Hub](https://huggingface.co/models).
 
 !!! Tip
     To use HQQ Text Generation deployment, install required libraris with `pip install hqq transformers` or include extra dependencies using `pip install aana[hqq]`.
+
+!!! Warning
+    HQQ Text Generation deployment is currently **deprecated** and might be removed in future versions of the Aana SDK. We recommend using the VLLM deployment for text generation models.
 
 It supports already quantized models as well as quantizing models on the fly. The quantization is blazing fast and can be done on the fly with minimal overhead. Check out the [the collections of already quantized models](https://huggingface.co/collections/mobiuslabsgmbh/llama3-hqq-6604257a96fc8b9c4e13e0fe) from Mobius Labs.
 
