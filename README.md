@@ -69,6 +69,21 @@ To install Aana SDK via PyPI, you can use the following command:
 pip install aana
 ```
 
+By default `aana` installs only the core dependencies. The deployment-specific dependencies are not installed by default. You have two options:
+- Install the dependencies manually. You will be prompted to install the dependencies when you try to use a deployment that requires them.
+- Use extras to install all dependencies. Here are the available extras:
+  - `all`: Install all dependencies.
+  - `vllm`: Install dependencies for the vLLM deployment.
+  - `asr`: Install dependencies for the Automatic Speech Recognition (Whisper) deployment and other ASR model (diarization, voice activity detection, etc.).
+  - `transformers`: Install dependencies for the Hugging Face Transformers deployment. There are multiple deployments that use Transformers.
+  - `hqq`: Install dependencies for Half-Quadratic Quantization (HQQ) deployment.
+
+For example, to install all dependencies, you can use the following command:
+    
+```bash 
+pip install aana[all]
+```
+
 For optimal performance install [PyTorch](https://pytorch.org/get-started/locally/) version >=2.1 appropriate for your system. You can skip it, but it will install a default version that may not make optimal use of your system's resources, for example, a GPU or even some SIMD operations. Therefore we recommend choosing your PyTorch package carefully and installing it manually.
 
 Some models use Flash Attention. Install Flash Attention library for better performance. See [flash attention installation instructions](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) for more details and supported GPUs.

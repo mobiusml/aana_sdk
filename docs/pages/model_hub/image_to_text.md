@@ -6,6 +6,9 @@ Aana SDK has two deployments to serve image-to-text models:
 
 - [HFBlip2Deployment](./../../reference/deployments.md#aana.deployments.idefics_2_deployment.HFBlip2Deployment): used to deploy the [BLIP-2](https://huggingface.co/docs/transformers/en/model_doc/blip-2) models. `HFBlip2Deployment` only supports image captioning capabilities of the BLIP-2 model.
 
+!!! Tip
+    To use Idefics2 or HF BLIP2 deployments, install required libraris with `pip install transformers` or include extra dependencies using `pip install aana[transformers]`.
+
 ## Idefics2 Deployment
 
 [Idefics2Config](./../../reference/deployments.md#aana.deployments.idefics_2_deployment.Idefics2Config) is used to configure the Idefics2 deployment.

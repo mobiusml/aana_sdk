@@ -24,7 +24,9 @@ from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install mobius-faster-whisper'") as faster_whisper_import:
+with LazyImport(
+    "Run 'pip install mobius-faster-whisper' or 'pip install aana[asr]'"
+) as faster_whisper_import:
     from faster_whisper import BatchedInferencePipeline, WhisperModel
 
 # Workaround for CUDNN issue with cTranslate2:

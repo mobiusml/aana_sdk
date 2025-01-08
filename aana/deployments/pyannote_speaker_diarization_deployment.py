@@ -17,7 +17,9 @@ from aana.exceptions.runtime import InferenceException
 from aana.processors.speaker import combine_homogeneous_speaker_diarization_segments
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install pyannote-audio'") as pyannote_imports:
+with LazyImport(
+    "Run 'pip install pyannote-audio' or 'pip install aana[asr]'"
+) as pyannote_imports:
     from pyannote.audio import Pipeline
     from pyannote.core import Annotation
 

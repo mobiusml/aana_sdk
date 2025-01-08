@@ -14,7 +14,9 @@ from aana.exceptions.runtime import InferenceException
 from aana.processors.batch import BatchProcessor
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install transformers'") as transformers_imports:
+with LazyImport(
+    "Run 'pip install transformers' or 'pip install aana[transformers]'"
+) as transformers_imports:
     import transformers
     from transformers import Blip2ForConditionalGeneration, Blip2Processor
 

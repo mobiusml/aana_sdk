@@ -14,6 +14,9 @@ All deployments have the same interface and provide similar capabilities.
 
 vLLM deployment allows you to efficiently serve Large Language Models (LLM) and Vision Language Models (VLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
 
+!!! Tip
+    To use vLLM deployment, install required libraris with `pip install vllm` or include extra dependencies using `pip install aana[vllm]`.
+
 [VLLMConfig](./../../reference/deployments.md#aana.deployments.vllm_deployment.VLLMConfig) is used to configure the vLLM deployment.
 
 ::: aana.deployments.vllm_deployment.VLLMConfig
@@ -22,6 +25,7 @@ vLLM deployment allows you to efficiently serve Large Language Models (LLM) and 
         heading_level: 4
         show_docstring_description: false
         docstring_section_style: list
+
 
 ### Example Configurations
 
@@ -253,7 +257,12 @@ You can find detailed tutorials on how to use structured generation in the [Stru
 
 ## Hugging Face Text Generation Deployment
 
-[HfTextGenerationConfig](./../../reference/deployments.md#aana.deployments.hf_text_generation_deployment.HfTextGenerationConfig) is used to configure the vLLM deployment. 
+[HfTextGenerationDeployment](./../../reference/deployments.md#aana.deployments.hf_text_generation_deployment.HfTextGenerationDeployment) uses the [Hugging Face Transformers](https://huggingface.co/transformers/) library to deploy text generation models.
+
+!!! Tip
+    To use HF Text Generation deployment, install required libraries with `pip install transformers` or include extra dependencies using `pip install aana[transformers]`.
+
+[HfTextGenerationConfig](./../../reference/deployments.md#aana.deployments.hf_text_generation_deployment.HfTextGenerationConfig) is used to configure the Hugging Face Text Generation deployment.
 
 ::: aana.deployments.hf_text_generation_deployment.HfTextGenerationConfig
     options:
@@ -261,6 +270,8 @@ You can find detailed tutorials on how to use structured generation in the [Stru
         heading_level: 4
         show_docstring_description: false
         docstring_section_style: list
+
+
 
 ### Example Configurations
 
@@ -313,6 +324,9 @@ Here are other example configurations for the Hugging Face Text Generation deplo
 ## Half-Quadratic Quantization (HQQ) Text Generation Deployment
 
 [HqqTexGenerationDeployment](./../../reference/deployments.md#aana.deployments.hqq_text_generation_deployment.HqqTextGenerationDeployment) uses [Half-Quadratic Quantization (HQQ)](https://github.com/mobiusml/hqq) to quantize and deploy text generation models from the [Hugging Face Hub](https://huggingface.co/models).
+
+!!! Tip
+    To use HQQ Text Generation deployment, install required libraris with `pip install hqq transformers` or include extra dependencies using `pip install aana[hqq]`.
 
 It supports already quantized models as well as quantizing models on the fly. The quantization is blazing fast and can be done on the fly with minimal overhead. Check out the [the collections of already quantized models](https://huggingface.co/collections/mobiuslabsgmbh/llama3-hqq-6604257a96fc8b9c4e13e0fe) from Mobius Labs.
 

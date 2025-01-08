@@ -14,7 +14,9 @@ from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install pyannote-audio'") as pyannote_imports:
+with LazyImport(
+    "Run 'pip install pyannote-audio' or 'pip install aana[asr]'"
+) as pyannote_imports:
     from pyannote.audio import Model
 
     from aana.processors.vad import BinarizeVadScores, VoiceActivitySegmentation
