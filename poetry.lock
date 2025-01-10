@@ -5016,22 +5016,6 @@ files = [
 ]
 
 [[package]]
-name = "portpicker"
-version = "1.6.0"
-description = "A library to choose unique available network ports."
-optional = false
-python-versions = ">=3.6"
-groups = ["tests"]
-markers = "python_version >= \"3.12\" or python_version <= \"3.11\""
-files = [
-    {file = "portpicker-1.6.0-py3-none-any.whl", hash = "sha256:b2787a41404cf7edbe29b07b9e0ed863b09f2665dcc01c1eb0c2261c1e7d0755"},
-    {file = "portpicker-1.6.0.tar.gz", hash = "sha256:bd507fd6f96f65ee02781f2e674e9dc6c99bbfa6e3c39992e3916204c9d431fa"},
-]
-
-[package.dependencies]
-psutil = "*"
-
-[[package]]
 name = "posthog"
 version = "3.7.5"
 description = "Integrate PostHog into any python application."
@@ -5278,7 +5262,7 @@ files = [
     {file = "psutil-6.1.1-cp37-abi3-win_amd64.whl", hash = "sha256:f35cfccb065fff93529d2afb4a2e89e363fe63ca1e4a5da22b603a85833c2649"},
     {file = "psutil-6.1.1.tar.gz", hash = "sha256:cf8496728c18f2d0b45198f06895be52f36611711746b7f30c464b422b50e2f5"},
 ]
-markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\") and (python_version >= \"3.12\" or python_version <= \"3.11\")", dev = "python_version >= \"3.12\" or python_version <= \"3.11\"", tests = "python_version >= \"3.12\" or python_version <= \"3.11\""}
+markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\") and (python_version >= \"3.12\" or python_version <= \"3.11\")", dev = "python_version >= \"3.12\" or python_version <= \"3.11\"", tests = "(python_version >= \"3.12\" or python_version <= \"3.11\") and sys_platform != \"cygwin\""}
 
 [package.extras]
 dev = ["abi3audit", "black", "check-manifest", "coverage", "packaging", "pylint", "pyperf", "pypinfo", "pytest-cov", "requests", "rstcheck", "ruff", "sphinx", "sphinx_rtd_theme", "toml-sort", "twine", "virtualenv", "vulture", "wheel"]
@@ -9222,4 +9206,4 @@ vllm = ["outlines", "vllm"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "f8ee1b57422e236a50c93b215854812495a478f5b23a297781d25d7ff3f9e8b7"
+content-hash = "b192b4a16f7b6553e94dcec27aa0cb7bdcd73800220a9d0cb4f34807004ece66"
