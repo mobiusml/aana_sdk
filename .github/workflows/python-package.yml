@@ -46,5 +46,5 @@ jobs:
       env:
         USE_DEPLOYMENT_CACHE: True
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        PORTSERVER_ADDRESS: @unittest-portserver
+        PORTSERVER_ADDRESS: "@unittest-portserver"
       run: poetry run pytest -vv
