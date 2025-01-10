@@ -39,8 +39,12 @@ jobs:
         sudo apt-get install ffmpeg
     - name: Install postgres
       uses: ikalnytskyi/action-setup-postgres@v6 
+    - name: Start portserver
+      run: |
+        portserver.py &
     - name: Test with pytest
       env:
         USE_DEPLOYMENT_CACHE: True
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        PORTSERVER_ADDRESS: @unittest-portserver
       run: poetry run pytest -vv
