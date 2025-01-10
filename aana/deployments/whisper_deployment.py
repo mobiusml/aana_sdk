@@ -7,7 +7,6 @@ from typing import Any, cast
 
 import nvidia.cudnn.lib
 import torch
-from faster_whisper import BatchedInferencePipeline, WhisperModel
 from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 from typing_extensions import TypedDict
@@ -23,6 +22,12 @@ from aana.core.models.vad import VadSegment
 from aana.core.models.whisper import BatchedWhisperParams, WhisperParams
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport(
+    "Run 'pip install mobius-faster-whisper' or 'pip install aana[asr]'"
+) as faster_whisper_import:
+    from faster_whisper import BatchedInferencePipeline, WhisperModel
 
 # Workaround for CUDNN issue with cTranslate2:
 cudnn_path = str(Path(nvidia.cudnn.lib.__file__).parent)
@@ -150,6 +155,7 @@ class WhisperDeployment(BaseDeployment):
 
         The configuration should conform to the WhisperConfig schema.
         """
+        faster_whisper_import.check()
         config_obj = WhisperConfig(**config)
         self.model_size = config_obj.model_size
         self.model_name = "whisper_" + self.model_size
@@ -247,7 +253,7 @@ class WhisperDeployment(BaseDeployment):
                         transcription=asr_transcription,
                     )
             except Exception as e:
-                raise InferenceException(self.model_name) from e
+                raise InferenceException(self.model_name, str(e)) from e
 
     async def transcribe_batch(
         self, audio_batch: list[Audio], params: WhisperParams | None = None
@@ -341,4 +347,4 @@ class WhisperDeployment(BaseDeployment):
                         transcription=asr_transcription,
                     )
             except Exception as e:
-                raise InferenceException(self.model_name) from e
+                raise InferenceException(self.model_name, str(e)) from e

@@ -4,12 +4,17 @@ from typing import Any
 import torch
 from pydantic import BaseModel, ConfigDict
 from ray import serve
-from transformers import pipeline
 
 from aana.core.models.base import pydantic_protected_fields
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport(
+    "Run 'pip install transformers' or 'pip install aana[transformers]'"
+) as transformers_imports:
+    from transformers import pipeline
 
 
 class HfPipelineConfig(BaseModel):
@@ -54,6 +59,7 @@ class HfPipelineDeployment(BaseDeployment):
 
         The configuration should conform to the HfPipelineConfig schema.
         """
+        transformers_imports.check()
         config_obj = HfPipelineConfig(**config)
         self.model_id = config_obj.model_id
         self.task = config_obj.task

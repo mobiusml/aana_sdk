@@ -3,14 +3,8 @@ from threading import Thread
 from typing import Any
 
 import torch
-import transformers
 from pydantic import BaseModel, ConfigDict
 from ray import serve
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    TextIteratorStreamer,
-)
 
 from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.sampling import SamplingParams
@@ -21,7 +15,18 @@ from aana.deployments.base_text_generation_deployment import (
 )
 from aana.deployments.hf_pipeline_deployment import CustomConfig
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
+from aana.utils.lazy_import import LazyImport
 from aana.utils.streamer import async_streamer_adapter
+
+with LazyImport(
+    "Run 'pip install transformers' or 'pip install aana[transformers]'"
+) as transformers_imports:
+    import transformers
+    from transformers import (
+        AutoModelForCausalLM,
+        AutoTokenizer,
+        TextIteratorStreamer,
+    )
 
 
 class HfTextGenerationConfig(BaseModel):
@@ -121,7 +126,7 @@ class BaseHfTextGenerationDeployment(BaseTextGenerationDeployment):
                 prompt_input.to("cpu")
                 del streamer
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
 
 @serve.deployment
@@ -137,6 +142,7 @@ class HfTextGenerationDeployment(BaseHfTextGenerationDeployment):
 
         The configuration should conform to the HfTextGenerationConfig schema.
         """
+        transformers_imports.check()
         config_obj = HfTextGenerationConfig(**config)
         self.model_id = config_obj.model_id
         self.model_kwargs = config_obj.model_kwargs

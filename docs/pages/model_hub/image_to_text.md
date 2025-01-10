@@ -2,15 +2,18 @@
 
 Aana SDK has two deployments to serve image-to-text models:
 
-- [Idefics2Deployment](./../../reference/deployments.md#aana.deployments.Idefics2Deployment): used to deploy the [Idefics2](https://huggingface.co/docs/transformers/main/en/model_doc/idefics2) models. Idefics2 is an open multimodal model that accepts arbitrary sequences of image and text inputs and produces text outputs.
+- [Idefics2Deployment](./../../reference/deployments.md#aana.deployments.idefics_2_deployment.Idefics2Deployment): used to deploy the [Idefics2](https://huggingface.co/docs/transformers/main/en/model_doc/idefics2) models. Idefics2 is an open multimodal model that accepts arbitrary sequences of image and text inputs and produces text outputs.
 
-- [HFBlip2Deployment](./../../reference/deployments.md#aana.deployments.HFBlip2Deployment): used to deploy the [BLIP-2](https://huggingface.co/docs/transformers/en/model_doc/blip-2) models. `HFBlip2Deployment` only supports image captioning capabilities of the BLIP-2 model.
+- [HFBlip2Deployment](./../../reference/deployments.md#aana.deployments.idefics_2_deployment.HFBlip2Deployment): used to deploy the [BLIP-2](https://huggingface.co/docs/transformers/en/model_doc/blip-2) models. `HFBlip2Deployment` only supports image captioning capabilities of the BLIP-2 model.
+
+!!! Tip
+    To use Idefics2 or HF BLIP2 deployments, install required libraries with `pip install transformers` or include extra dependencies using `pip install aana[transformers]`.
 
 ## Idefics2 Deployment
 
-[Idefics2Config](./../../reference/deployments.md#aana.deployments.Idefics2Config) is used to configure the Idefics2 deployment.
+[Idefics2Config](./../../reference/deployments.md#aana.deployments.idefics_2_deployment.Idefics2Config) is used to configure the Idefics2 deployment.
 
-::: aana.deployments.Idefics2Config
+::: aana.deployments.idefics_2_deployment.Idefics2Config
     options:
         show_bases: false
         heading_level: 4
@@ -41,9 +44,9 @@ Model is the Hugging Face model ID. `dtype=Dtype.FLOAT16` is used to specify the
 
 ## BLIP-2 Deployment
 
-[HFBlip2Config](./../../reference/deployments.md#aana.deployments.HFBlip2Config) is used to configure the BLIP-2 deployment.    
+[HFBlip2Config](./../../reference/deployments.md#aana.deployments.hf_blip2_deployment.HFBlip2Config) is used to configure the BLIP-2 deployment.    
 
-::: aana.deployments.HFBlip2Config
+::: aana.deployments.hf_blip2_deployment.HFBlip2Config
     options:
         show_bases: false
         heading_level: 4

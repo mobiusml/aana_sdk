@@ -3,15 +3,8 @@ from threading import Thread
 from typing import Any
 
 import torch
-import transformers
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
-from transformers import (
-    AutoModelForVision2Seq,
-    AutoProcessor,
-    TextIteratorStreamer,
-)
-from transformers.utils.import_utils import is_flash_attn_2_available
 
 from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.chat import ChatMessage
@@ -22,7 +15,19 @@ from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.deployments.base_text_generation_deployment import ChatOutput, LLMOutput
 from aana.exceptions.runtime import InferenceException
+from aana.utils.lazy_import import LazyImport
 from aana.utils.streamer import async_streamer_adapter
+
+with LazyImport(
+    "Run 'pip install transformers' or 'pip install aana[transformers]'"
+) as transformers_imports:
+    import transformers
+    from transformers import (
+        AutoModelForVision2Seq,
+        AutoProcessor,
+        TextIteratorStreamer,
+    )
+    from transformers.utils.import_utils import is_flash_attn_2_available
 
 
 class Idefics2Config(BaseModel):
@@ -61,6 +66,7 @@ class Idefics2Deployment(BaseDeployment):
 
         The configuration should conform to the Idefics2Config schema.
         """
+        transformers_imports.check()
         config_obj = Idefics2Config(**config)
 
         self.model_id = config_obj.model_id
@@ -155,7 +161,7 @@ class Idefics2Deployment(BaseDeployment):
                 del streamer
                 del inputs
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
     async def chat(
         self, dialog: ImageChatDialog, sampling_params: SamplingParams | None = None
@@ -245,6 +251,6 @@ class Idefics2Deployment(BaseDeployment):
                     ChatOutput(message=ChatMessage(content=text, role="assistant"))
                 )
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
         else:
             return chat_outputs
