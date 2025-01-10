@@ -15,7 +15,7 @@ All deployments have the same interface and provide similar capabilities.
 vLLM deployment allows you to efficiently serve Large Language Models (LLM) and Vision Language Models (VLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
 
 !!! Tip
-    To use vLLM deployment, install required libraris with `pip install vllm` or include extra dependencies using `pip install aana[vllm]`.
+    To use vLLM deployment, install required libraries with `pip install vllm` or include extra dependencies using `pip install aana[vllm]`.
 
 [VLLMConfig](./../../reference/deployments.md#aana.deployments.vllm_deployment.VLLMConfig) is used to configure the vLLM deployment.
 

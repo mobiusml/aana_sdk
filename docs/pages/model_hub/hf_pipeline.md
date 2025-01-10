@@ -3,7 +3,7 @@
 [Hugging Face Pipeline deployment](./../../reference/deployments.md#aana.deployments.hf_pipeline_deployment.HfPipelineDeployment) allows you to serve *almost* any model from the [Hugging Face Hub](https://huggingface.co/models). It is a wrapper for [Hugging Face Pipelines](https://huggingface.co/transformers/main_classes/pipelines.html) so you can deploy and scale *almost* any model from the Hugging Face Hub with a few lines of code.
 
 !!! Tip
-    To use HF Pipeline deployment, install required libraris with `pip install transformers` or include extra dependencies using `pip install aana[transformers]`.
+    To use HF Pipeline deployment, install required libraries with `pip install transformers` or include extra dependencies using `pip install aana[transformers]`.
 
 
 [HfPipelineConfig](./../../reference/deployments.md#aana.deployments.hf_pipeline_deployment.HfPipelineConfig) is used to configure the Hugging Face Pipeline deployment.

@@ -72,14 +72,14 @@ pip install aana
 By default `aana` installs only the core dependencies. The deployment-specific dependencies are not installed by default. You have two options:
 - Install the dependencies manually. You will be prompted to install the dependencies when you try to use a deployment that requires them.
 - Use extras to install all dependencies. Here are the available extras:
-  - `all`: Install all dependencies.
+  - `all`: Install dependencies for all deployments.
   - `vllm`: Install dependencies for the vLLM deployment.
-  - `asr`: Install dependencies for the Automatic Speech Recognition (Whisper) deployment and other ASR model (diarization, voice activity detection, etc.).
+  - `asr`: Install dependencies for the Automatic Speech Recognition (Whisper) deployment and other ASR models (diarization, voice activity detection, etc.).
   - `transformers`: Install dependencies for the Hugging Face Transformers deployment. There are multiple deployments that use Transformers.
   - `hqq`: Install dependencies for Half-Quadratic Quantization (HQQ) deployment.
 
 For example, to install all dependencies, you can use the following command:
-    
+
 ```bash 
 pip install aana[all]
 ```
@@ -106,7 +106,7 @@ Some models use Flash Attention. Install Flash Attention library for better perf
 
 The project is managed with [Poetry](https://python-poetry.org/docs/). See the [Poetry installation instructions](https://python-poetry.org/docs/#installation) on how to install it on your system. Use poetry >= 2.0 for the best experience.
 
-It will install the package. Add `--extras all` to install all extra dependencies.
+It will install the package in the virtual environment created by Poetry. Add `--extras all` to install all extra dependencies.
 
 ```bash
 poetry install --extras all
