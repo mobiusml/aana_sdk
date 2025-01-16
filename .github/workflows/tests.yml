@@ -1,4 +1,4 @@
-name: Python package
+name: Tests and Linting
 
 on:
   push:
@@ -40,8 +40,10 @@ jobs:
         sudo apt-get install ffmpeg
     - name: Install postgres
       uses: ikalnytskyi/action-setup-postgres@v6 
+    - name: Run Ruff Check
+      run: poetry run ruff check
     - name: Test with pytest
+      if: always()
       env:
-        USE_DEPLOYMENT_CACHE: True
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: poetry run pytest -vv
