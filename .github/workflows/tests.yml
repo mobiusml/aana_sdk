@@ -34,7 +34,7 @@ jobs:
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        poetry install --with tests --extras all
+        poetry install --with dev,tests --extras all
         sudo apt-get update
         sudo apt-get install ffmpeg
     - name: Install postgres
