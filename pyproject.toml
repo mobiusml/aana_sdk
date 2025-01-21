@@ -1,8 +1,8 @@
-[tool.poetry]
+[project]
 name = "aana"
 version = "0.2.3"
 description = "Multimodal SDK"
-authors = ["Mobius Labs GmbH <dev@mobiuslabs.com>"]
+authors = [{name="Mobius Labs GmbH", email="dev@mobiuslabs.com"}]
 homepage = "https://www.mobiuslabs.com"
 repository = "https://github.com/mobiusml/aana_sdk"
 documentation = "https://mobiusml.github.io/aana_sdk"
@@ -18,63 +18,97 @@ classifiers=[
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "alembic>=1.12.1",
+    "av==11.*",
+    "decord>=0.6.0",
+    "fastapi>=0.111.0",
+    "haystack-ai>=2.1.0",
+    "hf-transfer>=0.1.6",
+    "numpy>=1.17,<2",
+    "opencv-python-headless>=4.8.1.78",
+    "orjson>=3.10.3", 
+    "pydantic>=2.0",
+    "pydantic-settings>=2.1.0",
+    "python-multipart>=0.0.18",
+    "psycopg[binary]>=3.2.1",
+    "ray[serve]>=2.20",
+    "sqlalchemy[mypy]>=2.0.23",
+    "torch>=2.4.0",
+    "yt-dlp>=2024.08.06"
+]
 
-[tool.poetry.dependencies]
-# Apart from python (1st) and other internal deps (2nd), please
-# keep this list alphabetized!
-python = ">=3.10,<4.0"
-accelerate = "^0.34.2"
-alembic = "^1.12.1"
-av = "==11.*"
-bitblas = "^0.0.1.dev15"
-bitsandbytes = "^0.42.0"
-decord = "^0.6.0"
-fastapi = ">=0.111.0"
-haystack-ai = ">=2.1.0"
-hf-transfer = "^0.1.6"
-hqq = "^0.2.2"
-mobius-faster-whisper = ">=1.1.1"
-numpy = ">=1.17,<2"
-opencv-python-headless = "^4.8.1.78"
-orjson = "^3.10.3"
-portpicker = "^1.6.0"
-pyannote-audio = "^3.1.1"
-pydantic = ">=2.0"
-pydantic-settings = "^2.1.0"
-python-multipart = "^0.0.9"
-psycopg = {extras = ["binary"], version = "^3.2.1"}
-qdrant-haystack = ">=3.2.0"
-ray = {extras = ["serve"], version = ">=2.20"}
-rapidfuzz = "^3.4.0"
-scipy = "^1.11.3"
-sentence-transformers = ">=2.6.1"
-sqlalchemy = {extras = ["mypy"], version = "^2.0.23"}
-transformers = ">=4.47.0"
-torch = "^2.4.0"
-torchvision = ">=0.19.0"
-torchaudio = ">=2.4.0"
-vllm = ">=0.6.1, <0.6.4" # See https://github.com/vllm-project/vllm/issues/10451
-yt-dlp = ">=2024.08.06"
-outlines = {extras = ["serve"], version = "^0.0.46"}
+[project.optional-dependencies]
+vllm = [
+    "vllm>=0.6.1,<0.6.4",
+    "outlines[serve]>=0.0.46"
+]
+
+transformers = [
+    "accelerate>=0.34.2",
+    "bitsandbytes>=0.42.0",
+    "transformers>=4.47.0"
+]
+
+asr = [
+    "mobius-faster-whisper>=1.1.1",
+    "pyannote-audio>=3.1.1"
+]
+
+hqq = [
+    "accelerate>=0.34.2",
+    "bitblas>=0.0.1.dev15",
+    "bitsandbytes>=0.42.0",
+    "hqq>=0.2.2",
+    "transformers>=4.47.0"
+]
+
+all = [
+    "accelerate>=0.34.2",
+    "bitblas>=0.0.1.dev15",
+    "bitsandbytes>=0.42.0", 
+    "hqq>=0.2.2",
+    "mobius-faster-whisper>=1.1.1",
+    "outlines[serve]>=0.0.46",
+    "pyannote-audio>=3.1.1",
+    "transformers>=4.47.0",
+    "vllm>=0.6.1,<0.6.4"
+]
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
 matplotlib = "^3.8.2"
 mypy = "^1.6.1"
 ruff = "^0.1.5"
-portpicker = "^1.6.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.5.29"
+mkdocstrings = {extras = ["python"], version = "^0.25.1"}
+mkdocs = "^1.6.0"
+
+[tool.poetry.group.tests]
+optional = true
+
+[tool.poetry.group.tests.dependencies]
 pytest-asyncio = "^0.23.6"
 pytest-dotenv = "^0.5.2"
 pytest-env = "^1.1.3"
 pytest-mock = "^3.12.0"
 pytest-postgresql = "^6.0.0"
 pytest-timeout = "^2.2.0"
+rapidfuzz = "^3.4.0"
+sentence-transformers = ">=2.6.1"
 sqlalchemy-utils = "^0.41.1"
 
-[tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.5.29"
-mkdocstrings = {extras = ["python"], version = "^0.25.1"}
-mkdocs = "^1.6.0"
+[project.scripts]
+aana = "aana.cli:cli"
 
 [build-system]
 requires = ["poetry-core"]
@@ -91,9 +125,6 @@ filterwarnings = [
     "ignore:pkg_resources",
     "ignore::UserWarning",
 ]
-
-[tool.poetry.scripts]
-aana = "aana.cli:cli"
 
 [tool.ruff]
 # Lint with `ruff check aana`, `ruff check --fix aana` 

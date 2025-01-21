@@ -34,8 +34,7 @@ jobs:
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        chmod +x install.sh
-        ./install.sh
+        poetry install --with dev,tests --extras all
         sudo apt-get update
         sudo apt-get install ffmpeg
     - name: Install postgres
@@ -46,4 +45,5 @@ jobs:
       if: always()
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        PORTSERVER_ADDRESS: "@unittest-portserver"
       run: poetry run pytest -vv

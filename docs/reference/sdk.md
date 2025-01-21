@@ -1,3 +1,3 @@
 # SDK
 
-::: aana.AanaSDK
+::: aana.sdk.AanaSDK
