@@ -3,7 +3,6 @@ from typing import Any, TypedDict
 
 import torch
 from huggingface_hub.utils import GatedRepoError
-from pyannote.audio import Model
 from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 
@@ -13,7 +12,14 @@ from aana.core.models.time import TimeInterval
 from aana.core.models.vad import VadParams, VadSegment
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
-from aana.processors.vad import BinarizeVadScores, VoiceActivitySegmentation
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport(
+    "Run 'pip install pyannote-audio' or 'pip install aana[asr]'"
+) as pyannote_imports:
+    from pyannote.audio import Model
+
+    from aana.processors.vad import BinarizeVadScores, VoiceActivitySegmentation
 
 
 @dataclass
@@ -98,6 +104,7 @@ class VadDeployment(BaseDeployment):
         The configuration should conform to the VadConfig schema.
 
         """
+        pyannote_imports.check()
         config_obj = VadConfig(**config)
         self.hyperparameters = {
             "onset": config_obj.onset,
@@ -213,7 +220,7 @@ class VadDeployment(BaseDeployment):
         try:
             vad_segments = self.vad_pipeline(vad_input)
         except Exception as e:
-            raise InferenceException(self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
         return vad_segments
 

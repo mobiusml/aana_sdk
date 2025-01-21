@@ -2,7 +2,7 @@
 
 Aana SDK has three deployments to serve text generation models (LLMs):
 
-- [VLLMDeployment](./../../reference/deployments.md#aana.deployments.VLLMDeployment): allows you to efficiently serve Large Language Models (LLM) and Vision Language Models (VLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
+- [VLLMDeployment](./../../reference/deployments.md#aana.deployments.vllm_deployment.VLLMDeployment): allows you to efficiently serve Large Language Models (LLM) and Vision Language Models (VLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
 
 - [HfTextGenerationDeployment](./../../reference/deployments.md#aana.deployments.HfTextGenerationDeployment): uses the [Hugging Face Transformers](https://huggingface.co/transformers/) library to deploy text generation models.
 
@@ -14,14 +14,18 @@ All deployments have the same interface and provide similar capabilities.
 
 vLLM deployment allows you to efficiently serve Large Language Models (LLM) and Vision Language Models (VLM) with the [vLLM](https://github.com/vllm-project/vllm/) library.
 
-[VLLMConfig](./../../reference/deployments.md#aana.deployments.VLLMConfig) is used to configure the vLLM deployment.
+!!! Tip
+    To use vLLM deployment, install required libraries with `pip install vllm` or include extra dependencies using `pip install aana[vllm]`.
 
-::: aana.deployments.VLLMConfig
+[VLLMConfig](./../../reference/deployments.md#aana.deployments.vllm_deployment.VLLMConfig) is used to configure the vLLM deployment.
+
+::: aana.deployments.vllm_deployment.VLLMConfig
     options:
         show_bases: false
         heading_level: 4
         show_docstring_description: false
         docstring_section_style: list
+
 
 ### Example Configurations
 
@@ -253,14 +257,21 @@ You can find detailed tutorials on how to use structured generation in the [Stru
 
 ## Hugging Face Text Generation Deployment
 
-[HfTextGenerationConfig](./../../reference/deployments.md#aana.deployments.HfTextGenerationConfig) is used to configure the vLLM deployment. 
+[HfTextGenerationDeployment](./../../reference/deployments.md#aana.deployments.hf_text_generation_deployment.HfTextGenerationDeployment) uses the [Hugging Face Transformers](https://huggingface.co/transformers/) library to deploy text generation models.
 
-::: aana.deployments.HfTextGenerationConfig
+!!! Tip
+    To use HF Text Generation deployment, install required libraries with `pip install transformers` or include extra dependencies using `pip install aana[transformers]`.
+
+[HfTextGenerationConfig](./../../reference/deployments.md#aana.deployments.hf_text_generation_deployment.HfTextGenerationConfig) is used to configure the Hugging Face Text Generation deployment.
+
+::: aana.deployments.hf_text_generation_deployment.HfTextGenerationConfig
     options:
         show_bases: false
         heading_level: 4
         show_docstring_description: false
         docstring_section_style: list
+
+
 
 ### Example Configurations
 
@@ -310,15 +321,21 @@ Here are other example configurations for the Hugging Face Text Generation deplo
     ```
 
 
-## Half-Quadratic Quantization (HQQ) Text Generation Deployment
+## Half-Quadratic Quantization (HQQ) Text Generation Deployment (Deprecated)
 
-[HqqTexGenerationDeployment](./../../reference/deployments.md#aana.deployments.HqqTextGenerationDeployment) uses [Half-Quadratic Quantization (HQQ)](https://github.com/mobiusml/hqq) to quantize and deploy text generation models from the [Hugging Face Hub](https://huggingface.co/models).
+[HqqTexGenerationDeployment](./../../reference/deployments.md#aana.deployments.hqq_text_generation_deployment.HqqTextGenerationDeployment) uses [Half-Quadratic Quantization (HQQ)](https://github.com/mobiusml/hqq) to quantize and deploy text generation models from the [Hugging Face Hub](https://huggingface.co/models).
+
+!!! Tip
+    To use HQQ Text Generation deployment, install required libraris with `pip install hqq transformers` or include extra dependencies using `pip install aana[hqq]`.
+
+!!! Warning
+    HQQ Text Generation deployment is currently **deprecated** and might be removed in future versions of the Aana SDK. We recommend using the VLLM deployment for text generation models.
 
 It supports already quantized models as well as quantizing models on the fly. The quantization is blazing fast and can be done on the fly with minimal overhead. Check out the [the collections of already quantized models](https://huggingface.co/collections/mobiuslabsgmbh/llama3-hqq-6604257a96fc8b9c4e13e0fe) from Mobius Labs.
 
-[HqqTexGenerationConfig](./../../reference/deployments.md#aana.deployments.HqqTexGenerationConfig) is used to configure the HQQ Text Generation deployment.
+[HqqTexGenerationConfig](./../../reference/deployments.md#aana.deployments.hqq_text_generation_deployment.HqqTexGenerationConfig) is used to configure the HQQ Text Generation deployment.
 
-::: aana.deployments.HqqTexGenerationConfig
+::: aana.deployments.hqq_text_generation_deployment.HqqTexGenerationConfig
     options:
         show_bases: false
         heading_level: 4

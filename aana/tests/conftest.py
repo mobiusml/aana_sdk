@@ -1,11 +1,11 @@
 # This file is used to define fixtures that are used in the integration tests.
 # ruff: noqa: S101
 import os
+import random
 import tempfile
 from pathlib import Path
 from typing import Any
 
-import portpicker
 import pytest
 from pytest_postgresql import factories
 from sqlalchemy.orm import Session
@@ -28,6 +28,11 @@ if os.geteuid() == 0:
     postgresql = factories.postgresql("postgresql_proc")
 
 
+def random_port() -> int:
+    """Return a random port."""
+    return random.randint(30000, 60000)  # noqa: S311
+
+
 @pytest.fixture(scope="module")
 def app_factory():
     """Factory fixture to create and configure the app."""
@@ -46,7 +51,14 @@ def app_factory():
 
         # Import and start the app
         app = import_from(app_module, app_name)
-        app.connect(port=portpicker.pick_unused_port(), show_logs=True, num_cpus=10)
+        try:
+            # pretend we have 10 cpus for testing
+            app.connect(port=random_port(), show_logs=True, num_cpus=10)
+        except ValueError:
+            # if the port is already in use, try again
+            app.shutdown()
+            app = import_from(app_module, app_name)
+            app.connect(port=random_port(), show_logs=True, num_cpus=10)
         app.migrate()
         app.deploy()
 
@@ -73,9 +85,14 @@ def create_app():
     run_alembic_migrations(aana_settings)
 
     app = AanaSDK()
-    app.connect(
-        port=portpicker.pick_unused_port(), show_logs=True, num_cpus=10
-    )  # pretend we have 10 cpus for testing
+    try:
+        # pretend we have 10 cpus for testing
+        app.connect(port=random_port(), show_logs=True, num_cpus=10)
+    except ValueError:
+        # if the port is already in use, try again
+        app.shutdown()
+        app = AanaSDK()
+        app.connect(port=random_port(), show_logs=True, num_cpus=10)
     app.migrate()
 
     def start_app(deployments, endpoints):

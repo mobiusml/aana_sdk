@@ -3,21 +3,8 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 import torch
-from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
-from vllm.engine.arg_utils import AsyncEngineArgs
-from vllm.engine.async_llm_engine import AsyncLLMEngine
-from vllm.entrypoints.chat_utils import (
-    apply_hf_chat_template,
-    apply_mistral_chat_template,
-    parse_chat_messages,
-)
-from vllm.inputs import TokensPrompt
-from vllm.model_executor.utils import set_random_seed
-from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-from vllm.transformers_utils.tokenizer import MistralTokenizer
-from vllm.utils import random_uuid
 
 from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.chat import ChatDialog, ChatMessage
@@ -34,6 +21,22 @@ from aana.deployments.base_text_generation_deployment import (
 )
 from aana.exceptions.runtime import InferenceException, PromptTooLongException
 from aana.utils.gpu import get_gpu_memory
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_imports:
+    from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
+    from vllm.engine.arg_utils import AsyncEngineArgs
+    from vllm.engine.async_llm_engine import AsyncLLMEngine
+    from vllm.entrypoints.chat_utils import (
+        apply_hf_chat_template,
+        apply_mistral_chat_template,
+        parse_chat_messages,
+    )
+    from vllm.inputs import TokensPrompt
+    from vllm.model_executor.utils import set_random_seed
+    from vllm.sampling_params import SamplingParams as VLLMSamplingParams
+    from vllm.transformers_utils.tokenizer import MistralTokenizer
+    from vllm.utils import random_uuid
 
 
 class VLLMConfig(BaseModel):
@@ -99,6 +102,7 @@ class VLLMDeployment(BaseDeployment):
         Args:
             config (dict): the configuration of the deployment
         """
+        vllm_imports.check()
         config_obj = VLLMConfig(**config)
         self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
@@ -290,7 +294,7 @@ class VLLMDeployment(BaseDeployment):
                 await self.engine.abort(request_id)
             raise
         except Exception as e:
-            raise InferenceException(model_name=self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
     async def generate(
         self,

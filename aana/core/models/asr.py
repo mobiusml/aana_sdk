@@ -1,18 +1,21 @@
+import typing
 from typing import Annotated
 
 import numpy as np
-from faster_whisper.transcribe import (
-    Segment as WhisperSegment,
-)
-from faster_whisper.transcribe import (
-    TranscriptionInfo as WhisperTranscriptionInfo,
-)
-from faster_whisper.transcribe import (
-    Word as WhisperWord,
-)
 from pydantic import BaseModel, ConfigDict, Field
 
 from aana.core.models.time import TimeInterval
+
+if typing.TYPE_CHECKING:
+    from faster_whisper.transcribe import (
+        Segment as WhisperSegment,
+    )
+    from faster_whisper.transcribe import (
+        TranscriptionInfo as WhisperTranscriptionInfo,
+    )
+    from faster_whisper.transcribe import (
+        Word as WhisperWord,
+    )
 
 __all__ = [
     "AsrWord",
@@ -44,7 +47,7 @@ class AsrWord(BaseModel):
     )
 
     @classmethod
-    def from_whisper(cls, whisper_word: WhisperWord) -> "AsrWord":
+    def from_whisper(cls, whisper_word: "WhisperWord") -> "AsrWord":
         """Convert WhisperWord to AsrWord.
 
         Args:
@@ -93,7 +96,7 @@ class AsrSegment(BaseModel):
     speaker: str | None = Field(None, description="speaker label of the segment")
 
     @classmethod
-    def from_whisper(cls, whisper_segment: WhisperSegment) -> "AsrSegment":
+    def from_whisper(cls, whisper_segment: "WhisperSegment") -> "AsrSegment":
         """Convert WhisperSegment to AsrSegment."""
         time_interval = TimeInterval(
             start=whisper_segment.start, end=whisper_segment.end
@@ -146,7 +149,7 @@ class AsrTranscriptionInfo(BaseModel):
 
     @classmethod
     def from_whisper(
-        cls, transcription_info: WhisperTranscriptionInfo
+        cls, transcription_info: "WhisperTranscriptionInfo"
     ) -> "AsrTranscriptionInfo":
         """Convert WhisperTranscriptionInfo to AsrTranscriptionInfo.
 

@@ -2,8 +2,6 @@ from typing import Any, TypedDict
 
 import torch
 from huggingface_hub.utils import GatedRepoError
-from pyannote.audio import Pipeline
-from pyannote.core import Annotation
 from pydantic import BaseModel, ConfigDict, Field
 from ray import serve
 
@@ -17,6 +15,13 @@ from aana.core.models.time import TimeInterval
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
 from aana.exceptions.runtime import InferenceException
 from aana.processors.speaker import combine_homogeneous_speaker_diarization_segments
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport(
+    "Run 'pip install pyannote-audio' or 'pip install aana[asr]'"
+) as pyannote_imports:
+    from pyannote.audio import Pipeline
+    from pyannote.core import Annotation
 
 
 class SpeakerDiarizationOutput(TypedDict):
@@ -61,6 +66,7 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
         The configuration should conform to the PyannoteSpeakerDiarizationConfig schema.
 
         """
+        pyannote_imports.check()
         config_obj = PyannoteSpeakerDiarizationConfig(**config)
 
         self.sample_rate = config_obj.sample_rate
@@ -77,6 +83,8 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
 
             if self.diarize_model:
                 self.diarize_model.to(torch.device(self.device))
+            else:
+                raise  # If the model is not loaded, raise an exception.
 
         except Exception as e:
             raise GatedRepoError(
@@ -112,7 +120,7 @@ class PyannoteSpeakerDiarizationDeployment(BaseDeployment):
             )
 
         except Exception as e:
-            raise InferenceException(self.model_id) from e
+            raise InferenceException(self.model_id, str(e)) from e
 
         return speaker_segments
 
