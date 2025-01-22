@@ -48,7 +48,7 @@ class ApiServiceSettings(BaseModel):
         lago_api_key (str): The API key for the LAGO API service.
     """
 
-    enabled: bool = True
+    enabled: bool = False
     lago_url: str | None = None
     lago_api_key: str | None = None
 
