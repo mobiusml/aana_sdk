@@ -1,9 +1,12 @@
 import inspect
+import time
+import uuid
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
+import orjson
 from fastapi import FastAPI, Form, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import ConfigDict, Field, ValidationError, create_model
@@ -15,6 +18,7 @@ from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
+from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
@@ -231,7 +235,9 @@ class Endpoint:
         bound_path = self.path
 
         async def route_func_body(  # noqa: C901
-            body: str, files: dict[str, bytes] | None = None, defer=False
+            body: dict[str, Any],
+            files: dict[str, bytes] | None = None,
+            defer=False,
         ):
             if not self.initialized:
                 await self.initialize()
@@ -240,7 +246,7 @@ class Endpoint:
                 event_manager.handle(bound_path, defer=defer)
 
             # parse form data as a pydantic model and validate it
-            data = RequestModel.model_validate_json(body)
+            data = RequestModel.model_validate(body)
 
             # if the input requires file upload, add the files to the data
             if files:
@@ -298,13 +304,55 @@ class Endpoint:
         ):
             form_data = await request.form()
 
+            # Parse json data from the body
+            body = orjson.loads(body)
+
+            # Add api_key_info to the body if API service is enabled
+            if aana_settings.api_service.enabled:
+                body["api_key_info"] = request.state.api_key_info
+
+            # Parse files from the form data
             files: dict[str, bytes] = {}
             for field_name, field_value in form_data.items():
                 if isinstance(field_value, StarletteUploadFile):
                     files[field_name] = await field_value.read()
+
             return await route_func_body(body=body, files=files, defer=defer)
 
         return route_func
+
+    def send_usage_event(
+        self, api_key: ApiKey, metric: str, properties: dict[str, Any]
+    ):
+        """Send a usage event to the LAGO API service.
+
+        Args:
+            api_key (ApiKey): The API key information.
+            metric (str): The metric code.
+            properties (dict): The properties of the event (usage data, e.g. {"count": 10}).
+        """
+        from lago_python_client.client import Client
+        from lago_python_client.exceptions import LagoApiError
+        from lago_python_client.models import Event
+
+        client = Client(
+            api_key=aana_settings.api_service.lago_api_key,
+            api_url=aana_settings.api_service.lago_url,
+        )
+
+        event = Event(
+            transaction_id=str(uuid.uuid4()),
+            code=metric,
+            external_subscription_id=api_key.subscription_id,
+            timestamp=time.time(),
+            properties=properties,
+        )
+
+        try:
+            client.events.create(event)
+        except LagoApiError as e:
+            # TODO: Log the error properly
+            print("Unable to send usage event: ", e)
 
 
 def add_custom_schemas_to_openapi_schema(

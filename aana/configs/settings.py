@@ -39,6 +39,20 @@ class TaskQueueSettings(BaseModel):
     max_retries: int = 3
 
 
+class ApiServiceSettings(BaseModel):
+    """A pydantic model for API service settings.
+
+    Attributes:
+        enabled (bool): Flag indicating if the API service is enabled.
+        lago_url (str): The URL of the LAGO API service.
+        lago_api_key (str): The API key for the LAGO API service.
+    """
+
+    enabled: bool = True
+    lago_url: str | None = None
+    lago_api_key: str | None = None
+
+
 class Settings(BaseSettings):
     """A pydantic model for SDK settings.
 
@@ -68,6 +82,8 @@ class Settings(BaseSettings):
 
     test: TestSettings = TestSettings()
 
+    api_service: ApiServiceSettings = ApiServiceSettings()
+
     @model_validator(mode="after")
     def setup_resource_directories(self):
         """Create the resource directories if they do not exist."""
@@ -85,6 +101,17 @@ class Settings(BaseSettings):
         self.video_dir.mkdir(parents=True, exist_ok=True)
         self.audio_dir.mkdir(parents=True, exist_ok=True)
         self.model_dir.mkdir(parents=True, exist_ok=True)
+        return self
+
+    @model_validator(mode="after")
+    def validate_lago_settings(self):
+        """Validate the LAGO API service settings."""
+        if self.api_service.enabled and (
+            self.api_service.lago_url is None or self.api_service.lago_api_key is None
+        ):
+            raise ValueError(  # noqa: TRY003
+                "LAGO API service settings are required when the API service is enabled."
+            )
         return self
 
     model_config = SettingsConfigDict(
