@@ -309,7 +309,16 @@ class Endpoint:
 
             # Add api_key_info to the body if API service is enabled
             if aana_settings.api_service.enabled:
-                body["api_key_info"] = request.state.api_key_info
+                api_key_field = next(
+                    (
+                        field_name
+                        for field_name, field in RequestModel.model_fields.items()
+                        if field.annotation is ApiKey
+                    ),
+                    None,
+                )
+                if api_key_field:
+                    body[api_key_field] = request.state.api_key_info
 
             # Parse files from the form data
             files: dict[str, bytes] = {}
