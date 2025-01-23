@@ -1,4 +1,5 @@
 import inspect
+import logging
 import time
 import uuid
 from collections.abc import AsyncGenerator, Callable
@@ -22,6 +23,8 @@ from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
+
+logger = logging.getLogger(__name__)
 
 
 def get_default_values(func):
@@ -341,27 +344,39 @@ class Endpoint:
             properties (dict): The properties of the event (usage data, e.g. {"count": 10}).
         """
         from lago_python_client.client import Client
-        from lago_python_client.exceptions import LagoApiError
         from lago_python_client.models import Event
-
-        client = Client(
-            api_key=aana_settings.api_service.lago_api_key,
-            api_url=aana_settings.api_service.lago_url,
+        from tenacity import (
+            retry,
+            retry_if_exception_type,
+            stop_after_attempt,
         )
 
-        event = Event(
-            transaction_id=str(uuid.uuid4()),
-            code=metric,
-            external_subscription_id=api_key.subscription_id,
-            timestamp=time.time(),
-            properties=properties,
+        @retry(
+            stop=stop_after_attempt(3),
+            retry=retry_if_exception_type(Exception),
         )
+        def send_event_with_retry(client, event):
+            return client.events.create(event)
 
         try:
-            client.events.create(event)
-        except LagoApiError as e:
-            # TODO: Log the error properly
-            print("Unable to send usage event: ", e)
+            client = Client(
+                api_key=aana_settings.api_service.lago_api_key,
+                api_url=aana_settings.api_service.lago_url,
+            )
+
+            event = Event(
+                transaction_id=str(uuid.uuid4()),
+                code=metric,
+                external_subscription_id=api_key.subscription_id,
+                timestamp=time.time(),
+                properties=properties,
+            )
+
+            send_event_with_retry(client, event)
+        except Exception as e:
+            logger.error(
+                f"Failed to send usage event after retries: {e}", exc_info=True
+            )
 
 
 def add_custom_schemas_to_openapi_schema(

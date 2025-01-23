@@ -64,6 +64,11 @@ hqq = [
     "transformers>=4.47.0"
 ]
 
+api-service = [
+    "lago-python-client>=1.19.0",
+    "tenacity>=9.0.0",
+]
+
 all = [
     "accelerate>=0.34.2",
     "bitblas>=0.0.1.dev15",
