@@ -1,11 +1,14 @@
-
 from sqlalchemy import Boolean
-from sqlalchemy.orm import Mapped, mapped_column
-
-from aana.storage.models.base import BaseEntity, TimeStampEntity
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
-class ApiKeyEntity(BaseEntity, TimeStampEntity):
+class ApiServiceBase(DeclarativeBase):
+    """Base class."""
+
+    pass
+
+
+class ApiKeyEntity(ApiServiceBase):
     """Table for API keys."""
 
     __tablename__ = "api_keys"
@@ -33,8 +36,7 @@ class ApiKeyEntity(BaseEntity, TimeStampEntity):
             f"<APIKeyEntity(id={self.id}, "
             f"user_id={self.user_id}, "
             f"subscription_id={self.subscription_id}, "
-            f"is_subscription_active={self.is_subscription_active}, "
-            f"updated_at={self.updated_at})>"
+            f"is_subscription_active={self.is_subscription_active})>"
         )
 
     def to_dict(self) -> dict:
