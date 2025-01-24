@@ -86,6 +86,18 @@ def create_app():
 
     run_alembic_migrations(aana_settings)
 
+    # Setup API service database
+    tmp_api_service_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
+    api_service_db_config = DbSettings(
+        datastore_type=DbType.SQLITE,
+        datastore_config=SQLiteConfig(path=tmp_api_service_database_path),
+    )
+    os.environ["API_SERVICE_DB_CONFIG"] = jsonify(api_service_db_config)
+
+    aana_settings.api_service_db_config = api_service_db_config
+
+    ApiServiceBase.metadata.create_all(api_service_db_config.get_engine())
+
     app = AanaSDK()
     try:
         # pretend we have 10 cpus for testing
