@@ -238,7 +238,8 @@ class Endpoint:
         bound_path = self.path
 
         async def route_func_body(  # noqa: C901
-            body: dict[str, Any],
+            request: Request,
+            body: str,
             files: dict[str, bytes] | None = None,
             defer=False,
         ):
@@ -247,6 +248,24 @@ class Endpoint:
 
             if event_manager:
                 event_manager.handle(bound_path, defer=defer)
+
+            # Parse json data from the body
+            body = orjson.loads(body)
+
+            # Add api_key_info to the body if API service is enabled
+            api_key_info: dict = {}
+            if aana_settings.api_service.enabled:
+                api_key_info = request.state.api_key_info
+                api_key_field = next(
+                    (
+                        field_name
+                        for field_name, field in RequestModel.model_fields.items()
+                        if field.annotation is ApiKey
+                    ),
+                    None,
+                )
+                if api_key_field:
+                    body[api_key_field] = api_key_info
 
             # parse form data as a pydantic model and validate it
             data = RequestModel.model_validate(body)
@@ -272,7 +291,9 @@ class Endpoint:
 
                 with get_session() as session:
                     task = TaskRepository(session).save(
-                        endpoint=bound_path, data=data_dict
+                        endpoint=bound_path,
+                        data=data_dict,
+                        user_id=api_key_info.get("user_id"),
                     )
                     return AanaJSONResponse(content={"task_id": str(task.id)})
 
@@ -307,29 +328,15 @@ class Endpoint:
         ):
             form_data = await request.form()
 
-            # Parse json data from the body
-            body = orjson.loads(body)
-
-            # Add api_key_info to the body if API service is enabled
-            if aana_settings.api_service.enabled:
-                api_key_field = next(
-                    (
-                        field_name
-                        for field_name, field in RequestModel.model_fields.items()
-                        if field.annotation is ApiKey
-                    ),
-                    None,
-                )
-                if api_key_field:
-                    body[api_key_field] = request.state.api_key_info
-
             # Parse files from the form data
             files: dict[str, bytes] = {}
             for field_name, field_value in form_data.items():
                 if isinstance(field_value, StarletteUploadFile):
                     files[field_name] = await field_value.read()
 
-            return await route_func_body(body=body, files=files, defer=defer)
+            return await route_func_body(
+                request=request, body=body, files=files, defer=defer
+            )
 
         return route_func
 

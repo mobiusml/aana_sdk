@@ -3,8 +3,9 @@ from pathlib import Path
 from pydantic import BaseModel, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from aana.configs.db import DbSettings
+from aana.configs.db import DbSettings, SQLiteConfig
 from aana.core.models.base import pydantic_protected_fields
+from aana.storage.op import DbType
 
 
 class TestSettings(BaseModel):
@@ -83,6 +84,11 @@ class Settings(BaseSettings):
     test: TestSettings = TestSettings()
 
     api_service: ApiServiceSettings = ApiServiceSettings()
+
+    api_service_db_config: DbSettings = DbSettings(
+        datastore_type=DbType.SQLITE,
+        datastore_config=SQLiteConfig(path="/var/lib/aana_api_service_data"),
+    )
 
     @model_validator(mode="after")
     def setup_resource_directories(self):
