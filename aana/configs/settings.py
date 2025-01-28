@@ -118,6 +118,8 @@ class Settings(BaseSettings):
         protected_namespaces=("settings", *pydantic_protected_fields),
         env_nested_delimiter="__",
         env_ignore_empty=True,
+        env_file=".env",
+        extra="ignore",
     )
 
 
