@@ -31,6 +31,7 @@ class TaskQueueSettings(BaseModel):
             it will be considered as stuck and will be reassign to another worker.
         heartbeat_timeout (int): The maximum time between heartbeats in seconds.
         max_retries (int): The maximum number of retries for a task.
+        maximum_active_tasks_per_user (int): The maximum number of active tasks per user (only applicable in the API service).
     """
 
     enabled: bool = True
@@ -38,6 +39,7 @@ class TaskQueueSettings(BaseModel):
     execution_timeout: int = 600
     heartbeat_timeout: int = 60
     max_retries: int = 3
+    maximum_active_tasks_per_user: int = 25
 
 
 class ApiServiceSettings(BaseModel):
