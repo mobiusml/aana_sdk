@@ -79,6 +79,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         max_retries: int = 1,
         retryable_exceptions: list[str] | None = None,
         api_service_enabled: bool = False,
+        maximum_active_tasks_per_user: int = 25,
     ) -> list[TaskEntity]:
         """Fetches unprocessed tasks and marks them as ASSIGNED.
 
@@ -97,6 +98,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
             retryable_exceptions (list[str] | None): The list of exceptions that should be retried.
             api_service_enabled (bool): Whether the API service is enabled. If True, the tasks will be
                 assigned to users with active subscriptions only. Defaults to False.
+            maximum_active_tasks_per_user (int): The maximum number of active tasks per user.
 
         Returns:
             list[TaskEntity]: the unprocessed tasks.
@@ -159,23 +161,58 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 TaskEntity.user_id == None,
             )
 
-            tasks = (
+            # Window function to enumerate tasks per user by priority and created_at
+            window_subquery = (
                 self.session.query(
-                    TaskEntity, active_task_count.label("active_task_count")
+                    TaskEntity.id.label("task_id"),
+                    TaskEntity.user_id.label("user_id"),
+                    TaskEntity.priority.label("priority"),
+                    TaskEntity.created_at.label("created_at"),
+                    # "How many tasks are active for the same user?"
+                    active_task_count.label("active_count"),
+                    # row_number() to limit tasks per user by priority
+                    func.row_number()
+                    .over(
+                        partition_by=TaskEntity.user_id,
+                        order_by=(desc(TaskEntity.priority), TaskEntity.created_at),
+                    )
+                    .label("row_num"),
                 )
                 .filter(and_(main_filter_expr, user_filter_expr))
+                .subquery()
+            )
+
+            # Query to fetch tasks with limited active tasks per user
+            candidate_ids_query = (
+                self.session.query(window_subquery.c.task_id)
+                .filter(
+                    or_(
+                        window_subquery.c.active_count + window_subquery.c.row_num
+                        <= maximum_active_tasks_per_user,
+                        window_subquery.c.user_id == None,
+                    )
+                )
                 .order_by(
-                    active_task_count.asc(),  # Prioritize users with fewer active tasks
-                    desc(TaskEntity.priority),  # Higher priority first
-                    TaskEntity.created_at,  # Older tasks first
+                    desc(window_subquery.c.priority),
+                    window_subquery.c.created_at,
+                    window_subquery.c.row_num,
                 )
                 .limit(limit)
-                .populate_existing()
+            )
+
+            # Fetch the task IDs from the query
+            candidate_ids = [row.task_id for row in candidate_ids_query]
+            if not candidate_ids:
+                # No tasks matched
+                return []
+
+            # Lock those specific tasks with FOR UPDATE SKIP LOCKED
+            tasks = (
+                self.session.query(TaskEntity)
+                .filter(TaskEntity.id.in_(candidate_ids))
                 .with_for_update(skip_locked=True)
                 .all()
             )
-            tasks = [task for task, _ in tasks]  # Remove the count column
-
         else:
             tasks = (
                 self.session.query(TaskEntity)
