@@ -332,7 +332,7 @@ class Endpoint:
                 and not self.always_defer,
             ),
         ):
-            if self.admin_required:
+            if aana_settings.api_service.enabled and self.admin_required:
                 check_admin_permissions(request)
 
             if self.always_defer:

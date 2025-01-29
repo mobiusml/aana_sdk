@@ -4,6 +4,9 @@ Aana SDK provides an OpenAI-compatible Chat Completions API that allows you to i
 
 Chat Completions API is available at the `/chat/completions` endpoint.
 
+!!! Tip
+    The endpoint is enabled by default but can be disabled by setting the environment variable: `OPENAI_ENDPOINT_ENABLED=False`.
+
 It is compatible with the OpenAI client libraries and can be used as a drop-in replacement for OpenAI API.
 
 ```python
