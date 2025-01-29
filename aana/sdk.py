@@ -266,6 +266,7 @@ class AanaSDK:
         path: str,
         summary: str,
         endpoint_cls: type[Endpoint],
+        admin_required: bool = False,
         event_handlers: list[EventHandler] | None = None,
     ):
         """Register an endpoint.
@@ -275,12 +276,14 @@ class AanaSDK:
             path (str): The path of the endpoint.
             summary (str): The summary of the endpoint.
             endpoint_cls (Type[Endpoint]): The class of the endpoint.
+            admin_required (bool, optional): If True, the endpoint requires admin access. Defaults to False.
             event_handlers (list[EventHandler], optional): The event handlers to register for the endpoint.
         """
         endpoint = endpoint_cls(
             name=name,
             path=path,
             summary=summary,
+            admin_required=admin_required,
             event_handlers=event_handlers,
         )
         self.endpoints[name] = endpoint
