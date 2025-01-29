@@ -202,9 +202,22 @@ class RequestHandler:
         task = task_repo.delete(task_id)
         return TaskId(task_id=str(task.id))
 
-    @app.post("/chat/completions", response_model=ChatCompletion)
+    @app.post(
+        "/chat/completions",
+        response_model=ChatCompletion,
+        include_in_schema=aana_settings.openai_endpoint_enabled,
+    )
     async def chat_completions(self, request: ChatCompletionRequest):
         """Handle chat completions requests for OpenAI compatible API."""
+        if not aana_settings.openai_endpoint_enabled:
+            return AanaJSONResponse(
+                content={
+                    "error": {
+                        "message": "The OpenAI-compatible endpoint is not enabled."
+                    }
+                },
+                status_code=404,
+            )
 
         async def _async_chat_completions(
             handle: AanaDeploymentHandle,

@@ -66,6 +66,7 @@ class Settings(BaseSettings):
         audio_dir (Path): The temporary audio directory.
         model_dir (Path): The temporary model directory.
         num_workers (int): The number of web workers.
+        openai_endpoint_enabled (bool): Flag indicating if the OpenAI-compatible endpoint is enabled. Disabled by default.
         task_queue (TaskQueueSettings): The task queue settings.
         db_config (DbSettings): The database configuration.
         test (TestSettings): The test settings.
@@ -78,6 +79,8 @@ class Settings(BaseSettings):
     model_dir: Path | None = None
 
     num_workers: int = 2
+
+    openai_endpoint_enabled: bool = False
 
     task_queue: TaskQueueSettings = TaskQueueSettings()
 
