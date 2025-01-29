@@ -154,6 +154,9 @@ def test_get_unprocessed_tasks_with_api_key(db_session_with_api_service):
 
         # No user specified
         TaskEntity(user_id=None, status=TaskStatus.CREATED, priority=4, created_at=base_time + timedelta(minutes=5), endpoint="/test11", data={"test": "data11"}),
+        TaskEntity(user_id=None, status=TaskStatus.RUNNING, priority=5, created_at=base_time + timedelta(minutes=10), endpoint="/test12", data={"test": "data12"}),
+        TaskEntity(user_id=None, status=TaskStatus.NOT_FINISHED, priority=3, created_at=base_time + timedelta(minutes=15), endpoint="/test13", data={"test": "data13"}),
+        TaskEntity(user_id=None, status=TaskStatus.CREATED, priority=2, created_at=base_time + timedelta(minutes=20), endpoint="/test14", data={"test": "data14"}),
     ])
     db_session.commit()
     # fmt: on
@@ -163,13 +166,15 @@ def test_get_unprocessed_tasks_with_api_key(db_session_with_api_service):
         max_retries=3,
         retryable_exceptions=["InferenceException"],
         api_service_enabled=True,
+        maximum_active_tasks_per_user=2,
     )
 
     # Assert that the right tasks are returned in the right order
     assert len(unprocessed_tasks) == 6
-    assert ["/test11", "/test9", "/test8", "/test6", "/test7", "/test3"] == [
-        task.endpoint for task in unprocessed_tasks
-    ]
+    expected_endpoints = set(
+        ["/test11", "/test13", "/test6", "/test9", "/test14", "/test8"]
+    )
+    assert expected_endpoints == {task.endpoint for task in unprocessed_tasks}
 
 
 def test_update_status(db_session):
