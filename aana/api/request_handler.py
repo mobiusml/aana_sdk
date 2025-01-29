@@ -16,6 +16,7 @@ from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
+from aana.api.security import AdminRequired
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api import DeploymentStatus, SDKStatus, SDKStatusResponse
 from aana.core.models.chat import ChatCompletion, ChatCompletionRequest, ChatDialog
@@ -274,7 +275,7 @@ class RequestHandler:
             }
 
     @app.get("/api/status", response_model=SDKStatusResponse)
-    async def status(self) -> SDKStatusResponse:
+    async def status(self, is_admin: AdminRequired) -> SDKStatusResponse:
         """The endpoint for checking the status of the application."""
         app_names = [
             self.app_name,
