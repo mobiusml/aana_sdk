@@ -18,6 +18,7 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
+from aana.api.security import check_admin_permissions
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
@@ -45,12 +46,14 @@ class Endpoint:
         name (str): Name of the endpoint.
         path (str): Path of the endpoint (e.g. "/video/transcribe").
         summary (str): Description of the endpoint that will be shown in the API documentation.
+        admin_required (bool): Flag indicating if the endpoint requires admin access.
         event_handlers (list[EventHandler] | None): The list of event handlers to register for the endpoint.
     """
 
     name: str
     path: str
     summary: str
+    admin_required: bool = False
     initialized: bool = False
     event_handlers: list[EventHandler] | None = None
 
@@ -326,6 +329,9 @@ class Endpoint:
                 include_in_schema=aana_settings.task_queue.enabled,
             ),
         ):
+            if self.admin_required:
+                check_admin_permissions(request)
+
             form_data = await request.form()
 
             # Parse files from the form data
