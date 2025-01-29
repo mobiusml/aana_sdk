@@ -25,7 +25,7 @@ from aana.exceptions.runtime import InferenceException
 from aana.utils.lazy_import import LazyImport
 
 with LazyImport(
-    "Run 'pip install mobius-faster-whisper' or 'pip install aana[asr]'"
+    "Run 'pip install faster-whisper' or 'pip install aana[asr]'"
 ) as faster_whisper_import:
     from faster_whisper import BatchedInferencePipeline, WhisperModel
 
@@ -318,7 +318,16 @@ class WhisperDeployment(BaseDeployment):
             params = BatchedWhisperParams()
         audio_array = audio.get_numpy()
         if vad_segments:
+            sampling_rate = self.model.feature_extractor.sampling_rate
             vad_input = [seg.to_whisper_dict() for seg in vad_segments]
+            vad_input = [
+                {
+                    "start": int(seg["start"] * sampling_rate),
+                    "end": int(seg["end"] * sampling_rate),
+                }
+                for seg in vad_input
+            ]
+
         if not audio_array.any():
             # For silent audios/no audio tracks, return empty output with language as silence
             yield WhisperOutput(
@@ -332,7 +341,7 @@ class WhisperDeployment(BaseDeployment):
             try:
                 segments, info = self.batched_model.transcribe(
                     audio_array,
-                    vad_segments=vad_input if vad_segments else None,
+                    clip_timestamps=vad_input if vad_segments else None,
                     batch_size=batch_size,
                     **params.model_dump(),
                 )

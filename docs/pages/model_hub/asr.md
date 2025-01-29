@@ -3,7 +3,7 @@
 [WhisperDeployment](./../../reference/deployments.md#aana.deployments.whisper_deployment.WhisperDeployment) allows you to transcribe or translate audio with Whisper models. The deployment is based on the [faster-whisper](https://github.com/SYSTRAN/faster-whisper) library.
 
 !!! Tip
-    To use Whisper deployment, install required libraries with `pip install mobius-faster-whisper` or include extra dependencies using `pip install aana[asr]`.
+    To use Whisper deployment, install required libraries with `pip install faster-whisper` or include extra dependencies using `pip install aana[asr]`.
 
 [WhisperConfig](./../../reference/deployments.md#aana.deployments.whisper_deployment.WhisperConfig) is used to configure the Whisper deployment.
 

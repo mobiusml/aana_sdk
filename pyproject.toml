@@ -34,9 +34,10 @@ dependencies = [
     "python-multipart>=0.0.18",
     "psycopg[binary]>=3.2.1",
     "ray[serve]>=2.20",
+    "rich>=13.9.4",
     "sqlalchemy[mypy]>=2.0.23",
     "torch>=2.4.0",
-    "yt-dlp>=2024.08.06"
+    "yt-dlp>=2024.08.06",
 ]
 
 [project.optional-dependencies]
@@ -52,7 +53,7 @@ transformers = [
 ]
 
 asr = [
-    "mobius-faster-whisper>=1.1.1",
+    "faster-whisper (>=1.1.1,<2.0.0)",
     "pyannote-audio>=3.1.1"
 ]
 
@@ -73,8 +74,8 @@ all = [
     "accelerate>=0.34.2",
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0", 
+    "faster-whisper (>=1.1.1,<2.0.0)",
     "hqq>=0.2.2",
-    "mobius-faster-whisper>=1.1.1",
     "outlines[serve]>=0.0.46",
     "pyannote-audio>=3.1.1",
     "transformers>=4.47.0",
