@@ -47,6 +47,7 @@ class Endpoint:
         path (str): Path of the endpoint (e.g. "/video/transcribe").
         summary (str): Description of the endpoint that will be shown in the API documentation.
         admin_required (bool): Flag indicating if the endpoint requires admin access.
+        always_defer (bool): Flag indicating if the endpoint should always defer execution to the task queue.
         event_handlers (list[EventHandler] | None): The list of event handlers to register for the endpoint.
     """
 
@@ -54,6 +55,7 @@ class Endpoint:
     path: str
     summary: str
     admin_required: bool = False
+    always_defer: bool = False
     initialized: bool = False
     event_handlers: list[EventHandler] | None = None
 
@@ -326,11 +328,15 @@ class Endpoint:
             defer: bool = Query(
                 description="Defer execution of the endpoint to the task queue.",
                 default=False,
-                include_in_schema=aana_settings.task_queue.enabled,
+                include_in_schema=aana_settings.task_queue.enabled
+                and not self.always_defer,
             ),
         ):
             if self.admin_required:
                 check_admin_permissions(request)
+
+            if self.always_defer:
+                defer = True
 
             form_data = await request.form()
 
