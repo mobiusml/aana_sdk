@@ -689,6 +689,22 @@ files = [
 ]
 
 [[package]]
+name = "classes"
+version = "0.4.1"
+description = "Smart, pythonic, ad-hoc, typed polymorphism for Python"
+optional = true
+python-versions = ">=3.7,<4.0"
+groups = ["main"]
+markers = "(python_version <= \"3.11\" or python_version >= \"3.12\") and extra == \"api-service\""
+files = [
+    {file = "classes-0.4.1-py3-none-any.whl", hash = "sha256:934a19eb23d2fe0c0430af6eae6d81a4d4fcc53519cf737f69c3bba3994d54e9"},
+    {file = "classes-0.4.1.tar.gz", hash = "sha256:4de4fdd6c5c38607bbd8ad76703d7cc4dbe007cfa78e8ef1f62fc6ac55303e23"},
+]
+
+[package.dependencies]
+typing_extensions = ">=3.10,<5.0"
+
+[[package]]
 name = "click"
 version = "8.1.8"
 description = "Composable command line interface toolkit"
@@ -2665,6 +2681,29 @@ files = [
     {file = "kiwisolver-1.4.8-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:65ea09a5a3faadd59c2ce96dc7bf0f364986a315949dc6374f04396b0d60e09b"},
     {file = "kiwisolver-1.4.8.tar.gz", hash = "sha256:23d5f023bdc8c7e54eb65f03ca5d5bb25b601eac4d7f1a042888a1f45237987e"},
 ]
+
+[[package]]
+name = "lago-python-client"
+version = "1.19.0"
+description = "Lago Python API Client"
+optional = true
+python-versions = ">3.6"
+groups = ["main"]
+markers = "(python_version <= \"3.11\" or python_version >= \"3.12\") and extra == \"api-service\""
+files = [
+    {file = "lago_python_client-1.19.0-py3-none-any.whl", hash = "sha256:c2858f7fd999b15852119686069ccc89b69ad9e7dd2a852f669bce910f2572fb"},
+    {file = "lago_python_client-1.19.0.tar.gz", hash = "sha256:36ce4df02ff48e8f384d804d320b89c99d96a37b1a11a161559feeac3c9e84a9"},
+]
+
+[package.dependencies]
+classes = ">=0.4.1,<0.5.0"
+httpx = ">=0.24.0,<1.0.0"
+orjson = ">=3.8,<4.0"
+pydantic = ">=1.10,<3"
+typeguard = ">=3.0.2,<3.1.0"
+
+[package.extras]
+test = ["mypy (==0.971)", "pytest", "pytest_httpx"]
 
 [[package]]
 name = "lark"
@@ -8005,6 +8044,26 @@ tests = ["autopep8", "flake8", "isort", "llnl-hatchet", "numpy", "pytest", "scip
 tutorials = ["matplotlib", "pandas", "tabulate"]
 
 [[package]]
+name = "typeguard"
+version = "3.0.2"
+description = "Run-time type checker for Python"
+optional = true
+python-versions = ">=3.7.4"
+groups = ["main"]
+markers = "(python_version <= \"3.11\" or python_version >= \"3.12\") and extra == \"api-service\""
+files = [
+    {file = "typeguard-3.0.2-py3-none-any.whl", hash = "sha256:bbe993854385284ab42fd5bd3bee6f6556577ce8b50696d6cb956d704f286c8e"},
+    {file = "typeguard-3.0.2.tar.gz", hash = "sha256:fee5297fdb28f8e9efcb8142b5ee219e02375509cd77ea9d270b5af826358d5a"},
+]
+
+[package.dependencies]
+typing-extensions = {version = ">=4.4.0", markers = "python_version < \"3.11\""}
+
+[package.extras]
+doc = ["packaging", "sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
+test = ["mypy (>=0.991)", "pytest (>=7)"]
+
+[[package]]
 name = "typer"
 version = "0.15.1"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
@@ -8844,6 +8903,7 @@ type = ["pytest-mypy"]
 
 [extras]
 all = ["accelerate", "bitblas", "bitsandbytes", "faster-whisper", "hqq", "outlines", "pyannote-audio", "transformers", "vllm"]
+api-service = ["lago-python-client", "tenacity"]
 asr = ["faster-whisper", "pyannote-audio"]
 hqq = ["accelerate", "bitblas", "bitsandbytes", "hqq", "transformers"]
 transformers = ["accelerate", "bitsandbytes", "transformers"]
@@ -8852,4 +8912,4 @@ vllm = ["outlines", "vllm"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "3ddde06b40b7665b276ac5b3a8de2e754030672a5634f4a043b797e68620c5ff"
+content-hash = "672d596ed660946588deac33967e77a0209b3e47364269b41ecd5bc4a87480b9"
