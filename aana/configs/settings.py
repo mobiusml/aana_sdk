@@ -62,7 +62,7 @@ class WebhookSettings(BaseModel):
     """
 
     retry_attempts: int = 5
-    hmac_secret: str = "default_secret"
+    hmac_secret: str = "webhook_secret"
 
 
 class Settings(BaseSettings):

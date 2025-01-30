@@ -1,6 +1,8 @@
 import uuid
+
 from sqlalchemy import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column
+
 from aana.storage.models.base import BaseEntity, TimeStampEntity
 
 
@@ -13,16 +15,13 @@ class WebhookEntity(BaseEntity, TimeStampEntity):
         UUID, primary_key=True, default=uuid.uuid4, comment="Webhook ID"
     )
     user_id: Mapped[str | None] = mapped_column(
-        nullable=True, comment="The user ID associated with the webhook"
+        nullable=True, index=True, comment="The user ID associated with the webhook"
     )
     webhook_url: Mapped[str] = mapped_column(
         nullable=False, comment="The URL to which the webhook will send requests"
     )
     events: Mapped[list[str]] = mapped_column(
         JSON, nullable=False, comment="List of events the webhook is subscribed to"
-    )
-    secret: Mapped[str] = mapped_column(
-        nullable=False, comment="The secret key for HMAC signature generation"
     )
 
     def __repr__(self) -> str:

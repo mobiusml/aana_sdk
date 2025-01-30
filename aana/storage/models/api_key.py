@@ -1,4 +1,3 @@
-
 from sqlalchemy import Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -25,6 +24,9 @@ class ApiKeyEntity(BaseEntity, TimeStampEntity):
         nullable=False,
         default=True,
         comment="Whether the subscription is active (credits are available)",
+    )
+    hmac_secret: Mapped[str] = mapped_column(
+        nullable=True, comment="The secret key for HMAC signature generation"
     )
 
     def __repr__(self) -> str:
