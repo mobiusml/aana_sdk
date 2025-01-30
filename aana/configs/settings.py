@@ -53,6 +53,18 @@ class ApiServiceSettings(BaseModel):
     lago_api_key: str | None = None
 
 
+class WebhookSettings(BaseModel):
+    """A pydantic model for webhook settings.
+
+    Attributes:
+        retry_attempts (int): The number of retry attempts for webhook delivery.
+        hmac_secret (str): The secret key for HMAC signature generation.
+    """
+
+    retry_attempts: int = 5
+    hmac_secret: str = "default_secret"
+
+
 class Settings(BaseSettings):
     """A pydantic model for SDK settings.
 
@@ -83,6 +95,8 @@ class Settings(BaseSettings):
     test: TestSettings = TestSettings()
 
     api_service: ApiServiceSettings = ApiServiceSettings()
+
+    webhook: WebhookSettings = WebhookSettings()
 
     @model_validator(mode="after")
     def setup_resource_directories(self):

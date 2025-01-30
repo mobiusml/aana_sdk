@@ -5,11 +5,15 @@ from uuid import UUID, uuid4
 
 import orjson
 import ray
+import hmac
+import hashlib
+import httpx
 from fastapi import Depends
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
 from ray import serve
 from sqlalchemy.orm import Session
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
 from aana.api.app import app
@@ -24,7 +28,9 @@ from aana.core.models.task import TaskId, TaskInfo
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
+from aana.storage.repository.webhook import WebhookRepository
 from aana.storage.session import get_session
+from aana.utils.webhook import trigger_webhooks, generate_hmac_signature, send_webhook_request
 
 
 def get_db():
@@ -141,6 +147,8 @@ class RequestHandler:
                 TaskRepository(session).update_status(
                     task_id, TaskStatus.COMPLETED, 100, out
                 )
+                trigger_webhooks(task_id, TaskStatus.COMPLETED)
+
         except Exception as e:
             error_response = custom_exception_handler(None, e)
             error = orjson.loads(error_response.body)
@@ -148,6 +156,7 @@ class RequestHandler:
                 TaskRepository(session).update_status(
                     task_id, TaskStatus.FAILED, 0, error
                 )
+                trigger_webhooks(task_id, TaskStatus.FAILED)
         else:
             return out
         finally:
@@ -333,3 +342,79 @@ class RequestHandler:
             message=app_status_message,
             deployments=deployment_statuses,
         )
+
+    @app.post("/webhooks", status_code=201)
+    async def register_webhook(
+        self, request: WebhookRegistrationRequest, db: Annotated[Session, Depends(get_db)]
+    ) -> WebhookRegistrationResponse:
+        """Register a new webhook.
+
+        Args:
+            request (WebhookRegistrationRequest): The webhook registration request.
+            db (Session): The database session.
+
+        Returns:
+            WebhookRegistrationResponse: The response message.
+        """
+        webhook_repo = WebhookRepository(db)
+        webhook = WebhookEntity(
+            user_id=request.user_id,
+            webhook_url=request.webhook_url,
+            events=request.events,
+            secret=aana_settings.webhook.hmac_secret,
+        )
+        webhook_repo.save(webhook)
+        return WebhookRegistrationResponse(message="Webhook registered successfully")
+
+    async def trigger_webhooks(self, task_id: str, event: str):
+        """Trigger webhooks for a task event.
+
+        Args:
+            task_id (str): The ID of the task.
+            event (str): The event type (e.g., "task.completed").
+        """
+        with get_session() as session:
+            task_repo = TaskRepository(session)
+            task = task_repo.read(task_id)
+            user_id = task.user_id
+
+            webhook_repo = WebhookRepository(session)
+            webhooks = webhook_repo.get_webhooks(user_id)
+
+            payload = {
+                "event": event,
+                "task_id": task_id,
+                "status": task.status,
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            }
+
+            for webhook in webhooks:
+                signature = generate_hmac_signature(payload, webhook.secret)
+                headers = {"X-Signature": signature}
+                await self.send_webhook_request(webhook.webhook_url, payload, headers)
+
+    def generate_hmac_signature(self, payload: dict, secret: str) -> str:
+        """Generate HMAC signature for a payload.
+
+        Args:
+            payload (dict): The payload to sign.
+            secret (str): The secret key for HMAC.
+
+        Returns:
+            str: The generated HMAC signature.
+        """
+        payload_str = json.dumps(payload, separators=(",", ":"))
+        return hmac.new(secret.encode(), payload_str.encode(), hashlib.sha256).hexdigest()
+
+    @retry(stop=stop_after_attempt(aana_settings.webhook.retry_attempts), wait=wait_exponential())
+    async def send_webhook_request(self, url: str, payload: dict, headers: dict):
+        """Send a webhook request with retries.
+
+        Args:
+            url (str): The webhook URL.
+            payload (dict): The payload to send.
+            headers (dict): The headers to include in the request.
+        """
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=payload, headers=headers)
+            response.raise_for_status()
