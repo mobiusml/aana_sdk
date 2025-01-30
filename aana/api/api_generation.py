@@ -414,22 +414,3 @@ def add_custom_schemas_to_openapi_schema(
             "body"
         ] = schema
     return openapi_schema
-
-
-class WebhookEventType(str, Enum):
-    """Enum for webhook event types."""
-
-    TASK_COMPLETED = "task.completed"
-    TASK_FAILED = "task.failed"
-    TASK_IN_PROGRESS = "task.in_progress"
-    TASK_QUEUED = "task.queued"
-
-
-class WebhookRegistrationRequest(BaseModel):
-    user_id: str | None
-    webhook_url: str
-    events: list[WebhookEventType]
-
-
-class WebhookRegistrationResponse(BaseModel):
-    message: str
