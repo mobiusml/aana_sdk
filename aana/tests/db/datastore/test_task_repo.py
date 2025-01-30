@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from aana.storage.models.api_key import ApiKeyEntity
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.models.task import TaskEntity
 from aana.storage.repository.task import TaskRepository
@@ -53,57 +54,15 @@ def test_get_unprocessed_tasks(db_session):
         # Create sample tasks with different statuses
         now = datetime.now(timezone.utc)
 
-        task1 = TaskEntity(
-            endpoint="/test1",
-            data={"test": "data1"},
-            status=TaskStatus.CREATED,
-            priority=1,
-            created_at=now - timedelta(hours=10),
-        )
-        task2 = TaskEntity(
-            endpoint="/test2",
-            data={"test": "data2"},
-            status=TaskStatus.NOT_FINISHED,
-            priority=2,
-            created_at=now - timedelta(hours=1),
-        )
-        task3 = TaskEntity(
-            endpoint="/test3",
-            data={"test": "data3"},
-            status=TaskStatus.COMPLETED,
-            priority=3,
-            created_at=now - timedelta(hours=2),
-        )
-        task4 = TaskEntity(
-            endpoint="/test4",
-            data={"test": "data4"},
-            status=TaskStatus.CREATED,
-            priority=2,
-            created_at=now - timedelta(hours=3),
-        )
-        task5 = TaskEntity(
-            endpoint="/test5",
-            data={"test": "data5"},
-            status=TaskStatus.FAILED,
-            priority=1,
-            created_at=now - timedelta(minutes=1),
-            result={"error": "InferenceException"},
-        )
-        task6 = TaskEntity(
-            endpoint="/test6",
-            data={"test": "data6"},
-            status=TaskStatus.RUNNING,
-            priority=3,
-            created_at=now - timedelta(minutes=2),
-        )
-        task7 = TaskEntity(
-            endpoint="/test7",
-            data={"test": "data7"},
-            status=TaskStatus.FAILED,
-            priority=1,
-            created_at=now - timedelta(minutes=3),
-            result={"error": "NonRecoverableError"},
-        )
+        # fmt: off
+        task1 = TaskEntity(endpoint="/test1", data={"test": "data1"}, status=TaskStatus.CREATED, priority=1, created_at=now - timedelta(hours=10))
+        task2 = TaskEntity(endpoint="/test2", data={"test": "data2"}, status=TaskStatus.NOT_FINISHED, priority=2, created_at=now - timedelta(hours=1))
+        task3 = TaskEntity(endpoint="/test3", data={"test": "data3"}, status=TaskStatus.COMPLETED, priority=3, created_at=now - timedelta(hours=2))
+        task4 = TaskEntity(endpoint="/test4", data={"test": "data4"}, status=TaskStatus.CREATED, priority=2, created_at=now - timedelta(hours=3))
+        task5 = TaskEntity(endpoint="/test5", data={"test": "data5"}, status=TaskStatus.FAILED, priority=1, created_at=now - timedelta(minutes=1), result={"error": "InferenceException"})
+        task6 = TaskEntity(endpoint="/test6", data={"test": "data6"}, status=TaskStatus.RUNNING, priority=3, created_at=now - timedelta(minutes=2))
+        task7 = TaskEntity(endpoint="/test7", data={"test": "data7"}, status=TaskStatus.FAILED, priority=1, created_at=now - timedelta(minutes=3), result={"error": "NonRecoverableError"})
+        # fmt: on
 
         db_session.add_all([task1, task2, task3, task4, task5, task6, task7])
         db_session.commit()
@@ -142,6 +101,80 @@ def test_get_unprocessed_tasks(db_session):
     assert len(limited_tasks) == 2
     assert limited_tasks[0].id == task4.id  # Highest priority
     assert limited_tasks[1].id == task2.id  # Same priority, but older
+
+
+def test_get_unprocessed_tasks_with_api_key(db_session_with_api_service):
+    """Test fetching unprocessed tasks with an API key."""
+    db_session = db_session_with_api_service
+
+    task_repo = TaskRepository(db_session)
+
+    # Remove all existing tasks and API keys
+    db_session.query(TaskEntity).delete()
+    db_session.commit()
+
+    db_session.query(ApiKeyEntity).delete()
+    db_session.commit()
+
+    # fmt: off
+    db_session.add_all(
+        [
+            # Active users
+            ApiKeyEntity(user_id="1", is_subscription_active=True, api_key="key1", subscription_id="sub1"),
+            ApiKeyEntity(user_id="2", is_subscription_active=True, api_key="key2", subscription_id="sub2"),
+            ApiKeyEntity(user_id="3", is_subscription_active=True, api_key="key3", subscription_id="sub3"),
+            # Inactive user (should be excluded)
+            ApiKeyEntity(user_id="4", is_subscription_active=False, api_key="key4", subscription_id="sub4"),
+        ]
+    )
+    db_session.commit()
+    # fmt: on
+
+    # fmt: off
+    base_time = datetime.now(timezone.utc) - timedelta(hours=1)
+
+    db_session.add_all([
+        # User 1 (3 RUNNING tasks - lower priority)
+        TaskEntity(user_id="1", status=TaskStatus.RUNNING, priority=1, created_at=base_time, endpoint="/test1", data={"test": "data1"}),
+        TaskEntity(user_id="1", status=TaskStatus.RUNNING, priority=2, created_at=base_time + timedelta(minutes=5), endpoint="/test2", data={"test": "data2"}),
+        TaskEntity(user_id="1", status=TaskStatus.CREATED, priority=3, created_at=base_time + timedelta(minutes=10), endpoint="/test3", data={"test": "data3"}),
+        TaskEntity(user_id="1", status=TaskStatus.RUNNING, priority=3, created_at=base_time + timedelta(minutes=15), endpoint="/test4", data={"test": "data4"}),
+
+        # User 2 (1 RUNNING task - medium priority)
+        TaskEntity(user_id="2", status=TaskStatus.RUNNING, priority=2, created_at=base_time + timedelta(minutes=20), endpoint="/test5", data={"test": "data5"}),
+        TaskEntity(user_id="2", status=TaskStatus.NOT_FINISHED, priority=3, created_at=base_time + timedelta(minutes=25), endpoint="/test6", data={"test": "data6"}),
+        TaskEntity(user_id="2", status=TaskStatus.CREATED, priority=1, created_at=base_time + timedelta(minutes=30), endpoint="/test7", data={"test": "data7"}),
+
+        # User 3 (0 RUNNING tasks - should be prioritized first)
+        TaskEntity(user_id="3", status=TaskStatus.CREATED, priority=1, created_at=base_time + timedelta(minutes=35), endpoint="/test8", data={"test": "data8"}),
+        TaskEntity(user_id="3", status=TaskStatus.FAILED, priority=3, created_at=base_time + timedelta(minutes=40), endpoint="/test9", data={"test": "data9"}, result={"error": "InferenceException"},),
+
+        # User 4 (Inactive subscription - should be excluded)
+        TaskEntity(user_id="4", status=TaskStatus.CREATED, priority=3, created_at=base_time, endpoint="/test10", data={"test": "data10"}),
+
+        # No user specified
+        TaskEntity(user_id=None, status=TaskStatus.CREATED, priority=4, created_at=base_time + timedelta(minutes=5), endpoint="/test11", data={"test": "data11"}),
+        TaskEntity(user_id=None, status=TaskStatus.RUNNING, priority=5, created_at=base_time + timedelta(minutes=10), endpoint="/test12", data={"test": "data12"}),
+        TaskEntity(user_id=None, status=TaskStatus.NOT_FINISHED, priority=3, created_at=base_time + timedelta(minutes=15), endpoint="/test13", data={"test": "data13"}),
+        TaskEntity(user_id=None, status=TaskStatus.CREATED, priority=2, created_at=base_time + timedelta(minutes=20), endpoint="/test14", data={"test": "data14"}),
+    ])
+    db_session.commit()
+    # fmt: on
+
+    # Fetch unprocessed tasks without any limit
+    unprocessed_tasks = task_repo.fetch_unprocessed_tasks(
+        max_retries=3,
+        retryable_exceptions=["InferenceException"],
+        api_service_enabled=True,
+        maximum_active_tasks_per_user=2,
+    )
+
+    # Assert that the right tasks are returned in the right order
+    assert len(unprocessed_tasks) == 6
+    expected_endpoints = set(
+        ["/test11", "/test13", "/test6", "/test9", "/test14", "/test8"]
+    )
+    assert expected_endpoints == {task.endpoint for task in unprocessed_tasks}
 
 
 def test_update_status(db_session):
