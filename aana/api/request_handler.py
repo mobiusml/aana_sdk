@@ -364,7 +364,7 @@ class RequestHandler:
         try:
             webhook = WebhookEntity(
                 user_id=request.user_id,
-                webhook_url=request.webhook_url,
+                url=request.url,
                 events=request.events,
             )
             webhook_repo.save(webhook)

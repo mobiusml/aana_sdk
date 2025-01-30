@@ -1,6 +1,7 @@
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
-from aana.storage.models.webhook import WebhookEntity
+from aana.storage.models.webhook import WebhookEntity, WebhookEventType
 from aana.storage.repository.base import BaseRepository
 
 
@@ -20,6 +21,13 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         Returns:
             WebhookEntity: The saved webhook.
         """
+        if webhook.events is None:
+            webhook.events = []
+
+        # Check if events are in WebhookEventType enum
+        if webhook.events:
+            webhook.events = [WebhookEventType(event) for event in webhook.events]
+
         self.session.add(webhook)
         self.session.commit()
         return webhook
@@ -38,5 +46,28 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         """
         query = self.session.query(WebhookEntity).filter_by(user_id=user_id)
         if event_type:
-            query = query.filter(WebhookEntity.events.contains([event_type]))
+            if self.session.bind.dialect.name == "postgresql":
+                query = query.filter(
+                    or_(
+                        WebhookEntity.events.op("@>")([event_type]),
+                        WebhookEntity.events == [],
+                    )
+                )
+            elif self.session.bind.dialect.name == "sqlite":
+                events_func = func.json_each(WebhookEntity.events).table_valued(
+                    "value", joins_implicitly=True
+                )
+                query = query.filter(
+                    or_(
+                        self.session.query(events_func)
+                        .filter(events_func.c.value == event_type)
+                        .exists(),
+                        WebhookEntity.events == "[]",
+                    )
+                )
+            else:
+                raise NotImplementedError(
+                    f"Filtering by event type is not supported for {self.session.bind.dialect.name}"
+                )
+
         return query.all()
