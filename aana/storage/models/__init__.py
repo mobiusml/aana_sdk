@@ -15,6 +15,7 @@ from aana.storage.models.media import MediaEntity
 from aana.storage.models.task import TaskEntity
 from aana.storage.models.transcript import TranscriptEntity
 from aana.storage.models.video import VideoEntity
+from aana.storage.models.webhook import WebhookEntity
 
 __all__ = [
     "BaseEntity",
