@@ -175,6 +175,8 @@ class TaskQueueDeployment(BaseDeployment):
                     limit=num_tasks_to_assign,
                     max_retries=aana_settings.task_queue.max_retries,
                     retryable_exceptions=self.retryable_exceptions,
+                    api_service_enabled=aana_settings.api_service.enabled,
+                    maximum_active_tasks_per_user=aana_settings.task_queue.maximum_active_tasks_per_user,
                 )
 
                 # If there are no tasks, wait and retry

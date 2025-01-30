@@ -1,10 +1,24 @@
 from sqlalchemy.orm import Session, sessionmaker
 
-from aana.storage.engine import engine
+from aana.configs.settings import settings
+from aana.storage.models.api_key import ApiServiceBase
+from aana.storage.models.base import BaseEntity
 
 __all__ = ["get_session"]
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = settings.db_config.get_engine()
+
+if settings.api_service.enabled:
+    api_service_engine = settings.api_service_db_config.get_engine()
+    SessionLocal = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        binds={ApiServiceBase: api_service_engine, BaseEntity: engine},
+        bind=engine,  # Default engine
+    )
+
+else:
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_session() -> Session:
