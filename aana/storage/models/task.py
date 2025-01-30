@@ -37,6 +37,7 @@ class TaskEntity(BaseEntity, TimeStampEntity):
     status: Mapped[Status] = mapped_column(
         default=Status.CREATED,
         comment="Status of the task",
+        index=True,
     )
     priority: Mapped[int] = mapped_column(
         nullable=False, default=0, comment="Priority of the task (0 is the lowest)"
@@ -57,6 +58,11 @@ class TaskEntity(BaseEntity, TimeStampEntity):
     num_retries: Mapped[int] = mapped_column(
         nullable=False, default=0, comment="Number of retries"
     )
+    user_id: Mapped[str] = mapped_column(
+        nullable=True,
+        comment="ID of the user who launched the task",
+        index=True,
+    )
 
     def __repr__(self) -> str:
         """String representation of the task."""
@@ -64,6 +70,7 @@ class TaskEntity(BaseEntity, TimeStampEntity):
             f"<TaskEntity(id={self.id}, "
             f"endpoint={self.endpoint}, status={self.status}, "
             f"priority={self.priority}, progress={self.progress}, "
+            f"user_id={self.user_id}, "
             f"num_retries={self.num_retries}, "
             f"updated_at={self.updated_at})>"
         )

@@ -8,11 +8,13 @@ from typing import Any
 
 import pytest
 from pytest_postgresql import factories
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
+from aana.storage.models.api_key import ApiServiceBase
+from aana.storage.models.base import BaseEntity
 from aana.storage.op import DbType, run_alembic_migrations
 from aana.tests.utils import (
     is_gpu_available,
@@ -83,6 +85,18 @@ def create_app():
     aana_settings.db_config = db_config
 
     run_alembic_migrations(aana_settings)
+
+    # Setup API service database
+    tmp_api_service_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
+    api_service_db_config = DbSettings(
+        datastore_type=DbType.SQLITE,
+        datastore_config=SQLiteConfig(path=tmp_api_service_database_path),
+    )
+    os.environ["API_SERVICE_DB_CONFIG"] = jsonify(api_service_db_config)
+
+    aana_settings.api_service_db_config = api_service_db_config
+
+    ApiServiceBase.metadata.create_all(api_service_db_config.get_engine())
 
     app = AanaSDK()
     try:
@@ -183,52 +197,100 @@ def one_request_worker():
     yield
 
 
+def create_db_engine(config, db_type, tmp_path=None, postgresql_info=None):
+    """Helper to create engine for different configs and db types."""
+    config.datastore_type = db_type
+
+    if db_type == DbType.SQLITE:
+        config.datastore_config = SQLiteConfig(path=tmp_path)
+    elif db_type == DbType.POSTGRESQL:
+        config.datastore_config = PostgreSQLConfig(
+            host=postgresql_info.host,
+            port=postgresql_info.port,
+            user=postgresql_info.user,
+            password=postgresql_info.password,
+            database=postgresql_info.dbname,
+        )
+
+    os.environ["DB_CONFIG"] = jsonify(config)
+    config._engine = None  # Reset engine
+
+    return config.get_engine()
+
+
 @pytest.fixture(scope="function")
-def sqlite_db_session():
-    """Creates a new sql database file and session for each test."""
+def sqlite_db_engine():
+    """Create a SQLite database engine."""
     with tempfile.NamedTemporaryFile(dir=aana_settings.tmp_data_dir) as tmp:
-        # Configure the database to use the temporary file
-        aana_settings.db_config.datastore_type = DbType.SQLITE
-        aana_settings.db_config.datastore_config = SQLiteConfig(path=tmp.name)
-        os.environ["DB_CONFIG"] = jsonify(aana_settings.db_config)
-
-        # Reset the engine
-        aana_settings.db_config._engine = None
-
-        run_alembic_migrations(aana_settings)
-
-        # Create a new session
-        engine = aana_settings.db_config.get_engine()
-        with Session(engine) as session:
-            yield session
+        yield create_db_engine(
+            config=aana_settings.db_config, db_type=DbType.SQLITE, tmp_path=tmp.name
+        )
 
 
 @pytest.fixture(scope="function")
-def postgres_db_session(postgresql):
-    """Creates a new postgres database and session for each test."""
-    aana_settings.db_config.datastore_type = DbType.POSTGRESQL
-    aana_settings.db_config.datastore_config = PostgreSQLConfig(
-        host=postgresql.info.host,
-        port=postgresql.info.port,
-        user=postgresql.info.user,
-        password=postgresql.info.password,
-        database=postgresql.info.dbname,
+def postgres_db_engine(postgresql):
+    """Create a PostgreSQL database engine."""
+    yield create_db_engine(
+        config=aana_settings.db_config,
+        db_type=DbType.POSTGRESQL,
+        postgresql_info=postgresql.info,
     )
-    os.environ["DB_CONFIG"] = jsonify(aana_settings.db_config)
 
-    # Reset the engine
-    aana_settings.db_config._engine = None
 
-    # Run migrations to set up the schema
+@pytest.fixture(scope="function")
+def api_service_sqlite_db_engine():
+    """Create a SQLite database engine for the API service."""
+    with tempfile.NamedTemporaryFile(dir=aana_settings.tmp_data_dir) as tmp:
+        yield create_db_engine(
+            config=aana_settings.api_service_db_config,
+            db_type=DbType.SQLITE,
+            tmp_path=tmp.name,
+        )
+
+
+@pytest.fixture(scope="function")
+def api_service_postgres_db_engine(postgresql):
+    """Create a PostgreSQL database engine for the API service."""
+    yield create_db_engine(
+        config=aana_settings.api_service_db_config,
+        db_type=DbType.POSTGRESQL,
+        postgresql_info=postgresql.info,
+    )
+
+
+@pytest.fixture(params=["sqlite_db_engine", "postgres_db_engine"])
+def db_engine(request):
+    """Fixture to provide both SQLite and PostgreSQL database engines."""
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(
+    params=["api_service_sqlite_db_engine", "api_service_postgres_db_engine"]
+)
+def api_service_db_engine(request):
+    """Fixture to provide both SQLite and PostgreSQL database engines for the API service."""
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture
+def db_session(db_engine):
+    """Create a new session for each test."""
     run_alembic_migrations(aana_settings)
 
-    # Create a new session
-    engine = aana_settings.db_config.get_engine()
-    with Session(engine) as session:
+    SessionLocal = sessionmaker(bind=db_engine)
+    with SessionLocal() as session:
         yield session
 
 
-@pytest.fixture(params=["sqlite_db_session", "postgres_db_session"])
-def db_session(request):
-    """Iterate over different database type for db tests."""
-    return request.getfixturevalue(request.param)
+@pytest.fixture
+def db_session_with_api_service(db_engine, api_service_db_engine):
+    """Create a new session with both main and api service databases."""
+    run_alembic_migrations(aana_settings)
+    ApiServiceBase.metadata.create_all(api_service_db_engine)
+
+    SessionLocal = sessionmaker(
+        binds={ApiServiceBase: api_service_db_engine, BaseEntity: db_engine},
+        bind=db_engine,
+    )
+    with SessionLocal() as session:
+        yield session

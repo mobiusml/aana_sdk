@@ -46,7 +46,7 @@ class LowercaseEndpoint(Endpoint):
         """Lowercase the text.
 
         Args:
-            text (TextList): The list of text to lowercase
+            text (str): The list of text to lowercase
 
         Returns:
             LowercaseEndpointOutput: The lowercase texts
