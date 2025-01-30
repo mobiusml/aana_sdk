@@ -1,6 +1,6 @@
-
-from fastapi import FastAPI, Request
-from pydantic import ValidationError
+from fastapi import FastAPI, Request, HTTPException, status
+from pydantic import BaseModel, ValidationError
+from typing import list, X | None
 
 from aana.api.exception_handler import (
     aana_exception_handler,
@@ -14,6 +14,8 @@ from aana.exceptions.api_service import (
 )
 from aana.storage.models.api_key import ApiKeyEntity
 from aana.storage.session import get_session
+from aana.storage.repository.webhook import WebhookRepository
+from aana.storage.models.webhook import WebhookEntity
 
 app = FastAPI()
 
