@@ -38,7 +38,7 @@ class WebhookRegistrationRequest(BaseModel):
 class WebhookRegistrationResponse(BaseModel):
     """Response for a webhook registration."""
 
-    id: str
+    id: str | None
     message: str
 
 

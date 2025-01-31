@@ -370,4 +370,6 @@ class RequestHandler:
             webhook_repo.save(webhook)
         except Exception:
             return WebhookRegistrationResponse(message="Failed to register webhook")
-        return WebhookRegistrationResponse(message="Webhook registered successfully")
+        return WebhookRegistrationResponse(
+            id=str(webhook.id), message="Webhook registered successfully"
+        )
