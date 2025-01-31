@@ -1,6 +1,7 @@
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
+from aana.exceptions.runtime import InvalidWebhookEventType
 from aana.storage.models.webhook import WebhookEntity, WebhookEventType
 from aana.storage.repository.base import BaseRepository
 
@@ -26,7 +27,10 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
 
         # Check if events are in WebhookEventType enum
         if webhook.events:
-            webhook.events = [WebhookEventType(event) for event in webhook.events]
+            try:
+                webhook.events = [WebhookEventType(event) for event in webhook.events]
+            except ValueError as e:
+                raise InvalidWebhookEventType(event_type=e.args[0]) from e
 
         self.session.add(webhook)
         self.session.commit()
