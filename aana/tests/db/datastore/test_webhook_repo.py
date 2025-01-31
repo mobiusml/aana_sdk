@@ -2,6 +2,7 @@
 
 import pytest
 
+from aana.exceptions.runtime import InvalidWebhookEventType
 from aana.storage.models.webhook import WebhookEntity
 from aana.storage.repository.webhook import WebhookRepository
 
@@ -37,7 +38,7 @@ def test_save_webhook(db_session, webhook_entities):
         assert retrieved_webhook.url == saved_webhook.url
 
     # Test saving a webhook with invalid event type
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidWebhookEventType):
         webhook = WebhookEntity(
             user_id="user1", url="https://example7.com", events=["invalid.event"]
         )

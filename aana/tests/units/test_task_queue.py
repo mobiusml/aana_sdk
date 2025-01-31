@@ -116,17 +116,15 @@ def test_task_queue(create_app):  # noqa: C901
     aana_app = create_app(deployments, endpoints)
 
     port = aana_app.port
-    route_prefix = ""
-
     # Check that the server is ready
-    response = requests.get(f"http://localhost:{port}{route_prefix}/api/ready")
+    response = requests.get(f"http://localhost:{port}/api/ready")
     assert response.status_code == 200
     assert response.json() == {"ready": True}
 
     # Test lowercase endpoint
     data = {"text": ["Hello World!", "This is a test."]}
     response = requests.post(
-        f"http://localhost:{port}{route_prefix}/lowercase",
+        f"http://localhost:{port}/lowercase",
         data={"body": json.dumps(data)},
     )
     assert response.status_code == 200
@@ -135,7 +133,7 @@ def test_task_queue(create_app):  # noqa: C901
 
     # Defer endpoint execution
     response = requests.post(
-        f"http://localhost:{port}{route_prefix}/lowercase?defer=True",
+        f"http://localhost:{port}/lowercase?defer=True",
         data={"body": json.dumps(data)},
     )
     assert response.status_code == 200
@@ -144,9 +142,7 @@ def test_task_queue(create_app):  # noqa: C901
     # Check the task status with timeout of 10 seconds
     start_time = time.time()
     while time.time() - start_time < 10:
-        response = requests.get(
-            f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
-        )
+        response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
         task_status = response.json().get("status")
         result = response.json().get("result")
         if task_status == "completed":
@@ -157,31 +153,25 @@ def test_task_queue(create_app):  # noqa: C901
     assert result == {"text": ["hello world!", "this is a test."]}
 
     # Delete the task
-    response = requests.get(
-        f"http://localhost:{port}{route_prefix}/tasks/delete/{task_id}"
-    )
+    response = requests.get(f"http://localhost:{port}/tasks/delete/{task_id}")
     assert response.status_code == 200
     assert response.json().get("task_id") == task_id
 
     # Check that the task is deleted
-    response = requests.get(
-        f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
-    )
+    response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
     assert response.status_code == 404
     assert response.json().get("error") == "NotFoundException"
 
     # Check non-existent task
     task_id = "d1b1b1b1-1b1b-1b1b-1b1b-1b1b1b1b1b1b"
-    response = requests.get(
-        f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
-    )
+    response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
     assert response.status_code == 404
     assert response.json().get("error") == "NotFoundException"
 
     # Test lowercase streaming endpoint
     data = {"text": ["Hello World!", "This is a test."]}
     response = requests.post(
-        f"http://localhost:{port}{route_prefix}/lowercase_stream",
+        f"http://localhost:{port}/lowercase_stream",
         data={"body": json.dumps(data)},
         stream=True,
     )
@@ -195,7 +185,7 @@ def test_task_queue(create_app):  # noqa: C901
     # Test task queue with streaming endpoint
     data = {"text": ["Hello World!", "This is a test."]}
     response = requests.post(
-        f"http://localhost:{port}{route_prefix}/lowercase_stream?defer=True",
+        f"http://localhost:{port}/lowercase_stream?defer=True",
         data={"body": json.dumps(data)},
     )
     assert response.status_code == 200
@@ -204,9 +194,7 @@ def test_task_queue(create_app):  # noqa: C901
     # Check the task status with timeout of 10 seconds
     start_time = time.time()
     while time.time() - start_time < 10:
-        response = requests.get(
-            f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
-        )
+        response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
         task_status = response.json().get("status")
         result = response.json().get("result")
         if task_status == "completed":
@@ -221,7 +209,7 @@ def test_task_queue(create_app):  # noqa: C901
     for i in range(30):
         data = {"text": [f"Task {i}"]}
         response = requests.post(
-            f"http://localhost:{port}{route_prefix}/lowercase_stream?defer=True",
+            f"http://localhost:{port}/lowercase_stream?defer=True",
             data={"body": json.dumps(data)},
         )
         assert response.status_code == 200
@@ -234,9 +222,7 @@ def test_task_queue(create_app):  # noqa: C901
         for task_id in task_ids:
             if task_id in completed_tasks:
                 continue
-            response = requests.get(
-                f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
-            )
+            response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
             task_status = response.json().get("status")
             result = response.json().get("result")
             if task_status == "completed":
@@ -248,9 +234,7 @@ def test_task_queue(create_app):  # noqa: C901
 
     # Check that all tasks are completed
     for task_id in task_ids:
-        response = requests.get(
-            f"http://localhost:{port}{route_prefix}/tasks/get/{task_id}"
-        )
+        response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
         response = response.json()
         task_status = response.get("status")
         assert task_status == "completed", response

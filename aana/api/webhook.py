@@ -1,10 +1,11 @@
+import asyncio
 import hashlib
 import hmac
 import json
 import logging
 
 import httpx
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from aana.configs.settings import settings as aana_settings
@@ -18,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class WebhookRegistrationRequest(BaseModel):
+    """Request to register a webhook."""
+
     user_id: str | None = Field(
         None, description="The user ID. If None, the webhook is a system-wide webhook."
     )
@@ -29,28 +32,37 @@ class WebhookRegistrationRequest(BaseModel):
         description="The events to subscribe to. If None, the webhook is subscribed to all events.",
     )
 
+    model_config = ConfigDict(extra="forbid")
+
 
 class WebhookRegistrationResponse(BaseModel):
+    """Response for a webhook registration."""
+
+    id: str
     message: str
 
 
 class TaskStatusChangeWebhookPayload(BaseModel):
+    """Payload for a task status change webhook."""
+
     task_id: str
     status: str
-    result: str | None
+    result: dict | None
     num_retries: int
 
 
-class TaskStatusChangeWebhookBody(BaseModel):
+class WebhookBody(BaseModel):
+    """Body for a task status change webhook."""
+
     event: WebhookEventType
     payload: TaskStatusChangeWebhookPayload
 
 
-def generate_hmac_signature(payload: dict, user_id: str | None) -> str:
+def generate_hmac_signature(body: dict, user_id: str | None) -> str:
     """Generate HMAC signature for a payload for a given user.
 
     Args:
-        payload (dict): The payload to sign.
+        body (dict): The webhook body.
         user_id (str | None): The user ID associated with the payload.
 
     Returns:
@@ -67,7 +79,7 @@ def generate_hmac_signature(payload: dict, user_id: str | None) -> str:
             if api_key_info and api_key_info.hmac_secret:
                 secret = api_key_info.hmac_secret
 
-    payload_str = json.dumps(payload, separators=(",", ":"))
+    payload_str = json.dumps(body, separators=(",", ":"))
     return hmac.new(secret.encode(), payload_str.encode(), hashlib.sha256).hexdigest()
 
 
@@ -76,41 +88,41 @@ def generate_hmac_signature(payload: dict, user_id: str | None) -> str:
     wait=wait_exponential(),
     reraise=True,
 )
-async def send_webhook_request(url: str, payload: dict, headers: dict):
+async def send_webhook_request(url: str, body: dict, headers: dict):
     """Send a webhook request with retries.
 
     Args:
         url (str): The webhook URL.
-        payload (dict): The payload to send.
+        body (dict): The body of the request.
         headers (dict): The headers to include in the request.
     """
     async with httpx.AsyncClient(timeout=1.0) as client:
-        response = await client.post(url, json=payload, headers=headers)
+        response = await client.post(url, json=body, headers=headers)
         response.raise_for_status()
 
 
-async def trigger_webhooks(event: WebhookEventType, obj: dict, user_id: str | None):
+async def trigger_webhooks(
+    event: WebhookEventType, body: WebhookBody, user_id: str | None
+):
     """Trigger webhooks for an event.
 
     Args:
         event (WebhookEventType): The event type.
-        obj (dict): The object to send.
+        body (WebhookBody): The body of the webhook request.
         user_id (str | None): The user ID associated with the event.
     """
     with get_session() as session:
         webhook_repo = WebhookRepository(session)
         webhooks = webhook_repo.get_webhooks(user_id, event)
-
-        payload = {
-            "event": event,
-            "payload": obj,
-        }
+        body_dict = body.model_dump()
 
         for webhook in webhooks:
-            signature = generate_hmac_signature(payload, user_id)
+            signature = generate_hmac_signature(body_dict, user_id)
             headers = {"X-Signature": signature}
             try:
-                await send_webhook_request(webhook.url, payload, headers)
+                asyncio.create_task(  # noqa: RUF006
+                    send_webhook_request(webhook.url, body_dict, headers)
+                )
             except Exception:
                 logger.exception(f"Failed to send webhook request to {webhook.url}.")
 
@@ -122,10 +134,11 @@ async def trigger_task_webhooks(event: WebhookEventType, task: TaskEntity):
         event (WebhookEventType): The event type.
         task (TaskEntity): The task entity.
     """
-    obj = {
-        "task_id": str(task.id),
-        "status": task.status,
-        "result": task.result,
-        "num_retries": task.num_retries,
-    }
-    await trigger_webhooks(event, obj, task.user_id)
+    payload = TaskStatusChangeWebhookPayload(
+        task_id=str(task.id),
+        status=task.status,
+        result=task.result,
+        num_retries=task.num_retries,
+    )
+    body = WebhookBody(event=event, payload=payload)
+    await trigger_webhooks(event, body, task.user_id)
