@@ -4,6 +4,7 @@ import time
 import uuid
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
+from enum import Enum
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
@@ -38,6 +39,21 @@ def get_default_values(func):
     }
 
 
+class DeferOption(str, Enum):
+    """Enum for defer option.
+
+    Attributes:
+        ALWAYS (str): Always defer. Endpoints with this option will always be defer execution to the task queue.
+        NEVER (str): Never defer. Endpoints with this option will never be defer execution to the task queue.
+        OPTIONAL (str): Optionally defer. Endpoints with this option can be defer execution to the task queue if
+            the defer query parameter is set to True.
+    """
+
+    ALWAYS = "always"
+    NEVER = "never"
+    OPTIONAL = "optional"
+
+
 @dataclass
 class Endpoint:
     """Class used to represent an endpoint.
@@ -47,7 +63,7 @@ class Endpoint:
         path (str): Path of the endpoint (e.g. "/video/transcribe").
         summary (str): Description of the endpoint that will be shown in the API documentation.
         admin_required (bool): Flag indicating if the endpoint requires admin access.
-        always_defer (bool): Flag indicating if the endpoint should always defer execution to the task queue.
+        defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
         event_handlers (list[EventHandler] | None): The list of event handlers to register for the endpoint.
     """
 
@@ -55,7 +71,7 @@ class Endpoint:
     path: str
     summary: str
     admin_required: bool = False
-    always_defer: bool = False
+    defer_option: DeferOption = DeferOption.OPTIONAL
     initialized: bool = False
     event_handlers: list[EventHandler] | None = None
 
@@ -329,14 +345,16 @@ class Endpoint:
                 description="Defer execution of the endpoint to the task queue.",
                 default=False,
                 include_in_schema=aana_settings.task_queue.enabled
-                and not self.always_defer,
+                and self.defer_option == DeferOption.OPTIONAL,
             ),
         ):
             if aana_settings.api_service.enabled and self.admin_required:
                 check_admin_permissions(request)
 
-            if self.always_defer:
+            if self.defer_option == DeferOption.ALWAYS:
                 defer = True
+            elif self.defer_option == DeferOption.NEVER:
+                defer = False
 
             form_data = await request.form()
 
