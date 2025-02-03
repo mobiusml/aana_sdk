@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, Request
 from pydantic import ValidationError
 
@@ -10,6 +9,7 @@ from aana.configs.settings import settings as aana_settings
 from aana.exceptions.api_service import (
     ApiKeyNotFound,
     ApiKeyNotProvided,
+    ApiKeyValidationFailed,
     InactiveSubscription,
 )
 from aana.storage.models.api_key import ApiKeyEntity
@@ -24,6 +24,10 @@ app.add_exception_handler(Exception, aana_exception_handler)
 @app.middleware("http")
 async def api_key_check(request: Request, call_next):
     """Middleware to check the API key and subscription status."""
+    excluded_paths = ["/openapi.json", "/docs", "/redoc"]
+    if request.url.path in excluded_paths:
+        return await call_next(request)
+
     if aana_settings.api_service.enabled:
         api_key = request.headers.get("x-api-key")
 
@@ -31,9 +35,12 @@ async def api_key_check(request: Request, call_next):
             raise ApiKeyNotProvided()
 
         with get_session() as session:
-            api_key_info = (
-                session.query(ApiKeyEntity).filter_by(api_key=api_key).first()
-            )
+            try:
+                api_key_info = (
+                    session.query(ApiKeyEntity).filter_by(api_key=api_key).first()
+                )
+            except Exception as e:
+                raise ApiKeyValidationFailed() from e
 
             if not api_key_info:
                 raise ApiKeyNotFound(key=api_key)
