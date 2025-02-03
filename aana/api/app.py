@@ -48,7 +48,7 @@ async def api_key_check(request: Request, call_next):
             if not api_key_info.is_subscription_active:
                 raise InactiveSubscription(key=api_key)
 
-            request.state.api_key_info = api_key_info.to_dict()
+            request.state.api_key_info = api_key_info.to_model()
 
     response = await call_next(request)
     return response
