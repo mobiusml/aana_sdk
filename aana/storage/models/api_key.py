@@ -1,31 +1,13 @@
-from typing import TypedDict
-
 from sqlalchemy import Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+from aana.core.models.api_service import ApiKey
 
 
 class ApiServiceBase(DeclarativeBase):
     """Base class."""
 
     pass
-
-
-class ApiKeyInfo(TypedDict):
-    """API key info.
-
-    Attributes:
-        user_id (str): ID of the user who owns this API key.
-        is_admin (bool): Whether the user is an admin.
-        subscription_id (str): ID of the associated subscription.
-        is_subscription_active (bool): Whether the subscription is active (credits are available).
-        hmac_secret (str | None): The secret key for HMAC signature generation.
-    """
-
-    user_id: str
-    is_admin: bool
-    subscription_id: str
-    is_subscription_active: bool
-    hmac_secret: str | None
 
 
 class ApiKeyEntity(ApiServiceBase):
@@ -67,9 +49,10 @@ class ApiKeyEntity(ApiServiceBase):
             f"is_subscription_active={self.is_subscription_active})>"
         )
 
-    def to_dict(self) -> ApiKeyInfo:
+    def to_model(self) -> ApiKey:
         """Convert the object to a dictionary."""
-        return ApiKeyInfo(
+        return ApiKey(
+            api_key=self.api_key,
             user_id=self.user_id,
             is_admin=self.is_admin,
             subscription_id=self.subscription_id,

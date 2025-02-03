@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends, Request
 
 from aana.configs.settings import settings as aana_settings
+from aana.core.models.api_service import ApiKey
 from aana.exceptions.api_service import AdminOnlyAccess
-from aana.storage.models.api_key import ApiKeyInfo
 
 
 def require_admin_access(request: Request) -> bool:
@@ -17,14 +17,14 @@ def require_admin_access(request: Request) -> bool:
         AdminOnlyAccess: If the user is not an admin
     """
     if aana_settings.api_service.enabled:
-        api_key_info = request.state.api_key_info
-        is_admin = api_key_info.get("is_admin", False)
+        api_key_info: ApiKey = request.state.api_key_info
+        is_admin = api_key_info.is_admin if api_key_info else False
         if not is_admin:
             raise AdminOnlyAccess()
     return True
 
 
-def extract_api_key_info(request: Request) -> ApiKeyInfo | None:
+def extract_api_key_info(request: Request) -> ApiKey | None:
     """Get the API key info dependency."""
     return getattr(request.state, "api_key_info", None)
 
@@ -32,7 +32,7 @@ def extract_api_key_info(request: Request) -> ApiKeyInfo | None:
 def extract_user_id(request: Request) -> str | None:
     """Get the user ID dependency."""
     api_key_info = extract_api_key_info(request)
-    return api_key_info.get("user_id") if api_key_info else None
+    return api_key_info.user_id if api_key_info else None
 
 
 AdminAccessDependency = Annotated[bool, Depends(require_admin_access)]
@@ -41,5 +41,5 @@ AdminAccessDependency = Annotated[bool, Depends(require_admin_access)]
 UserIdDependency = Annotated[str | None, Depends(extract_user_id)]
 """ Dependency to get the user ID. """
 
-ApiKeyInfoDependency = Annotated[ApiKeyInfo | None, Depends(extract_api_key_info)]
+ApiKeyInfoDependency = Annotated[ApiKey | None, Depends(extract_api_key_info)]
 """ Dependency to get the API key info. """
