@@ -58,3 +58,29 @@ class InactiveSubscription(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.key,))
+
+
+class AdminOnlyAccess(BaseException):
+    """Exception raised when the user does not have enough permissions."""
+
+    def __init__(self):
+        """Initialize the exception."""
+        self.message = "Admin only access"
+        super().__init__(message=self.message)
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, ())
+
+
+class ApiKeyValidationFailed(BaseException):
+    """Exception raised when the API key validation fails."""
+
+    def __init__(self):
+        """Initialize the exception."""
+        self.message = "API key validation failed"
+        super().__init__(message=self.message)
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, ())

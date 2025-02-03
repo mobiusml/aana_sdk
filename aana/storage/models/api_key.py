@@ -20,6 +20,9 @@ class ApiKeyEntity(ApiServiceBase):
     user_id: Mapped[str] = mapped_column(
         nullable=False, comment="ID of the user who owns this API key"
     )
+    is_admin: Mapped[bool] = mapped_column(
+        nullable=False, default=False, comment="Whether the user is an admin"
+    )
     subscription_id: Mapped[str] = mapped_column(
         nullable=False, comment="ID of the associated subscription"
     )
@@ -37,7 +40,9 @@ class ApiKeyEntity(ApiServiceBase):
         """String representation of the API key."""
         return (
             f"<APIKeyEntity(id={self.id}, "
+            f"api_key={self.api_key}, "
             f"user_id={self.user_id}, "
+            f"is_admin={self.is_admin}, "
             f"subscription_id={self.subscription_id}, "
             f"is_subscription_active={self.is_subscription_active})>"
         )

@@ -9,6 +9,7 @@ from aana.configs.settings import settings as aana_settings
 from aana.exceptions.api_service import (
     ApiKeyNotFound,
     ApiKeyNotProvided,
+    ApiKeyValidationFailed,
     InactiveSubscription,
 )
 from aana.storage.models.api_key import ApiKeyEntity
@@ -34,9 +35,12 @@ async def api_key_check(request: Request, call_next):
             raise ApiKeyNotProvided()
 
         with get_session() as session:
-            api_key_info = (
-                session.query(ApiKeyEntity).filter_by(api_key=api_key).first()
-            )
+            try:
+                api_key_info = (
+                    session.query(ApiKeyEntity).filter_by(api_key=api_key).first()
+                )
+            except Exception as e:
+                raise ApiKeyValidationFailed() from e
 
             if not api_key_info:
                 raise ApiKeyNotFound(key=api_key)
