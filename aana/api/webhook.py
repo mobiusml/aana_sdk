@@ -3,19 +3,24 @@ import hashlib
 import hmac
 import json
 import logging
+from typing import Annotated, Any
 
 import httpx
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.orm import Session
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from aana.configs.settings import settings as aana_settings
 from aana.storage.models.api_key import ApiKeyEntity
 from aana.storage.models.task import TaskEntity
-from aana.storage.models.webhook import WebhookEventType
+from aana.storage.models.webhook import WebhookEntity, WebhookEventType
 from aana.storage.repository.webhook import WebhookRepository
-from aana.storage.session import get_session
+from aana.storage.session import get_db, get_session
 
 logger = logging.getLogger(__name__)
+
+router = APIRouter(tags=["webhooks"])
 
 
 class WebhookRegistrationRequest(BaseModel):
@@ -47,7 +52,7 @@ class TaskStatusChangeWebhookPayload(BaseModel):
 
     task_id: str
     status: str
-    result: dict | None
+    result: Any | None
     num_retries: int
 
 
@@ -142,3 +147,32 @@ async def trigger_task_webhooks(event: WebhookEventType, task: TaskEntity):
     )
     body = WebhookBody(event=event, payload=payload)
     await trigger_webhooks(event, body, task.user_id)
+
+
+@router.post("/webhooks", status_code=201)
+async def register_webhook(
+    request: WebhookRegistrationRequest,
+    db: Annotated[Session, Depends(get_db)],
+) -> WebhookRegistrationResponse:
+    """Register a new webhook.
+
+    Args:
+        request (WebhookRegistrationRequest): The webhook registration request.
+        db (Session): The database session.
+
+    Returns:
+        WebhookRegistrationResponse: The response message.
+    """
+    webhook_repo = WebhookRepository(db)
+    try:
+        webhook = WebhookEntity(
+            user_id=request.user_id,
+            url=request.url,
+            events=request.events,
+        )
+        webhook_repo.save(webhook)
+    except Exception:
+        return WebhookRegistrationResponse(message="Failed to register webhook")
+    return WebhookRegistrationResponse(
+        id=str(webhook.id), message="Webhook registered successfully"
+    )

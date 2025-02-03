@@ -7,6 +7,7 @@ from pathlib import Path
 
 import ray
 import yaml
+from fastapi import APIRouter
 from ray import serve
 from ray.autoscaler.v2.schema import ResourceDemand
 from ray.autoscaler.v2.sdk import get_cluster_status
@@ -50,6 +51,7 @@ class AanaSDK:
         self.migration_func = migration_func
         self.endpoints: dict[str, Endpoint] = {}
         self.deployments: dict[str, Deployment] = {}
+        self.routers: dict[str, APIRouter] = {}
 
         if retryable_exceptions is None:
             self.retryable_exceptions = [
@@ -258,6 +260,7 @@ class AanaSDK:
             app_name=self.name,
             endpoints=self.endpoints.values(),
             deployments=list(self.deployments.keys()),
+            routers=list(self.routers.values()),
         )
 
     def register_endpoint(
@@ -293,6 +296,24 @@ class AanaSDK:
         """
         if name in self.endpoints:
             del self.endpoints[name]
+
+    def register_router(self, name: str, router: APIRouter):
+        """Register a FastAPI router.
+
+        Args:
+            name (str): The name of the router.
+            router (APIRouter): The instance of the APIRouter to be registered.
+        """
+        self.routers[name] = router
+
+    def unregister_router(self, name: str):
+        """Unregister a FastAPI router.
+
+        Args:
+            name (str): The name of the router to be unregistered.
+        """
+        if name in self.routers:
+            del self.routers[name]
 
     def wait_for_deployment(self):  # noqa: C901
         """Wait for the deployment to complete."""

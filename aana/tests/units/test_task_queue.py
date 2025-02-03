@@ -149,7 +149,7 @@ def test_task_queue(create_app):  # noqa: C901
             break
         time.sleep(0.1)
 
-    assert task_status == "completed"
+    assert task_status == "completed", response.text
     assert result == {"text": ["hello world!", "this is a test."]}
 
     # Delete the task
@@ -201,7 +201,7 @@ def test_task_queue(create_app):  # noqa: C901
             break
         time.sleep(0.1)
 
-    assert task_status == "completed"
+    assert task_status == "completed", response.text
     assert [chunk["text"] for chunk in result] == lowercase_text
 
     # Send 30 tasks to the task queue

@@ -4,7 +4,7 @@ from aana.configs.settings import settings
 from aana.storage.models.api_key import ApiServiceBase
 from aana.storage.models.base import BaseEntity
 
-__all__ = ["get_session"]
+__all__ = ["get_session", "get_db"]
 
 engine = settings.db_config.get_engine()
 
@@ -28,3 +28,12 @@ def get_session() -> Session:
         Session: SQLAlchemy Session object.
     """
     return SessionLocal()
+
+
+def get_db():
+    """Get a database session."""
+    db = get_session()
+    try:
+        yield db
+    finally:
+        db.close()
