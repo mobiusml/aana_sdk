@@ -3,21 +3,20 @@ import hashlib
 import hmac
 import json
 import logging
-from typing import Annotated, Any
+from typing import Any
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy.orm import Session
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from aana.api.app import get_user_id
+from aana.api.security import UserIdDependency
 from aana.configs.settings import settings as aana_settings
 from aana.storage.models.api_key import ApiKeyEntity
 from aana.storage.models.task import TaskEntity
 from aana.storage.models.webhook import WebhookEntity, WebhookEventType
 from aana.storage.repository.webhook import WebhookRepository
-from aana.storage.session import get_db, get_session
+from aana.storage.session import GetDbDependency, get_session
 
 logger = logging.getLogger(__name__)
 
@@ -203,8 +202,8 @@ async def trigger_task_webhooks(event: WebhookEventType, task: TaskEntity):
 @router.post("/webhooks", status_code=201)
 async def create_webhook(
     request: WebhookRegistrationRequest,
-    db: Annotated[Session, Depends(get_db)],
-    user_id: Annotated[str | None, Depends(get_user_id)],
+    db: GetDbDependency,
+    user_id: UserIdDependency,
 ) -> WebhookResponse:
     """This endpoint is used to register a webhook."""
     webhook_repo = WebhookRepository(db)
@@ -222,8 +221,7 @@ async def create_webhook(
 
 @router.get("/webhooks")
 async def list_webhooks(
-    db: Annotated[Session, Depends(get_db)],
-    user_id: Annotated[str | None, Depends(get_user_id)],
+    db: GetDbDependency, user_id: UserIdDependency
 ) -> WebhookListResponse:
     """This endpoint is used to list all registered webhooks."""
     webhook_repo = WebhookRepository(db)
@@ -235,9 +233,7 @@ async def list_webhooks(
 
 @router.get("/webhooks/{webhook_id}")
 async def get_webhook(
-    webhook_id: str,
-    db: Annotated[Session, Depends(get_db)],
-    user_id: Annotated[str | None, Depends(get_user_id)],
+    webhook_id: str, db: GetDbDependency, user_id: UserIdDependency
 ) -> WebhookResponse:
     """This endpoint is used to fetch a webhook by ID."""
     webhook_repo = WebhookRepository(db)
@@ -251,8 +247,8 @@ async def get_webhook(
 async def update_webhook(
     webhook_id: str,
     request: WebhookUpdateRequest,
-    db: Annotated[Session, Depends(get_db)],
-    user_id: Annotated[str | None, Depends(get_user_id)],
+    db: GetDbDependency,
+    user_id: UserIdDependency,
 ) -> WebhookResponse:
     """This endpoint is used to update a webhook."""
     webhook_repo = WebhookRepository(db)
@@ -269,9 +265,7 @@ async def update_webhook(
 
 @router.delete("/webhooks/{webhook_id}")
 async def delete_webhook(
-    webhook_id: str,
-    db: Annotated[Session, Depends(get_db)],
-    user_id: Annotated[str | None, Depends(get_user_id)],
+    webhook_id: str, db: GetDbDependency, user_id: UserIdDependency
 ) -> WebhookResponse:
     """This endpoint is used to delete a webhook."""
     webhook_repo = WebhookRepository(db)

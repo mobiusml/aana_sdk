@@ -19,7 +19,7 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
-from aana.api.security import check_admin_permissions
+from aana.api.security import require_admin_access
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
@@ -349,7 +349,7 @@ class Endpoint:
             ),
         ):
             if aana_settings.api_service.enabled and self.admin_required:
-                check_admin_permissions(request)
+                require_admin_access(request)
 
             if self.defer_option == DeferOption.ALWAYS:
                 defer = True

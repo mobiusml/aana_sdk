@@ -52,14 +52,3 @@ async def api_key_check(request: Request, call_next):
 
     response = await call_next(request)
     return response
-
-
-def get_api_key_info(request: Request) -> dict | None:
-    """Get the API key info dependency."""
-    return getattr(request.state, "api_key_info", None)
-
-
-def get_user_id(request: Request) -> str | None:
-    """Get the user ID dependency."""
-    api_key_info = get_api_key_info(request)
-    return api_key_info.get("user_id") if api_key_info else None

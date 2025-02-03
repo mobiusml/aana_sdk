@@ -1,3 +1,6 @@
+from typing import Annotated
+
+from fastapi import Depends
 from sqlalchemy.orm import Session, sessionmaker
 
 from aana.configs.settings import settings
@@ -37,3 +40,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+GetDbDependency = Annotated[Session, Depends(get_db)]
+""" Dependency to get a database session. """

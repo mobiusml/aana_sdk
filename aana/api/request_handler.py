@@ -1,22 +1,21 @@
 import json
 import time
-from typing import Annotated, Any
+from typing import Any
 from uuid import UUID, uuid4
 
 import orjson
 import ray
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
 from ray import serve
-from sqlalchemy.orm import Session
 
 from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
 from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
-from aana.api.security import AdminRequired
+from aana.api.security import AdminAccessDependency
 from aana.api.webhook import (
     WebhookEventType,
     trigger_task_webhooks,
@@ -30,7 +29,7 @@ from aana.core.models.task import TaskId, TaskInfo
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
-from aana.storage.session import get_db, get_session
+from aana.storage.session import GetDbDependency, get_session
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -171,9 +170,7 @@ class RequestHandler:
         description="Get the task status by task ID.",
         include_in_schema=aana_settings.task_queue.enabled,
     )
-    async def get_task_endpoint(
-        self, task_id: str, db: Annotated[Session, Depends(get_db)]
-    ) -> TaskInfo:
+    async def get_task_endpoint(self, task_id: str, db: GetDbDependency) -> TaskInfo:
         """Get the task with the given ID.
 
         Args:
@@ -197,9 +194,7 @@ class RequestHandler:
         description="Delete the task by task ID.",
         include_in_schema=aana_settings.task_queue.enabled,
     )
-    async def delete_task_endpoint(
-        self, task_id: str, db: Annotated[Session, Depends(get_db)]
-    ) -> TaskId:
+    async def delete_task_endpoint(self, task_id: str, db: GetDbDependency) -> TaskId:
         """Delete the task with the given ID.
 
         Args:
@@ -299,7 +294,7 @@ class RequestHandler:
             }
 
     @app.get("/api/status", response_model=SDKStatusResponse)
-    async def status(self, is_admin: AdminRequired) -> SDKStatusResponse:
+    async def status(self, is_admin: AdminAccessDependency) -> SDKStatusResponse:
         """The endpoint for checking the status of the application."""
         app_names = [
             self.app_name,

@@ -4,10 +4,11 @@ from fastapi import Depends, Request
 
 from aana.configs.settings import settings as aana_settings
 from aana.exceptions.api_service import AdminOnlyAccess
+from aana.storage.models.api_key import ApiKeyInfo
 
 
-def check_admin_permissions(request: Request):
-    """Check if the user is an admin.
+def require_admin_access(request: Request) -> bool:
+    """Check if the user is an admin. If not, raise an exception.
 
     Args:
         request (Request): The request object
@@ -20,16 +21,25 @@ def check_admin_permissions(request: Request):
         is_admin = api_key_info.get("is_admin", False)
         if not is_admin:
             raise AdminOnlyAccess()
+    return True
 
 
-class AdminCheck:
-    """Dependency to check if the user is an admin."""
-
-    async def __call__(self, request: Request) -> bool:
-        """Check if the user is an admin."""
-        check_admin_permissions(request)
-        return True
+def extract_api_key_info(request: Request) -> ApiKeyInfo | None:
+    """Get the API key info dependency."""
+    return getattr(request.state, "api_key_info", None)
 
 
-AdminRequired = Annotated[bool, Depends(AdminCheck())]
-""" Annotation to check if the user is an admin. If not, it will raise an exception. """
+def extract_user_id(request: Request) -> str | None:
+    """Get the user ID dependency."""
+    api_key_info = extract_api_key_info(request)
+    return api_key_info.get("user_id") if api_key_info else None
+
+
+AdminAccessDependency = Annotated[bool, Depends(require_admin_access)]
+""" Dependency to check if the user is an admin. If not, it will raise an exception. """
+
+UserIdDependency = Annotated[str | None, Depends(extract_user_id)]
+""" Dependency to get the user ID. """
+
+ApiKeyInfoDependency = Annotated[ApiKeyInfo | None, Depends(extract_api_key_info)]
+""" Dependency to get the API key info. """
