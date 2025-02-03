@@ -105,3 +105,57 @@ def test_webhooks(create_app, httpserver):
 
     httpserver.check_assertions()
     httpserver.check_handler_errors()
+
+
+def test_webhook_crud(create_app):
+    """Test webhook CRUD operations."""
+    aana_app = create_app(deployments, endpoints)
+    port = aana_app.port
+    base_url = f"http://localhost:{port}"
+
+    # Clear existing webhooks
+    response = requests.get(f"{base_url}/webhooks")
+    assert response.status_code == 200
+    webhooks = response.json()["webhooks"]
+    for webhook in webhooks:
+        response = requests.delete(f"{base_url}/webhooks/{webhook['id']}")
+        assert response.status_code == 200
+
+    # Test Create
+    webhook_data = {
+        "url": "http://example.com/webhook",
+        "events": ["task.completed", "task.failed"],
+    }
+    response = requests.post(f"{base_url}/webhooks", json=webhook_data)
+    assert response.status_code == 201
+    webhook_id = response.json()["id"]
+    assert response.json()["url"] == webhook_data["url"]
+    assert response.json()["events"] == webhook_data["events"]
+
+    # Test Read (List)
+    response = requests.get(f"{base_url}/webhooks")
+    assert response.status_code == 200
+    webhooks = response.json()["webhooks"]
+    assert len(webhooks) == 1
+    assert webhooks[0]["id"] == webhook_id
+
+    # Test Read (Single)
+    response = requests.get(f"{base_url}/webhooks/{webhook_id}")
+    assert response.status_code == 200
+    assert response.json()["id"] == webhook_id
+    assert response.json()["url"] == webhook_data["url"]
+
+    # Test Update
+    update_data = {"url": "http://example.com/webhook2", "events": ["task.completed"]}
+    response = requests.put(f"{base_url}/webhooks/{webhook_id}", json=update_data)
+    assert response.status_code == 200
+    assert response.json()["url"] == update_data["url"]
+    assert response.json()["events"] == update_data["events"]
+
+    # Test Delete
+    response = requests.delete(f"{base_url}/webhooks/{webhook_id}")
+    assert response.status_code == 200
+
+    # Verify webhook is deleted
+    response = requests.get(f"{base_url}/webhooks/{webhook_id}")
+    assert response.status_code == 404
