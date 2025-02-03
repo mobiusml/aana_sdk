@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -12,6 +14,40 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
     def __init__(self, session: Session):
         """Constructor."""
         super().__init__(session, WebhookEntity)
+
+    def read(self, item_id: str | UUID, check: bool = True) -> WebhookEntity:
+        """Reads a single webhook from the database.
+
+        Args:
+            item_id (str | UUID): ID of the webhook to retrieve.
+            check (bool): whether to raise if the entity is not found (defaults to True).
+
+        Returns:
+            The corresponding entity from the database if found.
+
+        Raises:
+            NotFoundException if the entity is not found and `check` is True.
+        """
+        if isinstance(item_id, str):
+            item_id = UUID(item_id)
+        return super().read(item_id, check)
+
+    def delete(self, item_id: str | UUID, check: bool = True) -> WebhookEntity:
+        """Delete a webhook from the database.
+
+        Args:
+            item_id (str | UUID): The ID of the webhook to delete.
+            check (bool): whether to raise if the entity is not found (defaults to True).
+
+        Returns:
+            WebhookEntity: The deleted webhook.
+
+        Raises:
+            NotFoundException: The id does not correspond to a record in the database.
+        """
+        if isinstance(item_id, str):
+            item_id = UUID(item_id)
+        return super().delete(item_id, check)
 
     def save(self, webhook: WebhookEntity) -> WebhookEntity:
         """Save a webhook to the database.
