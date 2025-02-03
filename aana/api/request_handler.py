@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 import orjson
 import ray
-from fastapi import Depends
+from fastapi import APIRouter, Depends
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
 from ray import serve
@@ -18,10 +18,9 @@ from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.api.webhook import (
     WebhookEventType,
-    WebhookRegistrationRequest,
-    WebhookRegistrationResponse,
     trigger_task_webhooks,
 )
+from aana.api.webhook import router as webhook_router
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api import DeploymentStatus, SDKStatus, SDKStatusResponse
 from aana.core.models.chat import ChatCompletion, ChatCompletionRequest, ChatDialog
@@ -29,19 +28,8 @@ from aana.core.models.sampling import SamplingParams
 from aana.core.models.task import TaskId, TaskInfo
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.storage.models.task import Status as TaskStatus
-from aana.storage.models.webhook import WebhookEntity
 from aana.storage.repository.task import TaskRepository
-from aana.storage.repository.webhook import WebhookRepository
-from aana.storage.session import get_session
-
-
-def get_db():
-    """Get a database session."""
-    db = get_session()
-    try:
-        yield db
-    finally:
-        db.close()
+from aana.storage.session import get_db, get_session
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -52,7 +40,11 @@ class RequestHandler:
     ready = False
 
     def __init__(
-        self, app_name: str, endpoints: list[Endpoint], deployments: list[str]
+        self,
+        app_name: str,
+        endpoints: list[Endpoint],
+        deployments: list[str],
+        routers: list[APIRouter] | None = None,
     ):
         """Constructor.
 
@@ -60,10 +52,18 @@ class RequestHandler:
             app_name (str): The name of the application.
             endpoints (dict): List of endpoints for the request.
             deployments (list[str]): List of deployment names for the app.
+            routers (list[APIRouter]): List of FastAPI routers to include in the app.
         """
         self.app_name = app_name
         self.endpoints = endpoints
         self.deployments = deployments
+
+        # Include the webhook router
+        app.include_router(webhook_router)
+        # Include the custom routers
+        if routers is not None:
+            for router in routers:
+                app.include_router(router)
 
         self.event_manager = EventManager()
         self.custom_schemas: dict[str, dict] = {}
@@ -343,33 +343,4 @@ class RequestHandler:
             status=sdk_status,
             message=app_status_message,
             deployments=deployment_statuses,
-        )
-
-    @app.post("/webhooks", status_code=201)
-    async def register_webhook(
-        self,
-        request: WebhookRegistrationRequest,
-        db: Annotated[Session, Depends(get_db)],
-    ) -> WebhookRegistrationResponse:
-        """Register a new webhook.
-
-        Args:
-            request (WebhookRegistrationRequest): The webhook registration request.
-            db (Session): The database session.
-
-        Returns:
-            WebhookRegistrationResponse: The response message.
-        """
-        webhook_repo = WebhookRepository(db)
-        try:
-            webhook = WebhookEntity(
-                user_id=request.user_id,
-                url=request.url,
-                events=request.events,
-            )
-            webhook_repo.save(webhook)
-        except Exception:
-            return WebhookRegistrationResponse(message="Failed to register webhook")
-        return WebhookRegistrationResponse(
-            id=str(webhook.id), message="Webhook registered successfully"
         )
