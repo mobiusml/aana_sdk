@@ -16,7 +16,7 @@ from ray.serve.deployment import Application, Deployment
 from ray.serve.schema import ApplicationStatusOverview
 from rich import print as rprint
 
-from aana.api.api_generation import Endpoint
+from aana.api.api_generation import DeferOption, Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
 from aana.configs.settings import settings as aana_settings
@@ -269,6 +269,8 @@ class AanaSDK:
         path: str,
         summary: str,
         endpoint_cls: type[Endpoint],
+        admin_required: bool = False,
+        defer_option: DeferOption = DeferOption.OPTIONAL,
         event_handlers: list[EventHandler] | None = None,
     ):
         """Register an endpoint.
@@ -278,12 +280,16 @@ class AanaSDK:
             path (str): The path of the endpoint.
             summary (str): The summary of the endpoint.
             endpoint_cls (Type[Endpoint]): The class of the endpoint.
+            admin_required (bool, optional): If True, the endpoint requires admin access. Defaults to False.
+            defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
             event_handlers (list[EventHandler], optional): The event handlers to register for the endpoint.
         """
         endpoint = endpoint_cls(
             name=name,
             path=path,
             summary=summary,
+            admin_required=admin_required,
+            defer_option=defer_option,
             event_handlers=event_handlers,
         )
         self.endpoints[name] = endpoint

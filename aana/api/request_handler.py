@@ -16,6 +16,7 @@ from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
+from aana.api.security import AdminRequired
 from aana.api.webhook import (
     WebhookEventType,
     trigger_task_webhooks,
@@ -212,9 +213,22 @@ class RequestHandler:
         task = task_repo.delete(task_id)
         return TaskId(task_id=str(task.id))
 
-    @app.post("/chat/completions", response_model=ChatCompletion)
+    @app.post(
+        "/chat/completions",
+        response_model=ChatCompletion,
+        include_in_schema=aana_settings.openai_endpoint_enabled,
+    )
     async def chat_completions(self, request: ChatCompletionRequest):
         """Handle chat completions requests for OpenAI compatible API."""
+        if not aana_settings.openai_endpoint_enabled:
+            return AanaJSONResponse(
+                content={
+                    "error": {
+                        "message": "The OpenAI-compatible endpoint is not enabled."
+                    }
+                },
+                status_code=404,
+            )
 
         async def _async_chat_completions(
             handle: AanaDeploymentHandle,
@@ -285,7 +299,7 @@ class RequestHandler:
             }
 
     @app.get("/api/status", response_model=SDKStatusResponse)
-    async def status(self) -> SDKStatusResponse:
+    async def status(self, is_admin: AdminRequired) -> SDKStatusResponse:
         """The endpoint for checking the status of the application."""
         app_names = [
             self.app_name,
