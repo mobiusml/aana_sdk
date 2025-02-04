@@ -135,6 +135,32 @@ async def delete_task(
     return TaskInfo.from_entity(task)
 
 
+@router.post(
+    "/tasks/{task_id}/retry",
+    summary="Retry Failed Task",
+    description="Retry a failed task by resetting its status to CREATED.",
+)
+async def retry_task(
+    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+) -> TaskInfo:
+    """Retry a failed task by resetting its status."""
+    task_repo = TaskRepository(db)
+    task = task_repo.read(task_id, check=False)
+    if not task or task.user_id != user_id:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found",
+        )
+    if task.status != TaskStatus.FAILED:
+        raise HTTPException(
+            status_code=400,
+            detail="Only failed tasks can be retried",
+        )
+
+    updated_task = task_repo.retry_task(task.id)
+    return TaskInfo.from_entity(updated_task)
+
+
 # Legacy endpoints (to be removed in the future)
 
 
