@@ -16,6 +16,7 @@ from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.api.security import AdminAccessDependency
+from aana.api.task import router as task_router
 from aana.api.webhook import (
     WebhookEventType,
     trigger_task_webhooks,
@@ -25,11 +26,10 @@ from aana.configs.settings import settings as aana_settings
 from aana.core.models.api import DeploymentStatus, SDKStatus, SDKStatusResponse
 from aana.core.models.chat import ChatCompletion, ChatCompletionRequest, ChatDialog
 from aana.core.models.sampling import SamplingParams
-from aana.core.models.task import TaskId, TaskInfo
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
-from aana.storage.session import GetDbDependency, get_session
+from aana.storage.session import get_session
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -58,8 +58,9 @@ class RequestHandler:
         self.endpoints = endpoints
         self.deployments = deployments
 
-        # Include the webhook router
+        # Include the default routers
         app.include_router(webhook_router)
+        app.include_router(task_router)
         # Include the custom routers
         if routers is not None:
             for router in routers:
@@ -163,50 +164,6 @@ class RequestHandler:
             return out
         finally:
             self.running_tasks.remove(task_id)
-
-    @app.get(
-        "/tasks/get/{task_id}",
-        summary="Get Task Status",
-        description="Get the task status by task ID.",
-        include_in_schema=aana_settings.task_queue.enabled,
-    )
-    async def get_task_endpoint(self, task_id: str, db: GetDbDependency) -> TaskInfo:
-        """Get the task with the given ID.
-
-        Args:
-            task_id (str): The ID of the task.
-            db (Session): The database session.
-
-        Returns:
-            TaskInfo: The status of the task.
-        """
-        task_repo = TaskRepository(db)
-        task = task_repo.read(task_id)
-        return TaskInfo(
-            id=str(task.id),
-            status=task.status,
-            result=task.result,
-        )
-
-    @app.get(
-        "/tasks/delete/{task_id}",
-        summary="Delete Task",
-        description="Delete the task by task ID.",
-        include_in_schema=aana_settings.task_queue.enabled,
-    )
-    async def delete_task_endpoint(self, task_id: str, db: GetDbDependency) -> TaskId:
-        """Delete the task with the given ID.
-
-        Args:
-            task_id (str): The ID of the task.
-            db (Session): The database session.
-
-        Returns:
-            TaskInfo: The deleted task.
-        """
-        task_repo = TaskRepository(db)
-        task = task_repo.delete(task_id)
-        return TaskId(task_id=str(task.id))
 
     @app.post(
         "/chat/completions",
