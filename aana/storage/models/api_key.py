@@ -1,6 +1,8 @@
 from sqlalchemy import Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from aana.core.models.api_service import ApiKey
+
 
 class ApiServiceBase(DeclarativeBase):
     """Base class."""
@@ -32,6 +34,9 @@ class ApiKeyEntity(ApiServiceBase):
         default=True,
         comment="Whether the subscription is active (credits are available)",
     )
+    hmac_secret: Mapped[str] = mapped_column(
+        nullable=True, comment="The secret key for HMAC signature generation"
+    )
 
     def __repr__(self) -> str:
         """String representation of the API key."""
@@ -44,6 +49,13 @@ class ApiKeyEntity(ApiServiceBase):
             f"is_subscription_active={self.is_subscription_active})>"
         )
 
-    def to_dict(self) -> dict:
+    def to_model(self) -> ApiKey:
         """Convert the object to a dictionary."""
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return ApiKey(
+            api_key=self.api_key,
+            user_id=self.user_id,
+            is_admin=self.is_admin,
+            subscription_id=self.subscription_id,
+            is_subscription_active=self.is_subscription_active,
+            hmac_secret=self.hmac_secret,
+        )

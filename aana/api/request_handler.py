@@ -1,22 +1,26 @@
 import json
 import time
-from typing import Annotated, Any
+from typing import Any
 from uuid import UUID, uuid4
 
 import orjson
 import ray
-from fastapi import Depends
+from fastapi import APIRouter
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import StreamingResponse
 from ray import serve
-from sqlalchemy.orm import Session
 
 from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
 from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
-from aana.api.security import AdminRequired
+from aana.api.security import AdminAccessDependency
+from aana.api.webhook import (
+    WebhookEventType,
+    trigger_task_webhooks,
+)
+from aana.api.webhook import router as webhook_router
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api import DeploymentStatus, SDKStatus, SDKStatusResponse
 from aana.core.models.chat import ChatCompletion, ChatCompletionRequest, ChatDialog
@@ -25,16 +29,7 @@ from aana.core.models.task import TaskId, TaskInfo
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
-from aana.storage.session import get_session
-
-
-def get_db():
-    """Get a database session."""
-    db = get_session()
-    try:
-        yield db
-    finally:
-        db.close()
+from aana.storage.session import GetDbDependency, get_session
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -45,7 +40,11 @@ class RequestHandler:
     ready = False
 
     def __init__(
-        self, app_name: str, endpoints: list[Endpoint], deployments: list[str]
+        self,
+        app_name: str,
+        endpoints: list[Endpoint],
+        deployments: list[str],
+        routers: list[APIRouter] | None = None,
     ):
         """Constructor.
 
@@ -53,10 +52,18 @@ class RequestHandler:
             app_name (str): The name of the application.
             endpoints (dict): List of endpoints for the request.
             deployments (list[str]): List of deployment names for the app.
+            routers (list[APIRouter]): List of FastAPI routers to include in the app.
         """
         self.app_name = app_name
         self.endpoints = endpoints
         self.deployments = deployments
+
+        # Include the webhook router
+        app.include_router(webhook_router)
+        # Include the custom routers
+        if routers is not None:
+            for router in routers:
+                app.include_router(router)
 
         self.event_manager = EventManager()
         self.custom_schemas: dict[str, dict] = {}
@@ -121,7 +128,8 @@ class RequestHandler:
                 path = task.endpoint
                 kwargs = task.data
 
-                task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
+                task = task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
+                await trigger_task_webhooks(WebhookEventType.TASK_STARTED, task)
 
             for e in self.endpoints:
                 if e.path == path:
@@ -139,16 +147,18 @@ class RequestHandler:
                 out = await endpoint.run(**kwargs)
 
             with get_session() as session:
-                TaskRepository(session).update_status(
+                task = TaskRepository(session).update_status(
                     task_id, TaskStatus.COMPLETED, 100, out
                 )
+                await trigger_task_webhooks(WebhookEventType.TASK_COMPLETED, task)
         except Exception as e:
             error_response = custom_exception_handler(None, e)
             error = orjson.loads(error_response.body)
             with get_session() as session:
-                TaskRepository(session).update_status(
+                task = TaskRepository(session).update_status(
                     task_id, TaskStatus.FAILED, 0, error
                 )
+                await trigger_task_webhooks(WebhookEventType.TASK_FAILED, task)
         else:
             return out
         finally:
@@ -160,9 +170,7 @@ class RequestHandler:
         description="Get the task status by task ID.",
         include_in_schema=aana_settings.task_queue.enabled,
     )
-    async def get_task_endpoint(
-        self, task_id: str, db: Annotated[Session, Depends(get_db)]
-    ) -> TaskInfo:
+    async def get_task_endpoint(self, task_id: str, db: GetDbDependency) -> TaskInfo:
         """Get the task with the given ID.
 
         Args:
@@ -186,9 +194,7 @@ class RequestHandler:
         description="Delete the task by task ID.",
         include_in_schema=aana_settings.task_queue.enabled,
     )
-    async def delete_task_endpoint(
-        self, task_id: str, db: Annotated[Session, Depends(get_db)]
-    ) -> TaskId:
+    async def delete_task_endpoint(self, task_id: str, db: GetDbDependency) -> TaskId:
         """Delete the task with the given ID.
 
         Args:
@@ -288,7 +294,7 @@ class RequestHandler:
             }
 
     @app.get("/api/status", response_model=SDKStatusResponse)
-    async def status(self, is_admin: AdminRequired) -> SDKStatusResponse:
+    async def status(self, is_admin: AdminAccessDependency) -> SDKStatusResponse:
         """The endpoint for checking the status of the application."""
         app_names = [
             self.app_name,

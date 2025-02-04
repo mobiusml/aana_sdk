@@ -182,3 +182,20 @@ class UploadedFileNotFound(Exception):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, (self.filename,))
+
+
+class InvalidWebhookEventType(BaseException):
+    """Exception raised when an invalid webhook event type is provided."""
+
+    def __init__(self, event_type: str):
+        """Initialize the exception.
+
+        Args:
+            event_type (str): the invalid event type
+        """
+        super().__init__(event_type=event_type)
+        self.event_type = event_type
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.event_type,))
