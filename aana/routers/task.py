@@ -2,7 +2,7 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from aana.api.security import UserIdDependency
 from aana.configs.settings import settings as aana_settings
@@ -39,7 +39,33 @@ class TaskList(BaseModel):
     tasks: list[TaskInfo] = Field(..., description="The list of tasks.")
 
 
+# fmt: off
+class TaskCount(BaseModel):
+    """Response for a count of tasks by status."""
+
+    created: int | None = Field(None, description="The number of tasks in the CREATED status.")
+    assigned: int | None = Field(None, description="The number of tasks in the ASSIGNED status.")
+    completed: int | None = Field(None, description="The number of tasks in the COMPLETED status.")
+    running: int | None = Field(None, description="The number of tasks in the RUNNING status.")
+    failed: int | None = Field(None, description="The number of tasks in the FAILED status.")
+    not_finished: int | None = Field(None, description="The number of tasks in the NOT_FINISHED status.")
+    total: int = Field(..., description="The total number of tasks.")
+# fmt: on
+
 # Endpoints
+
+
+@router.get(
+    "/tasks/count",
+    summary="Count Tasks",
+    description="Count tasks per status.",
+    response_model_exclude_none=True,
+)
+async def count_tasks(db: GetDbDependency, user_id: UserIdDependency) -> TaskCount:
+    """Count tasks by status."""
+    task_repo = TaskRepository(db)
+    counts = task_repo.count(user_id=user_id)
+    return TaskCount(**counts)
 
 
 @router.get(

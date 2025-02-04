@@ -18,7 +18,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         """Constructor."""
         super().__init__(session, TaskEntity)
 
-    def read(self, task_id: str | UUID, check: bool = True) -> TaskEntity:
+    def read(self, task_id: str | UUID, check: bool = True) -> TaskEntity | None:
         """Reads a single task by id from the database.
 
         Args:
@@ -31,8 +31,11 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        if isinstance(task_id, str):
-            task_id = UUID(task_id)
+        try:
+            if isinstance(task_id, str):
+                task_id = UUID(task_id)
+        except ValueError:
+            return None
         return super().read(task_id, check=check)
 
     def delete(self, task_id: str | UUID, check: bool = False) -> TaskEntity | None:
@@ -48,8 +51,11 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        if isinstance(task_id, str):
-            task_id = UUID(task_id)
+        try:
+            if isinstance(task_id, str):
+                task_id = UUID(task_id)
+        except ValueError:
+            return None
         return super().delete(task_id, check)
 
     def save(
@@ -442,3 +448,22 @@ class TaskRepository(BaseRepository[TaskEntity]):
             .all()
         )
         return tasks
+
+    def count(self, user_id: str | None = None) -> dict[str, int]:
+        """Count tasks by status.
+
+        Args:
+            user_id (str | None): The user ID. If None, all tasks are counted.
+
+        Returns:
+            dict[str, int]: The count of tasks by status.
+        """
+        counts = (
+            self.session.query(TaskEntity.status, func.count(TaskEntity.id))
+            .filter(TaskEntity.user_id == user_id if user_id else True)
+            .group_by(TaskEntity.status)
+            .all()
+        )
+        count_dict = {status.value: count for status, count in counts}
+        count_dict["total"] = sum(count_dict.values())
+        return count_dict
