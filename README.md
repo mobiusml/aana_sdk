@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml/badge.svg)](https://github.com/mobiusml/aana_sdk/actions/workflows/python-package.yml)
+[![Build Status](https://github.com/mobiusml/aana_sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/mobiusml/aana_sdk/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](/LICENSE)
 [![Website](https://img.shields.io/badge/website-online-brightgreen.svg)](http://www.mobiuslabs.com)
 [![Documentation](https://img.shields.io/website?label=documentation&up_message=online&url=https://mobiusml.github.io/aana_sdk/)](https://mobiusml.github.io/aana_sdk/) 
