@@ -274,6 +274,25 @@ class TaskRepository(BaseRepository[TaskEntity]):
             self.session.commit()
         return task
 
+    def retry_task(self, task_id: str) -> TaskEntity:
+        """Retry a task. The task will reset to CREATED status.
+
+        Args:
+            task_id (str): The ID of the task.
+
+        Returns:
+            TaskEntity: The updated task.
+        """
+        task = self.read(task_id)
+        task.status = TaskStatus.CREATED
+        task.progress = 0
+        task.result = None
+        task.num_retries = 0
+        task.assigned_at = None
+        task.completed_at = None
+        self.session.commit()
+        return task
+
     def get_active_tasks(self) -> list[TaskEntity]:
         """Fetches all active tasks.
 
