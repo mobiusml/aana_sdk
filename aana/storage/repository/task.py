@@ -241,7 +241,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         progress: int | None = None,
         result: Any = None,
         commit: bool = True,
-    ):
+    ) -> TaskEntity:
         """Update the status of a task.
 
         Args:
@@ -250,6 +250,9 @@ class TaskRepository(BaseRepository[TaskEntity]):
             progress (int | None): The progress. If None, the progress will not be updated.
             result (Any): The result.
             commit (bool): Whether to commit the transaction.
+
+        Returns:
+            TaskEntity: The updated task.
         """
         task = self.read(task_id)
         if status == TaskStatus.COMPLETED or status == TaskStatus.FAILED:
@@ -263,6 +266,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         task.result = result
         if commit:
             self.session.commit()
+        return task
 
     def get_active_tasks(self) -> list[TaskEntity]:
         """Fetches all active tasks.

@@ -8,7 +8,6 @@ from enum import Enum
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
 
-import orjson
 from fastapi import FastAPI, Form, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import ConfigDict, Field, ValidationError, create_model
@@ -19,7 +18,7 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
-from aana.api.security import check_admin_permissions
+from aana.api.security import require_admin_access
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
@@ -270,11 +269,11 @@ class Endpoint:
             if event_manager:
                 event_manager.handle(bound_path, defer=defer)
 
-            # Parse json data from the body
-            body = orjson.loads(body)
+            # parse form data as a pydantic model and validate it
+            data = RequestModel.model_validate_json(body)
 
             # Add api_key_info to the body if API service is enabled
-            api_key_info: dict = {}
+            api_key_info: ApiKey | None = None
             if aana_settings.api_service.enabled:
                 api_key_info = request.state.api_key_info
                 api_key_field = next(
@@ -286,10 +285,7 @@ class Endpoint:
                     None,
                 )
                 if api_key_field:
-                    body[api_key_field] = api_key_info
-
-            # parse form data as a pydantic model and validate it
-            data = RequestModel.model_validate(body)
+                    setattr(data, api_key_field, api_key_info)
 
             # if the input requires file upload, add the files to the data
             if files:
@@ -314,7 +310,7 @@ class Endpoint:
                     task = TaskRepository(session).save(
                         endpoint=bound_path,
                         data=data_dict,
-                        user_id=api_key_info.get("user_id"),
+                        user_id=api_key_info.user_id if api_key_info else None,
                     )
                     return AanaJSONResponse(content={"task_id": str(task.id)})
 
@@ -349,7 +345,7 @@ class Endpoint:
             ),
         ):
             if aana_settings.api_service.enabled and self.admin_required:
-                check_admin_permissions(request)
+                require_admin_access(request)
 
             if self.defer_option == DeferOption.ALWAYS:
                 defer = True
