@@ -12,7 +12,16 @@ from aana.storage.models.base import BaseEntity, TimeStampEntity, timestamp
 
 
 class Status(str, Enum):
-    """Enum for task status."""
+    """Enum for task status.
+
+    Attributes:
+        CREATED: The task is created.
+        ASSIGNED: The task is assigned to a worker.
+        COMPLETED: The task is completed.
+        RUNNING: The task is running.
+        FAILED: The task has failed.
+        NOT_FINISHED: The task is not finished.
+    """
 
     CREATED = "created"
     ASSIGNED = "assigned"

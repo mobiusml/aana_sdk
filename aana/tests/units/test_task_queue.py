@@ -260,3 +260,8 @@ def test_task_queue(create_app):  # noqa: C901
         response = response.json()
         task_status = response.get("status")
         assert task_status == "completed", response
+
+    # Test task count endpoint
+    response = requests.get(f"http://localhost:{port}/tasks/count")
+    assert response.status_code == 200
+    assert response.json() == {"total": 31, "completed": 31}
