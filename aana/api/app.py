@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
 from aana.api.exception_handler import (
@@ -18,6 +19,7 @@ from aana.storage.session import get_session
 app = FastAPI()
 
 app.add_exception_handler(ValidationError, validation_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, aana_exception_handler)
 
 

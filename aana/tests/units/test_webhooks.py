@@ -54,7 +54,7 @@ def test_webhooks(create_app, httpserver):
 
     # Check that the server is ready
     response = requests.get(f"http://localhost:{port}/api/ready")
-    assert response.status_code == 200
+    assert response.status_code == 200, response.text
     assert response.json() == {"ready": True}
 
     # Setup the webhook listener
@@ -69,8 +69,6 @@ def test_webhooks(create_app, httpserver):
             secret_key.encode(), payload_str.encode(), hashlib.sha256
         ).hexdigest()
         assert signature == actual_signature
-
-        print("Received Webhook:", json.dumps(payload, indent=2))
         assert payload["event"] == "task.completed"
 
     httpserver.expect_request("/webhooks").respond_with_handler(webhook_listener)
@@ -92,7 +90,7 @@ def test_webhooks(create_app, httpserver):
         f"http://localhost:{port}/lowercase",
         data={"body": json.dumps(data)},
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, response.text
     lowercase_text = response.json().get("text")
     assert lowercase_text == ["hello world!", "this is a test."]
 
@@ -101,7 +99,7 @@ def test_webhooks(create_app, httpserver):
         f"http://localhost:{port}/lowercase?defer=True",
         data={"body": json.dumps(data)},
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, response.text
 
     httpserver.check_assertions()
     httpserver.check_handler_errors()
@@ -159,3 +157,8 @@ def test_webhook_crud(create_app):
     # Verify webhook is deleted
     response = requests.get(f"{base_url}/webhooks/{webhook_id}")
     assert response.status_code == 404
+
+    # Test validation for URL
+    response = requests.post(f"{base_url}/webhooks", json={"url": "invalid-url"})
+    assert response.status_code == 422
+    assert response.json()["error"] == "ValidationError"
