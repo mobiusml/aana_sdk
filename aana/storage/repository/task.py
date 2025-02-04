@@ -411,3 +411,34 @@ class TaskRepository(BaseRepository[TaskEntity]):
             synchronize_session=False,
         )
         self.session.commit()
+
+    def get_tasks(
+        self,
+        user_id: str | None = None,
+        status: TaskStatus | None = None,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> list[TaskEntity]:
+        """Get tasks by user_id and status.
+
+        Args:
+            user_id (str | None): The user ID.
+            status (TaskStatus | None): The task status.
+            limit (int): The maximum number of tasks to fetch.
+            offset (int): The offset.
+
+        Returns:
+            list[TaskEntity]: The list of tasks.
+        """
+        query = self.session.query(TaskEntity)
+        if user_id:
+            query = query.filter(TaskEntity.user_id == user_id)
+        if status:
+            query = query.filter(TaskEntity.status == status)
+        tasks = (
+            query.order_by(TaskEntity.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
+        return tasks
