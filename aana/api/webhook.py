@@ -7,7 +7,7 @@ from typing import Any
 
 import httpx
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from aana.api.security import UserIdDependency
@@ -29,7 +29,7 @@ router = APIRouter(tags=["webhooks"])
 class WebhookRegistrationRequest(BaseModel):
     """Request to register a webhook."""
 
-    url: str = Field(
+    url: HttpUrl = Field(
         ..., description="The URL to which the webhook will send requests."
     )
     events: list[WebhookEventType] = Field(
@@ -43,7 +43,7 @@ class WebhookRegistrationRequest(BaseModel):
 class WebhookUpdateRequest(BaseModel):
     """Request to update a webhook."""
 
-    url: str | None = Field(None, description="New URL for the webhook.")
+    url: HttpUrl | None = Field(None, description="New URL for the webhook.")
     events: list[WebhookEventType] | None = Field(
         None, description="New list of events to subscribe to."
     )
@@ -65,7 +65,7 @@ class WebhookResponse(BaseModel):
     """Response for a webhook registration."""
 
     id: str = Field(..., description="The webhook ID.")
-    url: str = Field(
+    url: HttpUrl = Field(
         ..., description="The URL to which the webhook will send requests."
     )
     events: list[WebhookEventType] = Field(
@@ -77,7 +77,7 @@ class WebhookResponse(BaseModel):
         """Create a WebhookResponse from a WebhookEntity."""
         return WebhookResponse(
             id=str(webhook.id),
-            url=webhook.url,
+            url=str(webhook.url),
             events=webhook.events,
         )
 
@@ -207,15 +207,12 @@ async def create_webhook(
 ) -> WebhookResponse:
     """This endpoint is used to register a webhook."""
     webhook_repo = WebhookRepository(db)
-    try:
-        webhook = WebhookEntity(
-            user_id=user_id,
-            url=request.url,
-            events=request.events,
-        )
-        webhook = webhook_repo.save(webhook)
-    except Exception:
-        return WebhookRegistrationResponse(message="Failed to register webhook")
+    webhook = WebhookEntity(
+        user_id=user_id,
+        url=str(request.url),
+        events=request.events,
+    )
+    webhook = webhook_repo.save(webhook)
     return WebhookResponse.from_entity(webhook)
 
 
@@ -256,7 +253,7 @@ async def update_webhook(
     if not webhook or webhook.user_id != user_id:
         raise HTTPException(status_code=404, detail="Webhook not found")
     if request.url is not None:
-        webhook.url = request.url
+        webhook.url = str(request.url)
     if request.events is not None:
         webhook.events = request.events
     webhook = webhook_repo.save(webhook)
