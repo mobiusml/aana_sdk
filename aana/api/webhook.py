@@ -153,6 +153,20 @@ async def send_webhook_request(url: str, body: dict, headers: dict):
         response.raise_for_status()
 
 
+async def send_webhook_request_with_retry(url: str, body: dict, headers: dict):
+    """Send a webhook request with retries.
+
+    Args:
+        url (str): The webhook URL.
+        body (dict): The body of the request.
+        headers (dict): The headers to include in the request.
+    """
+    try:
+        await send_webhook_request(url, body, headers)
+    except Exception:
+        logger.exception(f"Failed to send webhook request to {url}.")
+
+
 async def trigger_webhooks(
     event: WebhookEventType, body: WebhookBody, user_id: str | None
 ):
@@ -171,12 +185,9 @@ async def trigger_webhooks(
         for webhook in webhooks:
             signature = generate_hmac_signature(body_dict, user_id)
             headers = {"X-Signature": signature}
-            try:
-                asyncio.create_task(  # noqa: RUF006
-                    send_webhook_request(webhook.url, body_dict, headers)
-                )
-            except Exception:
-                logger.exception(f"Failed to send webhook request to {webhook.url}.")
+            asyncio.create_task(  # noqa: RUF006
+                send_webhook_request_with_retry(webhook.url, body_dict, headers)
+            )
 
 
 async def trigger_task_webhooks(event: WebhookEventType, task: TaskEntity):
