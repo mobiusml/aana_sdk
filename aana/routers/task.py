@@ -106,15 +106,15 @@ async def delete_task(
     """Delete the task with the given ID."""
     task_repo = TaskRepository(db)
     task = task_repo.read(task_id, check=False)
-    if task.status in (TaskStatus.RUNNING, TaskStatus.ASSIGNED):
-        raise HTTPException(
-            status_code=400,
-            detail="Cannot delete a running or assigned task.",
-        )
     if not task or task.user_id != user_id:
         raise HTTPException(
             status_code=404,
             detail="Task not found",
+        )
+    if task.status in (TaskStatus.RUNNING, TaskStatus.ASSIGNED):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete a running or assigned task.",
         )
     task = task_repo.delete(task_id)
     if task is None:
