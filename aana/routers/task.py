@@ -15,21 +15,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["tasks"], include_in_schema=aana_settings.task_queue.enabled)
 
-# Request models
-
-
-class TaskListRequest(BaseModel):
-    """Request to list tasks."""
-
-    status: TaskStatus | None = Field(
-        None, description="Filter tasks by status. If None, all tasks are returned."
-    )
-    limit: int = Field(100, description="The maximum number of tasks to return.")
-    offset: int = Field(
-        0, description="The number of tasks to skip before starting to return tasks."
-    )
-
-
 # Response models
 
 
@@ -121,6 +106,11 @@ async def delete_task(
     """Delete the task with the given ID."""
     task_repo = TaskRepository(db)
     task = task_repo.read(task_id, check=False)
+    if task.status in (TaskStatus.RUNNING, TaskStatus.ASSIGNED):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete a running or assigned task.",
+        )
     if not task or task.user_id != user_id:
         raise HTTPException(
             status_code=404,

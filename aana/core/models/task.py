@@ -12,6 +12,8 @@ class TaskInfo(BaseModel):
 
     Attributes:
         id (str): The task ID.
+        endpoint (str): The endpoint to which the task is assigned.
+        data (Any): The task data.
         status (TaskStatus): The task status.
         result (Any): The task result.
     """
