@@ -15,7 +15,7 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         """Constructor."""
         super().__init__(session, WebhookEntity)
 
-    def read(self, item_id: str | UUID, check: bool = True) -> WebhookEntity:
+    def read(self, item_id: str | UUID, check: bool = True) -> WebhookEntity | None:
         """Reads a single webhook from the database.
 
         Args:
@@ -28,11 +28,14 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        if isinstance(item_id, str):
-            item_id = UUID(item_id)
+        try:
+            if isinstance(item_id, str):
+                item_id = UUID(item_id)
+        except ValueError:
+            return None
         return super().read(item_id, check)
 
-    def delete(self, item_id: str | UUID, check: bool = True) -> WebhookEntity:
+    def delete(self, item_id: str | UUID, check: bool = True) -> WebhookEntity | None:
         """Delete a webhook from the database.
 
         Args:
@@ -45,8 +48,11 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        if isinstance(item_id, str):
-            item_id = UUID(item_id)
+        try:
+            if isinstance(item_id, str):
+                item_id = UUID(item_id)
+        except ValueError:
+            return None
         return super().delete(item_id, check)
 
     def save(self, webhook: WebhookEntity) -> WebhookEntity:
