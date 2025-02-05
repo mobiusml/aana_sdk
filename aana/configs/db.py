@@ -22,14 +22,14 @@ class PostgreSQLConfig(TypedDict):
 
     Attributes:
         host (str): The host of the PostgreSQL server.
-        port (str): The port of the PostgreSQL server.
+        port (int): The port of the PostgreSQL server.
         user (str): The user to connect to the PostgreSQL server.
         password (str): The password to connect to the PostgreSQL server.
         database (str): The database name.
     """
 
     host: str
-    port: str
+    port: int
     user: str
     password: str
     database: str

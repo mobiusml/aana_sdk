@@ -142,7 +142,7 @@ def test_task_queue(create_app):  # noqa: C901
     # Check the task status with timeout of 10 seconds
     start_time = time.time()
     while time.time() - start_time < 10:
-        response = requests.get(f"http://localhost:{port}/tasks/{task_id}")
+        response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
         task_status = response.json().get("status")
         result = response.json().get("result")
         if task_status == "completed":
@@ -152,43 +152,21 @@ def test_task_queue(create_app):  # noqa: C901
     assert task_status == "completed", response.text
     assert result == {"text": ["hello world!", "this is a test."]}
 
-    # Test task list endpoint
-    response = requests.get(f"http://localhost:{port}/tasks")
-    assert response.status_code == 200
-    assert "tasks" in response.json()
-    assert task_id in [task["id"] for task in response.json()["tasks"]]
-
-    # Test task list by status (completed, should be there)
-    response = requests.get(f"http://localhost:{port}/tasks?status=completed")
-    assert response.status_code == 200
-    assert "tasks" in response.json()
-    assert task_id in [task["id"] for task in response.json()["tasks"]]
-
-    # Test task list by status (failed, should not be there)
-    response = requests.get(f"http://localhost:{port}/tasks?status=failed")
-    assert response.status_code == 200
-    assert "tasks" in response.json()
-    assert task_id not in [task["id"] for task in response.json()["tasks"]]
-
     # Delete the task
-    response = requests.delete(f"http://localhost:{port}/tasks/{task_id}")
+    response = requests.get(f"http://localhost:{port}/tasks/delete/{task_id}")
     assert response.status_code == 200
-    assert response.json().get("id") == task_id
+    assert response.json().get("task_id") == task_id
 
     # Check that the task is deleted
-    response = requests.get(f"http://localhost:{port}/tasks/{task_id}")
+    response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
     assert response.status_code == 404
-
-    # Check that the task list does not contain the deleted task
-    response = requests.get(f"http://localhost:{port}/tasks")
-    assert response.status_code == 200
-    assert "tasks" in response.json()
-    assert task_id not in [task["id"] for task in response.json()["tasks"]]
+    assert response.json().get("error") == "NotFoundException"
 
     # Check non-existent task
     task_id = "d1b1b1b1-1b1b-1b1b-1b1b-1b1b1b1b1b1b"
-    response = requests.get(f"http://localhost:{port}/tasks/{task_id}")
+    response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
     assert response.status_code == 404
+    assert response.json().get("error") == "NotFoundException"
 
     # Test lowercase streaming endpoint
     data = {"text": ["Hello World!", "This is a test."]}
@@ -216,7 +194,7 @@ def test_task_queue(create_app):  # noqa: C901
     # Check the task status with timeout of 10 seconds
     start_time = time.time()
     while time.time() - start_time < 10:
-        response = requests.get(f"http://localhost:{port}/tasks/{task_id}")
+        response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
         task_status = response.json().get("status")
         result = response.json().get("result")
         if task_status == "completed":
@@ -244,7 +222,7 @@ def test_task_queue(create_app):  # noqa: C901
         for task_id in task_ids:
             if task_id in completed_tasks:
                 continue
-            response = requests.get(f"http://localhost:{port}/tasks/{task_id}")
+            response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
             task_status = response.json().get("status")
             result = response.json().get("result")
             if task_status == "completed":
@@ -256,12 +234,7 @@ def test_task_queue(create_app):  # noqa: C901
 
     # Check that all tasks are completed
     for task_id in task_ids:
-        response = requests.get(f"http://localhost:{port}/tasks/{task_id}")
+        response = requests.get(f"http://localhost:{port}/tasks/get/{task_id}")
         response = response.json()
         task_status = response.get("status")
         assert task_status == "completed", response
-
-    # Test task count endpoint
-    response = requests.get(f"http://localhost:{port}/tasks/count")
-    assert response.status_code == 200
-    assert response.json() == {"total": 31, "completed": 31}

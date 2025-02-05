@@ -388,3 +388,207 @@ def test_update_expired_tasks(db_session):
     returned_task_ids = {str(task.id) for task in expired_tasks}
 
     assert returned_task_ids == expected_task_ids
+
+
+def test_retry_task(db_session):
+    """Test retrying a failed task."""
+    task_repo = TaskRepository(db_session)
+
+    # Create a failed task with some progress and results
+    task = TaskEntity(
+        endpoint="/test",
+        data={"test": "data"},
+        status=TaskStatus.FAILED,
+        progress=50,
+        result={"error": "some error"},
+        num_retries=2,
+        assigned_at=datetime.now(timezone.utc),
+        completed_at=datetime.now(timezone.utc),
+    )
+    db_session.add(task)
+    db_session.commit()
+
+    # Retry the task
+    retried_task = task_repo.retry_task(str(task.id))
+
+    # Check that task was reset properly
+    assert retried_task.status == TaskStatus.CREATED
+    assert retried_task.progress == 0
+    assert retried_task.result is None
+    assert retried_task.num_retries == 0
+    assert retried_task.assigned_at is None
+    assert retried_task.completed_at is None
+
+    # Original data should be preserved
+    assert retried_task.endpoint == "/test"
+    assert retried_task.data == {"test": "data"}
+
+
+def test_get_tasks(db_session):
+    """Test fetching tasks with various filters."""
+    task_repo = TaskRepository(db_session)
+
+    # Remove all existing tasks
+    db_session.query(TaskEntity).delete()
+    db_session.commit()
+
+    # Create sample tasks with different users and statuses
+    base_time = datetime.now(timezone.utc)
+    tasks = [
+        TaskEntity(
+            endpoint="/test1",
+            data={"test": "data1"},
+            status=TaskStatus.COMPLETED,
+            user_id="user1",
+            created_at=base_time - timedelta(hours=1),
+        ),
+        TaskEntity(
+            endpoint="/test2",
+            data={"test": "data2"},
+            status=TaskStatus.RUNNING,
+            user_id="user1",
+            created_at=base_time - timedelta(minutes=30),
+        ),
+        TaskEntity(
+            endpoint="/test3",
+            data={"test": "data3"},
+            status=TaskStatus.FAILED,
+            user_id="user2",
+            created_at=base_time - timedelta(minutes=20),
+        ),
+        TaskEntity(
+            endpoint="/test4",
+            data={"test": "data4"},
+            status=TaskStatus.COMPLETED,
+            user_id="user2",
+            created_at=base_time - timedelta(minutes=10),
+        ),
+        TaskEntity(
+            endpoint="/test5",
+            data={"test": "data5"},
+            status=TaskStatus.COMPLETED,
+            user_id=None,
+            created_at=base_time,
+        ),
+    ]
+    db_session.add_all(tasks)
+    db_session.commit()
+
+    # Test getting all tasks without filters
+    all_tasks = task_repo.get_tasks()
+    assert len(all_tasks) == 5
+    assert all_tasks[0].endpoint == "/test5"  # Most recent first
+
+    # Test filtering by user_id
+    user1_tasks = task_repo.get_tasks(user_id="user1")
+    assert len(user1_tasks) == 2
+    assert all(task.user_id == "user1" for task in user1_tasks)
+
+    # Test filtering by status
+    completed_tasks = task_repo.get_tasks(status=TaskStatus.COMPLETED)
+    assert len(completed_tasks) == 3
+    assert all(task.status == TaskStatus.COMPLETED for task in completed_tasks)
+
+    # Test combined filters
+    user2_completed = task_repo.get_tasks(user_id="user2", status=TaskStatus.COMPLETED)
+    assert len(user2_completed) == 1
+    assert user2_completed[0].endpoint == "/test4"
+
+    # Test limit and offset
+    limited_tasks = task_repo.get_tasks(limit=2)
+    assert len(limited_tasks) == 2
+    assert limited_tasks[0].endpoint == "/test5"
+    assert limited_tasks[1].endpoint == "/test4"
+
+    offset_tasks = task_repo.get_tasks(limit=2, offset=2)
+    assert len(offset_tasks) == 2
+    assert offset_tasks[0].endpoint == "/test3"
+    assert offset_tasks[1].endpoint == "/test2"
+
+
+def test_count_tasks(db_session):
+    """Test counting tasks by status."""
+    task_repo = TaskRepository(db_session)
+
+    # Remove all existing tasks
+    db_session.query(TaskEntity).delete()
+    db_session.commit()
+
+    # Create sample tasks with different users and statuses
+    tasks = [
+        # User 1 tasks
+        TaskEntity(
+            endpoint="/test1",
+            data={"test": "data1"},
+            status=TaskStatus.COMPLETED,
+            user_id="user1",
+        ),
+        TaskEntity(
+            endpoint="/test2",
+            data={"test": "data2"},
+            status=TaskStatus.RUNNING,
+            user_id="user1",
+        ),
+        TaskEntity(
+            endpoint="/test3",
+            data={"test": "data3"},
+            status=TaskStatus.FAILED,
+            user_id="user1",
+        ),
+        TaskEntity(
+            endpoint="/test4",
+            data={"test": "data4"},
+            status=TaskStatus.COMPLETED,
+            user_id="user1",
+        ),
+        # User 2 tasks
+        TaskEntity(
+            endpoint="/test5",
+            data={"test": "data5"},
+            status=TaskStatus.COMPLETED,
+            user_id="user2",
+        ),
+        TaskEntity(
+            endpoint="/test6",
+            data={"test": "data6"},
+            status=TaskStatus.RUNNING,
+            user_id="user2",
+        ),
+        # Tasks with no user
+        TaskEntity(
+            endpoint="/test7",
+            data={"test": "data7"},
+            status=TaskStatus.CREATED,
+            user_id=None,
+        ),
+        TaskEntity(
+            endpoint="/test8",
+            data={"test": "data8"},
+            status=TaskStatus.NOT_FINISHED,
+            user_id=None,
+        ),
+    ]
+    db_session.add_all(tasks)
+    db_session.commit()
+
+    # Test counting all tasks
+    all_counts = task_repo.count()
+    assert all_counts["total"] == 8
+    assert all_counts["completed"] == 3
+    assert all_counts["running"] == 2
+    assert all_counts["failed"] == 1
+    assert all_counts["created"] == 1
+    assert all_counts["not_finished"] == 1
+
+    # Test counting user1's tasks
+    user1_counts = task_repo.count(user_id="user1")
+    assert user1_counts["total"] == 4
+    assert user1_counts["completed"] == 2
+    assert user1_counts["running"] == 1
+    assert user1_counts["failed"] == 1
+
+    # Test counting user2's tasks
+    user2_counts = task_repo.count(user_id="user2")
+    assert user2_counts["total"] == 2
+    assert user2_counts["completed"] == 1
+    assert user2_counts["running"] == 1

@@ -45,5 +45,4 @@ jobs:
       if: always()
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        PORTSERVER_ADDRESS: "@unittest-portserver"
       run: poetry run pytest -vv
