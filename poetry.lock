@@ -943,28 +943,6 @@ test = ["pytest"]
 
 [[package]]
 name = "compressed-tensors"
-version = "0.9.0"
-description = "Library for utilization of compressed safetensors of neural network models"
-optional = true
-python-versions = "*"
-groups = ["main"]
-markers = "(extra == \"vllm\" or extra == \"all\") and (python_version <= \"3.11\" or python_version >= \"3.12\")"
-files = [
-    {file = "compressed-tensors-0.9.0.tar.gz", hash = "sha256:80f8b002309b5970493e578d58542a308111fbef26f96811fa2c5322b24e7f1f"},
-    {file = "compressed_tensors-0.9.0-py3-none-any.whl", hash = "sha256:c4a0bccf2fd180a18a4bf0646f7746df4ea8ea537c06061f4b571662debf4424"},
-]
-
-[package.dependencies]
-pydantic = ">=2.0"
-torch = ">=1.7.0"
-transformers = "*"
-
-[package.extras]
-accelerate = ["accelerate"]
-dev = ["black (==22.12.0)", "flake8 (>=3.8.3)", "isort (==5.8.0)", "nbconvert (>=7.16.3)", "pytest (>=6.0.0)", "wheel (>=0.36.2)"]
-
-[[package]]
-name = "compressed-tensors"
 version = "0.9.1"
 description = "Library for utilization of compressed safetensors of neural network models"
 optional = true
@@ -2378,7 +2356,7 @@ files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
 ]
-markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"hqq\") and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"x86_64\" or extra == \"all\" or extra == \"hqq\")", tests = "python_version <= \"3.11\" or python_version >= \"3.12\""}
+markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"hqq\") and (python_version <= \"3.11\" or python_version >= \"3.12\")", tests = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [[package]]
 name = "interegular"
@@ -4839,7 +4817,7 @@ files = [
     {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
     {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
 ]
-markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"hqq\") and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"x86_64\" or extra == \"all\" or extra == \"hqq\")", tests = "python_version <= \"3.11\" or python_version >= \"3.12\""}
+markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"hqq\") and (python_version <= \"3.11\" or python_version >= \"3.12\")", tests = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.extras]
 dev = ["pre-commit", "tox"]
@@ -5450,7 +5428,7 @@ description = "Seamless operability between C++11 and Python"
 optional = true
 python-versions = ">=3.7"
 groups = ["main"]
-markers = "platform_machine == \"x86_64\" and (extra == \"vllm\" or extra == \"all\") and (python_version <= \"3.11\" or python_version >= \"3.12\")"
+markers = "(extra == \"vllm\" or extra == \"all\") and (extra == \"vllm\" or platform_machine == \"x86_64\") and (python_version <= \"3.11\" or python_version >= \"3.12\")"
 files = [
     {file = "pybind11-2.13.6-py3-none-any.whl", hash = "sha256:237c41e29157b962835d356b370ededd57594a26d5894a795960f0047cb5caf5"},
     {file = "pybind11-2.13.6.tar.gz", hash = "sha256:ba6af10348c12b24e92fa086b39cfba0eff619b61ac77c406167d813b096d39a"},
@@ -5722,7 +5700,7 @@ files = [
     {file = "pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6"},
     {file = "pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761"},
 ]
-markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"hqq\") and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"x86_64\" or extra == \"all\" or extra == \"hqq\")", tests = "python_version <= \"3.11\" or python_version >= \"3.12\""}
+markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"hqq\") and (python_version <= \"3.11\" or python_version >= \"3.12\")", tests = "python_version <= \"3.11\" or python_version >= \"3.12\""}
 
 [package.dependencies]
 colorama = {version = "*", markers = "sys_platform == \"win32\""}
@@ -7919,77 +7897,6 @@ test = ["argcomplete (>=3.0.3)", "mypy (>=1.7.0)", "pre-commit", "pytest (>=7.0,
 
 [[package]]
 name = "transformers"
-version = "4.48.1"
-description = "State-of-the-art Machine Learning for JAX, PyTorch and TensorFlow"
-optional = false
-python-versions = ">=3.9.0"
-groups = ["main", "tests"]
-files = [
-    {file = "transformers-4.48.1-py3-none-any.whl", hash = "sha256:24be0564b0a36d9e433d9a65de248f1545b6f6edce1737669605eb6a8141bbbb"},
-    {file = "transformers-4.48.1.tar.gz", hash = "sha256:7c1931facc3ee8adcbf86fc7a87461d54c1e40eca3bb57fef1ee9f3ecd32187e"},
-]
-markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\") and (python_version <= \"3.11\" or python_version >= \"3.12\")", tests = "python_version <= \"3.11\" or python_version >= \"3.12\""}
-
-[package.dependencies]
-filelock = "*"
-huggingface-hub = ">=0.24.0,<1.0"
-numpy = ">=1.17"
-packaging = ">=20.0"
-pyyaml = ">=5.1"
-regex = "!=2019.12.17"
-requests = "*"
-safetensors = ">=0.4.1"
-tokenizers = ">=0.21,<0.22"
-tqdm = ">=4.27"
-
-[package.extras]
-accelerate = ["accelerate (>=0.26.0)"]
-agents = ["Pillow (>=10.0.1,<=15.0)", "accelerate (>=0.26.0)", "datasets (!=2.5.0)", "diffusers", "opencv-python", "sentencepiece (>=0.1.91,!=0.1.92)", "torch (>=2.0)"]
-all = ["Pillow (>=10.0.1,<=15.0)", "accelerate (>=0.26.0)", "av (==9.2.0)", "codecarbon (>=2.8.1)", "flax (>=0.4.1,<=0.7.0)", "jax (>=0.4.1,<=0.4.13)", "jaxlib (>=0.4.1,<=0.4.13)", "kenlm", "keras-nlp (>=0.3.1,<0.14.0)", "librosa", "onnxconverter-common", "optax (>=0.0.8,<=0.1.4)", "optuna", "phonemizer", "protobuf", "pyctcdecode (>=0.4.0)", "ray[tune] (>=2.7.0)", "scipy (<1.13.0)", "sentencepiece (>=0.1.91,!=0.1.92)", "sigopt", "tensorflow (>2.9,<2.16)", "tensorflow-text (<2.16)", "tf2onnx", "timm (<=1.0.11)", "tokenizers (>=0.21,<0.22)", "torch (>=2.0)", "torchaudio", "torchvision"]
-audio = ["kenlm", "librosa", "phonemizer", "pyctcdecode (>=0.4.0)"]
-benchmark = ["optimum-benchmark (>=0.3.0)"]
-codecarbon = ["codecarbon (>=2.8.1)"]
-deepspeed = ["accelerate (>=0.26.0)", "deepspeed (>=0.9.3)"]
-deepspeed-testing = ["GitPython (<3.1.19)", "accelerate (>=0.26.0)", "beautifulsoup4", "cookiecutter (==1.7.3)", "datasets (!=2.5.0)", "deepspeed (>=0.9.3)", "dill (<0.3.5)", "evaluate (>=0.2.0)", "faiss-cpu", "nltk (<=3.8.1)", "optuna", "parameterized", "protobuf", "psutil", "pydantic", "pytest (>=7.2.0,<8.0.0)", "pytest-asyncio", "pytest-rich", "pytest-timeout", "pytest-xdist", "rjieba", "rouge-score (!=0.0.7,!=0.0.8,!=0.1,!=0.1.1)", "ruff (==0.5.1)", "sacrebleu (>=1.4.12,<2.0.0)", "sacremoses", "sentencepiece (>=0.1.91,!=0.1.92)", "tensorboard", "timeout-decorator"]
-dev = ["GitPython (<3.1.19)", "Pillow (>=10.0.1,<=15.0)", "accelerate (>=0.26.0)", "av (==9.2.0)", "beautifulsoup4", "codecarbon (>=2.8.1)", "cookiecutter (==1.7.3)", "datasets (!=2.5.0)", "dill (<0.3.5)", "evaluate (>=0.2.0)", "faiss-cpu", "flax (>=0.4.1,<=0.7.0)", "fugashi (>=1.0)", "ipadic (>=1.0.0,<2.0)", "isort (>=5.5.4)", "jax (>=0.4.1,<=0.4.13)", "jaxlib (>=0.4.1,<=0.4.13)", "kenlm", "keras-nlp (>=0.3.1,<0.14.0)", "libcst", "librosa", "nltk (<=3.8.1)", "onnxconverter-common", "optax (>=0.0.8,<=0.1.4)", "optuna", "parameterized", "phonemizer", "protobuf", "psutil", "pyctcdecode (>=0.4.0)", "pydantic", "pytest (>=7.2.0,<8.0.0)", "pytest-asyncio", "pytest-rich", "pytest-timeout", "pytest-xdist", "ray[tune] (>=2.7.0)", "rhoknp (>=1.1.0,<1.3.1)", "rich", "rjieba", "rouge-score (!=0.0.7,!=0.0.8,!=0.1,!=0.1.1)", "ruff (==0.5.1)", "sacrebleu (>=1.4.12,<2.0.0)", "sacremoses", "scikit-learn", "scipy (<1.13.0)", "sentencepiece (>=0.1.91,!=0.1.92)", "sigopt", "sudachidict-core (>=20220729)", "sudachipy (>=0.6.6)", "tensorboard", "tensorflow (>2.9,<2.16)", "tensorflow-text (<2.16)", "tf2onnx", "timeout-decorator", "timm (<=1.0.11)", "tokenizers (>=0.21,<0.22)", "torch (>=2.0)", "torchaudio", "torchvision", "unidic (>=1.0.2)", "unidic-lite (>=1.0.7)", "urllib3 (<2.0.0)"]
-dev-tensorflow = ["GitPython (<3.1.19)", "Pillow (>=10.0.1,<=15.0)", "beautifulsoup4", "cookiecutter (==1.7.3)", "datasets (!=2.5.0)", "dill (<0.3.5)", "evaluate (>=0.2.0)", "faiss-cpu", "isort (>=5.5.4)", "kenlm", "keras-nlp (>=0.3.1,<0.14.0)", "libcst", "librosa", "nltk (<=3.8.1)", "onnxconverter-common", "onnxruntime (>=1.4.0)", "onnxruntime-tools (>=1.4.2)", "parameterized", "phonemizer", "protobuf", "psutil", "pyctcdecode (>=0.4.0)", "pydantic", "pytest (>=7.2.0,<8.0.0)", "pytest-asyncio", "pytest-rich", "pytest-timeout", "pytest-xdist", "rich", "rjieba", "rouge-score (!=0.0.7,!=0.0.8,!=0.1,!=0.1.1)", "ruff (==0.5.1)", "sacrebleu (>=1.4.12,<2.0.0)", "sacremoses", "scikit-learn", "sentencepiece (>=0.1.91,!=0.1.92)", "tensorboard", "tensorflow (>2.9,<2.16)", "tensorflow-text (<2.16)", "tf2onnx", "timeout-decorator", "tokenizers (>=0.21,<0.22)", "urllib3 (<2.0.0)"]
-dev-torch = ["GitPython (<3.1.19)", "Pillow (>=10.0.1,<=15.0)", "accelerate (>=0.26.0)", "beautifulsoup4", "codecarbon (>=2.8.1)", "cookiecutter (==1.7.3)", "datasets (!=2.5.0)", "dill (<0.3.5)", "evaluate (>=0.2.0)", "faiss-cpu", "fugashi (>=1.0)", "ipadic (>=1.0.0,<2.0)", "isort (>=5.5.4)", "kenlm", "libcst", "librosa", "nltk (<=3.8.1)", "onnxruntime (>=1.4.0)", "onnxruntime-tools (>=1.4.2)", "optuna", "parameterized", "phonemizer", "protobuf", "psutil", "pyctcdecode (>=0.4.0)", "pydantic", "pytest (>=7.2.0,<8.0.0)", "pytest-asyncio", "pytest-rich", "pytest-timeout", "pytest-xdist", "ray[tune] (>=2.7.0)", "rhoknp (>=1.1.0,<1.3.1)", "rich", "rjieba", "rouge-score (!=0.0.7,!=0.0.8,!=0.1,!=0.1.1)", "ruff (==0.5.1)", "sacrebleu (>=1.4.12,<2.0.0)", "sacremoses", "scikit-learn", "sentencepiece (>=0.1.91,!=0.1.92)", "sigopt", "sudachidict-core (>=20220729)", "sudachipy (>=0.6.6)", "tensorboard", "timeout-decorator", "timm (<=1.0.11)", "tokenizers (>=0.21,<0.22)", "torch (>=2.0)", "torchaudio", "torchvision", "unidic (>=1.0.2)", "unidic-lite (>=1.0.7)", "urllib3 (<2.0.0)"]
-flax = ["flax (>=0.4.1,<=0.7.0)", "jax (>=0.4.1,<=0.4.13)", "jaxlib (>=0.4.1,<=0.4.13)", "optax (>=0.0.8,<=0.1.4)", "scipy (<1.13.0)"]
-flax-speech = ["kenlm", "librosa", "phonemizer", "pyctcdecode (>=0.4.0)"]
-ftfy = ["ftfy"]
-integrations = ["optuna", "ray[tune] (>=2.7.0)", "sigopt"]
-ja = ["fugashi (>=1.0)", "ipadic (>=1.0.0,<2.0)", "rhoknp (>=1.1.0,<1.3.1)", "sudachidict-core (>=20220729)", "sudachipy (>=0.6.6)", "unidic (>=1.0.2)", "unidic-lite (>=1.0.7)"]
-modelcreation = ["cookiecutter (==1.7.3)"]
-natten = ["natten (>=0.14.6,<0.15.0)"]
-onnx = ["onnxconverter-common", "onnxruntime (>=1.4.0)", "onnxruntime-tools (>=1.4.2)", "tf2onnx"]
-onnxruntime = ["onnxruntime (>=1.4.0)", "onnxruntime-tools (>=1.4.2)"]
-optuna = ["optuna"]
-quality = ["GitPython (<3.1.19)", "datasets (!=2.5.0)", "isort (>=5.5.4)", "libcst", "rich", "ruff (==0.5.1)", "urllib3 (<2.0.0)"]
-ray = ["ray[tune] (>=2.7.0)"]
-retrieval = ["datasets (!=2.5.0)", "faiss-cpu"]
-ruff = ["ruff (==0.5.1)"]
-sagemaker = ["sagemaker (>=2.31.0)"]
-sentencepiece = ["protobuf", "sentencepiece (>=0.1.91,!=0.1.92)"]
-serving = ["fastapi", "pydantic", "starlette", "uvicorn"]
-sigopt = ["sigopt"]
-sklearn = ["scikit-learn"]
-speech = ["kenlm", "librosa", "phonemizer", "pyctcdecode (>=0.4.0)", "torchaudio"]
-testing = ["GitPython (<3.1.19)", "beautifulsoup4", "cookiecutter (==1.7.3)", "datasets (!=2.5.0)", "dill (<0.3.5)", "evaluate (>=0.2.0)", "faiss-cpu", "nltk (<=3.8.1)", "parameterized", "psutil", "pydantic", "pytest (>=7.2.0,<8.0.0)", "pytest-asyncio", "pytest-rich", "pytest-timeout", "pytest-xdist", "rjieba", "rouge-score (!=0.0.7,!=0.0.8,!=0.1,!=0.1.1)", "ruff (==0.5.1)", "sacrebleu (>=1.4.12,<2.0.0)", "sacremoses", "sentencepiece (>=0.1.91,!=0.1.92)", "tensorboard", "timeout-decorator"]
-tf = ["keras-nlp (>=0.3.1,<0.14.0)", "onnxconverter-common", "tensorflow (>2.9,<2.16)", "tensorflow-text (<2.16)", "tf2onnx"]
-tf-cpu = ["keras (>2.9,<2.16)", "keras-nlp (>=0.3.1,<0.14.0)", "onnxconverter-common", "tensorflow-cpu (>2.9,<2.16)", "tensorflow-probability (<0.24)", "tensorflow-text (<2.16)", "tf2onnx"]
-tf-speech = ["kenlm", "librosa", "phonemizer", "pyctcdecode (>=0.4.0)"]
-tiktoken = ["blobfile", "tiktoken"]
-timm = ["timm (<=1.0.11)"]
-tokenizers = ["tokenizers (>=0.21,<0.22)"]
-torch = ["accelerate (>=0.26.0)", "torch (>=2.0)"]
-torch-speech = ["kenlm", "librosa", "phonemizer", "pyctcdecode (>=0.4.0)", "torchaudio"]
-torch-vision = ["Pillow (>=10.0.1,<=15.0)", "torchvision"]
-torchhub = ["filelock", "huggingface-hub (>=0.24.0,<1.0)", "importlib-metadata", "numpy (>=1.17)", "packaging (>=20.0)", "protobuf", "regex (!=2019.12.17)", "requests", "sentencepiece (>=0.1.91,!=0.1.92)", "tokenizers (>=0.21,<0.22)", "torch (>=2.0)", "tqdm (>=4.27)"]
-video = ["av (==9.2.0)"]
-vision = ["Pillow (>=10.0.1,<=15.0)"]
-
-[[package]]
-name = "transformers"
 version = "4.48.2"
 description = "State-of-the-art Machine Learning for JAX, PyTorch and TensorFlow"
 optional = false
@@ -8269,70 +8176,6 @@ platformdirs = ">=3.9.1,<5"
 [package.extras]
 docs = ["furo (>=2023.7.26)", "proselint (>=0.13)", "sphinx (>=7.1.2,!=7.3)", "sphinx-argparse (>=0.4)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=23.6)"]
 test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=23.1)", "pytest (>=7.4)", "pytest-env (>=0.8.2)", "pytest-freezer (>=0.4.8)", "pytest-mock (>=3.11.1)", "pytest-randomly (>=3.12)", "pytest-timeout (>=2.1)", "setuptools (>=68)", "time-machine (>=2.10)"]
-
-[[package]]
-name = "vllm"
-version = "0.7.0"
-description = "A high-throughput and memory-efficient inference and serving engine for LLMs"
-optional = true
-python-versions = ">=3.9"
-groups = ["main"]
-markers = "(extra == \"vllm\" or extra == \"all\") and (python_version <= \"3.11\" or python_version >= \"3.12\")"
-files = [
-    {file = "vllm-0.7.0-cp38-abi3-manylinux1_x86_64.whl", hash = "sha256:946c4169df196138ebc60f8de9cefb229580d837b85061a2e1d5793955149709"},
-    {file = "vllm-0.7.0.tar.gz", hash = "sha256:91521ca3e7629e2a40a4fceea3290cbde34c3ea6cb291ee9f84ad2ce752e65be"},
-]
-
-[package.dependencies]
-aiohttp = "*"
-blake3 = "*"
-cloudpickle = "*"
-compressed-tensors = "0.9.0"
-depyf = "0.18.0"
-einops = "*"
-fastapi = {version = ">=0.107.0,<0.113.dev0 || >0.114.0", markers = "python_version >= \"3.9\""}
-filelock = ">=3.16.1"
-gguf = "0.10.0"
-importlib_metadata = "*"
-lark = "1.2.2"
-lm-format-enforcer = ">=0.10.9,<0.11"
-mistral_common = {version = ">=1.5.0", extras = ["opencv"]}
-msgspec = "*"
-numpy = "<2.0.0"
-nvidia-ml-py = ">=12.560.30"
-openai = ">=1.52.0"
-outlines = "0.1.11"
-partial-json-parser = "*"
-pillow = "*"
-prometheus_client = ">=0.18.0"
-prometheus-fastapi-instrumentator = ">=7.0.0"
-protobuf = "*"
-psutil = "*"
-py-cpuinfo = "*"
-pydantic = ">=2.9"
-pyyaml = "*"
-pyzmq = "*"
-ray = {version = ">=2.9", extras = ["default"]}
-requests = ">=2.26.0"
-sentencepiece = "*"
-setuptools = {version = ">=74.1.1", markers = "python_version > \"3.11\""}
-six = {version = ">=1.16.0", markers = "python_version > \"3.11\""}
-tiktoken = ">=0.6.0"
-tokenizers = ">=0.19.1"
-torch = "2.5.1"
-torchvision = "0.20.1"
-tqdm = "*"
-transformers = ">=4.45.2"
-typing_extensions = ">=4.10"
-uvicorn = {version = "*", extras = ["standard"]}
-xformers = {version = "0.0.28.post3", markers = "platform_system == \"Linux\" and platform_machine == \"x86_64\""}
-xgrammar = {version = ">=0.1.6", markers = "platform_machine == \"x86_64\""}
-
-[package.extras]
-audio = ["librosa", "soundfile"]
-runai = ["boto3", "runai-model-streamer", "runai-model-streamer-s3"]
-tensorizer = ["tensorizer (>=2.9.0)"]
-video = ["decord"]
 
 [[package]]
 name = "vllm"
@@ -8757,7 +8600,7 @@ description = "Efficient, Flexible and Portable Structured Generation"
 optional = true
 python-versions = "<4,>=3.8"
 groups = ["main"]
-markers = "platform_machine == \"x86_64\" and (extra == \"vllm\" or extra == \"all\") and (python_version <= \"3.11\" or python_version >= \"3.12\")"
+markers = "(extra == \"vllm\" or extra == \"all\") and (extra == \"vllm\" or platform_machine == \"x86_64\") and (python_version <= \"3.11\" or python_version >= \"3.12\")"
 files = [
     {file = "xgrammar-0.1.11-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:5ed31db2669dc499d9d29bb16f30b3395332ff9d0fb80b759697190a5ef5258b"},
     {file = "xgrammar-0.1.11-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:93bb6c10cbdf1a2bda3b458d97b47436657d780f98dccf3d266e17e13568c0a9"},
@@ -8930,9 +8773,9 @@ api-service = ["lago-python-client", "tenacity"]
 asr = ["faster-whisper", "pyannote-audio"]
 hqq = ["accelerate", "bitblas", "bitsandbytes", "hqq", "transformers"]
 transformers = ["accelerate", "bitsandbytes", "transformers"]
-vllm = ["outlines", "vllm"]
+vllm = ["outlines", "vllm", "xgrammar"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "b493214405f2d13fcd12ba299f2877bdeb8917c1f66a49fa05139b17a0f9bdbd"
+content-hash = "151ec6be0b955fd67e34651b9a5bc65b241c44b5c5cfb2f4b7704c67f37b32d9"

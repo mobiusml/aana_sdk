@@ -43,7 +43,7 @@ dependencies = [
 [project.optional-dependencies]
 vllm = [
     "vllm>=0.7.2",
-    "outlines[serve]>=0.1.14",
+    "outlines[serve]>=0.1.11",
     "xgrammar>=0.1.8"
 ]
 
