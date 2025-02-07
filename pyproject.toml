@@ -43,7 +43,8 @@ dependencies = [
 [project.optional-dependencies]
 vllm = [
     "vllm>=0.7.2",
-    "outlines[serve]>=0.0.46"
+    "outlines[serve]>=0.1.14",
+    "xgrammar>=0.1.8"
 ]
 
 transformers = [
