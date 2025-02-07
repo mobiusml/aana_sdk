@@ -24,7 +24,6 @@ from aana.utils.gpu import get_gpu_memory
 from aana.utils.lazy_import import LazyImport
 
 with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_imports:
-    from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
     from vllm.engine.arg_utils import AsyncEngineArgs
     from vllm.engine.async_llm_engine import AsyncLLMEngine
     from vllm.entrypoints.chat_utils import (
@@ -34,7 +33,10 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     )
     from vllm.inputs import TokensPrompt
     from vllm.model_executor.utils import set_random_seed
-    from vllm.sampling_params import SamplingParams as VLLMSamplingParams
+    from vllm.sampling_params import (
+        GuidedDecodingParams,
+        SamplingParams as VLLMSamplingParams,
+    )
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
 
@@ -242,11 +244,15 @@ class VLLMDeployment(BaseDeployment):
         json_schema = sampling_params.json_schema
         regex_string = sampling_params.regex_string
         if json_schema is not None:
-            logits_processors = [JSONLogitsProcessor(json_schema, self.engine.engine)]
+            guided_decoding_params = GuidedDecodingParams(
+                json=json_schema, backend="xgrammar"
+            )
         elif regex_string is not None:
-            logits_processors = [RegexLogitsProcessor(regex_string, self.engine.engine)]
+            guided_decoding_params = GuidedDecodingParams(
+                regex=regex_string, backend="xgrammar"
+            )
         else:
-            logits_processors = []
+            guided_decoding_params = None
 
         request_id = None
 
@@ -264,7 +270,7 @@ class VLLMDeployment(BaseDeployment):
                     exclude=["kwargs", "json_schema", "regex_string"],
                 ),
                 **sampling_params.kwargs,
-                logits_processors=logits_processors,
+                guided_decoding_params=guided_decoding_params,
             )
             # start the request
             request_id = random_uuid()
