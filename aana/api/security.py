@@ -7,6 +7,21 @@ from aana.core.models.api_service import ApiKey
 from aana.exceptions.api_service import AdminOnlyAccess
 
 
+def is_admin(request: Request) -> bool:
+    """Check if the user is an admin.
+
+    Args:
+        request (Request): The request object
+
+    Returns:
+        bool: True if the user is an admin, False otherwise
+    """
+    if aana_settings.api_service.enabled:
+        api_key_info: ApiKey = request.state.api_key_info
+        return api_key_info.is_admin if api_key_info else False
+    return True
+
+
 def require_admin_access(request: Request) -> bool:
     """Check if the user is an admin. If not, raise an exception.
 
@@ -16,11 +31,9 @@ def require_admin_access(request: Request) -> bool:
     Raises:
         AdminOnlyAccess: If the user is not an admin
     """
-    if aana_settings.api_service.enabled:
-        api_key_info: ApiKey = request.state.api_key_info
-        is_admin = api_key_info.is_admin if api_key_info else False
-        if not is_admin:
-            raise AdminOnlyAccess()
+    _is_admin = is_admin(request)
+    if not _is_admin:
+        raise AdminOnlyAccess()
     return True
 
 
@@ -37,6 +50,9 @@ def extract_user_id(request: Request) -> str | None:
 
 AdminAccessDependency = Annotated[bool, Depends(require_admin_access)]
 """ Dependency to check if the user is an admin. If not, it will raise an exception. """
+
+IsAdminDependency = Annotated[bool, Depends(is_admin)]
+""" Dependency to check if the user is an admin. """
 
 UserIdDependency = Annotated[str | None, Depends(extract_user_id)]
 """ Dependency to get the user ID. """
