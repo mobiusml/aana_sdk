@@ -79,6 +79,7 @@ class Settings(BaseSettings):
         model_dir (Path): The temporary model directory.
         num_workers (int): The number of web workers.
         openai_endpoint_enabled (bool): Flag indicating if the OpenAI-compatible endpoint is enabled. Enabled by default.
+        include_stacktrace (bool): Flag indicating if stacktrace should be included in error messages. Enabled by default.
         task_queue (TaskQueueSettings): The task queue settings.
         db_config (DbSettings): The database configuration.
         test (TestSettings): The test settings.
@@ -93,6 +94,7 @@ class Settings(BaseSettings):
     num_workers: int = 2
 
     openai_endpoint_enabled: bool = True
+    include_stacktrace: bool = True
 
     task_queue: TaskQueueSettings = TaskQueueSettings()
 
