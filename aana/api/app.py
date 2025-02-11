@@ -11,7 +11,6 @@ from aana.exceptions.api_service import (
     ApiKeyNotFound,
     ApiKeyNotProvided,
     ApiKeyValidationFailed,
-    InactiveSubscription,
 )
 from aana.storage.models.api_key import ApiKeyEntity
 from aana.storage.session import get_session

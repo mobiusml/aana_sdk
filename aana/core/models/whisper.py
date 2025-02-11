@@ -7,7 +7,7 @@ class MyConfig(ConfigDict, total=False):
     json_schema_extra: dict
 
 
-__all__ = ["WhisperParams", "BatchedWhisperParams"]
+__all__ = ["BatchedWhisperParams", "WhisperParams"]
 
 
 class WhisperParams(BaseModel):
