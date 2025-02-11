@@ -5,14 +5,14 @@ from pydantic import BaseModel, ConfigDict, Field
 from aana.core.models.base import pydantic_protected_fields
 
 __all__ = [
-    "Role",
+    "ChatCompletion",
+    "ChatCompletionChoice",
+    "ChatCompletionRequest",
+    "ChatDialog",
+    "ChatMessage",
     "Prompt",
     "Question",
-    "ChatMessage",
-    "ChatDialog",
-    "ChatCompletionRequest",
-    "ChatCompletionChoice",
-    "ChatCompletion",
+    "Role",
 ]
 
 Role = Literal["system", "user", "assistant"]
