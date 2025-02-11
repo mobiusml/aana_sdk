@@ -1,6 +1,7 @@
 import traceback
 
 from fastapi import Request
+from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 from ray.exceptions import RayTaskError
 
@@ -10,22 +11,26 @@ from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.core import BaseException
 
 
-async def validation_exception_handler(request: Request, exc: ValidationError):
+async def validation_exception_handler(
+    request: Request, exc: ValidationError | RequestValidationError
+):
     """This handler is used to handle pydantic validation errors.
 
     Args:
         request (Request): The request object
-        exc (ValidationError): The validation error
+        exc (ValidationError | RequestValidationError): The exception raised
 
     Returns:
         JSONResponse: JSON response with the error details
     """
+    if isinstance(exc, ValidationError):
+        data = exc.errors(include_context=False)
+    elif isinstance(exc, RequestValidationError):
+        data = exc.errors()
     return AanaJSONResponse(
         status_code=422,
         content=ExceptionResponseModel(
-            error="ValidationError",
-            message="Validation error",
-            data=exc.errors(include_context=False),
+            error="ValidationError", message="Validation error", data=data
         ).model_dump(),
     )
 
