@@ -24,7 +24,7 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
         content=ExceptionResponseModel(
             error="ValidationError",
             message="Validation error",
-            data=exc.errors(),
+            data=exc.errors(include_context=False),
         ).model_dump(),
     )
 
