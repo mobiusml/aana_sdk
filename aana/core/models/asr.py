@@ -18,14 +18,14 @@ if typing.TYPE_CHECKING:
     )
 
 __all__ = [
-    "AsrWord",
     "AsrSegment",
-    "AsrTranscriptionInfo",
-    "AsrTranscription",
     "AsrSegments",
     "AsrSegmentsList",
+    "AsrTranscription",
+    "AsrTranscriptionInfo",
     "AsrTranscriptionInfoList",
     "AsrTranscriptionList",
+    "AsrWord",
 ]
 
 

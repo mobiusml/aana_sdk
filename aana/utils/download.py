@@ -9,7 +9,7 @@ from aana.configs.settings import settings
 from aana.exceptions.io import DownloadException
 from aana.utils.file import get_sha256_hash_file
 
-__all__ = ["download_model", "download_file"]
+__all__ = ["download_file", "download_model"]
 
 
 # Issue-Enable HF download: https://github.com/mobiusml/aana_sdk/issues/65

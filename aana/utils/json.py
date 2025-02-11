@@ -5,7 +5,7 @@ import orjson
 from pydantic import BaseModel
 from sqlalchemy import Engine
 
-__all__ = ["jsonify", "json_serializer_default"]
+__all__ = ["json_serializer_default", "jsonify"]
 
 
 def json_serializer_default(obj: object) -> object:

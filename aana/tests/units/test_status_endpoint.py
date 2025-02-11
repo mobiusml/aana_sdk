@@ -93,7 +93,7 @@ async def test_status_endpoint(create_app):
     assert status["status"] == "RUNNING"
 
     # kill the deployment
-    response = requests.post(  # noqa: ASYNC100
+    response = requests.post( # noqa: ASYNC210
         f"http://localhost:{aana_app.port}/lowercase",
         data={"body": json.dumps({"text": "kill"})},
     ).json()

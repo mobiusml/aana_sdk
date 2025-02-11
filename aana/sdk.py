@@ -270,6 +270,7 @@ class AanaSDK:
         summary: str,
         endpoint_cls: type[Endpoint],
         admin_required: bool = False,
+        active_subscription_required: bool = False,
         defer_option: DeferOption = DeferOption.OPTIONAL,
         event_handlers: list[EventHandler] | None = None,
     ):
@@ -281,6 +282,7 @@ class AanaSDK:
             summary (str): The summary of the endpoint.
             endpoint_cls (Type[Endpoint]): The class of the endpoint.
             admin_required (bool, optional): If True, the endpoint requires admin access. Defaults to False.
+            active_subscription_required (bool, optional): If True, the endpoint requires an active subscription. Defaults to False.
             defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
             event_handlers (list[EventHandler], optional): The event handlers to register for the endpoint.
         """
@@ -289,6 +291,7 @@ class AanaSDK:
             path=path,
             summary=summary,
             admin_required=admin_required,
+            active_subscription_required=active_subscription_required,
             defer_option=defer_option,
             event_handlers=event_handlers,
         )
