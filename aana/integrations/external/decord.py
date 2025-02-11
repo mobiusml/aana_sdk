@@ -11,11 +11,11 @@ from aana.core.models.video import Video, VideoParams
 from aana.exceptions.io import VideoReadingException
 
 __all__ = [
+    "FramesDict",
     "extract_frames",
     "generate_frames",
     "get_video_duration",
     "is_audio",
-    "FramesDict",
 ]
 
 

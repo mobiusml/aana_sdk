@@ -100,6 +100,7 @@ endpoints = [
         "name": "lowercase",
         "path": "/lowercase",
         "summary": "Lowercase text",
+        "active_subscription_required": True,
         "endpoint_cls": LowercaseEndpoint,
     },
     {

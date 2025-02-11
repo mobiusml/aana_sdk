@@ -118,13 +118,7 @@ def create_app():
             )
 
         for endpoint in endpoints:
-            app.register_endpoint(
-                name=endpoint["name"],
-                path=endpoint["path"],
-                summary=endpoint["summary"],
-                endpoint_cls=endpoint["endpoint_cls"],
-                event_handlers=endpoint.get("event_handlers", []),
-            )
+            app.register_endpoint(**endpoint)
 
         app.deploy(blocking=False)
 

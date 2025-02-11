@@ -2,8 +2,8 @@ from aana.core.models.media import MediaId
 from aana.exceptions.core import BaseException
 
 __all__ = [
-    "NotFoundException",
     "MediaIdAlreadyExistsException",
+    "NotFoundException",
 ]
 
 

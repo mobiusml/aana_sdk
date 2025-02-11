@@ -115,7 +115,7 @@ class TestWhisperDeployment:
         )
 
         assert vad_path.exists(), f"vad expected predictions not found: {vad_path}"
-        with Path(vad_path) as path, path.open() as f:
+        with Path(vad_path) as path, path.open() as f:  # noqa: ASYNC230
             expected_output_vad = json.load(f)
         vad_input = [
             VadSegment(time_interval=seg["time_interval"], segments=seg["segments"])
