@@ -5,6 +5,7 @@ from pydantic import ValidationError
 from ray.exceptions import RayTaskError
 
 from aana.api.responses import AanaJSONResponse
+from aana.configs.settings import settings as aana_settings
 from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.core import BaseException
 
@@ -60,6 +61,9 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
         # then we need to get the stack trace
         stacktrace = traceback.format_exc()
         exc = exc_raw
+    # Remove the stacktrace if it is disabled
+    if not aana_settings.include_stacktrace:
+        stacktrace = None
     # get the data from the exception
     # can be used to return additional info
     # like image path, url, model name etc.
