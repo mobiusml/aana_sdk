@@ -143,7 +143,7 @@ select = [
     "UP", "PTH", "TRY",  # pyupgrade, pathlib, tryceratops
     "D", "NPY", "RUF"  # pydocstyle, numpy, misc Ruff
 ]
-ignore = ["D100", "D104", "D106"]  # require docstrings for modules and nested clases
+ignore = ["D100", "D104", "D106", "A004", "A005"]  # require docstrings for modules and nested clases
 fixable = ["ALL"]
 unfixable = []
 target-version = "py310"
