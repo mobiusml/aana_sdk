@@ -128,17 +128,6 @@ class Settings(BaseSettings):
         self.model_dir.mkdir(parents=True, exist_ok=True)
         return self
 
-    @model_validator(mode="after")
-    def validate_lago_settings(self):
-        """Validate the LAGO API service settings."""
-        if self.api_service.enabled and (
-            self.api_service.lago_url is None or self.api_service.lago_api_key is None
-        ):
-            raise ValueError(  # noqa: TRY003
-                "LAGO API service settings are required when the API service is enabled."
-            )
-        return self
-
     model_config = SettingsConfigDict(
         protected_namespaces=("settings", *pydantic_protected_fields),
         env_nested_delimiter="__",
