@@ -2,6 +2,7 @@ from sqlalchemy import Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from aana.core.models.api_service import ApiKey
+from aana.storage.models.base import TimeStampEntity, timestamp
 
 
 class ApiServiceBase(DeclarativeBase):
@@ -10,20 +11,24 @@ class ApiServiceBase(DeclarativeBase):
     pass
 
 
-class ApiKeyEntity(ApiServiceBase):
+class ApiKeyEntity(ApiServiceBase, TimeStampEntity):
     """Table for API keys."""
 
     __tablename__ = "api_keys"
+    __entity_name__ = "api key"
 
     id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
-    api_key: Mapped[str] = mapped_column(
-        nullable=False, unique=True, comment="The API key"
+    key_id: Mapped[str] = mapped_column(
+        nullable=False, unique=True, comment="The API key id in api gateway"
     )
     user_id: Mapped[str] = mapped_column(
-        nullable=False, comment="ID of the user who owns this API key"
+        nullable=False, index=True, comment="ID of the user who owns this API key"
+    )
+    api_key: Mapped[str] = mapped_column(
+        nullable=False, index=True, unique=True, comment="The API key"
     )
     is_admin: Mapped[bool] = mapped_column(
-        nullable=False, default=False, comment="Whether the user is an admin"
+        Boolean, nullable=False, default=False, comment="Whether the user is an admin"
     )
     subscription_id: Mapped[str] = mapped_column(
         nullable=False, comment="ID of the associated subscription"
@@ -37,16 +42,24 @@ class ApiKeyEntity(ApiServiceBase):
     hmac_secret: Mapped[str] = mapped_column(
         nullable=True, comment="The secret key for HMAC signature generation"
     )
+    expired_at: Mapped[timestamp] = mapped_column(
+        nullable=False, comment="The expiration date of the API key"
+    )
 
     def __repr__(self) -> str:
         """String representation of the API key."""
         return (
             f"<APIKeyEntity(id={self.id}, "
-            f"api_key={self.api_key}, "
+            f"key_id={self.key_id}, "
             f"user_id={self.user_id}, "
+            f"api_key={self.api_key}, "
             f"is_admin={self.is_admin}, "
             f"subscription_id={self.subscription_id}, "
-            f"is_subscription_active={self.is_subscription_active})>"
+            f"hmac_secret={self.hmac_secret}, "
+            f"is_subscription_active={self.is_subscription_active}), "
+            f"expired_at={self.expired_at}, "
+            f"created_at={self.created_at}, "
+            f"updated_at={self.updated_at}>"
         )
 
     def to_model(self) -> ApiKey:
