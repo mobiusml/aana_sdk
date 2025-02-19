@@ -5,12 +5,16 @@ from typing import Any
 import torch
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
-
+from transformers import AutoTokenizer
 from aana.core.models.base import merged_options, pydantic_protected_fields
 from aana.core.models.chat import ChatDialog, ChatMessage
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
+from aana.core.models.audio import Audio
 from aana.core.models.image_chat import ImageChatDialog
+from aana.core.models.audio_chat import (
+    AudioChatDialog,
+)
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
@@ -23,21 +27,25 @@ from aana.exceptions.runtime import InferenceException, PromptTooLongException
 from aana.utils.gpu import get_gpu_memory
 from aana.utils.lazy_import import LazyImport
 
-with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_imports:
-    from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
-    from vllm.engine.arg_utils import AsyncEngineArgs
-    from vllm.engine.async_llm_engine import AsyncLLMEngine
-    from vllm.entrypoints.chat_utils import (
-        apply_hf_chat_template,
-        apply_mistral_chat_template,
-        parse_chat_messages,
-    )
-    from vllm.inputs import TokensPrompt
-    from vllm.model_executor.utils import set_random_seed
-    from vllm.sampling_params import SamplingParams as VLLMSamplingParams
-    from vllm.transformers_utils.tokenizer import MistralTokenizer
-    from vllm.utils import random_uuid
+#with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_imports:
+#from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
+from outlines.processors import JSONLogitsProcessor, RegexLogitsProcessor
+from vllm.engine.arg_utils import AsyncEngineArgs
+from vllm.engine.async_llm_engine import AsyncLLMEngine
+from vllm.entrypoints.chat_utils import (
+    apply_hf_chat_template,
+    apply_mistral_chat_template,
+    parse_chat_messages,
+    #ChatTemplateContentFormatOption
+)
+from vllm.inputs import TokensPrompt
+from vllm.model_executor.utils import set_random_seed
+from vllm.sampling_params import SamplingParams as VLLMSamplingParams
+from vllm.transformers_utils.tokenizer import MistralTokenizer
+from vllm.utils import random_uuid
+    #from vllm import LLM
 
+#content_format = ChatTemplateContentFormatOption.DEFAULT
 
 class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
@@ -64,7 +72,7 @@ class VLLMConfig(BaseModel):
     default_sampling_params: SamplingParams = SamplingParams(
         temperature=0, max_tokens=256
     )
-    max_model_len: int | None = Field(default=None)
+    max_model_len: int | None = Field(default=None)#from None, or change the prompt for generation, may be.#4192 is the default for the model.
     chat_template: str | None = Field(default=None)
     enforce_eager: bool = Field(default=False)
     engine_args: CustomConfig = {}
@@ -102,7 +110,7 @@ class VLLMDeployment(BaseDeployment):
         Args:
             config (dict): the configuration of the deployment
         """
-        vllm_imports.check()
+        #vllm_imports.check()
         config_obj = VLLMConfig(**config)
         self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
@@ -124,14 +132,28 @@ class VLLMDeployment(BaseDeployment):
             max_model_len=config_obj.max_model_len,
             **config_obj.engine_args,
         )
+        
+        # MODEL_NAME = "openbmb/MiniCPM-o-2_6"
+
+        # self.engine = LLM(
+        # model=MODEL_NAME,
+        # gpu_memory_utilization=1,
+        # max_model_len=4096*2,#
+        # trust_remote_code=True, 
+        # limit_mm_per_prompt = {"video":1}   
+        # )
 
         # TODO: check if the model is already loaded.
         # If it is and none of the model parameters changed, we don't need to reload the model.
-
+        
+        #Engine is not yet supported for latest models!
+        #self.
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
         self.tokenizer = self.engine.engine.tokenizer.tokenizer
-        self.model_config = await self.engine.get_model_config()
+        #self.tokenizer = AutoTokenizer.from_pretrained('openbmb/MiniCPM-o-2_6', trust_remote_code=True)
+
+        self.model_config = await self.engine.get_model_config() #None
 
     async def check_health(self):
         """Check the health of the deployment and clear torch cache to prevent memory leaks."""
@@ -142,7 +164,7 @@ class VLLMDeployment(BaseDeployment):
         await super().check_health()
 
     def apply_chat_template(
-        self, dialog: ChatDialog | ImageChatDialog
+        self, dialog: ChatDialog | ImageChatDialog | AudioChatDialog
     ) -> tuple[str | list[int], dict | None]:
         """Apply the chat template to the dialog.
 
@@ -160,6 +182,19 @@ class VLLMDeployment(BaseDeployment):
             base64_string = "data:image;base64," + base64_encoded_image.decode("utf-8")
             return base64_string
 
+        def audio_to_base64(audio: Audio) -> str:
+            """Convert an audio object to a base64 encoded string."""
+            # Get the audio bytes; adjust this if your Audio class uses a different method/attribute.
+
+            #convert to byte like.. 
+            with open(audio[0].path, "rb") as audio_file:
+                audio_data = audio_file.read()
+            #audio_data = audio.path #audio_data = audio_file.read()
+            base64_encoded_audio = base64.b64encode(audio_data)
+            # For WAV format; change "audio/wav" if your audio is a different format.
+            base64_string = "data:audio/wav;base64," + base64_encoded_audio.decode("utf-8")
+            return base64_string
+        
         def replace_image_type(messages: list[dict], images: list[Image]) -> list[dict]:
             """Replace the image type with image_url for compatibility with vLLM chat utils.
 
@@ -183,16 +218,35 @@ class VLLMDeployment(BaseDeployment):
                 )
             return messages
 
+        def replace_audio_type(messages: list[dict], audio: Audio) -> list[dict]:
+            """Replace the image type with image_url for compatibility with vLLM chat utils.
+
+            vLLM chat utils (parse_chat_messages) only support image_url type for images.
+            We need to replace the image type with image_url and provide the actual image content as base64 string.
+            """
+            for message in messages:
+                for item in message["content"]:
+                    if item["type"]== "audio":
+                        item["type"] = "audio_url"
+                        item["audio_url"] = {"url": audio_to_base64(audio)}
+            return messages
+        
         if isinstance(dialog, ImageChatDialog):
             messages, images = dialog.to_objects()
-            messages = replace_image_type(messages, images)
+            messages = replace_image_type(messages, images)##has both image abnd text
+
+        elif isinstance(dialog, AudioChatDialog):
+            messages, audio = dialog.to_objects()
+            messages = replace_audio_type(messages, audio)#has both audio abnd text
+
         else:
             messages = dialog.model_dump()["messages"]
             images = None
-
+            audio = None
+        
         conversation, mm_data = parse_chat_messages(
-            messages, self.model_config, self.tokenizer
-        )
+                messages, self.model_config, self.tokenizer, "default"
+            )
 
         if isinstance(self.tokenizer, MistralTokenizer):
             prompt = apply_mistral_chat_template(
@@ -350,7 +404,7 @@ class VLLMDeployment(BaseDeployment):
 
     async def chat(
         self,
-        dialog: ChatDialog | ImageChatDialog,
+        dialog: ChatDialog | ImageChatDialog| AudioChatDialog,
         sampling_params: SamplingParams | None = None,
     ) -> ChatOutput:
         """Chat with the model.
