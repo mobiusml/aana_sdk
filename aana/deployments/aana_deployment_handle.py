@@ -1,4 +1,5 @@
 from ray import serve
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from aana.utils.core import sleep_exponential_backoff
 from aana.utils.typing import is_async_generator
@@ -35,7 +36,15 @@ class AanaDeploymentHandle:
             retry_delay (float): The initial delay between retries.
             retry_max_delay (float): The maximum delay between retries.
         """
-        self.handle = serve.get_app_handle(deployment_name)
+
+        @retry(
+            stop=stop_after_attempt(num_retries),
+            wait=wait_exponential(multiplier=retry_delay, max=retry_max_delay),
+        )
+        def get_handle():
+            return serve.get_app_handle(deployment_name)
+
+        self.handle = get_handle()
         self.deployment_name = deployment_name
         self.__methods = None
         self.num_retries = num_retries

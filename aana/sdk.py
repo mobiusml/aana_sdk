@@ -45,7 +45,7 @@ class AanaSDK:
             name (str, optional): The name of the application. Defaults to "app".
             migration_func (Callable | None): The migration function to run. Defaults to None.
             retryable_exceptions (list[Exception, str] | None): The exceptions that can be retried in the task queue.
-                                                                Defaults to ['InferenceException', 'ActorDiedError', 'OutOfMemoryError'].
+                                                                Defaults to ['InferenceException', 'ActorDiedError', 'OutOfMemoryError', 'RayServeException'].
         """
         self.name = name
         self.migration_func = migration_func
@@ -58,6 +58,7 @@ class AanaSDK:
                 "InferenceException",
                 "ActorDiedError",
                 "OutOfMemoryError",
+                "RayServeException",
             ]
         else:
             self.retryable_exceptions = retryable_exceptions
