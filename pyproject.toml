@@ -36,8 +36,8 @@ dependencies = [
     "ray[serve]>=2.20",
     "rich>=13.9.4",
     "sqlalchemy[mypy]>=2.0.23",
-    "torch>=2.4.0",
-    "yt-dlp>=2024.08.06",
+    "torch>=2.5.1",
+    "yt-dlp>=2024.08.06",        
 ]
 
 [project.optional-dependencies]
@@ -62,7 +62,7 @@ hqq = [
     "accelerate>=0.34.2",
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0",
-    "hqq>=0.2.2",
+    "hqq>=0.2.3",
     "transformers>=4.47.0"
 ]
 
