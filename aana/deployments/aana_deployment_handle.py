@@ -40,6 +40,7 @@ class AanaDeploymentHandle:
         @retry(
             stop=stop_after_attempt(num_retries),
             wait=wait_exponential(multiplier=retry_delay, max=retry_max_delay),
+            reraise=True,
         )
         def get_handle():
             return serve.get_app_handle(deployment_name)
