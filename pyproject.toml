@@ -42,7 +42,7 @@ dependencies = [
 
 [project.optional-dependencies]
 vllm = [
-    "vllm>=0.7.2",
+    "vllm>=0.7.3",
     "outlines[serve]>=0.1.11",
     "xgrammar>=0.1.8"
 ]
@@ -79,7 +79,7 @@ all = [
     "hqq>=0.2.2",
     "outlines[serve]>=0.0.46",
     "pyannote-audio>=3.1.1",
-    "transformers>=4.47.0",
+    "transformers>=4.49.0",
     "vllm>=0.7.0"
 ]
 
