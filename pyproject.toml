@@ -1,6 +1,6 @@
 [project]
 name = "aana"
-version = "0.2.3"
+version = "0.2.3.post1"
 description = "Multimodal SDK"
 authors = [{name="Mobius Labs GmbH", email="dev@mobiuslabs.com"}]
 homepage = "https://www.mobiuslabs.com"

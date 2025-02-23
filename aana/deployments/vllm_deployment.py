@@ -30,6 +30,7 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
         apply_hf_chat_template,
         apply_mistral_chat_template,
         parse_chat_messages,
+        resolve_chat_template_content_format,
     )
     from vllm.inputs import TokensPrompt
     from vllm.model_executor.utils import set_random_seed
@@ -192,8 +193,9 @@ class VLLMDeployment(BaseDeployment):
             messages = dialog.model_dump()["messages"]
             images = None
 
+        content_format = resolve_chat_template_content_format(self.model_config)
         conversation, mm_data = parse_chat_messages(
-            messages, self.model_config, self.tokenizer, content_format="string"
+            messages, self.model_config, self.tokenizer, content_format=content_format
         )
 
         if isinstance(self.tokenizer, MistralTokenizer):
