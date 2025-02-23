@@ -125,6 +125,7 @@ class VLLMDeployment(BaseDeployment):
             enforce_eager=config_obj.enforce_eager,
             gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
+            disable_mm_tokens_check=True,  # Add this line to disable multimodal tokens check
             **config_obj.engine_args,
         )
 
