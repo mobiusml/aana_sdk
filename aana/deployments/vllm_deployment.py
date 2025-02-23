@@ -277,7 +277,7 @@ class VLLMDeployment(BaseDeployment):
                     exclude=["kwargs", "json_schema", "regex_string"],
                 ),
                 **sampling_params.kwargs,
-                guided_decoding_params=guided_decoding_params,
+                guided_decoding=guided_decoding_params,
             )
             # start the request
             request_id = random_uuid()
