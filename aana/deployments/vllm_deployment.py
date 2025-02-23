@@ -194,7 +194,7 @@ class VLLMDeployment(BaseDeployment):
             images = None
 
         content_format = resolve_chat_template_content_format(
-            self.chat_template,
+            self.tokenizer.chat_template
             "auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
             self.tokenizer
         )
@@ -203,7 +203,7 @@ class VLLMDeployment(BaseDeployment):
         )
 
         if isinstance(self.tokenizer, MistralTokenizer):
-            prompt = apply_mistral_chasst_template(
+            prompt = apply_mistral_chat_template(
                 self.tokenizer,
                 messages=messages,
                 add_generation_prompt=True,
