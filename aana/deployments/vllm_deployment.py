@@ -194,7 +194,7 @@ class VLLMDeployment(BaseDeployment):
             images = None
 
         content_format = resolve_chat_template_content_format(
-            self.tokenizer.chat_template
+            self.tokenizer.chat_template,
             "auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
             self.tokenizer
         )
