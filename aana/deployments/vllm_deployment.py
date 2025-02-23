@@ -194,13 +194,17 @@ class VLLMDeployment(BaseDeployment):
             messages = dialog.model_dump()["messages"]
             images = None
 
-        content_format = resolve_chat_template_content_format(self.model_config)
+        content_format = resolve_chat_template_content_format(
+            self.chat_template,
+            "auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
+            self.tokenizer
+        )
         conversation, mm_data = parse_chat_messages(
             messages, self.model_config, self.tokenizer, content_format=content_format
         )
 
         if isinstance(self.tokenizer, MistralTokenizer):
-            prompt = apply_mistral_chat_template(
+            prompt = apply_mistral_chasst_template(
                 self.tokenizer,
                 messages=messages,
                 add_generation_prompt=True,
