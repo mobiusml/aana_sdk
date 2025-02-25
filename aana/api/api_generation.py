@@ -18,7 +18,7 @@ from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
-from aana.api.security import require_admin_access
+from aana.api.security import require_active_subscription, require_admin_access
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
@@ -62,6 +62,7 @@ class Endpoint:
         path (str): Path of the endpoint (e.g. "/video/transcribe").
         summary (str): Description of the endpoint that will be shown in the API documentation.
         admin_required (bool): Flag indicating if the endpoint requires admin access.
+        active_subscription_required (bool): Flag indicating if the endpoint requires an active subscription.
         defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
         event_handlers (list[EventHandler] | None): The list of event handlers to register for the endpoint.
     """
@@ -70,6 +71,7 @@ class Endpoint:
     path: str
     summary: str
     admin_required: bool = False
+    active_subscription_required: bool = False
     defer_option: DeferOption = DeferOption.OPTIONAL
     initialized: bool = False
     event_handlers: list[EventHandler] | None = None
@@ -347,6 +349,9 @@ class Endpoint:
             if aana_settings.api_service.enabled and self.admin_required:
                 require_admin_access(request)
 
+            if aana_settings.api_service.enabled and self.active_subscription_required:
+                require_active_subscription(request)
+
             if self.defer_option == DeferOption.ALWAYS:
                 defer = True
             elif self.defer_option == DeferOption.NEVER:
@@ -390,6 +395,19 @@ class Endpoint:
         )
         def send_event_with_retry(client, event):
             return client.events.create(event)
+
+        if not aana_settings.api_service.enabled:
+            logger.warning("API service is not enabled. Skipping usage event.")
+            return
+
+        if (
+            not aana_settings.api_service.lago_url
+            or not aana_settings.api_service.lago_api_key
+        ):
+            logger.warning(
+                "LAGO API service URL or API key is not set. Skipping usage event."
+            )
+            return
 
         try:
             client = Client(

@@ -1,6 +1,6 @@
 [project]
 name = "aana"
-version = "0.2.3.post3"
+version = "0.2.4.post1"
 description = "Multimodal SDK"
 authors = [{name="Mobius Labs GmbH", email="dev@mobiuslabs.com"}]
 homepage = "https://www.mobiuslabs.com"
@@ -87,10 +87,10 @@ all = [
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-ipykernel = "^6.25.2"
+ipykernel = ">=6.25.2"
 matplotlib = "^3.8.2"
-mypy = "^1.6.1"
-ruff = "^0.1.5"
+mypy = ">=1.6.1"
+ruff = ">=0.9.0"
 
 [tool.poetry.group.docs]
 optional = true
@@ -144,7 +144,7 @@ select = [
     "UP", "PTH", "TRY",  # pyupgrade, pathlib, tryceratops
     "D", "NPY", "RUF"  # pydocstyle, numpy, misc Ruff
 ]
-ignore = ["D100", "D104", "D106"]  # require docstrings for modules and nested clases
+ignore = ["D100", "D104", "D106", "A004", "A005"]  # require docstrings for modules and nested clases
 fixable = ["ALL"]
 unfixable = []
 target-version = "py310"
