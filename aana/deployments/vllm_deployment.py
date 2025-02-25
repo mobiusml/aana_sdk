@@ -191,7 +191,7 @@ class VLLMDeployment(BaseDeployment):
             images = None
 
         conversation, mm_data = parse_chat_messages(
-            messages, self.model_config, self.tokenizer, content_format="default"
+            messages, self.model_config, self.tokenizer
         )
 
         if isinstance(self.tokenizer, MistralTokenizer):
