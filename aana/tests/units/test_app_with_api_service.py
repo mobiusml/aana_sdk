@@ -1,6 +1,7 @@
 # ruff: noqa: S101, S113
 import json
 import os
+from datetime import datetime, timedelta, timezone
 from typing import TypedDict
 
 import pytest
@@ -39,8 +40,8 @@ def add_test_api_keys():
         # fmt: off
         session.add_all(
             [
-                ApiKeyEntity(user_id="1", is_subscription_active=True, api_key=ACTIVE_API_KEY, subscription_id="sub1"),
-                ApiKeyEntity(user_id="2", is_subscription_active=False, api_key=INACTIVE_API_KEY, subscription_id="sub2"),
+                ApiKeyEntity(user_id="1", is_subscription_active=True, api_key=ACTIVE_API_KEY, key_id=ACTIVE_API_KEY, subscription_id="sub1", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
+                ApiKeyEntity(user_id="2", is_subscription_active=False, api_key=INACTIVE_API_KEY, key_id=INACTIVE_API_KEY, subscription_id="sub2", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
             ]
         )
         # fmt: on
@@ -100,6 +101,7 @@ endpoints = [
         "name": "lowercase",
         "path": "/lowercase",
         "summary": "Lowercase text",
+        "active_subscription_required": True,
         "endpoint_cls": LowercaseEndpoint,
     },
     {

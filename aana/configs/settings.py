@@ -65,7 +65,7 @@ class WebhookSettings(BaseModel):
     """
 
     retry_attempts: int = 5
-    hmac_secret: str = "webhook_secret"
+    hmac_secret: str = "webhook_secret" # noqa: S105
 
 
 class Settings(BaseSettings):
@@ -79,6 +79,7 @@ class Settings(BaseSettings):
         model_dir (Path): The temporary model directory.
         num_workers (int): The number of web workers.
         openai_endpoint_enabled (bool): Flag indicating if the OpenAI-compatible endpoint is enabled. Enabled by default.
+        include_stacktrace (bool): Flag indicating if stacktrace should be included in error messages. Enabled by default.
         task_queue (TaskQueueSettings): The task queue settings.
         db_config (DbSettings): The database configuration.
         test (TestSettings): The test settings.
@@ -93,6 +94,7 @@ class Settings(BaseSettings):
     num_workers: int = 2
 
     openai_endpoint_enabled: bool = True
+    include_stacktrace: bool = True
 
     task_queue: TaskQueueSettings = TaskQueueSettings()
 
@@ -126,17 +128,6 @@ class Settings(BaseSettings):
         self.video_dir.mkdir(parents=True, exist_ok=True)
         self.audio_dir.mkdir(parents=True, exist_ok=True)
         self.model_dir.mkdir(parents=True, exist_ok=True)
-        return self
-
-    @model_validator(mode="after")
-    def validate_lago_settings(self):
-        """Validate the LAGO API service settings."""
-        if self.api_service.enabled and (
-            self.api_service.lago_url is None or self.api_service.lago_api_key is None
-        ):
-            raise ValueError(  # noqa: TRY003
-                "LAGO API service settings are required when the API service is enabled."
-            )
         return self
 
     model_config = SettingsConfigDict(

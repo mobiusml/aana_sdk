@@ -3,11 +3,11 @@ from aana.configs.settings import Settings, TaskQueueSettings, TestSettings
 from aana.storage.op import DbType
 
 __all__ = [
-    "Settings",
     "DbSettings",
-    "TaskQueueSettings",
-    "TestSettings",
     "DbType",
     "PostgreSQLConfig",
     "SQLiteConfig",
+    "Settings",
+    "TaskQueueSettings",
+    "TestSettings",
 ]

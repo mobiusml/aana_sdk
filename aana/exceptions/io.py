@@ -9,9 +9,9 @@ if TYPE_CHECKING:
 
 
 __all__ = [
-    "ImageReadingException",
     "AudioReadingException",
     "DownloadException",
+    "ImageReadingException",
     "VideoException",
     "VideoReadingException",
     "VideoTooLongException",

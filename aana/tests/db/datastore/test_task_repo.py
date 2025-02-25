@@ -120,11 +120,11 @@ def test_get_unprocessed_tasks_with_api_key(db_session_with_api_service):
     db_session.add_all(
         [
             # Active users
-            ApiKeyEntity(user_id="1", is_subscription_active=True, api_key="key1", subscription_id="sub1"),
-            ApiKeyEntity(user_id="2", is_subscription_active=True, api_key="key2", subscription_id="sub2"),
-            ApiKeyEntity(user_id="3", is_subscription_active=True, api_key="key3", subscription_id="sub3"),
+            ApiKeyEntity(user_id="1", is_subscription_active=True, api_key="key1", key_id="key1", subscription_id="sub1", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
+            ApiKeyEntity(user_id="2", is_subscription_active=True, api_key="key2", key_id="key2", subscription_id="sub2", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
+            ApiKeyEntity(user_id="3", is_subscription_active=True, api_key="key3", key_id="key3", subscription_id="sub3", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
             # Inactive user (should be excluded)
-            ApiKeyEntity(user_id="4", is_subscription_active=False, api_key="key4", subscription_id="sub4"),
+            ApiKeyEntity(user_id="4", is_subscription_active=False, api_key="key4", key_id="key4", subscription_id="sub4", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
         ]
     )
     db_session.commit()
