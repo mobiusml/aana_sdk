@@ -6,7 +6,8 @@ from fastapi import APIRouter
 from fastapi.openapi.utils import get_openapi
 from ray import serve
 
-from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
+# from scalar_fastapi import get_scalar_api_reference
+from aana.api.api_generation import Endpoint
 from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
@@ -23,6 +24,7 @@ from aana.routers.webhook import router as webhook_router
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
+from aana.utils.openapi import add_custom_schemas_to_openapi_schema, rewrite_anyof
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -38,6 +40,7 @@ class RequestHandler:
         endpoints: list[Endpoint],
         deployments: list[str],
         routers: list[APIRouter] | None = None,
+        openapi_params: dict[str, Any] | None = None,
     ):
         """Constructor.
 
@@ -46,10 +49,12 @@ class RequestHandler:
             endpoints (dict): List of endpoints for the request.
             deployments (list[str]): List of deployment names for the app.
             routers (list[APIRouter]): List of FastAPI routers to include in the app.
+            openapi_params (dict[str, Any]): Parameters for the OpenAPI schema.
         """
         self.app_name = app_name
         self.endpoints = endpoints
         self.deployments = deployments
+        self.openapi_params = openapi_params
 
         # Include the default routers
         app.include_router(webhook_router)  # For webhook management
@@ -74,15 +79,40 @@ class RequestHandler:
         self.ready = True
         self.running_tasks = set()
 
+    # @app.get("/scalar", include_in_schema=False)
+    # async def scalar_html(self):
+    #     """The endpoint for the Scalar API documentation."""
+    #     return get_scalar_api_reference(
+    #         openapi_url=app.openapi_url, title=app.title, hide_models=True
+    #     )
+
     def custom_openapi(self) -> dict[str, Any]:
         """Returns OpenAPI schema, generating it if necessary."""
         if app.openapi_schema:
             return app.openapi_schema
-        # TODO: populate title and version from package info
-        openapi_schema = get_openapi(title="Aana", version="0.1.0", routes=app.routes)
+
+        if self.openapi_params is None:
+            self.openapi_params = {}
+        if "title" not in self.openapi_params:
+            self.openapi_params["title"] = self.app_name
+        if "version" not in self.openapi_params:
+            self.openapi_params["version"] = "0.1.0"
+        openapi_schema = get_openapi(routes=app.routes, **self.openapi_params)
+
+        # Add the security scheme for x-api-key
+        openapi_schema["components"]["securitySchemes"] = {
+            "ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "x-api-key"}
+        }
+        openapi_schema["security"] = [{"ApiKeyAuth": []}]
+
+        # Add custom schemas to the openapi schema
         openapi_schema = add_custom_schemas_to_openapi_schema(
             openapi_schema=openapi_schema, custom_schemas=self.custom_schemas
         )
+
+        # Rewrite anyOf patterns to include 'nullable': True
+        rewrite_anyof(openapi_schema)
+
         app.openapi_schema = openapi_schema
         return app.openapi_schema
 
