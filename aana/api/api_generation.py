@@ -3,7 +3,7 @@ import logging
 import time
 import uuid
 from collections.abc import AsyncGenerator, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
@@ -64,6 +64,8 @@ class Endpoint:
         admin_required (bool): Flag indicating if the endpoint requires admin access.
         active_subscription_required (bool): Flag indicating if the endpoint requires an active subscription.
         defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
+        tags (list[str]): List of tags for the endpoint. Default is ["app"].
+        openapi_extra (dict[str, Any] | None): Extra OpenAPI information for the endpoint.
         event_handlers (list[EventHandler] | None): The list of event handlers to register for the endpoint.
     """
 
@@ -74,6 +76,8 @@ class Endpoint:
     active_subscription_required: bool = False
     defer_option: DeferOption = DeferOption.OPTIONAL
     initialized: bool = False
+    tags: list[str] = field(default_factory=lambda: ["app"])
+    openapi_extra: dict[str, Any] | None = None
     event_handlers: list[EventHandler] | None = None
 
     async def initialize(self):
@@ -134,6 +138,8 @@ class Endpoint:
             summary=self.summary,
             operation_id=self.name,
             response_model=ResponseModel,
+            tags=self.tags,
+            openapi_extra=self.openapi_extra,
             responses={
                 400: {"model": ExceptionResponseModel},
             },
@@ -428,40 +434,3 @@ class Endpoint:
             logger.error(
                 f"Failed to send usage event after retries: {e}", exc_info=True
             )
-
-
-def add_custom_schemas_to_openapi_schema(
-    openapi_schema: dict[str, Any], custom_schemas: dict[str, Any]
-) -> dict[str, Any]:
-    """Add custom schemas to the openapi schema.
-
-    File upload is that FastAPI doesn't support Pydantic models in multipart requests.
-    There is a discussion about it on FastAPI discussion forum.
-    See https://github.com/tiangolo/fastapi/discussions/8406
-    The topic starter suggests a workaround.
-    The workaround is to use Forms instead of Pydantic models in the endpoint definition and
-    then convert the Forms to Pydantic models in the endpoint itself
-    using parse_raw_as function from Pydantic.
-    Since Pydantic model isn't used in the endpoint definition,
-    the API documentation will not be generated automatically.
-    So the workaround also suggests updating the API documentation manually
-    by overriding the openapi method of a FastAPI application.
-
-    Args:
-        openapi_schema (dict): The openapi schema.
-        custom_schemas (dict): The custom schemas.
-
-    Returns:
-        dict: The openapi schema with the custom schemas added.
-    """
-    if "$defs" not in openapi_schema:
-        openapi_schema["$defs"] = {}
-    for schema_name, schema in custom_schemas.items():
-        # if we have a definitions then we need to move them out to the top level of the schema
-        if "$defs" in schema:
-            openapi_schema["$defs"].update(schema["$defs"])
-            del schema["$defs"]
-        openapi_schema["components"]["schemas"][f"Body_{schema_name}"]["properties"][
-            "body"
-        ] = schema
-    return openapi_schema
