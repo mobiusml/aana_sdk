@@ -1,4 +1,5 @@
 import json
+import pprint
 from typing import Any
 
 from jinja2 import Environment, PackageLoader
@@ -157,12 +158,12 @@ def add_code_samples_to_endpoints(openapi_spec: dict) -> dict:
     loader = PackageLoader("aana.utils", "openapi_code_templates")
     env = Environment(loader=loader, autoescape=False)  # noqa: S701
     curl_template = env.get_template("curl_form.j2")
-    python_template = env.get_template("python_form.j2")
+    non_streaming_python_template = env.get_template("python_form.j2")
+    streaming_python_template = env.get_template("python_form_streaming.j2")
 
     # Extract the base URL from servers if available
     base_url = "http://localhost:8000"
     if openapi_spec.get("servers"):
-        print(openapi_spec["servers"])
         base_url = openapi_spec["servers"][0].get("url", base_url)
 
     # Iterate over all paths and methods in the spec.
@@ -191,6 +192,10 @@ def add_code_samples_to_endpoints(openapi_spec: dict) -> dict:
             if "x-codeSamples" in operation:
                 continue
 
+            response = operation.get("responses", {}).get("200", {})
+            response_content_type = response.get("content", {}).keys()
+            is_streaming = "application/x-ndjson" in response_content_type
+
             # Extract the JSON schema for the form data.
             schema = content["application/x-www-form-urlencoded"].get("schema", {})
 
@@ -207,10 +212,12 @@ def add_code_samples_to_endpoints(openapi_spec: dict) -> dict:
                 body=json.dumps(example, separators=(",", ":")),
             )
 
+            if is_streaming:
+                python_template = streaming_python_template
+            else:
+                python_template = non_streaming_python_template
             python_snippet = python_template.render(
-                base_url=base_url,
-                path=path,
-                body=json.dumps(example, separators=(",", ":")),
+                base_url=base_url, path=path, body=pprint.pformat(example, width=40)
             )
 
             # Attach the code samples to the endpoint.

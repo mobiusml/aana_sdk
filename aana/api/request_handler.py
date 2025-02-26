@@ -13,6 +13,7 @@ from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.api.security import AdminAccessDependency
+from aana.configs.settings import settings
 from aana.core.models.api import DeploymentStatus, SDKStatus, SDKStatusResponse
 from aana.routers.openai import router as openai_router
 from aana.routers.task import router as task_router
@@ -182,7 +183,7 @@ class RequestHandler:
         finally:
             self.running_tasks.remove(task_id)
 
-    @app.get("/api/ready", tags=["system"])
+    @app.get("/api/ready", tags=["system"], include_in_schema=False)
     async def is_ready(self):
         """The endpoint for checking if the application is ready.
 
@@ -203,7 +204,12 @@ class RequestHandler:
             task_repo = TaskRepository(session)
             task_repo.heartbeat(self.running_tasks)
 
-    @app.get("/api/status", response_model=SDKStatusResponse, tags=["system"])
+    @app.get(
+        "/api/status",
+        response_model=SDKStatusResponse,
+        tags=["system"],
+        include_in_schema=not settings.api_service.enabled,
+    )
     async def status(self, is_admin: AdminAccessDependency) -> SDKStatusResponse:
         """The endpoint for checking the status of the application."""
         app_names = [
