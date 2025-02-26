@@ -24,7 +24,11 @@ from aana.routers.webhook import router as webhook_router
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
-from aana.utils.openapi import add_custom_schemas_to_openapi_schema, rewrite_anyof
+from aana.utils.openapi import (
+    add_code_samples_to_endpoints,
+    add_custom_schemas_to_openapi_schema,
+    rewrite_anyof,
+)
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -109,6 +113,15 @@ class RequestHandler:
         openapi_schema = add_custom_schemas_to_openapi_schema(
             openapi_schema=openapi_schema, custom_schemas=self.custom_schemas
         )
+
+        # dump the schema to a file for debugging
+        import pickle
+
+        print("Dumping openapi schema to /workspaces/aana_sdk/openapi.pkl")
+        with open("/workspaces/aana_sdk/openapi.pkl", "wb") as f:
+            pickle.dump(openapi_schema, f)
+
+        openapi_schema = add_code_samples_to_endpoints(openapi_schema)
 
         # Rewrite anyOf patterns to include 'nullable': True
         rewrite_anyof(openapi_schema)
