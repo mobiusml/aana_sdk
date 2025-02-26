@@ -9,8 +9,10 @@ headers = {
 
 response = requests.post("{{ base_url }}{{ path }}",
     headers=headers,
-    data={"body": json.dumps(payload)}
+    data={"body": json.dumps(payload)},
+    stream=True
 )
 
-data = response.json()
-print(data)
+for chunk in response.iter_content(chunk_size=None):
+    json_data = json.loads(chunk)
+    print(json_data)
