@@ -89,10 +89,23 @@ def generate_example(schema: dict, root_schema: dict):  # noqa: C901
     if root_schema is None:
         root_schema = schema
 
+    # Store the default value before potentially resolving a reference
+    default_value = schema.get("default")
+
     # Resolve references
     if "$ref" in schema:
         resolved_schema = resolve_ref(schema, root_schema)
         if resolved_schema is not None:
+            # If the original schema had a default value, prioritize it
+            if default_value is not None:
+                return default_value
+            # Check if this is an enum
+            if "enum" in resolved_schema and resolved_schema["enum"]:
+                # First check if resolved schema has a default
+                if "default" in resolved_schema:
+                    return resolved_schema["default"]
+                # Otherwise use the first enum value
+                return resolved_schema["enum"][0]
             return generate_example(resolved_schema, root_schema)
         return None
 
@@ -107,6 +120,10 @@ def generate_example(schema: dict, root_schema: dict):  # noqa: C901
         return schema["example"]
     if "default" in schema:
         return schema["default"]
+
+    # Handle enum types explicitly
+    if "enum" in schema and schema["enum"]:
+        return schema["enum"][0]  # Return the first enum value as default
 
     # Handle alternative schemas (anyOf/oneOf)
     for key in ("anyOf", "oneOf"):
