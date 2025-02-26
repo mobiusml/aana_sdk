@@ -114,12 +114,12 @@ class RequestHandler:
             openapi_schema=openapi_schema, custom_schemas=self.custom_schemas
         )
 
-        # dump the schema to a file for debugging
-        import pickle
+        # # dump the schema to a file for debugging
+        # import pickle
 
-        print("Dumping openapi schema to /workspaces/aana_sdk/openapi.pkl")
-        with open("/workspaces/aana_sdk/openapi.pkl", "wb") as f:
-            pickle.dump(openapi_schema, f)
+        # print("Dumping openapi schema to /workspaces/aana_sdk/openapi.pkl")
+        # with open("/workspaces/aana_sdk/openapi.pkl", "wb") as f:
+        #     pickle.dump(openapi_schema, f)
 
         openapi_schema = add_code_samples_to_endpoints(openapi_schema)
 
