@@ -24,7 +24,7 @@
 	"securityOpt": [
 		"seccomp=unconfined"
 	],
-	"postCreateCommand": "poetry install --extras all --with dev,tests",
+	"postCreateCommand": "poetry config virtualenvs.in-project true;poetry install  --extras 'all api_service' --with dev,tests",
 	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
 	"customizations": {
 		"vscode": {

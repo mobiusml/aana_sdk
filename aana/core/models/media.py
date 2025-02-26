@@ -37,7 +37,11 @@ def verify_media_id(
 
 MediaId = Annotated[
     str,
-    Field(description="The media ID.", max_length=36),
+    Field(
+        description="The media ID.",
+        max_length=36,
+        example="123e4567-e89b-12d3-a456-426614174000",
+    ),
     WrapValidator(verify_media_id),
 ]
 """

@@ -44,9 +44,9 @@ class Image(Media):
 
     media_dir: Path | None = settings.image_dir
     numpy: np.ndarray | None = None  # The image as a numpy array.
-    image_lib: type[
-        AbstractImageLibrary
-    ] = OpenCVWrapper  # The image library to use, TODO: add support for PIL and allow to choose the library
+    image_lib: type[AbstractImageLibrary] = (
+        OpenCVWrapper  # The image library to use, TODO: add support for PIL and allow to choose the library
+    )
 
     def _validate(self):
         """Validate the image."""
@@ -360,7 +360,11 @@ class ImageInput(BaseModel):
                 "If 'url' is provided, the image will be downloaded from the url. \n"
                 "The 'content' and 'numpy' will be loaded automatically "
                 "if files are uploaded to the endpoint and the corresponding field is set to the file name."
-            )
+            ),
+            "examples": [
+                {"url": "https://example.com/image_12345.jpg", "media_id": "12345"},
+                {"path": "/path/to/image_12345.jpg", "media_id": "12345"},
+            ],
         },
         validate_assignment=True,
     )
