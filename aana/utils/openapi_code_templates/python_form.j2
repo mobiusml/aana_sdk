@@ -1,0 +1,17 @@
+import json, requests
+
+payload = {{ body }}
+
+headers = {
+  "Content-Type": "application/x-www-form-urlencoded",
+  "x-api-key": "YOUR_API_KEY_HERE"
+}
+
+response = requests.post("{{ base_url }}{{ path }}",
+    headers=headers,
+    params=query,
+    data={"body": json.dumps(payload)}
+)
+
+data = response.json()
+print(data)
