@@ -22,6 +22,7 @@ from aana.api.security import require_active_subscription, require_admin_access
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
+from aana.routers.task import TaskResponse
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
 
@@ -134,6 +135,14 @@ class Endpoint:
             event_manager=event_manager,
         )
 
+        if self.defer_option == DeferOption.ALWAYS:
+            ResponseModel = TaskResponse
+
+        if self.is_streaming_response():
+            response_class = AanaNDJSONResponse
+        else:
+            response_class = AanaJSONResponse
+
         app.post(
             self.path,
             name=self.name,
@@ -141,9 +150,7 @@ class Endpoint:
             description=self.description,
             operation_id=self.name,
             response_model=ResponseModel,
-            response_class=AanaNDJSONResponse
-            if self.is_streaming_response()
-            else AanaJSONResponse,
+            response_class=response_class,
             tags=self.tags,
             openapi_extra=self.openapi_extra,
             responses={
