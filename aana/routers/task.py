@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from aana.api.security import UserIdDependency
 from aana.configs.settings import settings as aana_settings
-from aana.core.models.task import TaskInfo
+from aana.core.models.task import TaskId, TaskInfo
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import GetDbDependency
@@ -16,6 +16,12 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["tasks"], include_in_schema=aana_settings.task_queue.enabled)
 
 # Response models
+
+
+class TaskResponse(BaseModel):
+    """Response for a task."""
+
+    task_id: TaskId
 
 
 class TaskList(BaseModel):
