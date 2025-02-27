@@ -27,6 +27,10 @@ async def validation_exception_handler(
         data = exc.errors(include_context=False)
     elif isinstance(exc, RequestValidationError):
         data = exc.errors()
+        # Remove ctx from the error messages
+        for error in data:
+            if "ctx" in error:
+                error.pop("ctx")
     return AanaJSONResponse(
         status_code=422,
         content=ExceptionResponseModel(
