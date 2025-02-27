@@ -84,13 +84,6 @@ class RequestHandler:
         self.ready = True
         self.running_tasks = set()
 
-    # @app.get("/scalar", include_in_schema=False)
-    # async def scalar_html(self):
-    #     """The endpoint for the Scalar API documentation."""
-    #     return get_scalar_api_reference(
-    #         openapi_url=app.openapi_url, title=app.title, hide_models=True
-    #     )
-
     def custom_openapi(self) -> dict[str, Any]:
         """Returns OpenAPI schema, generating it if necessary."""
         if app.openapi_schema:
@@ -115,13 +108,7 @@ class RequestHandler:
             openapi_schema=openapi_schema, custom_schemas=self.custom_schemas
         )
 
-        # # dump the schema to a file for debugging
-        # import pickle
-
-        # print("Dumping openapi schema to /workspaces/aana_sdk/openapi.pkl")
-        # with open("/workspaces/aana_sdk/openapi.pkl", "wb") as f:
-        #     pickle.dump(openapi_schema, f)
-
+        # Add code samples to endpoints
         openapi_schema = add_code_samples_to_endpoints(openapi_schema)
 
         # Rewrite anyOf patterns to include 'nullable': True
