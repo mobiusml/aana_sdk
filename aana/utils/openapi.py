@@ -100,7 +100,7 @@ def generate_example(schema: dict, root_schema: dict):  # noqa: C901
             if default_value is not None:
                 return default_value
             # Check if this is an enum
-            if "enum" in resolved_schema and resolved_schema["enum"]:
+            if resolved_schema.get("enum"):
                 # First check if resolved schema has a default
                 if "default" in resolved_schema:
                     return resolved_schema["default"]
@@ -122,7 +122,7 @@ def generate_example(schema: dict, root_schema: dict):  # noqa: C901
         return schema["default"]
 
     # Handle enum types explicitly
-    if "enum" in schema and schema["enum"]:
+    if schema.get("enum"):
         return schema["enum"][0]  # Return the first enum value as default
 
     # Handle alternative schemas (anyOf/oneOf)
