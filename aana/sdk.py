@@ -273,6 +273,7 @@ class AanaSDK:
         path: str,
         summary: str,
         endpoint_cls: type[Endpoint],
+        description: str | None = None,
         admin_required: bool = False,
         active_subscription_required: bool = False,
         defer_option: DeferOption = DeferOption.OPTIONAL,
@@ -284,7 +285,8 @@ class AanaSDK:
         Args:
             name (str): The name of the endpoint.
             path (str): The path of the endpoint.
-            summary (str): The summary of the endpoint.
+            summary (str): The short summary of the endpoint.
+            description (str | None): The optional description of the endpoint.
             endpoint_cls (Type[Endpoint]): The class of the endpoint.
             admin_required (bool, optional): If True, the endpoint requires admin access. Defaults to False.
             active_subscription_required (bool, optional): If True, the endpoint requires an active subscription. Defaults to False.
@@ -296,6 +298,7 @@ class AanaSDK:
             name=name,
             path=path,
             summary=summary,
+            description=description,
             admin_required=admin_required,
             active_subscription_required=active_subscription_required,
             defer_option=defer_option,

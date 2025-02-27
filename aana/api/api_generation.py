@@ -60,7 +60,8 @@ class Endpoint:
     Attributes:
         name (str): Name of the endpoint.
         path (str): Path of the endpoint (e.g. "/video/transcribe").
-        summary (str): Description of the endpoint that will be shown in the API documentation.
+        summary (str): Short summary of the endpoint that will used as the title in the API documentation.
+        description (str | None): Detailed description of the endpoint that will be shown in the API documentation. Default is None.
         admin_required (bool): Flag indicating if the endpoint requires admin access.
         active_subscription_required (bool): Flag indicating if the endpoint requires an active subscription.
         defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
@@ -72,6 +73,7 @@ class Endpoint:
     name: str
     path: str
     summary: str
+    description: str | None = None
     admin_required: bool = False
     active_subscription_required: bool = False
     defer_option: DeferOption = DeferOption.OPTIONAL
@@ -136,6 +138,7 @@ class Endpoint:
             self.path,
             name=self.name,
             summary=self.summary,
+            description=self.description,
             operation_id=self.name,
             response_model=ResponseModel,
             response_class=AanaNDJSONResponse
