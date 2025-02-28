@@ -3,7 +3,7 @@ import logging
 import time
 import uuid
 from collections.abc import AsyncGenerator, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from inspect import isasyncgenfunction
 from typing import Annotated, Any, get_origin
@@ -17,11 +17,12 @@ from starlette.datastructures import UploadFile as StarletteUploadFile
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
-from aana.api.responses import AanaJSONResponse
+from aana.api.responses import AanaJSONResponse, AanaNDJSONResponse
 from aana.api.security import require_active_subscription, require_admin_access
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api_service import ApiKey
 from aana.core.models.exception import ExceptionResponseModel
+from aana.routers.task import TaskResponse
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
 
@@ -60,20 +61,26 @@ class Endpoint:
     Attributes:
         name (str): Name of the endpoint.
         path (str): Path of the endpoint (e.g. "/video/transcribe").
-        summary (str): Description of the endpoint that will be shown in the API documentation.
+        summary (str): Short summary of the endpoint that will used as the title in the API documentation.
+        description (str | None): Detailed description of the endpoint that will be shown in the API documentation. Default is None.
         admin_required (bool): Flag indicating if the endpoint requires admin access.
         active_subscription_required (bool): Flag indicating if the endpoint requires an active subscription.
         defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
+        tags (list[str]): List of tags for the endpoint. Default is ["app"].
+        openapi_extra (dict[str, Any] | None): Extra OpenAPI information for the endpoint.
         event_handlers (list[EventHandler] | None): The list of event handlers to register for the endpoint.
     """
 
     name: str
     path: str
     summary: str
+    description: str | None = None
     admin_required: bool = False
     active_subscription_required: bool = False
     defer_option: DeferOption = DeferOption.OPTIONAL
     initialized: bool = False
+    tags: list[str] = field(default_factory=lambda: ["app"])
+    openapi_extra: dict[str, Any] | None = None
     event_handlers: list[EventHandler] | None = None
 
     async def initialize(self):
@@ -128,12 +135,24 @@ class Endpoint:
             event_manager=event_manager,
         )
 
+        if self.defer_option == DeferOption.ALWAYS:
+            ResponseModel = TaskResponse
+
+        if self.is_streaming_response():
+            response_class = AanaNDJSONResponse
+        else:
+            response_class = AanaJSONResponse
+
         app.post(
             self.path,
             name=self.name,
             summary=self.summary,
+            description=self.description,
             operation_id=self.name,
             response_model=ResponseModel,
+            response_class=response_class,
+            tags=self.tags,
+            openapi_extra=self.openapi_extra,
             responses={
                 400: {"model": ExceptionResponseModel},
             },
@@ -322,12 +341,12 @@ class Endpoint:
                     """Serializes the output of the generator using ORJSONResponseCustom."""
                     try:
                         async for output in self.run(**data_dict):
-                            yield AanaJSONResponse(content=output).body
+                            yield AanaNDJSONResponse(content=output).body
                     except Exception as e:
                         yield custom_exception_handler(None, e).body
 
                 return StreamingResponse(
-                    generator_wrapper(), media_type="application/json"
+                    generator_wrapper(), media_type="application/x-ndjson"
                 )
             else:
                 try:
@@ -428,40 +447,3 @@ class Endpoint:
             logger.error(
                 f"Failed to send usage event after retries: {e}", exc_info=True
             )
-
-
-def add_custom_schemas_to_openapi_schema(
-    openapi_schema: dict[str, Any], custom_schemas: dict[str, Any]
-) -> dict[str, Any]:
-    """Add custom schemas to the openapi schema.
-
-    File upload is that FastAPI doesn't support Pydantic models in multipart requests.
-    There is a discussion about it on FastAPI discussion forum.
-    See https://github.com/tiangolo/fastapi/discussions/8406
-    The topic starter suggests a workaround.
-    The workaround is to use Forms instead of Pydantic models in the endpoint definition and
-    then convert the Forms to Pydantic models in the endpoint itself
-    using parse_raw_as function from Pydantic.
-    Since Pydantic model isn't used in the endpoint definition,
-    the API documentation will not be generated automatically.
-    So the workaround also suggests updating the API documentation manually
-    by overriding the openapi method of a FastAPI application.
-
-    Args:
-        openapi_schema (dict): The openapi schema.
-        custom_schemas (dict): The custom schemas.
-
-    Returns:
-        dict: The openapi schema with the custom schemas added.
-    """
-    if "$defs" not in openapi_schema:
-        openapi_schema["$defs"] = {}
-    for schema_name, schema in custom_schemas.items():
-        # if we have a definitions then we need to move them out to the top level of the schema
-        if "$defs" in schema:
-            openapi_schema["$defs"].update(schema["$defs"])
-            del schema["$defs"]
-        openapi_schema["components"]["schemas"][f"Body_{schema_name}"]["properties"][
-            "body"
-        ] = schema
-    return openapi_schema

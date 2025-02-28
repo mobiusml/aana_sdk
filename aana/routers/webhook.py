@@ -54,17 +54,14 @@ class WebhookUpdateRequest(BaseModel):
 # Response models
 
 
-class WebhookRegistrationResponse(BaseModel):
-    """Response for a webhook registration."""
-
-    id: str | None
-    message: str
-
-
 class WebhookResponse(BaseModel):
     """Response for a webhook registration."""
 
-    id: str = Field(..., description="The webhook ID.")
+    id: str = Field(
+        ...,
+        description="The webhook ID.",
+        example="00000000-0000-0000-0000-000000000000",
+    )
     url: HttpUrl = Field(
         ..., description="The URL to which the webhook will send requests."
     )

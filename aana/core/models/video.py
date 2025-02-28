@@ -141,6 +141,11 @@ class VideoMetadata(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "description": "Metadata of a video.",
+            "example": {
+                "title": "Example video",
+                "description": "Description of the example video",
+                "duration": 10.0,
+            },
         },
         extra="forbid",
     )
@@ -268,7 +273,17 @@ class VideoInput(BaseModel):
                 "If 'url' is provided, the video will be downloaded from the url. \n"
                 "The 'content' will be loaded automatically "
                 "if files are uploaded to the endpoint and 'content' is set to the filename."
-            )
+            ),
+            "examples": [
+                {
+                    "url": "https://example.com/video_12345.mp4",
+                    "media_id": "12345",
+                },
+                {
+                    "path": "/path/to/video_12345.mp4",
+                    "media_id": "12345",
+                },
+            ],
         },
         validate_assignment=True,
     )

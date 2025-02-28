@@ -38,6 +38,7 @@ class AanaSDK:
         name: str = "app",
         migration_func: Callable | None = None,
         retryable_exceptions: list[Exception, str] | None = None,
+        openapi_params: dict[str, str] | None = None,
     ):
         """Aana SDK to deploy and manage Aana deployments and endpoints.
 
@@ -46,12 +47,14 @@ class AanaSDK:
             migration_func (Callable | None): The migration function to run. Defaults to None.
             retryable_exceptions (list[Exception, str] | None): The exceptions that can be retried in the task queue.
                                                                 Defaults to ['InferenceException', 'ActorDiedError', 'OutOfMemoryError'].
+            openapi_params (dict[str, str] | None): The parameters to include in the OpenAPI schema. Defaults to None.
         """
         self.name = name
         self.migration_func = migration_func
         self.endpoints: dict[str, Endpoint] = {}
         self.deployments: dict[str, Deployment] = {}
         self.routers: dict[str, APIRouter] = {}
+        self.openapi_params = openapi_params
 
         if retryable_exceptions is None:
             self.retryable_exceptions = [
@@ -261,6 +264,7 @@ class AanaSDK:
             endpoints=self.endpoints.values(),
             deployments=list(self.deployments.keys()),
             routers=list(self.routers.values()),
+            openapi_params=self.openapi_params,
         )
 
     def register_endpoint(
@@ -269,31 +273,37 @@ class AanaSDK:
         path: str,
         summary: str,
         endpoint_cls: type[Endpoint],
+        description: str | None = None,
         admin_required: bool = False,
         active_subscription_required: bool = False,
         defer_option: DeferOption = DeferOption.OPTIONAL,
         event_handlers: list[EventHandler] | None = None,
+        **kwargs,
     ):
         """Register an endpoint.
 
         Args:
             name (str): The name of the endpoint.
             path (str): The path of the endpoint.
-            summary (str): The summary of the endpoint.
+            summary (str): The short summary of the endpoint.
+            description (str | None): The optional description of the endpoint.
             endpoint_cls (Type[Endpoint]): The class of the endpoint.
             admin_required (bool, optional): If True, the endpoint requires admin access. Defaults to False.
             active_subscription_required (bool, optional): If True, the endpoint requires an active subscription. Defaults to False.
             defer_option (DeferOption): Defer option for the endpoint (always, never, optional).
             event_handlers (list[EventHandler], optional): The event handlers to register for the endpoint.
+            **kwargs: Additional keyword arguments to pass to the endpoint.
         """
         endpoint = endpoint_cls(
             name=name,
             path=path,
             summary=summary,
+            description=description,
             admin_required=admin_required,
             active_subscription_required=active_subscription_required,
             defer_option=defer_option,
             event_handlers=event_handlers,
+            **kwargs,
         )
         self.endpoints[name] = endpoint
 
