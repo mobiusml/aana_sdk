@@ -249,7 +249,7 @@ class VLLMDeployment(BaseDeployment):
 
         json_schema = sampling_params.json_schema
         regex_string = sampling_params.regex_string
-        backend = sampling_params.kwargs.get("backend", "outlines")
+        backend = sampling_params.kwargs.get("backend", "xgrammar")
         if json_schema is not None:
             guided_decoding_params = GuidedDecodingParams(
                 json=json_schema, backend=backend
