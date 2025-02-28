@@ -10,7 +10,12 @@ from aana.utils.download import download_file
 
 MediaId = Annotated[
     str,
-    Field(description="The media ID.", max_length=36, min_length=1),
+    Field(
+        description="The media ID.",
+        max_length=36,
+        min_length=1,
+        pattern=r"^[A-Za-z0-9_-]+$",
+    ),
 ]
 """
 The media ID (str, max length 36 characters).
