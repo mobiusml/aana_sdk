@@ -43,6 +43,13 @@ class TaskCount(BaseModel):
     total: int = Field(..., description="The total number of tasks.")
 # fmt: on
 
+
+class ErrorResponse(BaseModel):
+    """Error response."""
+
+    detail: str
+
+
 # Endpoints
 
 
@@ -63,6 +70,12 @@ async def count_tasks(db: GetDbDependency, user_id: UserIdDependency) -> TaskCou
     "/tasks/{task_id}",
     summary="Get Task Status",
     description="Get the task status by task ID.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        }
+    },
 )
 async def get_task(
     task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
@@ -105,6 +118,16 @@ async def list_tasks(
     "/tasks/{task_id}",
     summary="Delete Task",
     description="Delete the task by task ID.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        },
+        400: {
+            "model": ErrorResponse,
+            "description": "Cannot delete a running or assigned task",
+        },
+    },
 )
 async def delete_task(
     task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
@@ -135,6 +158,16 @@ async def delete_task(
     "/tasks/{task_id}/retry",
     summary="Retry Failed Task",
     description="Retry a failed task by resetting its status to CREATED.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        },
+        400: {
+            "model": ErrorResponse,
+            "description": "Only failed tasks can be retried",
+        },
+    },
 )
 async def retry_task(
     task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
@@ -165,6 +198,12 @@ async def retry_task(
     summary="Get Task Status (Legacy)",
     description="Get the task status by task ID (Legacy endpoint).",
     deprecated=True,
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        }
+    },
 )
 async def get_task_legacy(
     task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
@@ -182,6 +221,12 @@ async def get_task_legacy(
     summary="Delete Task (Legacy)",
     description="Delete the task by task ID (Legacy endpoint).",
     deprecated=True,
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        }
+    },
 )
 async def delete_task_legacy(
     task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
