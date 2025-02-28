@@ -65,7 +65,7 @@ async def count_tasks(db: GetDbDependency, user_id: UserIdDependency) -> TaskCou
     description="Get the task status by task ID.",
 )
 async def get_task(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Get the task with the given ID."""
     task_repo = TaskRepository(db)
@@ -107,7 +107,7 @@ async def list_tasks(
     description="Delete the task by task ID.",
 )
 async def delete_task(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Delete the task with the given ID."""
     task_repo = TaskRepository(db)
@@ -137,7 +137,7 @@ async def delete_task(
     description="Retry a failed task by resetting its status to CREATED.",
 )
 async def retry_task(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Retry a failed task by resetting its status."""
     task_repo = TaskRepository(db)
@@ -167,7 +167,7 @@ async def retry_task(
     deprecated=True,
 )
 async def get_task_legacy(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Get the task with the given ID (Legacy endpoint)."""
     task_repo = TaskRepository(db)
@@ -177,16 +177,6 @@ async def get_task_legacy(
     return TaskInfo.from_entity(task)
 
 
-class TaskId(BaseModel):
-    """Task ID (Legacy).
-
-    Attributes:
-        id (str): The task ID.
-    """
-
-    task_id: str = Field(..., description="The task ID.")
-
-
 @router.get(
     "/tasks/delete/{task_id}",
     summary="Delete Task (Legacy)",
@@ -194,12 +184,12 @@ class TaskId(BaseModel):
     deprecated=True,
 )
 async def delete_task_legacy(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
-) -> TaskId:
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
+) -> TaskResponse:
     """Delete the task with the given ID (Legacy endpoint)."""
     task_repo = TaskRepository(db)
     task = task_repo.read(task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
     task = task_repo.delete(task_id)
-    return TaskId(task_id=str(task.id))
+    return TaskResponse(task_id=str(task.id))
