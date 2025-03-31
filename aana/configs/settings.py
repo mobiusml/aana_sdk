@@ -74,14 +74,14 @@ class CorsSettings(BaseModel):
 
     Attributes:
         allow_origins (list[str]): List of origins that should be permitted to make cross-origin requests.
-        allow_origin_regex (str): A regex string for origins that should be permitted to make cross-origin requests.
+        allow_origin_regex (str | None): A regex string for origins that should be permitted to make cross-origin requests.
         allow_credentials (bool): Indicate that cookies should be supported for cross-origin requests.
         allow_methods (list[str]): A list of HTTP methods that should be allowed for cross-origin requests.
         allow_headers (list[str]): A list of HTTP request headers that should be supported for cross-origin requests.
     """
 
     allow_origins: list[str] = ["*"]
-    allow_origin_regex: str = ""
+    allow_origin_regex: str | None = None
     allow_credentials: bool = True
     allow_methods: list[str] = ["*"]
     allow_headers: list[str] = ["*"]
