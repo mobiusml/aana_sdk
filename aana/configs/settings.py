@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from pydantic import BaseModel, model_validator
@@ -65,7 +66,28 @@ class WebhookSettings(BaseModel):
     """
 
     retry_attempts: int = 5
-    hmac_secret: str = "webhook_secret" # noqa: S105
+    hmac_secret: str = "webhook_secret"  # noqa: S105
+
+
+class CorsSettings(BaseModel):
+    """A pydantic model for CORS settings.
+
+    Attributes:
+        allow_origins (list[str]): List of origins that should be permitted to make cross-origin requests.
+        allow_origin_regex (str): A regex string for origins that should be permitted to make cross-origin requests.
+        allow_credentials (bool): Indicate that cookies should be supported for cross-origin requests.
+        allow_methods (list[str]): A list of HTTP methods that should be allowed for cross-origin requests.
+        allow_headers (list[str]): A list of HTTP request headers that should be supported for cross-origin requests.
+    """
+
+    allow_origins: list[str] = ["*"]
+    allow_origin_regex: str = ""
+    allow_credentials: bool = True
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
+
+    class Config:
+        json_loads = json.loads
 
 
 class Settings(BaseSettings):
@@ -83,6 +105,7 @@ class Settings(BaseSettings):
         task_queue (TaskQueueSettings): The task queue settings.
         db_config (DbSettings): The database configuration.
         test (TestSettings): The test settings.
+        cors (CorsSettings): The CORS settings.
     """
 
     tmp_data_dir: Path = Path("/tmp/aana_data")  # noqa: S108
@@ -110,6 +133,8 @@ class Settings(BaseSettings):
     )
 
     webhook: WebhookSettings = WebhookSettings()
+
+    cors: CorsSettings = CorsSettings()
 
     @model_validator(mode="after")
     def setup_resource_directories(self):
