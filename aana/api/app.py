@@ -37,7 +37,7 @@ app.add_middleware(
 async def api_key_check(request: Request, call_next):
     """Middleware to check the API key and subscription status."""
     excluded_paths = ["/openapi.json", "/docs", "/redoc"]
-    if request.url.path in excluded_paths:
+    if request.url.path in excluded_paths or request.method == "OPTIONS":
         return await call_next(request)
 
     if aana_settings.api_service.enabled:
