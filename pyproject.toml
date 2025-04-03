@@ -22,7 +22,6 @@ requires-python = ">=3.10,<4.0"
 dependencies = [
     "alembic>=1.12.1",
     "av==11.*",
-    "decord>=0.6.0",
     "fastapi>=0.111.0",
     "haystack-ai>=2.1.0",
     "hf-transfer>=0.1.6",
