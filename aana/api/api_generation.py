@@ -17,7 +17,7 @@ from starlette.datastructures import UploadFile as StarletteUploadFile
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
-from aana.api.responses import AanaJSONResponse, AanaNDJSONResponse
+from aana.api.responses import AanaConcatenatedJSONResponse, AanaJSONResponse
 from aana.api.security import require_active_subscription, require_admin_access
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.api_service import ApiKey
@@ -139,7 +139,7 @@ class Endpoint:
             ResponseModel = TaskResponse
 
         if self.is_streaming_response():
-            response_class = AanaNDJSONResponse
+            response_class = AanaConcatenatedJSONResponse
         else:
             response_class = AanaJSONResponse
 
@@ -341,13 +341,13 @@ class Endpoint:
                     """Serializes the output of the generator using ORJSONResponseCustom."""
                     try:
                         async for output in self.run(**data_dict):
-                            yield AanaNDJSONResponse(content=output).body
+                            yield AanaConcatenatedJSONResponse(content=output).body
                     except Exception as e:
                         yield custom_exception_handler(None, e).body
 
                 return StreamingResponse(
                     generator_wrapper(),
-                    media_type="application/x-ndjson",
+                    media_type="application/json-seq",
                     headers={
                         "X-Accel-Buffering": "no",
                     },
