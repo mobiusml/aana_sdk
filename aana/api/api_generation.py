@@ -346,7 +346,11 @@ class Endpoint:
                         yield custom_exception_handler(None, e).body
 
                 return StreamingResponse(
-                    generator_wrapper(), media_type="application/x-ndjson"
+                    generator_wrapper(),
+                    media_type="application/x-ndjson",
+                    headers={
+                        "X-Accel-Buffering": "no",
+                    },
                 )
             else:
                 try:
