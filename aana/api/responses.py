@@ -31,7 +31,7 @@ class AanaJSONResponse(JSONResponse):
         return jsonify(content, option=self.option, as_bytes=True)
 
 
-class AanaNDJSONResponse(AanaJSONResponse):
-    """Response class that uses orjson to serialize data to newline-delimited JSON (NDJSON)."""
+class AanaConcatenatedJSONResponse(AanaJSONResponse):
+    """Response class that uses orjson to serialize data to Concatenated JSON format."""
 
-    media_type = "application/x-ndjson"
+    media_type = "application/json-seq"
