@@ -1,4 +1,5 @@
 import json, requests
+import ijson # pip install ijson
 
 payload = {{ body }}
 
@@ -13,6 +14,5 @@ response = requests.post("{{ base_url }}{{ path }}",
     stream=True
 )
 
-for chunk in response.iter_content(chunk_size=None):
-    json_data = json.loads(chunk)
-    print(json_data)
+for obj in ijson.items(response.raw, '', multiple_values=True, buf_size=32):
+    print(obj)
