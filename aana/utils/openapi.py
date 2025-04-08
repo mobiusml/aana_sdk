@@ -211,7 +211,7 @@ def add_code_samples_to_endpoints(openapi_spec: dict) -> dict:
 
             response = operation.get("responses", {}).get("200", {})
             response_content_type = response.get("content", {}).keys()
-            is_streaming = "application/x-ndjson" in response_content_type
+            is_streaming = "application/json-seq" in response_content_type
 
             # Extract the JSON schema for the form data.
             schema = content["application/x-www-form-urlencoded"].get("schema", {})
