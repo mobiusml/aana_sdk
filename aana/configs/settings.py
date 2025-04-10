@@ -43,6 +43,16 @@ class TaskQueueSettings(BaseModel):
     maximum_active_tasks_per_user: int = 25
 
 
+class GpuManagerSettings(BaseModel):
+    """A pydantic model for GPU manager settings.
+
+    Attributes:
+        enabled (bool): Flag indicating if the GPU manager is enabled.
+    """
+
+    enabled: bool = False
+
+
 class ApiServiceSettings(BaseModel):
     """A pydantic model for API service settings.
 
@@ -135,6 +145,8 @@ class Settings(BaseSettings):
     webhook: WebhookSettings = WebhookSettings()
 
     cors: CorsSettings = CorsSettings()
+
+    gpu_manager: GpuManagerSettings = GpuManagerSettings()
 
     @model_validator(mode="after")
     def setup_resource_directories(self):
