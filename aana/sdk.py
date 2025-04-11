@@ -1,4 +1,5 @@
 import importlib
+import os
 import sys
 import time
 import traceback
@@ -20,6 +21,7 @@ from aana.api.api_generation import DeferOption, Endpoint
 from aana.api.event_handlers.event_handler import EventHandler
 from aana.api.request_handler import RequestHandler
 from aana.configs.settings import settings as aana_settings
+from aana.deployments.gpu_manager import GpuManagerConfig
 from aana.exceptions.runtime import (
     DeploymentException,
     EmptyMigrationsException,
@@ -73,6 +75,9 @@ class AanaSDK:
 
         if aana_settings.task_queue.enabled:
             self.add_task_queue(deploy=False)
+
+        if aana_settings.gpu_manager.enabled:
+            self.add_gpu_manager(deploy=False)
 
     def connect(
         self,
@@ -193,6 +198,32 @@ class AanaSDK:
         self.register_deployment(
             "task_queue_deployment",
             task_queue_deployment,
+            deploy=deploy,
+        )
+
+    def add_gpu_manager(self, deploy: bool = False):
+        """Add a GPU manager deployment.
+
+        Args:
+            deploy (bool, optional): If True, the deployment will be deployed immediately,
+                    otherwise it will be registered and can be deployed later when deploy() is called. Defaults to False.
+        """
+        from aana.deployments.gpu_manager import GpuManagerDeployment
+
+        available_gpus = (
+            list(map(int, os.environ.get("CUDA_VISIBLE_DEVICES", "").split(",")))
+            if os.environ.get("CUDA_VISIBLE_DEVICES")
+            else []
+        )
+        gpu_manager_deployment = GpuManagerDeployment.options(
+            num_replicas=1,
+            user_config=GpuManagerConfig(
+                available_gpus=available_gpus,
+            ).model_dump(),
+        )
+        self.register_deployment(
+            "gpu_manager",
+            gpu_manager_deployment,
             deploy=deploy,
         )
 
@@ -410,7 +441,7 @@ class AanaSDK:
                     route_prefix=f"/{deployment_name}",
                     _blocking=False,
                 )
-                if sequential:
+                if sequential or deployment_name == "gpu_manager":
                     self.wait_for_deployment()
 
             serve.api._run(
