@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -5,6 +6,9 @@ from ray import serve
 from ray.serve.api import _get_global_client
 
 from aana.deployments.base_deployment import BaseDeployment
+from aana.exceptions.runtime import InsufficientResources
+
+logger = logging.getLogger(__name__)
 
 
 class GpuManagerConfig(BaseModel):
@@ -36,7 +40,9 @@ class GpuManagerDeployment(BaseDeployment):
         for deployment in self.allocations:
             for rep in list(self.allocations[deployment].keys()):
                 if rep not in active_replica_ids:
-                    print(f"Cleaning up replica {rep} for deployment {deployment}")
+                    logger.info(
+                        f"Cleaning up replica {rep} for deployment {deployment}"
+                    )
                     del self.allocations[deployment][rep]
 
     def _compute_gpu_load(self) -> dict:
@@ -68,7 +74,7 @@ class GpuManagerDeployment(BaseDeployment):
                     state = replica["state"]
                     if state not in ["STOPPING", "INACTIVE"]:
                         active_replica_ids.add(replica["replica_id"])
-                    print(f"Replica ID: {replica['replica_id']}, State: {state}")
+                    logger.debug(f"Replica ID: {replica['replica_id']}, State: {state}")
         return active_replica_ids
 
     async def request_gpu(
@@ -79,7 +85,7 @@ class GpuManagerDeployment(BaseDeployment):
         Returns:
             list[int]: A list of GPU IDs that have been allocated.
         """
-        print(
+        logger.info(
             f"Requesting {num_gpus} GPUs for deployment {deployment} with replica ID {replica_id}"
         )
         if num_gpus > 1:
@@ -101,9 +107,9 @@ class GpuManagerDeployment(BaseDeployment):
 
         # Get list of GPUs and compute current load.
         available_gpus = self._get_available_gpus()
-        print(f"Available GPUs for deployment '{deployment}': {available_gpus}")
+        logger.info(f"Available GPUs for deployment '{deployment}': {available_gpus}")
         gpu_load = self._compute_gpu_load()
-        print(f"Current GPU load: {gpu_load}")
+        logger.info(f"Current GPU load: {gpu_load}")
 
         # Find GPUs already used by other replicas in this deployment.
         used_gpus = set()
@@ -112,7 +118,9 @@ class GpuManagerDeployment(BaseDeployment):
             if rep == replica_id:
                 continue
             used_gpus.update(alloc.keys())
-        print(f"Used GPUs for other replicas in deployment '{deployment}': {used_gpus}")
+        logger.info(
+            f"Used GPUs for other replicas in deployment '{deployment}': {used_gpus}"
+        )
 
         allocated_gpus = []
         sorted_gpus = sorted(
@@ -123,7 +131,7 @@ class GpuManagerDeployment(BaseDeployment):
             free_capacity = 1.0 - gpu_load[gpu]
             if num_gpus > free_capacity:
                 continue  # Skip GPU if not enough capacity.
-            print(
+            logger.info(
                 f"Allocating {num_gpus:.2f} on GPU {gpu} for replica {replica_id} (free capacity {free_capacity:.2f})"
             )
             self.allocations[deployment][replica_id][gpu] = num_gpus
@@ -131,8 +139,8 @@ class GpuManagerDeployment(BaseDeployment):
             break
 
         if allocated_gpus == []:
-            raise Exception("Insufficient GPU capacity to fulfill the request")
+            raise InsufficientResources()
 
-        print(f"Allocated GPUs for replica {replica_id}: {allocated_gpus}")
-        print(self.allocations)
+        logger.info(f"Allocated GPUs for replica {replica_id}: {allocated_gpus}")
+        logger.info(f"Current allocations: {self.allocations}")
         return allocated_gpus

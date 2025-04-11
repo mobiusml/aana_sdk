@@ -64,16 +64,13 @@ class BaseDeployment:
     async def request_gpu_from_manager(self):
         """Request GPU resources for the deployment from the GPU manager."""
         num_gpus = ray.get_runtime_context().get_assigned_resources().get("GPU", 0)
+        # If no GPUs are assigned, skip
         if num_gpus == 0:
-            print("No GPUs assigned to this replica.")
             return
 
         replica_context = serve.get_replica_context()
         self._replica_id = replica_context.replica_id.unique_id
         self._deployment_name = replica_context.replica_id.deployment_id.app_name
-        print("Replica ID:", self._replica_id)
-        print("Deployment Name:", self._deployment_name)
-        print("Original CUDA_VISIBLE_DEVICES:", os.environ["CUDA_VISIBLE_DEVICES"])
 
         gpu_manager_handle = await AanaDeploymentHandle.create("gpu_manager")
         gpu_ids = await gpu_manager_handle.request_gpu(
@@ -81,7 +78,6 @@ class BaseDeployment:
             replica_id=self._replica_id,
             num_gpus=num_gpus,
         )
-        print("Assigned GPUs:", gpu_ids)
         os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(map(str, gpu_ids))
 
     async def reconfigure(self, config: dict[str, Any]):
