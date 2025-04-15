@@ -7,15 +7,14 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import pytest_asyncio
 from pytest_postgresql import factories
-from sqlalchemy.orm import sessionmaker
 
 from aana.configs.db import DbSettings, PostgreSQLConfig, SQLiteConfig
 from aana.configs.settings import settings as aana_settings
 from aana.sdk import AanaSDK
 from aana.storage.models.api_key import ApiServiceBase
-from aana.storage.models.base import BaseEntity
-from aana.storage.op import DbType, run_alembic_migrations
+from aana.storage.op import DatabaseSessionManager, DbType, run_alembic_migrations
 from aana.tests.utils import (
     is_gpu_available,
     send_api_request,
@@ -49,7 +48,6 @@ def app_factory():
         os.environ["DB_CONFIG"] = jsonify(db_config)
 
         aana_settings.db_config = db_config
-        aana_settings.db_config._engine = None
 
         # Import and start the app
         app = import_from(app_module, app_name)
@@ -93,10 +91,6 @@ def create_app():
         datastore_config=SQLiteConfig(path=tmp_api_service_database_path),
     )
     os.environ["API_SERVICE_DB_CONFIG"] = jsonify(api_service_db_config)
-
-    aana_settings.api_service_db_config = api_service_db_config
-
-    ApiServiceBase.metadata.create_all(api_service_db_config.get_engine())
 
     app = AanaSDK()
     try:
@@ -191,100 +185,76 @@ def one_request_worker():
     yield
 
 
-def create_db_engine(config, db_type, tmp_path=None, postgresql_info=None):
-    """Helper to create engine for different configs and db types."""
-    config.datastore_type = db_type
-
-    if db_type == DbType.SQLITE:
-        config.datastore_config = SQLiteConfig(path=tmp_path)
-    elif db_type == DbType.POSTGRESQL:
-        config.datastore_config = PostgreSQLConfig(
-            host=postgresql_info.host,
-            port=postgresql_info.port,
-            user=postgresql_info.user,
-            password=postgresql_info.password,
-            database=postgresql_info.dbname,
-        )
-
-    os.environ["DB_CONFIG"] = jsonify(config)
-    config._engine = None  # Reset engine
-
-    return config.get_engine()
-
-
-@pytest.fixture(scope="function")
-def sqlite_db_engine():
-    """Create a SQLite database engine."""
+@pytest.fixture
+def db_sqlite_config():
+    """Create a SQLite database config."""
     with tempfile.NamedTemporaryFile(dir=aana_settings.tmp_data_dir) as tmp:
-        yield create_db_engine(
-            config=aana_settings.db_config, db_type=DbType.SQLITE, tmp_path=tmp.name
+        db_config = DbSettings(
+            datastore_type=DbType.SQLITE, datastore_config=SQLiteConfig(path=tmp.name)
         )
-
-
-@pytest.fixture(scope="function")
-def postgres_db_engine(postgresql):
-    """Create a PostgreSQL database engine."""
-    yield create_db_engine(
-        config=aana_settings.db_config,
-        db_type=DbType.POSTGRESQL,
-        postgresql_info=postgresql.info,
-    )
-
-
-@pytest.fixture(scope="function")
-def api_service_sqlite_db_engine():
-    """Create a SQLite database engine for the API service."""
-    with tempfile.NamedTemporaryFile(dir=aana_settings.tmp_data_dir) as tmp:
-        yield create_db_engine(
-            config=aana_settings.api_service_db_config,
-            db_type=DbType.SQLITE,
-            tmp_path=tmp.name,
-        )
-
-
-@pytest.fixture(scope="function")
-def api_service_postgres_db_engine(postgresql):
-    """Create a PostgreSQL database engine for the API service."""
-    yield create_db_engine(
-        config=aana_settings.api_service_db_config,
-        db_type=DbType.POSTGRESQL,
-        postgresql_info=postgresql.info,
-    )
-
-
-@pytest.fixture(params=["sqlite_db_engine", "postgres_db_engine"])
-def db_engine(request):
-    """Fixture to provide both SQLite and PostgreSQL database engines."""
-    return request.getfixturevalue(request.param)
-
-
-@pytest.fixture(
-    params=["api_service_sqlite_db_engine", "api_service_postgres_db_engine"]
-)
-def api_service_db_engine(request):
-    """Fixture to provide both SQLite and PostgreSQL database engines for the API service."""
-    return request.getfixturevalue(request.param)
+        yield db_config
 
 
 @pytest.fixture
-def db_session(db_engine):
+def db_postgres_config(postgresql):
+    """Create a PostgreSQL database config."""
+    db_config = DbSettings(
+        datastore_type=DbType.POSTGRESQL,
+        datastore_config=PostgreSQLConfig(
+            host=postgresql.info.host,
+            port=str(postgresql.info.port),
+            user=postgresql.info.user,
+            password=postgresql.info.password,
+            database=postgresql.info.dbname,
+        ),
+    )
+
+    yield db_config
+
+
+@pytest.fixture(params=["db_sqlite_config", "db_postgres_config"])
+def db_config(request):
+    """Fixture to provide both SQLite and PostgreSQL database configs."""
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=["db_sqlite_config", "db_postgres_config"])
+def api_service_db_config(request):
+    """Fixture to provide both SQLite and PostgreSQL database configs for the API service."""
+    return request.getfixturevalue(request.param)
+
+
+@pytest_asyncio.fixture
+async def db_session_manager(db_config):
     """Create a new session for each test."""
+    aana_settings.db_config = db_config
+
     run_alembic_migrations(aana_settings)
 
-    SessionLocal = sessionmaker(bind=db_engine)
-    with SessionLocal() as session:
-        yield session
+    session_manager = DatabaseSessionManager(aana_settings)
+
+    try:
+        yield session_manager
+    finally:
+        await session_manager.close()
 
 
-@pytest.fixture
-def db_session_with_api_service(db_engine, api_service_db_engine):
+@pytest_asyncio.fixture
+async def db_session_manager_with_api_service(db_config, api_service_db_config):
     """Create a new session with both main and api service databases."""
-    run_alembic_migrations(aana_settings)
-    ApiServiceBase.metadata.create_all(api_service_db_engine)
+    aana_settings.api_service.enabled = True
+    aana_settings.db_config = db_config
+    aana_settings.api_service_db_config = api_service_db_config
 
-    SessionLocal = sessionmaker(
-        binds={ApiServiceBase: api_service_db_engine, BaseEntity: db_engine},
-        bind=db_engine,
-    )
-    with SessionLocal() as session:
-        yield session
+    run_alembic_migrations(aana_settings)
+
+    session_manager = DatabaseSessionManager(aana_settings)
+
+    async with session_manager.connect() as conn:
+        await conn.run_sync(ApiServiceBase.metadata.drop_all)
+        await conn.run_sync(ApiServiceBase.metadata.create_all)
+
+    try:
+        yield session_manager
+    finally:
+        await session_manager.close()

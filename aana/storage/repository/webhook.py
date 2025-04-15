@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from sqlalchemy import func, or_
-from sqlalchemy.orm import Session
+from sqlalchemy import func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from aana.exceptions.runtime import InvalidWebhookEventType
 from aana.storage.models.webhook import WebhookEntity, WebhookEventType
@@ -11,11 +11,13 @@ from aana.storage.repository.base import BaseRepository
 class WebhookRepository(BaseRepository[WebhookEntity]):
     """Repository for webhooks."""
 
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         """Constructor."""
         super().__init__(session, WebhookEntity)
 
-    def read(self, item_id: str | UUID, check: bool = True) -> WebhookEntity | None:
+    async def read(
+        self, item_id: str | UUID, check: bool = True
+    ) -> WebhookEntity | None:
         """Reads a single webhook from the database.
 
         Args:
@@ -33,9 +35,11 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
                 item_id = UUID(item_id)
         except ValueError:
             return None
-        return super().read(item_id, check)
+        return await super().read(item_id, check)
 
-    def delete(self, item_id: str | UUID, check: bool = True) -> WebhookEntity | None:
+    async def delete(
+        self, item_id: str | UUID, check: bool = True
+    ) -> WebhookEntity | None:
         """Delete a webhook from the database.
 
         Args:
@@ -53,9 +57,9 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
                 item_id = UUID(item_id)
         except ValueError:
             return None
-        return super().delete(item_id, check)
+        return await super().delete(item_id, check)
 
-    def save(self, webhook: WebhookEntity) -> WebhookEntity:
+    async def save(self, webhook: WebhookEntity) -> WebhookEntity:
         """Save a webhook to the database.
 
         Args:
@@ -75,10 +79,10 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
                 raise InvalidWebhookEventType(event_type=e.args[0]) from e
 
         self.session.add(webhook)
-        self.session.commit()
+        await self.session.commit()
         return webhook
 
-    def get_webhooks(
+    async def get_webhooks(
         self, user_id: str | None, event_type: str | None = None
     ) -> list[WebhookEntity]:
         """Get webhooks for a user.
@@ -90,7 +94,7 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         Returns:
             List[WebhookEntity]: The list of webhooks.
         """
-        query = self.session.query(WebhookEntity).filter_by(user_id=user_id)
+        query = select(WebhookEntity).filter_by(user_id=user_id)
         if event_type:
             if self.session.bind.dialect.name == "postgresql":
                 query = query.filter(
@@ -105,7 +109,7 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
                 )
                 query = query.filter(
                     or_(
-                        self.session.query(events_func)
+                        select(events_func)
                         .filter(events_func.c.value == event_type)
                         .exists(),
                         WebhookEntity.events == "[]",
@@ -116,4 +120,5 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
                     f"Filtering by event type is not supported for {self.session.bind.dialect.name}"
                 )
 
-        return query.all()
+        result = await self.session.execute(query)
+        return list(result.scalars().all())

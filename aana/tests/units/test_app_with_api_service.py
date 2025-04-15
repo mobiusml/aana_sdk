@@ -5,12 +5,12 @@ from datetime import datetime, timedelta, timezone
 from typing import TypedDict
 
 import pytest
+import pytest_asyncio
 import requests
-from sqlalchemy.orm import Session
 
 from aana.api.api_generation import Endpoint
 from aana.core.models.api_service import ApiKeyType
-from aana.storage.models.api_key import ApiKeyEntity
+from aana.storage.models.api_key import ApiKeyEntity, ApiServiceBase
 
 ACTIVE_API_KEY = "1234567890"
 INACTIVE_API_KEY = "0000000000"
@@ -30,13 +30,19 @@ def enable_api_service():
     os.environ.pop("API_SERVICE__LAGO_API_KEY", None)
 
 
-@pytest.fixture(scope="module")
-def add_test_api_keys():
+@pytest_asyncio.fixture(scope="module")
+async def add_test_api_keys():
     """Add test API keys to the database."""
     from aana.configs.settings import settings
+    from aana.storage.op import DatabaseSessionManager
 
-    engine = settings.api_service_db_config.get_engine()
-    with Session(engine) as session:
+    session_manager = DatabaseSessionManager(settings)
+
+    async with session_manager.connect() as conn:
+        await conn.run_sync(ApiServiceBase.metadata.drop_all)
+        await conn.run_sync(ApiServiceBase.metadata.create_all)
+
+    async with session_manager.session() as session:
         # fmt: off
         session.add_all(
             [
@@ -45,7 +51,9 @@ def add_test_api_keys():
             ]
         )
         # fmt: on
-        session.commit()
+        await session.commit()
+
+    await session_manager.close()
 
 
 class LowercaseEndpointOutput(TypedDict):

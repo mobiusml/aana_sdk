@@ -8,6 +8,7 @@ from typing import Any
 import httpx
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from sqlalchemy import select
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from aana.api.security import UserIdDependency
@@ -107,7 +108,7 @@ class WebhookBody(BaseModel):
 # Webhook functions
 
 
-def generate_hmac_signature(body: dict, user_id: str | None) -> str:
+async def generate_hmac_signature(body: dict, user_id: str | None) -> str:
     """Generate HMAC signature for a payload for a given user.
 
     Args:
@@ -121,10 +122,12 @@ def generate_hmac_signature(body: dict, user_id: str | None) -> str:
     secret = aana_settings.webhook.hmac_secret
     # Get the user-specific secret if a user ID is provided
     if user_id:
-        with get_session() as session:
-            api_key_info = (
-                session.query(ApiKeyEntity).filter_by(user_id=user_id).first()
+        async with get_session() as session:
+            result = await session.execute(
+                select(ApiKeyEntity).where(ApiKeyEntity.user_id == user_id)
             )
+            api_key_info = result.scalars().first()
+
             if api_key_info and api_key_info.hmac_secret:
                 secret = api_key_info.hmac_secret
 
@@ -174,13 +177,13 @@ async def trigger_webhooks(
         body (WebhookBody): The body of the webhook request.
         user_id (str | None): The user ID associated with the event.
     """
-    with get_session() as session:
+    async with get_session() as session:
         webhook_repo = WebhookRepository(session)
-        webhooks = webhook_repo.get_webhooks(user_id, event)
+        webhooks = await webhook_repo.get_webhooks(user_id, event)
         body_dict = body.model_dump()
 
         for webhook in webhooks:
-            signature = generate_hmac_signature(body_dict, user_id)
+            signature = await generate_hmac_signature(body_dict, user_id)
             headers = {"X-Signature": signature}
             asyncio.create_task(  # noqa: RUF006
                 send_webhook_request_with_retry(webhook.url, body_dict, headers)
@@ -220,7 +223,7 @@ async def create_webhook(
         url=str(request.url),
         events=request.events,
     )
-    webhook = webhook_repo.save(webhook)
+    webhook = await webhook_repo.save(webhook)
     return WebhookResponse.from_entity(webhook)
 
 
@@ -230,7 +233,7 @@ async def list_webhooks(
 ) -> WebhookListResponse:
     """This endpoint is used to list all registered webhooks."""
     webhook_repo = WebhookRepository(db)
-    webhooks = webhook_repo.get_webhooks(user_id, None)
+    webhooks = await webhook_repo.get_webhooks(user_id, None)
     return WebhookListResponse(
         webhooks=[WebhookResponse.from_entity(webhook) for webhook in webhooks]
     )
@@ -242,7 +245,7 @@ async def get_webhook(
 ) -> WebhookResponse:
     """This endpoint is used to fetch a webhook by ID."""
     webhook_repo = WebhookRepository(db)
-    webhook = webhook_repo.read(webhook_id, check=False)
+    webhook = await webhook_repo.read(webhook_id, check=False)
     if not webhook or webhook.user_id != user_id:
         raise HTTPException(status_code=404, detail="Webhook not found")
     return WebhookResponse.from_entity(webhook)
@@ -257,14 +260,14 @@ async def update_webhook(
 ) -> WebhookResponse:
     """This endpoint is used to update a webhook."""
     webhook_repo = WebhookRepository(db)
-    webhook = webhook_repo.read(webhook_id, check=False)
+    webhook = await webhook_repo.read(webhook_id, check=False)
     if not webhook or webhook.user_id != user_id:
         raise HTTPException(status_code=404, detail="Webhook not found")
     if request.url is not None:
         webhook.url = str(request.url)
     if request.events is not None:
         webhook.events = request.events
-    webhook = webhook_repo.save(webhook)
+    webhook = await webhook_repo.save(webhook)
     return WebhookResponse.from_entity(webhook)
 
 
@@ -274,8 +277,8 @@ async def delete_webhook(
 ) -> WebhookResponse:
     """This endpoint is used to delete a webhook."""
     webhook_repo = WebhookRepository(db)
-    webhook = webhook_repo.read(webhook_id, check=False)
+    webhook = await webhook_repo.read(webhook_id, check=False)
     if not webhook or webhook.user_id != user_id:
         raise HTTPException(status_code=404, detail="Webhook not found")
-    webhook = webhook_repo.delete(webhook.id)
+    webhook = await webhook_repo.delete(webhook.id)
     return WebhookResponse.from_entity(webhook)

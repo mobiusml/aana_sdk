@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from typing import Generic, TypeVar
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from aana.core.models.media import MediaId
 from aana.exceptions.db import NotFoundException
@@ -16,23 +16,23 @@ T = TypeVar("T", bound=BaseEntity)
 class BaseRepository(Generic[T]):
     """Base class for repositories."""
 
-    session: Session
+    session: AsyncSession
     table_name: str
     model_class: type[T]
 
-    def __init__(self, session: Session, model_class: type[T]):
+    def __init__(self, session: AsyncSession, model_class: type[T]):
         """Constructor."""
         self.session = session
         self.table_name = model_class.__tablename__
         self.model_class = model_class
 
-    def create(self, entity: T) -> T:
+    async def create(self, entity: T) -> T:
         """Inserts a single new entity."""
         self.session.add(entity)
-        self.session.commit()
+        await self.session.commit()
         return entity
 
-    def create_multiple(self, entities: Iterable[T]) -> list[T]:
+    async def create_multiple(self, entities: Iterable[T]) -> list[T]:
         """Inserts multiple entities.
 
         Returns:
@@ -40,10 +40,10 @@ class BaseRepository(Generic[T]):
         """
         entities = list(entities)
         self.session.add_all(entities)
-        self.session.commit()
+        await self.session.commit()
         return entities
 
-    def read(self, item_id: int | MediaId | UUID, check: bool = True) -> T:
+    async def read(self, item_id: int | MediaId | UUID, check: bool = True) -> T:
         """Reads a single item by id from the database.
 
         Args:
@@ -56,12 +56,12 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        entity: T | None = self.session.query(self.model_class).get(item_id)
-        if not entity and check:
+        result = await self.session.get(self.model_class, item_id)
+        if not result and check:
             raise NotFoundException(self.table_name, item_id)
-        return entity
+        return result
 
-    def delete(self, id: int | MediaId | UUID, check: bool = True) -> T | None:
+    async def delete(self, id: int | MediaId | UUID, check: bool = True) -> T | None:
         """Deletes an entity.
 
         Args:
@@ -74,11 +74,11 @@ class BaseRepository(Generic[T]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        entity = self.read(id, check=False)
+        entity = await self.read(id, check=False)
         if entity:
-            self.session.delete(entity)
-            self.session.flush()
-            self.session.commit()
+            await self.session.delete(entity)
+            await self.session.flush()
+            await self.session.commit()
             return entity
         elif check:
             raise NotFoundException(self.table_name, id)
