@@ -1,10 +1,20 @@
+from enum import Enum
 from os import PathLike
 
 from pydantic_settings import BaseSettings
-from sqlalchemy.engine import Engine
 from typing_extensions import TypedDict
 
-from aana.storage.op import DbType, create_database_engine
+
+class DbType(str, Enum):
+    """Engine types for relational database.
+
+    Attributes:
+        POSTGRESQL: PostgreSQL database.
+        SQLITE: SQLite database.
+    """
+
+    POSTGRESQL = "postgresql"
+    SQLITE = "sqlite"
 
 
 class SQLiteConfig(TypedDict):
@@ -56,25 +66,3 @@ class DbSettings(BaseSettings):
     pool_size: int = 5
     max_overflow: int = 10
     pool_recycle: int = 3600
-
-    _engine: Engine | None = None
-
-    def get_engine(self):
-        """Gets engine. Each instance of DbSettings will create a max.of 1 engine."""
-        if not self._engine:
-            self._engine = create_database_engine(self)
-        return self._engine
-
-    def __getstate__(self):
-        """Used by pickle to pickle an object."""
-        # We need to remove the "engine" property because SqlAlchemy engines
-        # are not picklable
-        state = self.__dict__.copy()
-        state.pop("engine", None)
-        return state
-
-    def __setstate__(self, state):
-        """Used to restore a runtime object from pickle; the opposite of __getstate__()."""
-        # We don't need to do anything special here, since the engine will be recreated
-        # if needed.
-        self.__dict__.update(state)

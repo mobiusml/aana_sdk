@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
+from sqlalchemy import select
 
 from aana.api.exception_handler import (
     aana_exception_handler,
@@ -46,11 +47,12 @@ async def api_key_check(request: Request, call_next):
         if not api_key:
             raise ApiKeyNotProvided()
 
-        with get_session() as session:
+        async with get_session() as session:
             try:
-                api_key_info = (
-                    session.query(ApiKeyEntity).filter_by(api_key=api_key).first()
+                result = await session.execute(
+                    select(ApiKeyEntity).where(ApiKeyEntity.api_key == api_key)
                 )
+                api_key_info = result.scalars().first()
             except Exception as e:
                 raise ApiKeyValidationFailed() from e
 
