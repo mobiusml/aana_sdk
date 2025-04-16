@@ -84,15 +84,6 @@ def create_app():
 
     run_alembic_migrations(aana_settings)
 
-    # Setup API service database
-    tmp_api_service_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
-    api_service_db_config = DbSettings(
-        datastore_type=DbType.SQLITE,
-        datastore_config=SQLiteConfig(path=tmp_api_service_database_path),
-    )
-    os.environ["API_SERVICE_DB_CONFIG"] = jsonify(api_service_db_config)
-    aana_settings.api_service_db_config = api_service_db_config
-
     os.environ["API_SERVICE__ENABLED"] = "False"
     aana_settings.api_service.enabled = False
 
@@ -122,12 +113,13 @@ def create_app():
 
         return app
 
-    yield start_app
+    try:
+        yield start_app
+    finally:
+        # delete temporary database
+        tmp_database_path.unlink()
 
-    # delete temporary database
-    tmp_database_path.unlink()
-
-    app.shutdown()
+        app.shutdown()
 
 
 @pytest.fixture(scope="module")
@@ -185,12 +177,14 @@ def create_app_with_api_service():
 
         return app
 
-    yield start_app
+    try:
+        yield start_app
+    finally:
+        # delete temporary databases
+        tmp_database_path.unlink()
+        tmp_api_service_database_path.unlink()
 
-    # delete temporary database
-    tmp_database_path.unlink()
-
-    app.shutdown()
+        app.shutdown()
 
 
 @pytest.fixture(scope="class")

@@ -79,19 +79,20 @@ class DatabaseSessionManager:
                     },
                     bind=self._engine,  # Default engine
                 )
-            self._sessionmaker = async_sessionmaker(
-                autocommit=False,
-                autoflush=False,
-                expire_on_commit=False,
-                bind=self._engine,
-            )
+            else:
+                self._sessionmaker = async_sessionmaker(
+                    autocommit=False,
+                    autoflush=False,
+                    expire_on_commit=False,
+                    bind=self._engine,
+                )
 
     @classmethod
     def create_postgresql_engine(cls, db_config: "DbSettings") -> AsyncEngine:
         """Create PostgreSQL async engine based on the provided configuration.
 
         Args:
-            db_config: Database configuration.
+            db_config (DbSettings): Database configuration.
 
         Returns:
             AsyncEngine: SQLAlchemy async engine instance.
@@ -119,7 +120,7 @@ class DatabaseSessionManager:
         """Create an SQLite async SQLAlchemy engine based on the provided configuration.
 
         Args:
-            db_config: Database configuration.
+            db_config (DbSettings): Database configuration.
 
         Returns:
             AsyncEngine: SQLAlchemy async engine instance.
@@ -138,7 +139,7 @@ class DatabaseSessionManager:
         """Create SQLAlchemy async engine based on the provided configuration.
 
         Args:
-            db_config: Database configuration.
+            db_config (DbSettings): Database configuration.
 
         Returns:
             AsyncEngine: SQLAlchemy async engine instance.
@@ -194,6 +195,7 @@ class DatabaseSessionManager:
             AsyncSession: An instance of the asynchronous database session.
 
         Raises:
+            DatabaseException: If there is an error during the session.
             InternalException: If the session maker is not initialized.
             Exception: If an error occurs during the session, the session is rolled back and the exception is re-raised.
         """
@@ -209,16 +211,17 @@ class DatabaseSessionManager:
         except SQLAlchemyError as e:
             raise DatabaseException(message=str(e)) from e
         finally:
-            logger.debug("Closing session")
             await session.close()
 
 
-async def run_alembic_migrations_async(settings, root_path: Path | None = None):
+async def run_alembic_migrations_async(
+    settings: "Settings", root_path: Path | None = None
+):
     """Run database migrations asynchronously.
 
     Args:
-        settings: Application settings
-        root_path: Root path of the application (optional)
+        settings (Settings): Application settings
+        root_path (Path | None): Root path of the application
 
     Raises:
         RuntimeError: If the alembic directory does not exist
@@ -272,11 +275,11 @@ async def run_alembic_migrations_async(settings, root_path: Path | None = None):
     await session_manager.close()
 
 
-def run_alembic_migrations(settings, root_path: Path | None = None):
+def run_alembic_migrations(settings: "Settings", root_path: Path | None = None):
     """Run database migrations.
 
     Args:
-        settings: Application settings
-        root_path: Root path of the application (optional)
+        settings (Settings): Application settings
+        root_path (Path | None): Root path of the application
     """
     run_async(run_alembic_migrations_async(settings, root_path=root_path))
