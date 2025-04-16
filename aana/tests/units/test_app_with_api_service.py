@@ -121,9 +121,9 @@ endpoints = [
 ]
 
 
-def test_app(enable_api_service, create_app, add_test_api_keys):
+def test_app(enable_api_service, create_app_with_api_service, add_test_api_keys):
     """Test the Ray Serve app."""
-    aana_app = create_app(deployments, endpoints)
+    aana_app = create_app_with_api_service(deployments, endpoints)
 
     port = aana_app.port
     route_prefix = ""

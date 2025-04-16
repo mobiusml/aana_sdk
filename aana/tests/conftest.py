@@ -91,6 +91,73 @@ def create_app():
         datastore_config=SQLiteConfig(path=tmp_api_service_database_path),
     )
     os.environ["API_SERVICE_DB_CONFIG"] = jsonify(api_service_db_config)
+    aana_settings.api_service_db_config = api_service_db_config
+
+    os.environ["API_SERVICE__ENABLED"] = "False"
+    aana_settings.api_service.enabled = False
+
+    app = AanaSDK()
+    try:
+        # pretend we have 10 cpus for testing
+        app.connect(port=random_port(), show_logs=True, num_cpus=10)
+    except ValueError:
+        # if the port is already in use, try again
+        app.shutdown()
+        app = AanaSDK()
+        app.connect(port=random_port(), show_logs=True, num_cpus=10)
+    app.migrate()
+
+    def start_app(deployments, endpoints):
+        for deployment in deployments:
+            deployment_instance = deployment["instance"]
+
+            app.register_deployment(
+                name=deployment["name"], instance=deployment_instance
+            )
+
+        for endpoint in endpoints:
+            app.register_endpoint(**endpoint)
+
+        app.deploy(blocking=False)
+
+        return app
+
+    yield start_app
+
+    # delete temporary database
+    tmp_database_path.unlink()
+
+    app.shutdown()
+
+
+@pytest.fixture(scope="module")
+def create_app_with_api_service():
+    """Setup Ray Serve app for given deployments and endpoints with API service enabled."""
+    # create temporary database
+    tmp_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
+    db_config = DbSettings(
+        datastore_type=DbType.SQLITE,
+        datastore_config=SQLiteConfig(path=tmp_database_path),
+    )
+    # set environment variable for the database config so Ray can find it
+    os.environ["DB_CONFIG"] = jsonify(db_config)
+
+    # set database config in aana settings
+    aana_settings.db_config = db_config
+
+    run_alembic_migrations(aana_settings)
+
+    # Setup API service database
+    tmp_api_service_database_path = Path(tempfile.mkstemp(suffix=".db")[1])
+    api_service_db_config = DbSettings(
+        datastore_type=DbType.SQLITE,
+        datastore_config=SQLiteConfig(path=tmp_api_service_database_path),
+    )
+    os.environ["API_SERVICE_DB_CONFIG"] = jsonify(api_service_db_config)
+    aana_settings.api_service_db_config = api_service_db_config
+
+    os.environ["API_SERVICE__ENABLED"] = "True"
+    aana_settings.api_service.enabled = True
 
     app = AanaSDK()
     try:
