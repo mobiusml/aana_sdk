@@ -128,13 +128,13 @@ class RequestHandler:
         """
         try:
             self.running_tasks.add(task_id)
-            with get_session() as session:
+            async with get_session() as session:
                 task_repo = TaskRepository(session)
-                task = task_repo.read(task_id)
+                task = await task_repo.read(task_id)
                 path = task.endpoint
                 kwargs = task.data
 
-                task = task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
+                task = await task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
                 await trigger_task_webhooks(WebhookEventType.TASK_STARTED, task)
 
             for e in self.endpoints:
@@ -152,16 +152,16 @@ class RequestHandler:
             else:
                 out = await endpoint.run(**kwargs)
 
-            with get_session() as session:
-                task = TaskRepository(session).update_status(
+            async with get_session() as session:
+                task = await TaskRepository(session).update_status(
                     task_id, TaskStatus.COMPLETED, 100, out
                 )
                 await trigger_task_webhooks(WebhookEventType.TASK_COMPLETED, task)
         except Exception as e:
             error_response = custom_exception_handler(None, e)
             error = orjson.loads(error_response.body)
-            with get_session() as session:
-                task = TaskRepository(session).update_status(
+            async with get_session() as session:
+                task = await TaskRepository(session).update_status(
                     task_id, TaskStatus.FAILED, 0, error
                 )
                 await trigger_task_webhooks(WebhookEventType.TASK_FAILED, task)
@@ -187,9 +187,9 @@ class RequestHandler:
     async def check_health(self):
         """Check the health of the application."""
         # Heartbeat for the running tasks
-        with get_session() as session:
+        async with get_session() as session:
             task_repo = TaskRepository(session)
-            task_repo.heartbeat(self.running_tasks)
+            await task_repo.heartbeat(self.running_tasks)
 
     @app.get(
         "/api/status",

@@ -1,8 +1,11 @@
+import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from aana.configs.db import DbType
 from aana.configs.settings import settings
 from aana.storage.models.base import BaseEntity
 
@@ -28,51 +31,77 @@ target_metadata = BaseEntity.metadata
 # ... etc.
 
 
+def get_db_url():
+    """Get database URL from settings or environment variables."""
+    db_config = settings.db_config
+    db_type = db_config.datastore_type
+
+    if db_type == DbType.POSTGRESQL:
+        pg_config = db_config.datastore_config
+        return f"postgresql+asyncpg://{pg_config['user']}:{pg_config['password']}@{pg_config['host']}:{pg_config['port']}/{pg_config['database']}"
+    elif db_type == DbType.SQLITE:
+        sqlite_config = db_config.datastore_config
+        return f"sqlite+aiosqlite:///{sqlite_config['path']}"
+    else:
+        raise ValueError(f"Unsupported database type: {db_type}")  # noqa: TRY003
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
-    Modified to use our existing db config module.
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
 
     Calls to context.execute() here emit the given string to the
     script output.
 
     """
-    engine = settings.db_config.get_engine()
+    url = get_db_url()
     context.configure(
-        url=engine.url,
+        url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        render_as_batched=True,
     )
 
     with context.begin_transaction():
         context.run_migrations()
 
 
-def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+def do_run_migrations(connection):
+    """Run migrations based on the connection given."""
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+    )
+    with context.begin_transaction():
+        context.run_migrations()
 
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
 
-    """
+async def run_async_migrations() -> None:
+    """Run database migrations asynchronously."""
+    db_url = get_db_url()
+
     config_section = config.get_section(config.config_ini_section, {})
-    engine = settings.db_config.get_engine()
-    config_section["sqlalchemy.url"] = engine.url
-    connectable = engine_from_config(
+    config_section["sqlalchemy.url"] = db_url
+
+    connectable = async_engine_from_config(
         config_section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata, render_as_batch=True
-        )
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
 
-        with context.begin_transaction():
-            context.run_migrations()
+    await connectable.dispose()
+
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode."""
+    asyncio.run(run_async_migrations())
 
 
 if context.is_offline_mode():

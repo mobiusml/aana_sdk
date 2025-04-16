@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from aana.core.models.asr import (
     AsrSegments,
@@ -16,11 +16,11 @@ T = TypeVar("T", bound=TranscriptEntity)
 class TranscriptRepository(BaseRepository[T]):
     """Repository for Transcripts."""
 
-    def __init__(self, session: Session, model_class: type[T] = TranscriptEntity):
+    def __init__(self, session: AsyncSession, model_class: type[T] = TranscriptEntity):
         """Constructor."""
         super().__init__(session, model_class)
 
-    def save(
+    async def save(
         self,
         model_name: str,
         transcription_info: AsrTranscriptionInfo,
@@ -45,5 +45,5 @@ class TranscriptRepository(BaseRepository[T]):
             info=transcription_info,
         )
         self.session.add(transcript_entity)
-        self.session.commit()
+        await self.session.commit()
         return transcript_entity

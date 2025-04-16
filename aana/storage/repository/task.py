@@ -3,7 +3,8 @@ from typing import Any
 from uuid import UUID
 
 from sqlalchemy import and_, desc, func, or_, select, text
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 from aana.storage.models.api_key import ApiKeyEntity
 from aana.storage.models.task import Status as TaskStatus
@@ -14,11 +15,11 @@ from aana.storage.repository.base import BaseRepository
 class TaskRepository(BaseRepository[TaskEntity]):
     """Repository for tasks."""
 
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         """Constructor."""
         super().__init__(session, TaskEntity)
 
-    def read(self, task_id: str | UUID, check: bool = True) -> TaskEntity | None:
+    async def read(self, task_id: str | UUID, check: bool = True) -> TaskEntity | None:
         """Reads a single task by id from the database.
 
         Args:
@@ -36,9 +37,11 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 task_id = UUID(task_id)
         except ValueError:
             return None
-        return super().read(task_id, check=check)
+        return await super().read(task_id, check=check)
 
-    def delete(self, task_id: str | UUID, check: bool = False) -> TaskEntity | None:
+    async def delete(
+        self, task_id: str | UUID, check: bool = False
+    ) -> TaskEntity | None:
         """Deletes a single task by id from the database.
 
         Args:
@@ -56,9 +59,9 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 task_id = UUID(task_id)
         except ValueError:
             return None
-        return super().delete(task_id, check)
+        return await super().delete(task_id, check)
 
-    def save(
+    async def save(
         self, endpoint: str, data: Any, user_id: str | None = None, priority: int = 0
     ):
         """Add a task to the database.
@@ -76,10 +79,10 @@ class TaskRepository(BaseRepository[TaskEntity]):
             endpoint=endpoint, data=data, priority=priority, user_id=user_id
         )
         self.session.add(task)
-        self.session.commit()
+        await self.session.commit()
         return task
 
-    def fetch_unprocessed_tasks(
+    async def fetch_unprocessed_tasks(
         self,
         limit: int | None = None,
         max_retries: int = 1,
@@ -119,6 +122,10 @@ class TaskRepository(BaseRepository[TaskEntity]):
                 exception_name_query = (
                     f"json_extract(result, '$.error') IN ({exceptions_str})"
                 )
+            else:
+                raise NotImplementedError(
+                    f"Filtering by exception name is not supported for {self.session.bind.dialect.name}"
+                )
 
             main_filter_expr = or_(
                 TaskEntity.status.in_([TaskStatus.CREATED, TaskStatus.NOT_FINISHED]),
@@ -135,15 +142,11 @@ class TaskRepository(BaseRepository[TaskEntity]):
 
         if api_service_enabled:
             # Fetch active users with active subscriptions from the API service database
-            active_user_ids = (
-                self.session.query(ApiKeyEntity.user_id)
-                .filter(ApiKeyEntity.is_subscription_active == True)
-                .all()
+            stmt = select(ApiKeyEntity.user_id).where(
+                ApiKeyEntity.is_subscription_active == True
             )
-
-            active_user_ids = (
-                [user_id for (user_id,) in active_user_ids] if active_user_ids else []
-            )
+            result = await self.session.execute(stmt)
+            active_user_ids = [row[0] for row in result.all()]
 
             if not active_user_ids:
                 return []
@@ -168,8 +171,8 @@ class TaskRepository(BaseRepository[TaskEntity]):
             )
 
             # Window function to enumerate tasks per user by priority and created_at
-            window_subquery = (
-                self.session.query(
+            window_stmt = (
+                select(
                     TaskEntity.id.label("task_id"),
                     TaskEntity.user_id.label("user_id"),
                     TaskEntity.priority.label("priority"),
@@ -184,63 +187,67 @@ class TaskRepository(BaseRepository[TaskEntity]):
                     )
                     .label("row_num"),
                 )
-                .filter(and_(main_filter_expr, user_filter_expr))
+                .where(and_(main_filter_expr, user_filter_expr))
                 .subquery()
             )
 
             # Query to fetch tasks with limited active tasks per user
-            candidate_ids_query = (
-                self.session.query(window_subquery.c.task_id)
-                .filter(
+            candidate_ids_stmt = (
+                select(window_stmt.c.task_id)
+                .where(
                     or_(
-                        window_subquery.c.active_count + window_subquery.c.row_num
+                        window_stmt.c.active_count + window_stmt.c.row_num
                         <= maximum_active_tasks_per_user,
-                        window_subquery.c.user_id == None,
+                        window_stmt.c.user_id == None,
                     )
                 )
                 .order_by(
-                    desc(window_subquery.c.priority),
-                    window_subquery.c.created_at,
-                    window_subquery.c.row_num,
+                    desc(window_stmt.c.priority),
+                    window_stmt.c.created_at,
+                    window_stmt.c.row_num,
                 )
                 .limit(limit)
             )
 
             # Fetch the task IDs from the query
-            candidate_ids = [row.task_id for row in candidate_ids_query]
+            result = await self.session.execute(candidate_ids_stmt)
+            candidate_ids = [row.task_id for row in result.all()]
+
             if not candidate_ids:
                 # No tasks matched
                 return []
 
             # Lock those specific tasks with FOR UPDATE SKIP LOCKED
-            tasks = (
-                self.session.query(TaskEntity)
-                .filter(TaskEntity.id.in_(candidate_ids))
+            stmt = (
+                select(TaskEntity)
+                .where(TaskEntity.id.in_(candidate_ids))
                 .with_for_update(skip_locked=True)
-                .all()
             )
+            result = await self.session.execute(stmt)
+            tasks = result.scalars().all()
         else:
-            tasks = (
-                self.session.query(TaskEntity)
-                .filter(main_filter_expr)
+            stmt = (
+                select(TaskEntity)
+                .where(main_filter_expr)
                 .order_by(desc(TaskEntity.priority), TaskEntity.created_at)
                 .limit(limit)
-                .populate_existing()
+                .execution_options(populate_existing=True)
                 .with_for_update(skip_locked=True)
-                .all()
             )
+            result = await self.session.execute(stmt)
+            tasks = result.scalars().all()
 
         for task in tasks:
-            self.update_status(
+            await self.update_status(
                 task_id=task.id,
                 status=TaskStatus.ASSIGNED,
                 progress=0,
                 commit=False,
             )
-        self.session.commit()
+        await self.session.commit()
         return tasks
 
-    def update_status(
+    async def update_status(
         self,
         task_id: str,
         status: TaskStatus,
@@ -260,7 +267,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Returns:
             TaskEntity: The updated task.
         """
-        task = self.read(task_id)
+        task = await self.read(task_id)
         if status == TaskStatus.COMPLETED or status == TaskStatus.FAILED:
             task.completed_at = datetime.now(timezone.utc)
         if status == TaskStatus.ASSIGNED:
@@ -271,10 +278,10 @@ class TaskRepository(BaseRepository[TaskEntity]):
         task.status = status
         task.result = result
         if commit:
-            self.session.commit()
+            await self.session.commit()
         return task
 
-    def retry_task(self, task_id: str) -> TaskEntity:
+    async def retry_task(self, task_id: str) -> TaskEntity:
         """Retry a task. The task will reset to CREATED status.
 
         Args:
@@ -283,17 +290,17 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Returns:
             TaskEntity: The updated task.
         """
-        task = self.read(task_id)
+        task = await self.read(task_id)
         task.status = TaskStatus.CREATED
         task.progress = 0
         task.result = None
         task.num_retries = 0
         task.assigned_at = None
         task.completed_at = None
-        self.session.commit()
+        await self.session.commit()
         return task
 
-    def get_active_tasks(self) -> list[TaskEntity]:
+    async def get_active_tasks(self) -> list[TaskEntity]:
         """Fetches all active tasks.
 
         The task is considered active if it is in RUNNING or ASSIGNED state.
@@ -301,14 +308,13 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Returns:
             list[TaskEntity]: the active tasks.
         """
-        tasks = (
-            self.session.query(TaskEntity)
-            .filter(TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED]))
-            .all()
+        stmt = select(TaskEntity).where(
+            TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED])
         )
-        return tasks
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
 
-    def filter_incomplete_tasks(self, task_ids: list[str]) -> list[str]:
+    async def filter_incomplete_tasks(self, task_ids: list[str]) -> list[str]:
         """Remove the task IDs that are already completed (COMPLETED or FAILED).
 
         Args:
@@ -318,26 +324,24 @@ class TaskRepository(BaseRepository[TaskEntity]):
             list[str]: The task IDs that are not completed.
         """
         task_ids = [UUID(task_id) for task_id in task_ids]
-        tasks = (
-            self.session.query(TaskEntity)
-            .filter(
-                and_(
-                    TaskEntity.id.in_(task_ids),
-                    TaskEntity.status.not_in(
-                        [
-                            TaskStatus.COMPLETED,
-                            TaskStatus.FAILED,
-                            TaskStatus.NOT_FINISHED,
-                        ]
-                    ),
-                )
+        stmt = select(TaskEntity).where(
+            and_(
+                TaskEntity.id.in_(task_ids),
+                TaskEntity.status.not_in(
+                    [
+                        TaskStatus.COMPLETED,
+                        TaskStatus.FAILED,
+                        TaskStatus.NOT_FINISHED,
+                    ]
+                ),
             )
-            .all()
         )
+        result = await self.session.execute(stmt)
+        tasks = result.scalars().all()
         incomplete_task_ids = [str(task.id) for task in tasks]
         return incomplete_task_ids
 
-    def update_expired_tasks(
+    async def update_expired_tasks(
         self, execution_timeout: float, heartbeat_timeout: float, max_retries: int
     ) -> list[TaskEntity]:
         """Fetches all tasks that are expired and updates their status.
@@ -370,21 +374,24 @@ class TaskRepository(BaseRepository[TaskEntity]):
         heartbeat_cutoff = datetime.now(timezone.utc) - timedelta(
             seconds=heartbeat_timeout
         )
-        tasks = (
-            self.session.query(TaskEntity)
-            .filter(
+
+        stmt = (
+            select(TaskEntity)
+            .where(
                 and_(
                     TaskEntity.status.in_([TaskStatus.RUNNING, TaskStatus.ASSIGNED]),
                     or_(
                         TaskEntity.assigned_at <= timeout_cutoff,
                         TaskEntity.updated_at <= heartbeat_cutoff,
                     ),
-                ),
+                )
             )
-            .populate_existing()
             .with_for_update(skip_locked=True)
-            .all()
         )
+
+        result = await self.session.execute(stmt)
+        tasks = result.scalars().all()
+
         for task in tasks:
             if task.num_retries >= max_retries:
                 if task.assigned_at.astimezone(timezone.utc) <= timeout_cutoff:
@@ -404,7 +411,7 @@ class TaskRepository(BaseRepository[TaskEntity]):
                         ),
                     }
 
-                self.update_status(
+                await self.update_status(
                     task_id=task.id,
                     status=TaskStatus.FAILED,
                     progress=0,
@@ -412,16 +419,17 @@ class TaskRepository(BaseRepository[TaskEntity]):
                     commit=False,
                 )
             else:
-                self.update_status(
+                await self.update_status(
                     task_id=task.id,
                     status=TaskStatus.NOT_FINISHED,
                     progress=0,
                     commit=False,
                 )
-        self.session.commit()
+
+        await self.session.commit()
         return tasks
 
-    def heartbeat(self, task_ids: list[str] | set[str]):
+    async def heartbeat(self, task_ids: list[str] | set[str]):
         """Updates the updated_at timestamp for multiple tasks.
 
         Args:
@@ -431,13 +439,18 @@ class TaskRepository(BaseRepository[TaskEntity]):
             UUID(task_id) if isinstance(task_id, str) else task_id
             for task_id in task_ids
         ]
-        self.session.query(TaskEntity).filter(TaskEntity.id.in_(task_ids)).update(
-            {TaskEntity.updated_at: datetime.now(timezone.utc)},
-            synchronize_session=False,
-        )
-        self.session.commit()
 
-    def get_tasks(
+        stmt = select(TaskEntity).where(TaskEntity.id.in_(task_ids))
+
+        result = await self.session.execute(stmt)
+        tasks = result.scalars().all()
+
+        for task in tasks:
+            task.updated_at = datetime.now(timezone.utc)
+
+        await self.session.commit()
+
+    async def get_tasks(
         self,
         user_id: str | None = None,
         status: TaskStatus | None = None,
@@ -455,20 +468,17 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Returns:
             list[TaskEntity]: The list of tasks.
         """
-        query = self.session.query(TaskEntity)
+        stmt = select(TaskEntity)
         if user_id:
-            query = query.filter(TaskEntity.user_id == user_id)
+            stmt = stmt.where(TaskEntity.user_id == user_id)
         if status:
-            query = query.filter(TaskEntity.status == status)
-        tasks = (
-            query.order_by(TaskEntity.created_at.desc())
-            .limit(limit)
-            .offset(offset)
-            .all()
-        )
-        return tasks
+            stmt = stmt.where(TaskEntity.status == status)
 
-    def count(self, user_id: str | None = None) -> dict[str, int]:
+        stmt = stmt.order_by(TaskEntity.created_at.desc()).limit(limit).offset(offset)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def count(self, user_id: str | None = None) -> dict[str, int]:
         """Count tasks by status.
 
         Args:
@@ -477,12 +487,14 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Returns:
             dict[str, int]: The count of tasks by status.
         """
-        counts = (
-            self.session.query(TaskEntity.status, func.count(TaskEntity.id))
-            .filter(TaskEntity.user_id == user_id if user_id else True)
-            .group_by(TaskEntity.status)
-            .all()
-        )
+        base_stmt = select(TaskEntity.status, func.count(TaskEntity.id))
+        if user_id:
+            base_stmt = base_stmt.where(TaskEntity.user_id == user_id)
+
+        stmt = base_stmt.group_by(TaskEntity.status)
+        result = await self.session.execute(stmt)
+        counts = result.all()
+
         count_dict = {status.value: count for status, count in counts}
         count_dict["total"] = sum(count_dict.values())
         return count_dict

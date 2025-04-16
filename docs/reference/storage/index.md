@@ -21,17 +21,17 @@ If you want to use the provided models and repositories, you can use the followi
 
 ### Get session object
 
-You can use `get_session` method from the `aana.storage.session` module:
+You can use `get_session` method from the `aana.storage.session` module. It's a context manager that provides a session object to interact with the database. 
     
 ```python
 from aana.storage.session import get_session
 
-session = get_session()
+async with get_session() as session:
+    # Use the session object to interact with the database
 ```
 
-<!-- ::: aana.storage.session.get_session -->
+Here is an example of how to use the session in an endpoint:
 
-If you are using Endpoint, please use `get_session` function with the context manager:
 
 ```python
 from aana.api import Endpoint
@@ -40,17 +40,19 @@ from aana.storage.session import get_session
 class TranscribeVideoEndpoint(Endpoint):
 
     async def run(self, video: VideoInput) -> WhisperOutput:
-        with get_session() as session:
+        async with get_session() as session:
             repo = SomeRepository(session)
-            repo.some_method(...)
+            await repo.some_method(...)
             # or 
-            SomeRepository(session).some_method(...)
+            await SomeRepository(session).some_method(...)
 ```
 
 
 ### Create a repository object and use it to interact with the database.
 
 You can use the provided repositories from the `aana.storage.repository` module. See [Repositories](repositories.md) for the list of available repositories.
+
+The repositories are designed in asyncronous way, so you can use them in async functions. 
 
 For example, to work with the [`VideoEntity`](models.md#aana.storage.models.VideoEntity) model, you can create a [`VideoRepository`](repositories.md#aana.storage.repository.VideoRepository) object:
 
@@ -66,7 +68,7 @@ And then use the repository object to interact with the database. For example, t
 from aana.core.models import Video
 
 video = Video(title="My Video", url="https://example.com/video.mp4")
-video_repository.save(video)
+await video_repository.save(video)
 ```
 
 Or, if you are using Endpoint, you can create a repository object in the `initialize` method:
@@ -80,7 +82,7 @@ class TranscribeVideoEndpoint(Endpoint):
 
     async def run(self, video: VideoInput) -> WhisperOutput:
         video_obj: Video = await run_remote(download_video)(video_input=video)
-        with get_session() as session:
-            VideoRepository(session).save(video_obj)
+        async with get_session() as session:
+            await VideoRepository(session).save(video_obj)
         # ...
 ``` 

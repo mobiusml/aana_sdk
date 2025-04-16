@@ -1,7 +1,7 @@
 import datetime
 from typing import Annotated, Any, TypeVar
 
-from sqlalchemy import DateTime, MetaData, String, func
+from sqlalchemy import MetaData, String, func
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -11,10 +11,11 @@ from sqlalchemy.orm import (
 )
 
 from aana.core.models.media import MediaId
+from aana.storage.types import TimezoneAwareDateTime
 
 timestamp = Annotated[
     datetime.datetime,
-    mapped_column(DateTime(timezone=True)),
+    mapped_column(TimezoneAwareDateTime(timezone=True)),
 ]
 
 T = TypeVar("T", bound="InheritanceReuseMixin")

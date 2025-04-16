@@ -62,7 +62,7 @@ class ErrorResponse(BaseModel):
 async def count_tasks(db: GetDbDependency, user_id: UserIdDependency) -> TaskCount:
     """Count tasks by status."""
     task_repo = TaskRepository(db)
-    counts = task_repo.count(user_id=user_id)
+    counts = await task_repo.count(user_id=user_id)
     return TaskCount(**counts)
 
 
@@ -82,7 +82,7 @@ async def get_task(
 ) -> TaskInfo:
     """Get the task with the given ID."""
     task_repo = TaskRepository(db)
-    task = task_repo.read(task_id, check=False)
+    task = await task_repo.read(task_id, check=False)
     if not task or task.user_id != user_id:
         raise HTTPException(
             status_code=404,
@@ -108,7 +108,7 @@ async def list_tasks(
 ) -> TaskList:
     """List all tasks."""
     task_repo = TaskRepository(db)
-    tasks = task_repo.get_tasks(
+    tasks = await task_repo.get_tasks(
         user_id=user_id, status=status, limit=per_page, offset=(page - 1) * per_page
     )
     return TaskList(tasks=[TaskInfo.from_entity(task) for task in tasks])
@@ -134,7 +134,7 @@ async def delete_task(
 ) -> TaskInfo:
     """Delete the task with the given ID."""
     task_repo = TaskRepository(db)
-    task = task_repo.read(task_id, check=False)
+    task = await task_repo.read(task_id, check=False)
     if not task or task.user_id != user_id:
         raise HTTPException(
             status_code=404,
@@ -145,7 +145,7 @@ async def delete_task(
             status_code=400,
             detail="Cannot delete a running or assigned task.",
         )
-    task = task_repo.delete(task_id)
+    task = await task_repo.delete(task_id)
     if task is None:
         raise HTTPException(
             status_code=404,
@@ -174,7 +174,7 @@ async def retry_task(
 ) -> TaskInfo:
     """Retry a failed task by resetting its status."""
     task_repo = TaskRepository(db)
-    task = task_repo.read(task_id, check=False)
+    task = await task_repo.read(task_id, check=False)
     if not task or task.user_id != user_id:
         raise HTTPException(
             status_code=404,
@@ -186,7 +186,7 @@ async def retry_task(
             detail="Only failed tasks can be retried",
         )
 
-    updated_task = task_repo.retry_task(task.id)
+    updated_task = await task_repo.retry_task(task.id)
     return TaskInfo.from_entity(updated_task)
 
 
@@ -210,7 +210,7 @@ async def get_task_legacy(
 ) -> TaskInfo:
     """Get the task with the given ID (Legacy endpoint)."""
     task_repo = TaskRepository(db)
-    task = task_repo.read(task_id)
+    task = await task_repo.read(task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
     return TaskInfo.from_entity(task)
@@ -233,8 +233,8 @@ async def delete_task_legacy(
 ) -> TaskResponse:
     """Delete the task with the given ID (Legacy endpoint)."""
     task_repo = TaskRepository(db)
-    task = task_repo.read(task_id)
+    task = await task_repo.read(task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
-    task = task_repo.delete(task_id)
+    task = await task_repo.delete(task_id)
     return TaskResponse(task_id=str(task.id))

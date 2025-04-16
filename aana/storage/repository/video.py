@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from aana.core.models.media import MediaId
 from aana.core.models.video import Video, VideoMetadata
@@ -13,11 +13,11 @@ V = TypeVar("V", bound=VideoEntity)
 class VideoRepository(MediaRepository[V]):
     """Repository for videos."""
 
-    def __init__(self, session: Session, model_class: type[V] = VideoEntity):
+    def __init__(self, session: AsyncSession, model_class: type[V] = VideoEntity):
         """Constructor."""
         super().__init__(session, model_class)
 
-    def save(self, video: Video) -> dict:
+    async def save(self, video: Video) -> dict:
         """Saves a video to datastore.
 
         Args:
@@ -34,12 +34,12 @@ class VideoRepository(MediaRepository[V]):
             description=video.description,
         )
 
-        self.create(video_entity)
+        await self.create(video_entity)
         return {
             "media_id": video_entity.id,
         }
 
-    def get_metadata(self, media_id: MediaId) -> VideoMetadata:
+    async def get_metadata(self, media_id: MediaId) -> VideoMetadata:
         """Get the metadata of a video.
 
         Args:
@@ -48,5 +48,5 @@ class VideoRepository(MediaRepository[V]):
         Returns:
             VideoMetadata: The video metadata.
         """
-        entity: VideoEntity = self.read(media_id)
+        entity: VideoEntity = await self.read(media_id)
         return VideoMetadata(title=entity.title, description=entity.description)
