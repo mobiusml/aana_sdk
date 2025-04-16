@@ -38,7 +38,7 @@ async def add_test_api_keys():
 
     session_manager = DatabaseSessionManager(settings)
 
-    async with session_manager.connect() as conn:
+    async with session_manager._api_service_engine.begin() as conn:
         await conn.run_sync(ApiServiceBase.metadata.drop_all)
         await conn.run_sync(ApiServiceBase.metadata.create_all)
 
