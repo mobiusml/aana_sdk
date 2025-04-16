@@ -5,6 +5,8 @@ from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from aana.configs.db import DbType
+from aana.configs.settings import settings
 from aana.storage.models.base import BaseEntity
 
 # this is the Alembic Config object, which provides
@@ -29,6 +31,21 @@ target_metadata = BaseEntity.metadata
 # ... etc.
 
 
+def get_db_url():
+    """Get database URL from settings or environment variables."""
+    db_config = settings.db_config
+    db_type = db_config.datastore_type
+
+    if db_type == DbType.POSTGRESQL:
+        pg_config = db_config.datastore_config
+        return f"postgresql+asyncpg://{pg_config['user']}:{pg_config['password']}@{pg_config['host']}:{pg_config['port']}/{pg_config['database']}"
+    elif db_type == DbType.SQLITE:
+        sqlite_config = db_config.datastore_config
+        return f"sqlite+aiosqlite:///{sqlite_config['path']}"
+    else:
+        raise ValueError(f"Unsupported database type: {db_type}")  # noqa: TRY003
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -41,7 +58,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = get_db_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -65,8 +82,13 @@ def do_run_migrations(connection):
 
 async def run_async_migrations() -> None:
     """Run database migrations asynchronously."""
+    db_url = get_db_url()
+
+    config_section = config.get_section(config.config_ini_section, {})
+    config_section["sqlalchemy.url"] = db_url
+
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        config_section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
@@ -78,16 +100,8 @@ async def run_async_migrations() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-    """
-    try:
-        asyncio.run(run_async_migrations())
-    except (Exception, KeyboardInterrupt):
-        # Handle errors or user interruption
-        raise
+    """Run migrations in 'online' mode."""
+    asyncio.run(run_async_migrations())
 
 
 if context.is_offline_mode():
