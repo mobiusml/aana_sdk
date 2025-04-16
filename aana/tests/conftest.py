@@ -279,7 +279,36 @@ def db_config(request):
     return request.getfixturevalue(request.param)
 
 
-@pytest.fixture(params=["db_sqlite_config", "db_postgres_config"])
+@pytest.fixture
+def api_service_db_sqlite_config():
+    """Create a SQLite database config."""
+    with tempfile.NamedTemporaryFile(dir=aana_settings.tmp_data_dir) as tmp:
+        db_config = DbSettings(
+            datastore_type=DbType.SQLITE, datastore_config=SQLiteConfig(path=tmp.name)
+        )
+        yield db_config
+
+
+@pytest.fixture
+def api_service_db_postgres_config(postgresql):
+    """Create a PostgreSQL database config."""
+    db_config = DbSettings(
+        datastore_type=DbType.POSTGRESQL,
+        datastore_config=PostgreSQLConfig(
+            host=postgresql.info.host,
+            port=str(postgresql.info.port),
+            user=postgresql.info.user,
+            password=postgresql.info.password,
+            database=postgresql.info.dbname,
+        ),
+    )
+
+    yield db_config
+
+
+@pytest.fixture(
+    params=["api_service_db_sqlite_config", "api_service_db_postgres_config"]
+)
 def api_service_db_config(request):
     """Fixture to provide both SQLite and PostgreSQL database configs for the API service."""
     return request.getfixturevalue(request.param)
@@ -311,7 +340,7 @@ async def db_session_manager_with_api_service(db_config, api_service_db_config):
 
     session_manager = DatabaseSessionManager(aana_settings)
 
-    async with session_manager.connect() as conn:
+    async with session_manager._api_service_engine.begin() as conn:
         await conn.run_sync(ApiServiceBase.metadata.drop_all)
         await conn.run_sync(ApiServiceBase.metadata.create_all)
 
