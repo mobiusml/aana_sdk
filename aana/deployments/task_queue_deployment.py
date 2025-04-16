@@ -7,8 +7,10 @@ from ray import serve
 
 from aana.configs.settings import settings as aana_settings
 from aana.deployments.base_deployment import BaseDeployment
+from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
+from aana.utils.asyncio import run_async
 from aana.utils.core import sleep_exponential_backoff
 
 
@@ -50,6 +52,16 @@ class TaskQueueDeployment(BaseDeployment):
 
     def __del__(self):
         """Clean up the deployment."""
+
+        async def _cancel_running_tasks():
+            """Cancel all running tasks and set their status to NOT_FINISHED."""
+            async with get_session() as session:
+                TaskRepository(session).update_status(
+                    task_id=task_id,
+                    status=TaskStatus.NOT_FINISHED,
+                    progress=0,
+                )
+
         # Cancel the loop task to prevent tasks from being reassigned
         self.loop_task.cancel()
         # Cancel all deployment responses to stop the tasks
@@ -58,12 +70,7 @@ class TaskQueueDeployment(BaseDeployment):
             deployment_response = self.deployment_responses.get(task_id)
             if deployment_response:
                 deployment_response.cancel()
-            # async with get_session() as session:
-            #     TaskRepository(session).update_status(
-            #         task_id=task_id,
-            #         status=TaskStatus.NOT_FINISHED,
-            #         progress=0,
-            #     )
+            run_async(_cancel_running_tasks())
 
     async def app_health_check(self) -> bool:
         """Check the health of the app.
