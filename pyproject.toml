@@ -18,7 +18,7 @@ classifiers=[
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "alembic>=1.12.1",
     "av==11.*",
@@ -42,7 +42,7 @@ dependencies = [
 
 [project.optional-dependencies]
 vllm = [
-    "vllm>=0.7.3",
+    "vllm>=0.8.4",
     "outlines[serve]>=0.1.11",
     "xgrammar>=0.1.8"
 ]
@@ -138,6 +138,10 @@ filterwarnings = [
 [tool.ruff]
 # Lint with `ruff check aana`, `ruff check --fix aana` 
 # Format with `ruff format aana`
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
 select = [
     "F", "B", "A", "DTZ", "TCH", "ICN", "SIM", "ASYNC",  # flake8+plugins
     "PERF", "S", "C90", "I",  # performance, security, complexity, imports
@@ -147,11 +151,9 @@ select = [
 ignore = ["D100", "D104", "D106", "A004", "A005"]  # require docstrings for modules and nested clases
 fixable = ["ALL"]
 unfixable = []
-target-version = "py310"
-line-length = 88
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.ruff.format]
 quote-style = "double"
-
-[tool.ruff.pydocstyle]
-convention = "google"  # Accepts: "google", "numpy", or "pep257".

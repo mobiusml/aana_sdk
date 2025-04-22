@@ -36,6 +36,8 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     from vllm.model_executor.utils import set_random_seed
     from vllm.sampling_params import (
         GuidedDecodingParams,
+    )
+    from vllm.sampling_params import (
         SamplingParams as VLLMSamplingParams,
     )
     from vllm.transformers_utils.tokenizer import MistralTokenizer
@@ -124,7 +126,7 @@ class VLLMDeployment(BaseDeployment):
             quantization=config_obj.quantization,
             enforce_eager=config_obj.enforce_eager,
             gpu_memory_utilization=self.gpu_memory_utilization,
-            max_model_len=config_obj.max_model_len,            
+            max_model_len=config_obj.max_model_len,
             **config_obj.engine_args,
         )
 
@@ -194,9 +196,11 @@ class VLLMDeployment(BaseDeployment):
             images = None
 
         content_format = resolve_chat_template_content_format(
-            self.tokenizer.chat_template,
-            "auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
-            self.tokenizer
+            chat_template=None,  # Use default chat template from tokenizer
+            given_format="auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
+            tokenizer=self.tokenizer,
+            tools=None,
+            trust_remote_code=self.model_config.trust_remote_code,
         )
         conversation, mm_data = parse_chat_messages(
             messages, self.model_config, self.tokenizer, content_format=content_format
@@ -206,15 +210,18 @@ class VLLMDeployment(BaseDeployment):
             prompt = apply_mistral_chat_template(
                 self.tokenizer,
                 messages=messages,
+                chat_template=None,
+                tools=None,
                 add_generation_prompt=True,
             )
         else:
             prompt = apply_hf_chat_template(
-                self.tokenizer,
+                tokenizer=self.tokenizer,
                 conversation=conversation,
-                chat_template=self.tokenizer.chat_template,
+                chat_template=None,
                 add_generation_prompt=True,
-                # tokenize=True
+                tools=None,
+                trust_remote_code=self.model_config.trust_remote_code,
             )
         return prompt, mm_data
 
