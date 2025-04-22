@@ -63,6 +63,7 @@ hqq = [
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0",
     "hqq>=0.2.3",
+    "gemlite>=0.4.4",
     "transformers>=4.47.0"
 ]
 

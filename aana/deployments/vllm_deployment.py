@@ -1,4 +1,5 @@
 import base64
+import os
 from collections.abc import AsyncGenerator
 from typing import Any
 
@@ -43,6 +44,11 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
 
+with LazyImport(
+    "Run 'pip install gemlite hqq' or 'pip install aana[gemlite]'"
+) as gemlite_imports:
+    from hqq.utils.vllm import VLLM_HQQ_BACKEND, set_vllm_hqq_backend
+
 
 class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
@@ -59,6 +65,7 @@ class VLLMConfig(BaseModel):
             from the model will be used. Some models may not have a chat template.
             Defaults to None.
         enforce_eager (bool): Whether to enforce eager execution. Defaults to False.
+        use_gemlite (bool): Whether to use gemlite. Defaults to False.
         engine_args (CustomConfig): Extra engine arguments. Defaults to {}.
     """
 
@@ -72,6 +79,7 @@ class VLLMConfig(BaseModel):
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
     enforce_eager: bool = Field(default=False)
+    use_gemlite: bool = Field(default=False)
     engine_args: CustomConfig = {}
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
@@ -109,6 +117,12 @@ class VLLMDeployment(BaseDeployment):
         """
         vllm_imports.check()
         config_obj = VLLMConfig(**config)
+
+        if config_obj.use_gemlite:
+            gemlite_imports.check()
+            os.environ["VLLM_USE_V1"] = "0"
+            set_vllm_hqq_backend(backend=VLLM_HQQ_BACKEND.GEMLITE)
+
         self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
         total_gpu_memory_mb = total_gpu_memory_bytes / 1024**2
