@@ -7,7 +7,7 @@ description = "Accelerate"
 optional = true
 python-versions = ">=3.9.0"
 groups = ["main"]
-markers = "extra == \"transformers\" or extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "accelerate-1.4.0-py3-none-any.whl", hash = "sha256:f6e1e7dfaf9d799a20a1dc45efbf4b1546163eac133faa5acd0d89177c896e55"},
     {file = "accelerate-1.4.0.tar.gz", hash = "sha256:37d413e1b64cb8681ccd2908ae211cf73e13e6e636a2f598a96eccaa538773a5"},
@@ -444,7 +444,7 @@ description = "A light weight framework to generate high performance CUDA/HIP co
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "bitblas-0.1.0.post1-py3-none-manylinux1_x86_64.whl", hash = "sha256:5beaf38899671dc35da63ff31b8d7bea4d98a2c929a102fe40d2f3004cec391b"},
 ]
@@ -481,7 +481,7 @@ description = "k-bit optimizers and matrix multiplication routines."
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"transformers\" or extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "bitsandbytes-0.45.2-py3-none-manylinux_2_24_x86_64.whl", hash = "sha256:ba3a720187f518b172ebce4081049c682ae3fd8284947e22499b256ff99a2bc3"},
     {file = "bitsandbytes-0.45.2-py3-none-win_amd64.whl", hash = "sha256:e1893170455422924156760bae9e210ae26e8bd2ce7b21065d24b47decbe6963"},
@@ -693,7 +693,7 @@ files = [
     {file = "cffi-1.17.1-cp39-cp39-win_amd64.whl", hash = "sha256:d016c76bdd850f3c626af19b0542c9677ba156e4ee4fccfdd7848803533ef662"},
     {file = "cffi-1.17.1.tar.gz", hash = "sha256:1c39c6016c32bc48dd54561950ebd6836e1670f2ae46128f67cf49e789c52824"},
 ]
-markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\") and (implementation_name == \"pypy\" or extra == \"asr\" or extra == \"all\" or extra == \"hqq\")", dev = "implementation_name == \"pypy\""}
+markers = {main = "(extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\" or extra == \"gemlite\") and (implementation_name == \"pypy\" or extra == \"asr\" or extra == \"all\" or extra == \"hqq\" or extra == \"gemlite\")", dev = "implementation_name == \"pypy\""}
 
 [package.dependencies]
 pycparser = "*"
@@ -838,7 +838,7 @@ description = "Pickler class to extend the standard pickle.Pickler functionality
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"vllm\" or extra == \"all\" or extra == \"hqq\""
+markers = "extra == \"vllm\" or extra == \"all\" or extra == \"hqq\" or extra == \"gemlite\""
 files = [
     {file = "cloudpickle-3.1.1-py3-none-any.whl", hash = "sha256:c8c5a44295039331ee9dad40ba100a9c7297b6f988e50e87ccdf3765a668350e"},
     {file = "cloudpickle-3.1.1.tar.gz", hash = "sha256:b216fa8ae4019d5482a8ac3c95d8f6346115d8835911fd4aefd1a445e4242c64"},
@@ -1031,7 +1031,7 @@ description = "Automated checker to ensure C++ files follow Google's style guide
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "cpplint-2.0.0-py3-none-any.whl", hash = "sha256:f418e1d76a14b44e0757b39faa8bd47543e352ced697afd35a598a0114aec69f"},
     {file = "cpplint-2.0.0.tar.gz", hash = "sha256:330daf6bf9a9006b9161af6693661df8f8373d54b2ea6527cd515a8e61d41abb"},
@@ -1132,7 +1132,7 @@ description = "The Cython compiler for writing C extensions in the Python langua
 optional = true
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "Cython-3.0.12-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ba67eee9413b66dd9fbacd33f0bc2e028a2a120991d77b5fd4b19d0b1e4039b9"},
     {file = "Cython-3.0.12-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bee2717e5b5f7d966d0c6e27d2efe3698c357aa4d61bb3201997c7a4f9fe485a"},
@@ -1247,7 +1247,7 @@ files = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
-markers = {main = "extra == \"hqq\" or extra == \"all\""}
+markers = {main = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""}
 
 [[package]]
 name = "decord"
@@ -1401,7 +1401,7 @@ description = "Docutils -- Python Documentation Utilities"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "docutils-0.21.2-py3-none-any.whl", hash = "sha256:dafca5b9e384f0e419294eb4d2ff9fa826435bf15f15b7bd45723e8ad76811b2"},
     {file = "docutils-0.21.2.tar.gz", hash = "sha256:3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f"},
@@ -1414,7 +1414,7 @@ description = "A small package of basic data structures and algorithms"
 optional = true
 python-versions = ">=3.7"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "dtlib-0.0.0.dev2-py3-none-any.whl", hash = "sha256:c95982fea15b7bcdcf7d53cd4a0183f6f88ce2176dda90e087320786c8f45fa1"},
     {file = "dtlib-0.0.0.dev2.tar.gz", hash = "sha256:185fe92d8dd872fce8a9c08c8f23cb2dbfb1f2f75e931f179a3cf8c12fa19171"},
@@ -1427,7 +1427,7 @@ description = "A new flavour of deep learning operations"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\""
+markers = "extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\" or extra == \"gemlite\""
 files = [
     {file = "einops-0.8.1-py3-none-any.whl", hash = "sha256:919387eb55330f5757c6bea9165c5ff5cfe63a642682ea788a6d472576d81737"},
     {file = "einops-0.8.1.tar.gz", hash = "sha256:de5d960a7a761225532e0f1959e5315ebeafc0cd43394732f103ca44b9837e84"},
@@ -1473,7 +1473,7 @@ description = "execnet: rapid multi-Python deployment"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "execnet-2.1.1-py3-none-any.whl", hash = "sha256:26dee51f1b80cebd6d0ca8e74dd8745419761d3bef34163928cbebbdc4749fdc"},
     {file = "execnet-2.1.1.tar.gz", hash = "sha256:5189b52c6121c24feae288166ab41b32549c7e2348652736540b9e6e7d4e72e3"},
@@ -1901,19 +1901,25 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "gemlite"
-version = "0.4.4"
+version = "0.4.5"
 description = ""
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"hqq\""
-files = [
-    {file = "gemlite-0.4.4.tar.gz", hash = "sha256:29e1b0bfd47d2bcd76a840966d710b8e2ec1fdae21d50181e20b9b6b9375605e"},
-]
+markers = "extra == \"gemlite\" or extra == \"all\""
+files = []
+develop = false
 
 [package.dependencies]
 numpy = "*"
+torch = ">=2.5.0"
 triton = ">=3.1.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/mobiusml/gemlite.git"
+reference = "HEAD"
+resolved_reference = "8826d6d2817a5d1abfb5d2992ca34fd4d1956025"
 
 [[package]]
 name = "gguf"
@@ -2313,15 +2319,14 @@ tests = ["pytest"]
 
 [[package]]
 name = "hqq"
-version = "0.2.3.post1"
+version = "0.2.5"
 description = "Half-Quadratic Quantization (HQQ)"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
-files = [
-    {file = "hqq-0.2.3.post1.tar.gz", hash = "sha256:c85b9eb6124b5e2aaac65a6f17bcb202c7c5be0d71237c206ed724905cc3a04f"},
-]
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
+files = []
+develop = false
 
 [package.dependencies]
 accelerate = "*"
@@ -2331,6 +2336,12 @@ numpy = ">=1.24.4"
 termcolor = "*"
 tqdm = ">=4.64.1"
 transformers = ">=4.36.1"
+
+[package.source]
+type = "git"
+url = "https://github.com/mobiusml/hqq.git"
+reference = "HEAD"
+resolved_reference = "1c47dfc2e58bac717087cd215cf45d1d1afd3eea"
 
 [[package]]
 name = "httpcore"
@@ -2446,7 +2457,7 @@ files = [
     {file = "huggingface_hub-0.30.2-py3-none-any.whl", hash = "sha256:68ff05969927058cfa41df4f2155d4bb48f5f54f719dd0390103eefa9b191e28"},
     {file = "huggingface_hub-0.30.2.tar.gz", hash = "sha256:9a7897c5b6fd9dad3168a794a8998d6378210f5b9688d0dfc180b1a228dc2466"},
 ]
-markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"asr\""}
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\" or extra == \"asr\""}
 
 [package.dependencies]
 filelock = "*"
@@ -2553,7 +2564,7 @@ files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
 ]
-markers = {main = "extra == \"hqq\" or extra == \"all\""}
+markers = {main = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""}
 
 [[package]]
 name = "interegular"
@@ -3605,7 +3616,7 @@ description = ""
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "ml_dtypes-0.5.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:bd73f51957949069573ff783563486339a9285d72e2f36c18e0c1aa9ca7eb190"},
     {file = "ml_dtypes-0.5.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:810512e2eccdfc3b41eefa3a27402371a3411453a1efc7e9c000318196140fed"},
@@ -5185,7 +5196,7 @@ files = [
     {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
     {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
 ]
-markers = {main = "extra == \"hqq\" or extra == \"all\""}
+markers = {main = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""}
 
 [package.extras]
 dev = ["pre-commit", "tox"]
@@ -5475,7 +5486,7 @@ files = [
     {file = "psutil-7.0.0-cp37-abi3-win_amd64.whl", hash = "sha256:4cf3d4eb1aa9b348dec30105c55cd9b7d4629285735a102beb4441e38db90553"},
     {file = "psutil-7.0.0.tar.gz", hash = "sha256:7be9c3eba38beccb6495ea33afd982a44074b78f28c434a1f51cc07fd315c456"},
 ]
-markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\"", tests = "sys_platform != \"cygwin\""}
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\"", tests = "sys_platform != \"cygwin\""}
 
 [package.extras]
 dev = ["abi3audit", "black (==24.10.0)", "check-manifest", "coverage", "packaging", "pylint", "pyperf", "pypinfo", "pytest", "pytest-cov", "pytest-xdist", "requests", "rstcheck", "ruff", "setuptools", "sphinx", "sphinx_rtd_theme", "toml-sort", "twine", "virtualenv", "vulture", "wheel"]
@@ -5831,7 +5842,7 @@ files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
 ]
-markers = {main = "(implementation_name == \"pypy\" or extra == \"asr\" or extra == \"all\" or extra == \"hqq\") and (extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\")", dev = "implementation_name == \"pypy\""}
+markers = {main = "(implementation_name == \"pypy\" or extra == \"asr\" or extra == \"all\" or extra == \"hqq\" or extra == \"gemlite\") and (extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\" or extra == \"gemlite\")", dev = "implementation_name == \"pypy\""}
 
 [[package]]
 name = "pydantic"
@@ -6064,7 +6075,7 @@ files = [
     {file = "pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6"},
     {file = "pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761"},
 ]
-markers = {main = "extra == \"hqq\" or extra == \"all\""}
+markers = {main = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""}
 
 [package.dependencies]
 colorama = {version = "*", markers = "sys_platform == \"win32\""}
@@ -6205,7 +6216,7 @@ description = "pytest xdist plugin for distributed testing, most importantly acr
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "pytest_xdist-3.6.1-py3-none-any.whl", hash = "sha256:9ed4adfb68a016610848639bb7e02c9352d5d9f03d04809919e2dafc3be4cca7"},
     {file = "pytest_xdist-3.6.1.tar.gz", hash = "sha256:ead156a4db231eec769737f57668ef58a2084a34b2e55c4a8fa20d861107300d"},
@@ -6953,7 +6964,7 @@ files = [
     {file = "regex-2024.11.6-cp39-cp39-win_amd64.whl", hash = "sha256:b2837718570f95dd41675328e111345f9b7095d821bac435aac173ac80b19983"},
     {file = "regex-2024.11.6.tar.gz", hash = "sha256:7ab159b063c52a0333c884e4679f8d7a85112ee3078fe3d9004b2dd875585519"},
 ]
-markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\""}
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\""}
 
 [[package]]
 name = "requests"
@@ -7272,7 +7283,7 @@ files = [
     {file = "safetensors-0.5.2-cp38-abi3-win_amd64.whl", hash = "sha256:78abdddd03a406646107f973c7843276e7b64e5e32623529dc17f3d94a20f589"},
     {file = "safetensors-0.5.2.tar.gz", hash = "sha256:cb4a8d98ba12fa016f4241932b1fc5e702e5143f5374bba0bbcf7ddc1c4cf2b8"},
 ]
-markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\""}
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\""}
 
 [package.extras]
 all = ["safetensors[jax]", "safetensors[numpy]", "safetensors[paddlepaddle]", "safetensors[pinned-tf]", "safetensors[quality]", "safetensors[testing]", "safetensors[torch]"]
@@ -7398,7 +7409,7 @@ files = [
     {file = "scipy-1.15.2-cp313-cp313t-win_amd64.whl", hash = "sha256:fe8a9eb875d430d81755472c5ba75e84acc980e4a8f6204d402849234d3017db"},
     {file = "scipy-1.15.2.tar.gz", hash = "sha256:cd58a314d92838f7e6f755c8a2167ead4f27e1fd5c1251fd54289569ef3495ec"},
 ]
-markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\""}
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"asr\" or extra == \"hqq\" or extra == \"gemlite\""}
 
 [package.dependencies]
 numpy = ">=1.23.5,<2.5"
@@ -7848,7 +7859,7 @@ description = "Pretty-print tabular data"
 optional = true
 python-versions = ">=3.7"
 groups = ["main"]
-markers = "extra == \"asr\" or extra == \"all\" or extra == \"hqq\""
+markers = "extra == \"asr\" or extra == \"all\" or extra == \"hqq\" or extra == \"gemlite\""
 files = [
     {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
     {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
@@ -7898,7 +7909,7 @@ description = "ANSI color formatting for output in terminal"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "termcolor-2.5.0-py3-none-any.whl", hash = "sha256:37b17b5fc1e604945c2642c872a3764b5d547a48009871aea3edd3afa180afb8"},
     {file = "termcolor-2.5.0.tar.gz", hash = "sha256:998d8d27da6d48442e8e1f016119076b690d962507531df4890fcd2db2ef8a6f"},
@@ -7914,7 +7925,7 @@ description = "Fuzzy string matching in python"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"hqq\" or extra == \"all\""
+markers = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""
 files = [
     {file = "thefuzz-0.22.1-py3-none-any.whl", hash = "sha256:59729b33556850b90e1093c4cf9e618af6f2e4c985df193fdf3c5b5cf02ca481"},
     {file = "thefuzz-0.22.1.tar.gz", hash = "sha256:7138039a7ecf540da323792d8592ef9902b1d79eb78c147d4f20664de79f3680"},
@@ -8009,7 +8020,7 @@ files = [
     {file = "tokenizers-0.21.0-cp39-abi3-win_amd64.whl", hash = "sha256:87841da5a25a3a5f70c102de371db120f41873b854ba65e52bccd57df5a3780c"},
     {file = "tokenizers-0.21.0.tar.gz", hash = "sha256:ee0894bf311b75b0c03079f33859ae4b2334d675d4e93f5a4132e1eae2834fe4"},
 ]
-markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"asr\""}
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\" or extra == \"asr\""}
 
 [package.dependencies]
 huggingface-hub = ">=0.16.4,<1.0"
@@ -8289,7 +8300,7 @@ files = [
     {file = "tornado-6.4.2-cp38-abi3-win_amd64.whl", hash = "sha256:908b71bf3ff37d81073356a5fadcc660eb10c1476ee6e2725588626ce7e5ca38"},
     {file = "tornado-6.4.2.tar.gz", hash = "sha256:92bad5b4746e9879fd7bf1eb21dce4e3fc5128d71601f80005afa39237ad620b"},
 ]
-markers = {main = "extra == \"hqq\" or extra == \"all\""}
+markers = {main = "extra == \"hqq\" or extra == \"gemlite\" or extra == \"all\""}
 
 [[package]]
 name = "tqdm"
@@ -8340,7 +8351,7 @@ files = [
     {file = "transformers-4.51.3-py3-none-any.whl", hash = "sha256:fd3279633ceb2b777013234bbf0b4f5c2d23c4626b05497691f00cfda55e8a83"},
     {file = "transformers-4.51.3.tar.gz", hash = "sha256:e292fcab3990c6defe6328f0f7d2004283ca81a7a07b2de9a46d67fd81ea1409"},
 ]
-markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\""}
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\""}
 
 [package.dependencies]
 filelock = "*"
@@ -8419,7 +8430,7 @@ files = [
     {file = "triton-3.2.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e5dfa23ba84541d7c0a531dfce76d8bcd19159d50a4a8b14ad01e91734a5c1b0"},
     {file = "triton-3.2.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:30ceed0eff2c4a73b14eb63e052992f44bbdf175f3fad21e1ac8097a772de7ee"},
 ]
-markers = {main = "(platform_machine == \"x86_64\" or extra == \"hqq\") and (platform_system == \"Linux\" or extra == \"hqq\")", tests = "platform_machine == \"x86_64\" and platform_system == \"Linux\""}
+markers = {main = "(platform_machine == \"x86_64\" or extra == \"gemlite\" or extra == \"all\") and (platform_system == \"Linux\" or extra == \"gemlite\" or extra == \"all\")", tests = "platform_machine == \"x86_64\" and platform_system == \"Linux\""}
 
 [package.extras]
 build = ["cmake (>=3.20)", "lit"]
@@ -9223,14 +9234,15 @@ test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.funct
 type = ["pytest-mypy"]
 
 [extras]
-all = ["accelerate", "bitblas", "bitsandbytes", "faster-whisper", "hqq", "outlines", "pyannote-audio", "transformers", "vllm"]
+all = ["accelerate", "bitblas", "bitsandbytes", "faster-whisper", "gemlite", "hqq", "outlines", "pyannote-audio", "transformers", "vllm"]
 api-service = ["lago-python-client", "tenacity"]
 asr = ["faster-whisper", "pyannote-audio"]
-hqq = ["accelerate", "bitblas", "bitsandbytes", "gemlite", "hqq", "transformers"]
+gemlite = ["accelerate", "bitblas", "bitsandbytes", "gemlite", "hqq", "transformers"]
+hqq = ["accelerate", "bitblas", "bitsandbytes", "hqq", "transformers"]
 transformers = ["accelerate", "bitsandbytes", "transformers"]
 vllm = ["outlines", "vllm", "xgrammar"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "a3744e7250cadbe8c7b4333cd784fed161f1d19090f887d9bb7b92a497fa6adc"
+content-hash = "05dc64d97156b081baf64ecb28a6af4c4c542f7aed580bedfec45323367d44fd"

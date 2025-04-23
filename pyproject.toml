@@ -42,7 +42,7 @@ dependencies = [
 
 [project.optional-dependencies]
 vllm = [
-    "vllm>=0.8.4",
+    "vllm>=0.8.0",
     "outlines[serve]>=0.1.11",
     "xgrammar>=0.1.8"
 ]
@@ -62,8 +62,16 @@ hqq = [
     "accelerate>=0.34.2",
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0",
-    "hqq>=0.2.3",
-    "gemlite>=0.4.4",
+    "hqq @ git+https://github.com/mobiusml/hqq.git",
+    "transformers>=4.47.0"
+]
+
+gemlite = [
+    "accelerate>=0.34.2",
+    "bitblas>=0.0.1.dev15",
+    "bitsandbytes>=0.42.0",
+    "hqq @ git+https://github.com/mobiusml/hqq.git",
+    "gemlite @ git+https://github.com/mobiusml/gemlite.git",
     "transformers>=4.47.0"
 ]
 
@@ -77,11 +85,12 @@ all = [
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0", 
     "faster-whisper (>=1.1.1,<2.0.0)",
-    "hqq>=0.2.2",
+    "hqq @ git+https://github.com/mobiusml/hqq.git",
+    "gemlite @ git+https://github.com/mobiusml/gemlite.git",
     "outlines[serve]>=0.0.46",
     "pyannote-audio>=3.1.1",
     "transformers>=4.49.0",
-    "vllm>=0.7.3"
+    "vllm>=0.8.0"
 ]
 
 [tool.poetry.group.dev]
