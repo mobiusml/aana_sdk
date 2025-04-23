@@ -47,6 +47,7 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
 with LazyImport(
     "Run 'pip install gemlite hqq' or 'pip install aana[gemlite]'"
 ) as gemlite_imports:
+    import gemlite
     from hqq.utils.vllm import VLLM_HQQ_BACKEND, set_vllm_hqq_backend
 
 
@@ -66,6 +67,7 @@ class VLLMConfig(BaseModel):
             Defaults to None.
         enforce_eager (bool): Whether to enforce eager execution. Defaults to False.
         use_gemlite (bool): Whether to use gemlite. Defaults to False.
+        gemlite_config (str | None): The path to the gemlite config file. Defaults to None.
         engine_args (CustomConfig): Extra engine arguments. Defaults to {}.
     """
 
@@ -80,6 +82,7 @@ class VLLMConfig(BaseModel):
     chat_template: str | None = Field(default=None)
     enforce_eager: bool = Field(default=False)
     use_gemlite: bool = Field(default=False)
+    gemlite_config: str | None = Field(default=None)
     engine_args: CustomConfig = {}
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
@@ -120,6 +123,8 @@ class VLLMDeployment(BaseDeployment):
 
         if config_obj.use_gemlite:
             gemlite_imports.check()
+            if config_obj.gemlite_config is not None:
+                gemlite.load_config(config_obj.gemlite_config)
             os.environ["VLLM_USE_V1"] = "0"
             set_vllm_hqq_backend(backend=VLLM_HQQ_BACKEND.GEMLITE)
 
@@ -270,14 +275,13 @@ class VLLMDeployment(BaseDeployment):
 
         json_schema = sampling_params.json_schema
         regex_string = sampling_params.regex_string
-        backend = sampling_params.kwargs.get("backend", "xgrammar")
         if json_schema is not None:
             guided_decoding_params = GuidedDecodingParams(
-                json=json_schema, backend=backend
+                json=json_schema, backend=sampling_params.guided_decoding_backend
             )
         elif regex_string is not None:
             guided_decoding_params = GuidedDecodingParams(
-                regex=regex_string, backend=backend
+                regex=regex_string, backend=sampling_params.guided_decoding_backend
             )
         else:
             guided_decoding_params = None
@@ -295,7 +299,12 @@ class VLLMDeployment(BaseDeployment):
             sampling_params_vllm = VLLMSamplingParams(
                 **sampling_params.model_dump(
                     exclude_unset=True,
-                    exclude=["kwargs", "json_schema", "regex_string"],
+                    exclude=[
+                        "kwargs",
+                        "json_schema",
+                        "regex_string",
+                        "guided_decoding_backend",
+                    ],
                 ),
                 **sampling_params.kwargs,
                 guided_decoding=guided_decoding_params,
