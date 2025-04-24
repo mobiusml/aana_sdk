@@ -44,12 +44,6 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
 
-with LazyImport(
-    "Run 'pip install gemlite hqq' or 'pip install aana[gemlite]'"
-) as gemlite_imports:
-    import gemlite
-    from hqq.utils.vllm import VLLM_HQQ_BACKEND, set_vllm_hqq_backend
-
 
 class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
@@ -122,6 +116,13 @@ class VLLMDeployment(BaseDeployment):
         config_obj = VLLMConfig(**config)
 
         if config_obj.use_gemlite:
+            with LazyImport(
+                "Run 'pip install gemlite hqq' or 'pip install aana[gemlite]'"
+            ) as gemlite_imports:
+                print("Gemlite imports")
+                import gemlite
+                from hqq.utils.vllm import VLLM_HQQ_BACKEND, set_vllm_hqq_backend
+
             gemlite_imports.check()
             if config_obj.gemlite_config is not None:
                 gemlite.load_config(config_obj.gemlite_config)
