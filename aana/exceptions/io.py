@@ -104,14 +104,28 @@ class VideoException(BaseException):
         return (self.__class__, (self.video,))
 
 
-class VideoReadingException(VideoException):
+class VideoReadingException(BaseException):
     """Exception raised when there is an error reading a video.
 
     Attributes:
         video (Video): the video that caused the exception
+        message (str): the error message (optional)
     """
 
-    pass
+    def __init__(self, video: "Video", message: str = ""):
+        """Initialize the exception.
+
+        Args:
+            video (Video): the video that caused the exception
+            message (str): the error message (optional)
+        """
+        super().__init__(video=video, message=message)
+        self.video = video
+        self.message = message
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.video, self.message))
 
 
 class VideoTooLongException(BaseException):

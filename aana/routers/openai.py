@@ -87,7 +87,10 @@ async def chat_completions(request: ChatCompletionRequest):
     if request.stream:
         return StreamingResponse(
             _async_chat_completions(handle, dialog, sampling_params),
-            media_type="application/x-ndjson",
+            media_type="application/json-seq",
+            headers={
+                "X-Accel-Buffering": "no",
+            },
         )
     else:
         response = await handle.chat(dialog=dialog, sampling_params=sampling_params)
