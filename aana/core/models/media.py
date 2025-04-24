@@ -2,43 +2,21 @@ import hashlib
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated
 
-from pydantic import Field, ValidationInfo, ValidatorFunctionWrapHandler
-from pydantic.functional_validators import WrapValidator
+from pydantic import Field
 
 from aana.utils.download import download_file
 
-
-def verify_media_id_must_not_be_empty(
-    v: Any, handler: ValidatorFunctionWrapHandler, info: ValidationInfo
-) -> str:
-    """Validates that the media_id is not an empty string."""
-    assert v != "", "media_id cannot be an empty string"  # noqa: S101
-    return v
-
-
-def verify_media_id_length(
-    v: Any, handler: ValidatorFunctionWrapHandler, info: ValidationInfo
-) -> str:
-    """Validates that the media_id is maximum 36 characters long."""
-    assert len(v) <= 36, "media_id must be at most 36 characters long"  # noqa: S101
-    return v
-
-
-def verify_media_id(
-    v: Any, handler: ValidatorFunctionWrapHandler, info: ValidationInfo
-) -> str:
-    """Validates the media_id."""
-    v = verify_media_id_must_not_be_empty(v, handler, info)
-    v = verify_media_id_length(v, handler, info)
-    return v
-
-
 MediaId = Annotated[
     str,
-    Field(description="The media ID.", max_length=36),
-    WrapValidator(verify_media_id),
+    Field(
+        description="The media ID.",
+        max_length=36,
+        min_length=1,
+        pattern=r"^[A-Za-z0-9_-]+$",
+        example="123e4567-e89b-12d3-a456-426614174000",
+    ),
 ]
 """
 The media ID (str, max length 36 characters).

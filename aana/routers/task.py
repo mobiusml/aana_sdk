@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from aana.api.security import UserIdDependency
 from aana.configs.settings import settings as aana_settings
-from aana.core.models.task import TaskInfo
+from aana.core.models.task import TaskId, TaskInfo
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import GetDbDependency
@@ -16,6 +16,12 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["tasks"], include_in_schema=aana_settings.task_queue.enabled)
 
 # Response models
+
+
+class TaskResponse(BaseModel):
+    """Response for a task."""
+
+    task_id: TaskId
 
 
 class TaskList(BaseModel):
@@ -37,6 +43,13 @@ class TaskCount(BaseModel):
     total: int = Field(..., description="The total number of tasks.")
 # fmt: on
 
+
+class ErrorResponse(BaseModel):
+    """Error response."""
+
+    detail: str
+
+
 # Endpoints
 
 
@@ -57,9 +70,15 @@ async def count_tasks(db: GetDbDependency, user_id: UserIdDependency) -> TaskCou
     "/tasks/{task_id}",
     summary="Get Task Status",
     description="Get the task status by task ID.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        }
+    },
 )
 async def get_task(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Get the task with the given ID."""
     task_repo = TaskRepository(db)
@@ -99,9 +118,19 @@ async def list_tasks(
     "/tasks/{task_id}",
     summary="Delete Task",
     description="Delete the task by task ID.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        },
+        400: {
+            "model": ErrorResponse,
+            "description": "Cannot delete a running or assigned task",
+        },
+    },
 )
 async def delete_task(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Delete the task with the given ID."""
     task_repo = TaskRepository(db)
@@ -129,9 +158,19 @@ async def delete_task(
     "/tasks/{task_id}/retry",
     summary="Retry Failed Task",
     description="Retry a failed task by resetting its status to CREATED.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        },
+        400: {
+            "model": ErrorResponse,
+            "description": "Only failed tasks can be retried",
+        },
+    },
 )
 async def retry_task(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Retry a failed task by resetting its status."""
     task_repo = TaskRepository(db)
@@ -159,9 +198,15 @@ async def retry_task(
     summary="Get Task Status (Legacy)",
     description="Get the task status by task ID (Legacy endpoint).",
     deprecated=True,
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        }
+    },
 )
 async def get_task_legacy(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
 ) -> TaskInfo:
     """Get the task with the given ID (Legacy endpoint)."""
     task_repo = TaskRepository(db)
@@ -171,29 +216,25 @@ async def get_task_legacy(
     return TaskInfo.from_entity(task)
 
 
-class TaskId(BaseModel):
-    """Task ID (Legacy).
-
-    Attributes:
-        id (str): The task ID.
-    """
-
-    task_id: str = Field(..., description="The task ID.")
-
-
 @router.get(
     "/tasks/delete/{task_id}",
     summary="Delete Task (Legacy)",
     description="Delete the task by task ID (Legacy endpoint).",
     deprecated=True,
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Task not found or does not belong to the user",
+        }
+    },
 )
 async def delete_task_legacy(
-    task_id: str, db: GetDbDependency, user_id: UserIdDependency
-) -> TaskId:
+    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
+) -> TaskResponse:
     """Delete the task with the given ID (Legacy endpoint)."""
     task_repo = TaskRepository(db)
     task = task_repo.read(task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
     task = task_repo.delete(task_id)
-    return TaskId(task_id=str(task.id))
+    return TaskResponse(task_id=str(task.id))

@@ -6,12 +6,14 @@ from fastapi import APIRouter
 from fastapi.openapi.utils import get_openapi
 from ray import serve
 
-from aana.api.api_generation import Endpoint, add_custom_schemas_to_openapi_schema
+# from scalar_fastapi import get_scalar_api_reference
+from aana.api.api_generation import Endpoint
 from aana.api.app import app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
 from aana.api.security import AdminAccessDependency
+from aana.configs.settings import settings
 from aana.core.models.api import DeploymentStatus, SDKStatus, SDKStatusResponse
 from aana.routers.openai import router as openai_router
 from aana.routers.task import router as task_router
@@ -23,6 +25,11 @@ from aana.routers.webhook import router as webhook_router
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
+from aana.utils.openapi import (
+    add_code_samples_to_endpoints,
+    add_custom_schemas_to_openapi_schema,
+    rewrite_anyof,
+)
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -38,6 +45,7 @@ class RequestHandler:
         endpoints: list[Endpoint],
         deployments: list[str],
         routers: list[APIRouter] | None = None,
+        openapi_params: dict[str, Any] | None = None,
     ):
         """Constructor.
 
@@ -46,10 +54,12 @@ class RequestHandler:
             endpoints (dict): List of endpoints for the request.
             deployments (list[str]): List of deployment names for the app.
             routers (list[APIRouter]): List of FastAPI routers to include in the app.
+            openapi_params (dict[str, Any]): Parameters for the OpenAPI schema.
         """
         self.app_name = app_name
         self.endpoints = endpoints
         self.deployments = deployments
+        self.openapi_params = openapi_params
 
         # Include the default routers
         app.include_router(webhook_router)  # For webhook management
@@ -78,11 +88,32 @@ class RequestHandler:
         """Returns OpenAPI schema, generating it if necessary."""
         if app.openapi_schema:
             return app.openapi_schema
-        # TODO: populate title and version from package info
-        openapi_schema = get_openapi(title="Aana", version="0.1.0", routes=app.routes)
+
+        if self.openapi_params is None:
+            self.openapi_params = {}
+        if "title" not in self.openapi_params:
+            self.openapi_params["title"] = self.app_name
+        if "version" not in self.openapi_params:
+            self.openapi_params["version"] = "0.1.0"
+        openapi_schema = get_openapi(routes=app.routes, **self.openapi_params)
+
+        # Add the security scheme for x-api-key
+        openapi_schema["components"]["securitySchemes"] = {
+            "ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "x-api-key"}
+        }
+        openapi_schema["security"] = [{"ApiKeyAuth": []}]
+
+        # Add custom schemas to the openapi schema
         openapi_schema = add_custom_schemas_to_openapi_schema(
             openapi_schema=openapi_schema, custom_schemas=self.custom_schemas
         )
+
+        # Add code samples to endpoints
+        openapi_schema = add_code_samples_to_endpoints(openapi_schema)
+
+        # Rewrite anyOf patterns to include 'nullable': True
+        rewrite_anyof(openapi_schema)
+
         app.openapi_schema = openapi_schema
         return app.openapi_schema
 
@@ -139,7 +170,7 @@ class RequestHandler:
         finally:
             self.running_tasks.remove(task_id)
 
-    @app.get("/api/ready", tags=["system"])
+    @app.get("/api/ready", tags=["system"], include_in_schema=False)
     async def is_ready(self):
         """The endpoint for checking if the application is ready.
 
@@ -160,7 +191,12 @@ class RequestHandler:
             task_repo = TaskRepository(session)
             task_repo.heartbeat(self.running_tasks)
 
-    @app.get("/api/status", response_model=SDKStatusResponse, tags=["system"])
+    @app.get(
+        "/api/status",
+        response_model=SDKStatusResponse,
+        tags=["system"],
+        include_in_schema=not settings.api_service.enabled,
+    )
     async def status(self, is_admin: AdminAccessDependency) -> SDKStatusResponse:
         """The endpoint for checking the status of the application."""
         app_names = [
