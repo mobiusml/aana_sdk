@@ -56,7 +56,7 @@ class TaskQueueDeployment(BaseDeployment):
         async def _cancel_running_tasks():
             """Cancel all running tasks and set their status to NOT_FINISHED."""
             async with get_session() as session:
-                TaskRepository(session).update_status(
+                await TaskRepository(session).update_status(
                     task_id=task_id,
                     status=TaskStatus.NOT_FINISHED,
                     progress=0,

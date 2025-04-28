@@ -33,6 +33,8 @@ async def test_save_webhook(db_session_manager, webhook_entities):
             assert saved_webhook.user_id == webhook.user_id
             assert saved_webhook.url == webhook.url
             assert saved_webhook.events == webhook.events
+            assert saved_webhook.created_at is not None
+            assert saved_webhook.updated_at is not None
 
             retrieved_webhook = await webhook_repo.read(saved_webhook.id)
             assert retrieved_webhook.id == saved_webhook.id
