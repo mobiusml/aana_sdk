@@ -38,7 +38,8 @@ class BaseRepository(Generic[T]):
         try:
             if isinstance(id, str):
                 return UUID(id)
-            return id
+            else:
+                return id
         except ValueError:
             return None
 
