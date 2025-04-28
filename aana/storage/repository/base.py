@@ -26,6 +26,22 @@ class BaseRepository(Generic[T]):
         self.table_name = model_class.__tablename__
         self.model_class = model_class
 
+    def _convert_to_uuid(self, id: str | UUID) -> UUID | None:
+        """Convert string id to UUID if needed.
+
+        Args:
+            id (str | UUID): The ID to convert
+
+        Returns:
+            UUID | None: The converted UUID, or None if conversion fails
+        """
+        try:
+            if isinstance(id, str):
+                return UUID(id)
+            return id
+        except ValueError:
+            return None
+
     async def create(self, entity: T) -> T:
         """Inserts a single new entity."""
         self.session.add(entity)

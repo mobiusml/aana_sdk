@@ -32,10 +32,8 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        try:
-            if isinstance(task_id, str):
-                task_id = UUID(task_id)
-        except ValueError:
+        task_id = self._convert_to_uuid(task_id)
+        if task_id is None:
             return None
         return await super().read(task_id, check=check)
 
@@ -54,10 +52,8 @@ class TaskRepository(BaseRepository[TaskEntity]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        try:
-            if isinstance(task_id, str):
-                task_id = UUID(task_id)
-        except ValueError:
+        task_id = self._convert_to_uuid(task_id)
+        if task_id is None:
             return None
         return await super().delete(task_id, check)
 
