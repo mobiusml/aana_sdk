@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from aana.core.models.captions import Caption, CaptionsList
 from aana.storage.models.caption import CaptionEntity
@@ -12,11 +12,13 @@ T = TypeVar("T", bound=CaptionEntity)
 class CaptionRepository(BaseRepository[T]):
     """Repository for Captions."""
 
-    def __init__(self, session: Session, model_class: type[T] = CaptionEntity):
+    def __init__(self, session: AsyncSession, model_class: type[T] = CaptionEntity):
         """Constructor."""
         super().__init__(session, model_class)
 
-    def save(self, model_name: str, caption: Caption, timestamp: float, frame_id: int):
+    async def save(
+        self, model_name: str, caption: Caption, timestamp: float, frame_id: int
+    ):
         """Save a caption.
 
         Args:
@@ -31,10 +33,10 @@ class CaptionRepository(BaseRepository[T]):
             timestamp=timestamp,
             caption=caption,
         )
-        self.create(entity)
+        await self.create(entity)
         return entity
 
-    def save_all(
+    async def save_all(
         self,
         model_name: str,
         captions: CaptionsList,
@@ -63,5 +65,5 @@ class CaptionRepository(BaseRepository[T]):
                 captions, timestamps, frame_ids, strict=True
             )
         ]
-        results = self.create_multiple(entities)
+        results = await self.create_multiple(entities)
         return results

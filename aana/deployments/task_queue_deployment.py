@@ -10,6 +10,7 @@ from aana.deployments.base_deployment import BaseDeployment
 from aana.storage.models.task import Status as TaskStatus
 from aana.storage.repository.task import TaskRepository
 from aana.storage.session import get_session
+from aana.utils.asyncio import run_async
 from aana.utils.core import sleep_exponential_backoff
 
 
@@ -51,6 +52,16 @@ class TaskQueueDeployment(BaseDeployment):
 
     def __del__(self):
         """Clean up the deployment."""
+
+        async def _cancel_running_tasks():
+            """Cancel all running tasks and set their status to NOT_FINISHED."""
+            async with get_session() as session:
+                await TaskRepository(session).update_status(
+                    task_id=task_id,
+                    status=TaskStatus.NOT_FINISHED,
+                    progress=0,
+                )
+
         # Cancel the loop task to prevent tasks from being reassigned
         self.loop_task.cancel()
         # Cancel all deployment responses to stop the tasks
@@ -59,12 +70,7 @@ class TaskQueueDeployment(BaseDeployment):
             deployment_response = self.deployment_responses.get(task_id)
             if deployment_response:
                 deployment_response.cancel()
-            with get_session() as session:
-                TaskRepository(session).update_status(
-                    task_id=task_id,
-                    status=TaskStatus.NOT_FINISHED,
-                    progress=0,
-                )
+            run_async(_cancel_running_tasks())
 
     async def app_health_check(self) -> bool:
         """Check the health of the app.
@@ -131,14 +137,15 @@ class TaskQueueDeployment(BaseDeployment):
             else:
                 configuration_attempts = 0
 
-            with get_session() as session:
+            async with get_session() as session:
+                task_repo = TaskRepository(session)
                 # Remove completed tasks from the list of running tasks
-                self.running_task_ids = TaskRepository(session).filter_incomplete_tasks(
+                self.running_task_ids = await task_repo.filter_incomplete_tasks(
                     self.running_task_ids
                 )
 
                 # Check for expired tasks
-                expired_tasks = TaskRepository(session).update_expired_tasks(
+                expired_tasks = await task_repo.update_expired_tasks(
                     execution_timeout=aana_settings.task_queue.execution_timeout,
                     heartbeat_timeout=aana_settings.task_queue.heartbeat_timeout,
                     max_retries=aana_settings.task_queue.max_retries,
@@ -167,11 +174,11 @@ class TaskQueueDeployment(BaseDeployment):
                     continue
 
             # Get new tasks from the database
-            with get_session() as session:
+            async with get_session() as session:
                 num_tasks_to_assign = aana_settings.task_queue.num_workers - len(
                     self.running_task_ids
                 )
-                tasks = TaskRepository(session).fetch_unprocessed_tasks(
+                tasks = await TaskRepository(session).fetch_unprocessed_tasks(
                     limit=num_tasks_to_assign,
                     max_retries=aana_settings.task_queue.max_retries,
                     retryable_exceptions=self.retryable_exceptions,

@@ -327,8 +327,8 @@ class Endpoint:
                 if not aana_settings.task_queue.enabled:
                     raise RuntimeError("Task queue is not enabled.")  # noqa: TRY003
 
-                with get_session() as session:
-                    task = TaskRepository(session).save(
+                async with get_session() as session:
+                    task = await TaskRepository(session).save(
                         endpoint=bound_path,
                         data=data_dict,
                         user_id=api_key_info.user_id if api_key_info else None,

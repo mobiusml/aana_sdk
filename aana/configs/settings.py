@@ -4,9 +4,8 @@ from pathlib import Path
 from pydantic import BaseModel, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from aana.configs.db import DbSettings, SQLiteConfig
+from aana.configs.db import DbSettings, DbType, SQLiteConfig
 from aana.core.models.base import pydantic_protected_fields
-from aana.storage.op import DbType
 
 
 class TestSettings(BaseModel):
