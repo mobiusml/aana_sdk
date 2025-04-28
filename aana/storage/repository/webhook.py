@@ -30,10 +30,8 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         Raises:
             NotFoundException if the entity is not found and `check` is True.
         """
-        try:
-            if isinstance(item_id, str):
-                item_id = UUID(item_id)
-        except ValueError:
+        item_id = self._convert_to_uuid(item_id)
+        if item_id is None:
             return None
         return await super().read(item_id, check)
 
@@ -52,10 +50,8 @@ class WebhookRepository(BaseRepository[WebhookEntity]):
         Raises:
             NotFoundException: The id does not correspond to a record in the database.
         """
-        try:
-            if isinstance(item_id, str):
-                item_id = UUID(item_id)
-        except ValueError:
+        item_id = self._convert_to_uuid(item_id)
+        if item_id is None:
             return None
         return await super().delete(item_id, check)
 
