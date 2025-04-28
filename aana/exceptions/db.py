@@ -7,6 +7,21 @@ __all__ = [
 ]
 
 
+class DatabaseException(BaseException):
+    def __init__(self, message: str):
+        """Constructor.
+
+        Args:
+            message: (str): the error message.
+        """
+        super().__init__(message=message)
+        self.message = message
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.message,))
+
+
 class NotFoundException(BaseException):
     """Raised when an item searched by id is not found."""
 
