@@ -1,14 +1,69 @@
 import traceback
 
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 from ray.exceptions import RayTaskError
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.core import BaseException
+
+
+def get_app_middleware(
+    app: FastAPI, middleware_class: type
+) -> BaseHTTPMiddleware | None:
+    """Get middleware instance by class from FastAPI app.
+
+    Args:
+        app (FastAPI): The FastAPI application
+        middleware_class (type): The middleware class to find
+
+    Returns:
+        Optional[BaseHTTPMiddleware]: The middleware instance if found, None otherwise
+    """
+    middleware_index = None
+    for index, middleware in enumerate(app.user_middleware):
+        if middleware.cls == middleware_class:
+            middleware_index = index
+            break
+
+    middleware = app.user_middleware[middleware_index]
+    return (
+        None
+        if middleware_index is None
+        else middleware.cls(app, *middleware.args, **middleware.kwargs)
+    )
+
+
+def add_cors_headers(request: Request, response: AanaJSONResponse):
+    """Add CORS headers to response based on app CORS middleware configuration.
+
+    Args:
+        request (Request): The request object
+        response (AanaJSONResponse): The response object to add headers to
+    """
+    request_origin = request.headers.get("origin")
+    if request_origin is None:
+        return
+
+    cors_middleware: CORSMiddleware = get_app_middleware(
+        app=request.app, middleware_class=CORSMiddleware
+    )
+    if not cors_middleware:
+        return
+
+    response.headers.update(cors_middleware.simple_headers)
+    has_cookie = "cookie" in request.headers
+
+    if (cors_middleware.allow_all_origins and has_cookie) or (
+        not cors_middleware.allow_all_origins
+        and cors_middleware.is_allowed_origin(origin=request_origin)
+    ):
+        cors_middleware.allow_explicit_origin(response.headers, request_origin)
 
 
 async def validation_exception_handler(
@@ -31,12 +86,14 @@ async def validation_exception_handler(
         for error in data:
             if "ctx" in error:
                 error.pop("ctx")
-    return AanaJSONResponse(
+    response = AanaJSONResponse(
         status_code=422,
         content=ExceptionResponseModel(
             error="ValidationError", message="Validation error", data=data
         ).model_dump(),
     )
+    add_cors_headers(request, response)
+    return response
 
 
 def custom_exception_handler(request: Request | None, exc_raw: Exception):
@@ -83,12 +140,17 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
     # get the message of the exception
     message = str(exc)
     status_code = getattr(exc, "http_status_code", 400)
-    return AanaJSONResponse(
+
+    response = AanaJSONResponse(
         status_code=status_code,
         content=ExceptionResponseModel(
             error=error, message=message, data=data, stacktrace=stacktrace
         ).model_dump(),
     )
+
+    if request:  # Only add CORS headers if we have a request object
+        add_cors_headers(request, response)
+    return response
 
 
 async def aana_exception_handler(request: Request, exc: Exception):
