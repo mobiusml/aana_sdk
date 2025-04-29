@@ -30,13 +30,11 @@ def get_app_middleware(
         if middleware.cls == middleware_class:
             middleware_index = index
             break
+    if middleware_index is None:
+        return None
 
     middleware = app.user_middleware[middleware_index]
-    return (
-        None
-        if middleware_index is None
-        else middleware.cls(app, *middleware.args, **middleware.kwargs)
-    )
+    return middleware.cls(app, *middleware.args, **middleware.kwargs)
 
 
 def add_cors_headers(request: Request, response: AanaJSONResponse):
