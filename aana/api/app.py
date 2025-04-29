@@ -19,11 +19,6 @@ from aana.storage.session import get_session
 
 app = FastAPI()
 
-app.add_exception_handler(ValidationError, validation_exception_handler)
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(Exception, aana_exception_handler)
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=aana_settings.cors.allow_origins,
@@ -32,6 +27,10 @@ app.add_middleware(
     allow_methods=aana_settings.cors.allow_methods,
     allow_headers=aana_settings.cors.allow_headers,
 )
+
+app.add_exception_handler(ValidationError, validation_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, aana_exception_handler)
 
 
 @app.middleware("http")
