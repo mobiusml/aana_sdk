@@ -27,30 +27,32 @@ def dummy_transcript():
     return transcript, segments, info
 
 
-def test_save_transcript(db_session, dummy_transcript):
+@pytest.mark.asyncio
+async def test_save_transcript(db_session_manager, dummy_transcript):
     """Tests saving a transcript."""
     transcript, segments, info = dummy_transcript
     model_name = "whisper"
 
-    transcript_repo = TranscriptRepository(db_session)
-    transcript_entity = transcript_repo.save(
-        model_name=model_name,
-        transcription_info=info,
-        transcription=transcript,
-        segments=segments,
-    )
+    async with db_session_manager.session() as session:
+        transcript_repo = TranscriptRepository(session)
+        transcript_entity = await transcript_repo.save(
+            model_name=model_name,
+            transcription_info=info,
+            transcription=transcript,
+            segments=segments,
+        )
 
-    transcript_id = transcript_entity.id
+        transcript_id = transcript_entity.id
 
-    transcript_entity = transcript_repo.read(transcript_id)
-    assert transcript_entity
-    assert transcript_entity.id == transcript_id
-    assert transcript_entity.model == model_name
-    assert transcript_entity.transcript == transcript.text
-    assert len(transcript_entity.segments) == len(segments)
-    assert transcript_entity.language == info.language
-    assert transcript_entity.language_confidence == info.language_confidence
+        transcript_entity = await transcript_repo.read(transcript_id)
+        assert transcript_entity
+        assert transcript_entity.id == transcript_id
+        assert transcript_entity.model == model_name
+        assert transcript_entity.transcript == transcript.text
+        assert len(transcript_entity.segments) == len(segments)
+        assert transcript_entity.language == info.language
+        assert transcript_entity.language_confidence == info.language_confidence
 
-    transcript_repo.delete(transcript_id)
-    with pytest.raises(NotFoundException):
-        transcript_repo.read(transcript_id)
+        await transcript_repo.delete(transcript_id)
+        with pytest.raises(NotFoundException):
+            await transcript_repo.read(transcript_id)

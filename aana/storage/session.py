@@ -1,46 +1,37 @@
+import logging
 from typing import Annotated
 
 from fastapi import Depends
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from aana.configs.settings import settings
-from aana.storage.models.api_key import ApiServiceBase
-from aana.storage.models.base import BaseEntity
+from aana.storage.op import DatabaseSessionManager
 
-__all__ = ["get_db", "get_session"]
+logger = logging.getLogger(__name__)
 
-engine = settings.db_config.get_engine()
+__all__ = ["GetDbDependency", "get_db", "get_session"]
 
-if settings.api_service.enabled:
-    api_service_engine = settings.api_service_db_config.get_engine()
-    SessionLocal = sessionmaker(
-        autocommit=False,
-        autoflush=False,
-        binds={ApiServiceBase: api_service_engine, BaseEntity: engine},
-        bind=engine,  # Default engine
-    )
-
-else:
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+session_manager = DatabaseSessionManager(settings)
 
 
-def get_session() -> Session:
+def get_session() -> AsyncSession:
     """Get a new SQLAlchemy Session object.
 
     Returns:
-        Session: SQLAlchemy Session object.
+        AsyncSession: SQLAlchemy async session
     """
-    return SessionLocal()
+    return session_manager.session()
 
 
-def get_db():
-    """Get a database session."""
-    db = get_session()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db():
+    """Get a database session.
+
+    Returns:
+        AsyncSession: SQLAlchemy async session
+    """
+    async with session_manager.session() as session:
+        yield session
 
 
-GetDbDependency = Annotated[Session, Depends(get_db)]
+GetDbDependency = Annotated[AsyncSession, Depends(get_db)]
 """ Dependency to get a database session. """

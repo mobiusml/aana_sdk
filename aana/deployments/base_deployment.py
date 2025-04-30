@@ -1,7 +1,13 @@
 import inspect
+import os
 from functools import wraps
 from typing import Any
 
+import ray
+from ray import serve
+
+from aana.configs.settings import settings as aana_settings
+from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
 from aana.exceptions.runtime import InferenceException
 
 
@@ -55,12 +61,35 @@ class BaseDeployment:
         self.raised_exceptions = []
         self.restart_exceptions = [InferenceException]
 
+    async def request_gpu_from_manager(self):
+        """Request GPU resources for the deployment from the GPU manager."""
+        num_gpus = ray.get_runtime_context().get_assigned_resources().get("GPU", 0)
+        # If no GPUs are assigned, skip
+        if num_gpus == 0:
+            return
+
+        replica_context = serve.get_replica_context()
+        self._replica_id = replica_context.replica_id.unique_id
+        self._deployment_name = replica_context.replica_id.deployment_id.app_name
+
+        gpu_manager_handle = await AanaDeploymentHandle.create("gpu_manager")
+        gpu_ids = await gpu_manager_handle.request_gpu(
+            deployment=self._deployment_name,
+            replica_id=self._replica_id,
+            num_gpus=num_gpus,
+        )
+        os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(map(str, gpu_ids))
+
     async def reconfigure(self, config: dict[str, Any]):
         """Reconfigure the deployment.
 
         The method is called when the deployment is updated.
         """
         self.config = config
+
+        if aana_settings.gpu_manager.enabled:
+            await self.request_gpu_from_manager()
+
         await self.apply_config(config)
         self._configured = True
 
@@ -97,7 +126,9 @@ class BaseDeployment:
         Args:
             config (dict): the configuration
         """
-        raise NotImplementedError
+        raise NotImplementedError(
+            "apply_config method must be implemented in the deployment class."
+        )
 
     async def get_methods(self) -> dict:
         """Returns the methods of the deployment.
