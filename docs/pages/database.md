@@ -29,11 +29,18 @@ The migrations are run with `aana_app.migrate()` or with CLI command `aana migra
 
 The SDK has following predefined data models:
 
-- `TaskEntity`: Represents a task for the task queue. It is used internally by the SDK and is not intended to be used directly.
+- [`TaskEntity`](./../reference/models/index.md#aana.storage.models.TaskEntity): Represents a task for the task queue. It is used internally by the SDK and is not intended to be used directly.
+
+- [`WebhookEntity`](./../reference/models/index.md#aana.storage.models.WebhookEntity): Represents a webhook. It is used internally by the SDK and is not intended to be used directly.
+
 - [`BaseEntity`](./../reference/models/index.md#aana.storage.models.BaseEntity): Base class for all entities in the SDK. Use it as a base class for your custom models.
+
 - [`MediaEntity`](./../reference/models/index.md#aana.storage.models.MediaEntity): Base class for media entities (audio, video, image). You can use it as a base class for your custom media models.
+
 - [`VideoEntity`](./../reference/models/index.md#aana.storage.models.VideoEntity): Represents a video. You can use it in your application directly or as a base class for your custom video models.
+
 - [`TranscriptEntity`](./../reference/models/index.md#aana.storage.models.TranscriptEntity): Represents an ASR transcript. You can use it in your application directly or as a base class for your custom ASR models.
+
 - [`CaptionEntity`](./../reference/models/index.md#aana.storage.models.CaptionEntity): Represents a caption. You can use it in your application directly or as a base class for your custom caption models.
 
 ## Repositories
@@ -41,12 +48,20 @@ The SDK has following predefined data models:
 Repositories are classes that provide an interface to interact with the database. The SDK provides repositories for each data model.
 
 The repositories are available in the `aana.storage.repository` module. Here is a list of available repositories:
-- `TaskRepository`: Repository for the `TaskEntity` model. It is used internally by the SDK and is not intended to be used directly.
-- [`BaseRepository`](./../reference/storage/repositories.md#aana.storage.repository.BaseRepository): Base repository class for all entities in the SDK. Use it as a base class for your custom repositories.
-- [`MediaRepository`](./../reference/storage/repositories.md#aana.storage.repository.MediaRepository): Repository for media entities (audio, video, image). You can use it as a base class for your custom media repositories. 
-- [`VideoRepository`](./../reference/storage/repositories.md#aana.storage.repository.VideoRepository): Repository for the `VideoEntity` model. You can use it in your application directly or as a base class for your custom video repositories.
-- [`TranscriptRepository`](./../reference/storage/repositories.md#aana.storage.repository.TranscriptRepository): Repository for the `TranscriptEntity` model. You can use it in your application directly or as a base class for your custom ASR repositories.
-- [`CaptionRepository`](./../reference/storage/repositories.md#aana.storage.repository.CaptionRepository): Repository for the `CaptionEntity` model. You can use it in your application directly or as a base class for your custom caption repositories.
+
+- [`TaskRepository`](./../reference/storage/repositories.md#aana.storage.repository.task.TaskRepository):   Repository for the `TaskEntity` model. It is used internally by the SDK and is not intended to be used directly.
+
+- [`WebhookRepository`](./../reference/storage/repositories.md#aana.storage.repository.webhook.WebhookRepository): Repository for the `WebhookEntity` model. It is used internally by the SDK and is not intended to be used directly.
+
+- [`BaseRepository`](./../reference/storage/repositories.md#aana.storage.repository.base.BaseRepository): Base repository class for all entities in the SDK. Use it as a base class for your custom repositories.
+
+- [`MediaRepository`](./../reference/storage/repositories.md#aana.storage.repository.media.MediaRepository): Repository for media entities (audio, video, image). You can use it as a base class for your custom media repositories. 
+
+- [`VideoRepository`](./../reference/storage/repositories.md#aana.storage.repository.video.VideoRepository): Repository for the `VideoEntity` model. You can use it in your application directly or as a base class for your custom video repositories.
+
+- [`TranscriptRepository`](./../reference/storage/repositories.md#aana.storage.repository.transcript.TranscriptRepository): Repository for the `TranscriptEntity` model. You can use it in your application directly or as a base class for your custom ASR repositories.
+
+- [`CaptionRepository`](./../reference/storage/repositories.md#aana.storage.repository.caption.CaptionRepository): Repository for the `CaptionEntity` model. You can use it in your application directly or as a base class for your custom caption repositories.
 
 To learn more how to use predefined repositories and models, see the [How to Use Provided Models and Repositories](./../reference/storage/index.md#how-to-use-provided-models-and-repositories) section in the reference documentation.
 
@@ -106,7 +121,7 @@ In this example, we created a new model class `ExtendedVideoEntity` that inherit
 Next, we need to create a repository class that provides an interface to interact with the database. Here is an example of how to create a repository for the `ExtendedVideoEntity` model:
 
 ```python
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from aana.core.models.media import MediaId
 from aana.core.models.video import Video, VideoMetadata
@@ -115,11 +130,11 @@ from aana.storage.repository.video import VideoRepository
 class ExtendedVideoRepository(VideoRepository[ExtendedVideoEntity]):
     """Repository for videos with additional metadata."""
 
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         """Constructor."""
         super().__init__(session, ExtendedVideoEntity)
 
-    def save(self, video: Video, duration: float | None = None) -> dict:
+    async def save(self, video: Video, duration: float | None = None) -> dict:
         """Saves a video to datastore.
 
         Args:
@@ -137,10 +152,10 @@ class ExtendedVideoRepository(VideoRepository[ExtendedVideoEntity]):
             description=video.description,
             duration=duration,
         )
-        self.create(video_entity)
+        await self.create(video_entity)
         return video_entity
 
-    def get_status(self, media_id: MediaId) -> VideoProcessingStatus:
+    async def get_status(self, media_id: MediaId) -> VideoProcessingStatus:
         """Get the status of a video.
 
         Args:
@@ -149,21 +164,21 @@ class ExtendedVideoRepository(VideoRepository[ExtendedVideoEntity]):
         Returns:
             VideoProcessingStatus: The status of the video.
         """
-        entity: ExtendedVideoEntity = self.read(media_id)
+        entity: ExtendedVideoEntity = await self.read(media_id)
         return entity.status
 
-    def update_status(self, media_id: MediaId, status: VideoProcessingStatus):
+    async def update_status(self, media_id: MediaId, status: VideoProcessingStatus):
         """Update the status of a video.
 
         Args:
             media_id (str): The media ID.
             status (VideoProcessingStatus): The status of the video.
         """
-        entity: ExtendedVideoEntity = self.read(media_id)
+        entity: ExtendedVideoEntity = await self.read(media_id)
         entity.status = status
-        self.session.commit()
+        await self.session.commit()
 
-    def get_metadata(self, media_id: MediaId) -> VideoMetadata:
+    async def get_metadata(self, media_id: MediaId) -> VideoMetadata:
         """Get the metadata of a video.
 
         Args:
@@ -172,7 +187,7 @@ class ExtendedVideoRepository(VideoRepository[ExtendedVideoEntity]):
         Returns:
             VideoMetadata: The video metadata.
         """
-        entity: ExtendedVideoEntity = self.read(media_id)
+        entity: ExtendedVideoEntity = await self.read(media_id)
         return VideoMetadata(
             title=entity.title,
             description=entity.description,
@@ -198,7 +213,7 @@ from aana.core.models import Video
 video = Video(title="My Video", url="https://example.com/video.mp4")
 duration = 42
 video_repository = ExtendedVideoRepository(session)
-video_repository.save(video, duration)
+await video_repository.save(video, duration)
 ```
 
 To learn more on how to use data models and repositories, see the [How to Use Provided Models and Repositories](./../reference/storage/index.md#how-to-use-provided-models-and-repositories) section in the reference documentation.

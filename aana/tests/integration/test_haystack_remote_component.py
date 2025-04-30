@@ -12,8 +12,8 @@ from aana.api.api_generation import Endpoint
 from aana.deployments.haystack_component_deployment import (
     HaystackComponentDeployment,
     HaystackComponentDeploymentConfig,
-    RemoteHaystackComponent,
 )
+from aana.integrations.haystack.remote_haystack_component import RemoteHaystackComponent
 
 
 class HaystackTestEndpointOutput(TypedDict):

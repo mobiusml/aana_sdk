@@ -4,9 +4,8 @@ from pathlib import Path
 from pydantic import BaseModel, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from aana.configs.db import DbSettings, SQLiteConfig
+from aana.configs.db import DbSettings, DbType, SQLiteConfig
 from aana.core.models.base import pydantic_protected_fields
-from aana.storage.op import DbType
 
 
 class TestSettings(BaseModel):
@@ -41,6 +40,16 @@ class TaskQueueSettings(BaseModel):
     heartbeat_timeout: int = 60
     max_retries: int = 3
     maximum_active_tasks_per_user: int = 25
+
+
+class GpuManagerSettings(BaseModel):
+    """A pydantic model for GPU manager settings.
+
+    Attributes:
+        enabled (bool): Flag indicating if the GPU manager is enabled.
+    """
+
+    enabled: bool = False
 
 
 class ApiServiceSettings(BaseModel):
@@ -135,6 +144,8 @@ class Settings(BaseSettings):
     webhook: WebhookSettings = WebhookSettings()
 
     cors: CorsSettings = CorsSettings()
+
+    gpu_manager: GpuManagerSettings = GpuManagerSettings()
 
     @model_validator(mode="after")
     def setup_resource_directories(self):
