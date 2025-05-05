@@ -174,15 +174,15 @@ class RequestHandler:
     async def is_ready(self):
         """The endpoint for checking if the application is ready.
 
-        Real reason for this endpoint is to make automatic endpoint generation work.
-        If RequestHandler doesn't have any endpoints defined manually,
-        then the automatic endpoint generation doesn't work.
-        #TODO: Find a better solution for this.
-
         Returns:
-            AanaJSONResponse: The response containing the ready status.
+            AanaJSONResponse: The response containing the ready status based on the application status.
         """
-        return AanaJSONResponse(content={"ready": self.ready})
+        status_response = await self.status(is_admin=True)
+        is_ready = status_response.status == SDKStatus.RUNNING
+        if self.app_name not in status_response.deployments:
+            # If the app is not in the deployments yet, it is not ready
+            is_ready = False
+        return AanaJSONResponse(content={"ready": is_ready})
 
     async def check_health(self):
         """Check the health of the application."""
