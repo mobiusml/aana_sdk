@@ -36,7 +36,7 @@ app.add_exception_handler(Exception, aana_exception_handler)
 @app.middleware("http")
 async def api_key_check(request: Request, call_next):
     """Middleware to check the API key and subscription status."""
-    excluded_paths = ["/openapi.json", "/docs", "/redoc"]
+    excluded_paths = ["/openapi.json", "/docs", "/redoc", "/api/ready"]
     if request.url.path in excluded_paths or request.method == "OPTIONS":
         return await call_next(request)
 
