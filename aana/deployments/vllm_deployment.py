@@ -1,6 +1,7 @@
 import base64
 import os
 from collections.abc import AsyncGenerator
+from enum import Enum
 from typing import Any
 
 import torch
@@ -45,6 +46,39 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     from vllm.utils import random_uuid
 
 
+# weight_bits=4, group_size=64, quant_mode="static", skip_modules=["lm_head"]
+
+
+class GemliteQuantizationConfig(BaseModel):
+    """The configuration of the gemlite quantization.
+
+    Attributes:
+        weight_bits (int): The number of bits to use for weights. Defaults to 4.
+        group_size (int | None): The group size for quantization. Defaults to 64.
+        quant_mode (str): The quantization mode. Defaults to "static".
+        skip_modules (list[str]): The list of modules to skip for quantization. Defaults to ["lm_head"].
+    """
+
+    weight_bits: int = Field(default=4)
+    group_size: int | None = Field(default=64)
+    quant_mode: str = Field(default="static")
+    skip_modules: list[str] = Field(default_factory=lambda: ["lm_head"])
+
+
+class GemliteMode(str, Enum):
+    """The mode of the gemlite quantization.
+
+    Attributes:
+        OFF (str): The gemlite quantization is off.
+        PREQUANTIZED (str): The gemlite quantization is prequantized.
+        ONTHEFLY (str): The gemlite quantization is on the fly.
+    """
+
+    OFF = "off"
+    PREQUANTIZED = "prequantized"
+    ONTHEFLY = "onthefly"
+
+
 class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
 
@@ -60,8 +94,8 @@ class VLLMConfig(BaseModel):
             from the model will be used. Some models may not have a chat template.
             Defaults to None.
         enforce_eager (bool): Whether to enforce eager execution. Defaults to False.
-        use_gemlite (bool): Whether to use gemlite. Defaults to False.
-        gemlite_config (str | None): The path to the gemlite config file. Defaults to None.
+        gemlite_mode (GemliteMode): The mode of the gemlite quantization. Defaults to GemliteMode.OFF.
+        gemlite_config (GemliteQuantizationConfig | None): The configuration of the gemlite quantization.
         engine_args (CustomConfig): Extra engine arguments. Defaults to {}.
     """
 
@@ -75,8 +109,10 @@ class VLLMConfig(BaseModel):
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
     enforce_eager: bool = Field(default=False)
-    use_gemlite: bool = Field(default=False)
-    gemlite_config: str | None = Field(default=None)
+
+    gemlite_mode: GemliteMode = Field(default=GemliteMode.OFF)
+    gemlite_config: GemliteQuantizationConfig | None = Field(default=None)
+
     engine_args: CustomConfig = {}
 
     model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
@@ -115,19 +151,34 @@ class VLLMDeployment(BaseDeployment):
         vllm_imports.check()
         config_obj = VLLMConfig(**config)
 
-        if config_obj.use_gemlite:
+        if config_obj.gemlite_mode != GemliteMode.OFF:
             with LazyImport(
                 "Run 'pip install gemlite hqq' or 'pip install aana[gemlite]'"
             ) as gemlite_imports:
-                print("Gemlite imports")
-                import gemlite
-                from hqq.utils.vllm import VLLM_HQQ_BACKEND, set_vllm_hqq_backend
+                from hqq.utils.vllm import (
+                    VLLM_HQQ_BACKEND,
+                    set_vllm_hqq_backend,
+                    set_vllm_onthefly_hqq_quant,
+                )
 
             gemlite_imports.check()
-            if config_obj.gemlite_config is not None:
-                gemlite.load_config(config_obj.gemlite_config)
+
             os.environ["VLLM_USE_V1"] = "0"
             set_vllm_hqq_backend(backend=VLLM_HQQ_BACKEND.GEMLITE)
+
+            # For ONTHEFLY mode, we need to set the gemlite config
+            if config_obj.gemlite_mode == GemliteMode.ONTHEFLY:
+                if config_obj.gemlite_config is None:
+                    gemlite_config = GemliteQuantizationConfig()
+                else:
+                    gemlite_config = config_obj.gemlite_config
+
+                set_vllm_onthefly_hqq_quant(
+                    weight_bits=gemlite_config.weight_bits,
+                    group_size=gemlite_config.group_size,
+                    quant_mode=gemlite_config.quant_mode,
+                    skip_modules=gemlite_config.skip_modules,
+                )
 
         self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
