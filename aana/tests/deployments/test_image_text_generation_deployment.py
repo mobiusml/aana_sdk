@@ -9,7 +9,12 @@ from aana.core.models.image_chat import ImageChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
 from aana.deployments.aana_deployment_handle import AanaDeploymentHandle
-from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
+from aana.deployments.vllm_deployment import (
+    GemliteMode,
+    GemliteQuantizationConfig,
+    VLLMConfig,
+    VLLMDeployment,
+)
 from aana.exceptions.runtime import PromptTooLongException
 from aana.tests.utils import verify_deployment_results
 from aana.utils.core import get_object_hash
@@ -95,18 +100,50 @@ deployments = [
                     model_id="mobiuslabsgmbh/Qwen2.5-VL-3B-Instruct_4bitgs64_hqq_hf",
                     gpu_memory_reserved=40000,
                     dtype=Dtype.FLOAT16,
-                    use_gemlite=True,
-                    # gemlite_config="/data/aana_sdk/aana/tests/files/gemlite/qwen_3b_vl_config.json",
-                    gemlite_config=(
-                        resources.files("aana.tests.files.gemlite")
-                        / "qwen_3b_vl_config.json"
-                    ).as_posix(),
+                    gemlite_mode=GemliteMode.PREQUANTIZED,
                     default_sampling_params=SamplingParams(
                         temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
                     ),
                     max_model_len=4096,
                     engine_args=dict(
                         limit_mm_per_prompt={"image": 3},
+                        mm_processor_kwargs={
+                            "min_pixels": 28 * 28,
+                            "max_pixels": 640 * 640 * 3,
+                        },
+                    ),
+                ).model_dump(mode="json"),
+            ),
+        ),
+        "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n{query}<|im_end|>\n<|im_start|>assistant\n",
+    ),
+    (
+        (
+            "qwen2_vl_3b_gemlite_onthefly_vllm_deployment",
+            VLLMDeployment.options(
+                num_replicas=1,
+                ray_actor_options={"num_gpus": 1.0},
+                user_config=VLLMConfig(
+                    model_id="Qwen/Qwen2.5-VL-3B-Instruct",
+                    gpu_memory_reserved=40000,
+                    dtype=Dtype.FLOAT16,
+                    gemlite_mode=GemliteMode.ONTHEFLY,
+                    gemlite_config=GemliteQuantizationConfig(
+                        weight_bits=8,
+                        group_size=None,
+                        quant_mode="dynamic_int8",
+                        skip_modules=["lm_head", "visual", "vision"],
+                    ),
+                    default_sampling_params=SamplingParams(
+                        temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+                    ),
+                    max_model_len=4096,
+                    engine_args=dict(
+                        limit_mm_per_prompt={"image": 3},
+                        mm_processor_kwargs={
+                            "min_pixels": 28 * 28,
+                            "max_pixels": 640 * 640 * 3,
+                        },
                     ),
                 ).model_dump(mode="json"),
             ),
