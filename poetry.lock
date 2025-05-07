@@ -1037,6 +1037,28 @@ accelerate = ["accelerate"]
 dev = ["black (==22.12.0)", "flake8 (>=3.8.3)", "isort (==5.8.0)", "nbconvert (>=7.16.3)", "pytest (>=6.0.0)", "wheel (>=0.36.2)"]
 
 [[package]]
+name = "compressed-tensors"
+version = "0.9.3"
+description = "Library for utilization of compressed safetensors of neural network models"
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "compressed_tensors-0.9.3-py3-none-any.whl", hash = "sha256:5fcc3e4e7aa828036c2aeb130a610f9745a2e4890692cad6f6b5a2f960b21cc1"},
+    {file = "compressed_tensors-0.9.3.tar.gz", hash = "sha256:5bdc7774a6c217496cba7d6a4fca6ffac943e68adae0481ead6d036660c1b340"},
+]
+
+[package.dependencies]
+pydantic = ">=2.0"
+torch = ">=1.7.0"
+transformers = "*"
+
+[package.extras]
+accelerate = ["accelerate"]
+dev = ["black (==22.12.0)", "flake8 (>=3.8.3)", "isort (==5.8.0)", "nbconvert (>=7.16.3)", "pytest (>=6.0.0)", "wheel (>=0.36.2)"]
+
+[[package]]
 name = "contourpy"
 version = "1.3.1"
 description = "Python library for calculating contours of 2D quadrilateral grids"
@@ -1352,6 +1374,25 @@ files = [
 
 [package.dependencies]
 numpy = ">=1.14.0"
+
+[[package]]
+name = "deprecated"
+version = "1.2.18"
+description = "Python @deprecated decorator to deprecate old python classes, functions or methods."
+optional = true
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "Deprecated-1.2.18-py2.py3-none-any.whl", hash = "sha256:bd5011788200372a32418f888e326a09ff80d0214bd961147cfed01b5c018eec"},
+    {file = "deprecated-1.2.18.tar.gz", hash = "sha256:422b6f6d859da6f2ef57857761bfb392480502a64c3028ca9bbe86085d72115d"},
+]
+
+[package.dependencies]
+wrapt = ">=1.10,<2"
+
+[package.extras]
+dev = ["PyTest", "PyTest-Cov", "bump2version (<1)", "setuptools ; python_version >= \"3.12\"", "tox"]
 
 [[package]]
 name = "depyf"
@@ -2007,6 +2048,28 @@ pyyaml = ">=5.1"
 tqdm = ">=4.27"
 
 [[package]]
+name = "gguf"
+version = "0.16.3"
+description = "Read and write ML models in GGUF for GGML"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "gguf-0.16.3-py3-none-any.whl", hash = "sha256:dcfef3916e180e11882f93269e4daec4b120be6c4df6231d9164aad32c7f3190"},
+    {file = "gguf-0.16.3.tar.gz", hash = "sha256:ee6b827bf83c899fe8276bec276c43a6f6b1c8b8027efbebfa4c8fa852a5d3d5"},
+]
+
+[package.dependencies]
+numpy = ">=1.17"
+pyyaml = ">=5.1"
+sentencepiece = ">=0.1.98,<=0.2.0"
+tqdm = ">=4.27"
+
+[package.extras]
+gui = ["PySide6 (>=6.9,<7.0) ; python_version >= \"3.9\" and python_version < \"3.14\""]
+
+[[package]]
 name = "ghp-import"
 version = "2.1.0"
 description = "Copy your docs directly to the gh-pages branch."
@@ -2359,6 +2422,28 @@ files = [
 ]
 
 [[package]]
+name = "hf-xet"
+version = "1.1.0"
+description = ""
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "hf_xet-1.1.0-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:0322c42551e275fcb7949c083a54a81b2898e50787c9aa74284fcb8d2c58c12c"},
+    {file = "hf_xet-1.1.0-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:667153a0304ac2debf2af95a8ff7687186f885b493f4cd16344869af270cd110"},
+    {file = "hf_xet-1.1.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:995eeffb119636ea617b96c7d7bf3c3f5ea8727fa57974574e25d700b8532d48"},
+    {file = "hf_xet-1.1.0-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:3aee847da362393331f515c4010d0aaa1c2669acfcca1f4b28946d6949cc0086"},
+    {file = "hf_xet-1.1.0-cp37-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:68c5813a6074aa36e12ef5983230e3b03148cce61e0fcdd294096493795565b4"},
+    {file = "hf_xet-1.1.0-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:4ee9222bf9274b1c198b88a929de0b5a49349c4962d89c5b3b2f0f7f47d9761c"},
+    {file = "hf_xet-1.1.0-cp37-abi3-win_amd64.whl", hash = "sha256:73153eab9abf3d6973b21e94a67ccba5d595c3e12feb8c0bf50be02964e7f126"},
+    {file = "hf_xet-1.1.0.tar.gz", hash = "sha256:a7c2a4c2b6eee9ce0a1a367a82b60d95ba634420ef1c250addad7aa4af419cf4"},
+]
+
+[package.extras]
+tests = ["pytest"]
+
+[[package]]
 name = "hqq"
 version = "0.2.5"
 description = "Half-Quadratic Quantization (HQQ)"
@@ -2503,6 +2588,7 @@ markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transform
 [package.dependencies]
 filelock = "*"
 fsspec = ">=2023.5.0"
+hf-xet = {version = ">=0.1.4", optional = true, markers = "extra == \"hf-xet\""}
 packaging = ">=20.9"
 pyyaml = ">=5.1"
 requests = "*"
@@ -3208,6 +3294,38 @@ files = [
 ]
 
 [[package]]
+name = "llvmlite"
+version = "0.44.0"
+description = "lightweight wrapper around basic LLVM functionality"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "llvmlite-0.44.0-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:9fbadbfba8422123bab5535b293da1cf72f9f478a65645ecd73e781f962ca614"},
+    {file = "llvmlite-0.44.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:cccf8eb28f24840f2689fb1a45f9c0f7e582dd24e088dcf96e424834af11f791"},
+    {file = "llvmlite-0.44.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7202b678cdf904823c764ee0fe2dfe38a76981f4c1e51715b4cb5abb6cf1d9e8"},
+    {file = "llvmlite-0.44.0-cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:40526fb5e313d7b96bda4cbb2c85cd5374e04d80732dd36a282d72a560bb6408"},
+    {file = "llvmlite-0.44.0-cp310-cp310-win_amd64.whl", hash = "sha256:41e3839150db4330e1b2716c0be3b5c4672525b4c9005e17c7597f835f351ce2"},
+    {file = "llvmlite-0.44.0-cp311-cp311-macosx_10_14_x86_64.whl", hash = "sha256:eed7d5f29136bda63b6d7804c279e2b72e08c952b7c5df61f45db408e0ee52f3"},
+    {file = "llvmlite-0.44.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:ace564d9fa44bb91eb6e6d8e7754977783c68e90a471ea7ce913bff30bd62427"},
+    {file = "llvmlite-0.44.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c5d22c3bfc842668168a786af4205ec8e3ad29fb1bc03fd11fd48460d0df64c1"},
+    {file = "llvmlite-0.44.0-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:f01a394e9c9b7b1d4e63c327b096d10f6f0ed149ef53d38a09b3749dcf8c9610"},
+    {file = "llvmlite-0.44.0-cp311-cp311-win_amd64.whl", hash = "sha256:d8489634d43c20cd0ad71330dde1d5bc7b9966937a263ff1ec1cebb90dc50955"},
+    {file = "llvmlite-0.44.0-cp312-cp312-macosx_10_14_x86_64.whl", hash = "sha256:1d671a56acf725bf1b531d5ef76b86660a5ab8ef19bb6a46064a705c6ca80aad"},
+    {file = "llvmlite-0.44.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:5f79a728e0435493611c9f405168682bb75ffd1fbe6fc360733b850c80a026db"},
+    {file = "llvmlite-0.44.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c0143a5ef336da14deaa8ec26c5449ad5b6a2b564df82fcef4be040b9cacfea9"},
+    {file = "llvmlite-0.44.0-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:d752f89e31b66db6f8da06df8b39f9b91e78c5feea1bf9e8c1fba1d1c24c065d"},
+    {file = "llvmlite-0.44.0-cp312-cp312-win_amd64.whl", hash = "sha256:eae7e2d4ca8f88f89d315b48c6b741dcb925d6a1042da694aa16ab3dd4cbd3a1"},
+    {file = "llvmlite-0.44.0-cp313-cp313-macosx_10_14_x86_64.whl", hash = "sha256:319bddd44e5f71ae2689859b7203080716448a3cd1128fb144fe5c055219d516"},
+    {file = "llvmlite-0.44.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:9c58867118bad04a0bb22a2e0068c693719658105e40009ffe95c7000fcde88e"},
+    {file = "llvmlite-0.44.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:46224058b13c96af1365290bdfebe9a6264ae62fb79b2b55693deed11657a8bf"},
+    {file = "llvmlite-0.44.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:aa0097052c32bf721a4efc03bd109d335dfa57d9bffb3d4c24cc680711b8b4fc"},
+    {file = "llvmlite-0.44.0-cp313-cp313-win_amd64.whl", hash = "sha256:2fb7c4f2fb86cbae6dca3db9ab203eeea0e22d73b99bc2341cdf9de93612e930"},
+    {file = "llvmlite-0.44.0.tar.gz", hash = "sha256:07667d66a5d150abed9157ab6c0b9393c9356f229784a4385c02f99e94fc94d4"},
+]
+
+[[package]]
 name = "lm-format-enforcer"
 version = "0.10.11"
 description = "Enforce the output format (JSON Schema, Regex etc) of a language model"
@@ -3701,7 +3819,7 @@ description = "A framework for machine learning on Apple silicon."
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "platform_machine == \"arm64\" and extra == \"vllm\" and platform_system == \"Darwin\""
+markers = "platform_system == \"Darwin\" and extra == \"vllm\" and platform_machine == \"arm64\""
 files = [
     {file = "mlx-0.25.0-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:4dd7ce7a3a42aac82a297deed46a5b664384ad554ef1c632ec46bf2dc5d0ac6f"},
     {file = "mlx-0.25.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:b066ae4893597548ed4a7ddb1c1727da812236b403068556f68f04a0901d4c84"},
@@ -3730,7 +3848,7 @@ description = "LLMs on Apple silicon with MLX and the Hugging Face Hub"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "platform_machine == \"arm64\" and extra == \"vllm\" and platform_system == \"Darwin\""
+markers = "platform_system == \"Darwin\" and extra == \"vllm\" and platform_machine == \"arm64\""
 files = [
     {file = "mlx_lm-0.23.1-py3-none-any.whl", hash = "sha256:87a01fbc3d3ab7e2e4e27c4e18fd8b7ed1a37b3ee615bd044dc8941d2f637de7"},
     {file = "mlx_lm-0.23.1.tar.gz", hash = "sha256:512e2b31da38183295456dcb305e5db3d68c3790fe3eb5bee55e1a1e623dde51"},
@@ -4187,6 +4305,42 @@ llvmlite = "==0.43.*"
 numpy = ">=1.22,<2.1"
 
 [[package]]
+name = "numba"
+version = "0.61.2"
+description = "compiling Python code using LLVM"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "numba-0.61.2-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:cf9f9fc00d6eca0c23fc840817ce9f439b9f03c8f03d6246c0e7f0cb15b7162a"},
+    {file = "numba-0.61.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ea0247617edcb5dd61f6106a56255baab031acc4257bddaeddb3a1003b4ca3fd"},
+    {file = "numba-0.61.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:ae8c7a522c26215d5f62ebec436e3d341f7f590079245a2f1008dfd498cc1642"},
+    {file = "numba-0.61.2-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:bd1e74609855aa43661edffca37346e4e8462f6903889917e9f41db40907daa2"},
+    {file = "numba-0.61.2-cp310-cp310-win_amd64.whl", hash = "sha256:ae45830b129c6137294093b269ef0a22998ccc27bf7cf096ab8dcf7bca8946f9"},
+    {file = "numba-0.61.2-cp311-cp311-macosx_10_14_x86_64.whl", hash = "sha256:efd3db391df53aaa5cfbee189b6c910a5b471488749fd6606c3f33fc984c2ae2"},
+    {file = "numba-0.61.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:49c980e4171948ffebf6b9a2520ea81feed113c1f4890747ba7f59e74be84b1b"},
+    {file = "numba-0.61.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:3945615cd73c2c7eba2a85ccc9c1730c21cd3958bfcf5a44302abae0fb07bb60"},
+    {file = "numba-0.61.2-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:bbfdf4eca202cebade0b7d43896978e146f39398909a42941c9303f82f403a18"},
+    {file = "numba-0.61.2-cp311-cp311-win_amd64.whl", hash = "sha256:76bcec9f46259cedf888041b9886e257ae101c6268261b19fda8cfbc52bec9d1"},
+    {file = "numba-0.61.2-cp312-cp312-macosx_10_14_x86_64.whl", hash = "sha256:34fba9406078bac7ab052efbf0d13939426c753ad72946baaa5bf9ae0ebb8dd2"},
+    {file = "numba-0.61.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:4ddce10009bc097b080fc96876d14c051cc0c7679e99de3e0af59014dab7dfe8"},
+    {file = "numba-0.61.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:5b1bb509d01f23d70325d3a5a0e237cbc9544dd50e50588bc581ba860c213546"},
+    {file = "numba-0.61.2-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:48a53a3de8f8793526cbe330f2a39fe9a6638efcbf11bd63f3d2f9757ae345cd"},
+    {file = "numba-0.61.2-cp312-cp312-win_amd64.whl", hash = "sha256:97cf4f12c728cf77c9c1d7c23707e4d8fb4632b46275f8f3397de33e5877af18"},
+    {file = "numba-0.61.2-cp313-cp313-macosx_10_14_x86_64.whl", hash = "sha256:3a10a8fc9afac40b1eac55717cece1b8b1ac0b946f5065c89e00bde646b5b154"},
+    {file = "numba-0.61.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:7d3bcada3c9afba3bed413fba45845f2fb9cd0d2b27dd58a1be90257e293d140"},
+    {file = "numba-0.61.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:bdbca73ad81fa196bd53dc12e3aaf1564ae036e0c125f237c7644fe64a4928ab"},
+    {file = "numba-0.61.2-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:5f154aaea625fb32cfbe3b80c5456d514d416fcdf79733dd69c0df3a11348e9e"},
+    {file = "numba-0.61.2-cp313-cp313-win_amd64.whl", hash = "sha256:59321215e2e0ac5fa928a8020ab00b8e57cda8a97384963ac0dfa4d4e6aa54e7"},
+    {file = "numba-0.61.2.tar.gz", hash = "sha256:8750ee147940a6637b80ecf7f95062185ad8726c8c28a2295b8ec1160a196f7d"},
+]
+
+[package.dependencies]
+llvmlite = "==0.44.*"
+numpy = ">=1.24,<2.3"
+
+[[package]]
 name = "numpy"
 version = "1.26.4"
 description = "Fundamental package for array computing in Python"
@@ -4578,6 +4732,164 @@ numpy = [
     {version = ">=1.21.4", markers = "python_version == \"3.10\" and platform_system == \"Darwin\""},
     {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version == \"3.10\""},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+]
+
+[[package]]
+name = "opentelemetry-api"
+version = "1.26.0"
+description = "OpenTelemetry Python API"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_api-1.26.0-py3-none-any.whl", hash = "sha256:7d7ea33adf2ceda2dd680b18b1677e4152000b37ca76e679da71ff103b943064"},
+    {file = "opentelemetry_api-1.26.0.tar.gz", hash = "sha256:2bd639e4bed5b18486fef0b5a520aaffde5a18fc225e808a1ac4df363f43a1ce"},
+]
+
+[package.dependencies]
+deprecated = ">=1.2.6"
+importlib-metadata = ">=6.0,<=8.0.0"
+
+[[package]]
+name = "opentelemetry-exporter-otlp"
+version = "1.26.0"
+description = "OpenTelemetry Collector Exporters"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_exporter_otlp-1.26.0-py3-none-any.whl", hash = "sha256:f839989f54bda85ee33c5dae033c44dcec9ccbb0dafc6a43d585df44da1d2036"},
+    {file = "opentelemetry_exporter_otlp-1.26.0.tar.gz", hash = "sha256:cf0e093f080011951d9f97431a83869761e4d4ebe83a4195ee92d7806223299c"},
+]
+
+[package.dependencies]
+opentelemetry-exporter-otlp-proto-grpc = "1.26.0"
+opentelemetry-exporter-otlp-proto-http = "1.26.0"
+
+[[package]]
+name = "opentelemetry-exporter-otlp-proto-common"
+version = "1.26.0"
+description = "OpenTelemetry Protobuf encoding"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_exporter_otlp_proto_common-1.26.0-py3-none-any.whl", hash = "sha256:ee4d8f8891a1b9c372abf8d109409e5b81947cf66423fd998e56880057afbc71"},
+    {file = "opentelemetry_exporter_otlp_proto_common-1.26.0.tar.gz", hash = "sha256:bdbe50e2e22a1c71acaa0c8ba6efaadd58882e5a5978737a44a4c4b10d304c92"},
+]
+
+[package.dependencies]
+opentelemetry-proto = "1.26.0"
+
+[[package]]
+name = "opentelemetry-exporter-otlp-proto-grpc"
+version = "1.26.0"
+description = "OpenTelemetry Collector Protobuf over gRPC Exporter"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_exporter_otlp_proto_grpc-1.26.0-py3-none-any.whl", hash = "sha256:e2be5eff72ebcb010675b818e8d7c2e7d61ec451755b8de67a140bc49b9b0280"},
+    {file = "opentelemetry_exporter_otlp_proto_grpc-1.26.0.tar.gz", hash = "sha256:a65b67a9a6b06ba1ec406114568e21afe88c1cdb29c464f2507d529eb906d8ae"},
+]
+
+[package.dependencies]
+deprecated = ">=1.2.6"
+googleapis-common-protos = ">=1.52,<2.0"
+grpcio = ">=1.0.0,<2.0.0"
+opentelemetry-api = ">=1.15,<2.0"
+opentelemetry-exporter-otlp-proto-common = "1.26.0"
+opentelemetry-proto = "1.26.0"
+opentelemetry-sdk = ">=1.26.0,<1.27.0"
+
+[[package]]
+name = "opentelemetry-exporter-otlp-proto-http"
+version = "1.26.0"
+description = "OpenTelemetry Collector Protobuf over HTTP Exporter"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_exporter_otlp_proto_http-1.26.0-py3-none-any.whl", hash = "sha256:ee72a87c48ec977421b02f16c52ea8d884122470e0be573905237b540f4ee562"},
+    {file = "opentelemetry_exporter_otlp_proto_http-1.26.0.tar.gz", hash = "sha256:5801ebbcf7b527377883e6cbbdda35ee712dc55114fff1e93dfee210be56c908"},
+]
+
+[package.dependencies]
+deprecated = ">=1.2.6"
+googleapis-common-protos = ">=1.52,<2.0"
+opentelemetry-api = ">=1.15,<2.0"
+opentelemetry-exporter-otlp-proto-common = "1.26.0"
+opentelemetry-proto = "1.26.0"
+opentelemetry-sdk = ">=1.26.0,<1.27.0"
+requests = ">=2.7,<3.0"
+
+[[package]]
+name = "opentelemetry-proto"
+version = "1.26.0"
+description = "OpenTelemetry Python Proto"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_proto-1.26.0-py3-none-any.whl", hash = "sha256:6c4d7b4d4d9c88543bcf8c28ae3f8f0448a753dc291c18c5390444c90b76a725"},
+    {file = "opentelemetry_proto-1.26.0.tar.gz", hash = "sha256:c5c18796c0cab3751fc3b98dee53855835e90c0422924b484432ac852d93dc1e"},
+]
+
+[package.dependencies]
+protobuf = ">=3.19,<5.0"
+
+[[package]]
+name = "opentelemetry-sdk"
+version = "1.26.0"
+description = "OpenTelemetry Python SDK"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_sdk-1.26.0-py3-none-any.whl", hash = "sha256:feb5056a84a88670c041ea0ded9921fca559efec03905dddeb3885525e0af897"},
+    {file = "opentelemetry_sdk-1.26.0.tar.gz", hash = "sha256:c90d2868f8805619535c05562d699e2f4fb1f00dbd55a86dcefca4da6fa02f85"},
+]
+
+[package.dependencies]
+opentelemetry-api = "1.26.0"
+opentelemetry-semantic-conventions = "0.47b0"
+typing-extensions = ">=3.7.4"
+
+[[package]]
+name = "opentelemetry-semantic-conventions"
+version = "0.47b0"
+description = "OpenTelemetry Semantic Conventions"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_semantic_conventions-0.47b0-py3-none-any.whl", hash = "sha256:4ff9d595b85a59c1c1413f02bba320ce7ea6bf9e2ead2b0913c4395c7bbc1063"},
+    {file = "opentelemetry_semantic_conventions-0.47b0.tar.gz", hash = "sha256:a8d57999bbe3495ffd4d510de26a97dadc1dace53e0275001b2c1b2f67992a7e"},
+]
+
+[package.dependencies]
+deprecated = ">=1.2.6"
+opentelemetry-api = "1.26.0"
+
+[[package]]
+name = "opentelemetry-semantic-conventions-ai"
+version = "0.4.6"
+description = "OpenTelemetry Semantic Conventions Extension for Large Language Models"
+optional = true
+python-versions = "<4,>=3.9"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "opentelemetry_semantic_conventions_ai-0.4.6-py3-none-any.whl", hash = "sha256:0e97e7b1a4ef737a0021667468438f6800f2fbc8227f5c04fd5cb2bba20255df"},
+    {file = "opentelemetry_semantic_conventions_ai-0.4.6.tar.gz", hash = "sha256:7b36cc2f0b400cf12587b145884787bee6fc015276a88de522870f040dcbd335"},
 ]
 
 [[package]]
@@ -5306,6 +5618,27 @@ protobuf = ">=3.19.0,<6.0.0dev"
 
 [package.extras]
 testing = ["google-api-core (>=1.31.5)"]
+
+[[package]]
+name = "protobuf"
+version = "4.25.7"
+description = ""
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "protobuf-4.25.7-cp310-abi3-win32.whl", hash = "sha256:dc582cf1a73a6b40aa8e7704389b8d8352da616bc8ed5c6cc614bdd0b5ce3f7a"},
+    {file = "protobuf-4.25.7-cp310-abi3-win_amd64.whl", hash = "sha256:cd873dbddb28460d1706ff4da2e7fac175f62f2a0bebc7b33141f7523c5a2399"},
+    {file = "protobuf-4.25.7-cp37-abi3-macosx_10_9_universal2.whl", hash = "sha256:4c899f09b0502eb39174c717ccf005b844ea93e31137c167ddcacf3e09e49610"},
+    {file = "protobuf-4.25.7-cp37-abi3-manylinux2014_aarch64.whl", hash = "sha256:6d2f5dede3d112e573f0e5f9778c0c19d9f9e209727abecae1d39db789f522c6"},
+    {file = "protobuf-4.25.7-cp37-abi3-manylinux2014_x86_64.whl", hash = "sha256:d41fb7ae72a25fcb79b2d71e4247f0547a02e8185ed51587c22827a87e5736ed"},
+    {file = "protobuf-4.25.7-cp38-cp38-win32.whl", hash = "sha256:237db80000865851eac3c6e9d5597c0dfb0b2700d642ec48ed80b6ffe7b8729c"},
+    {file = "protobuf-4.25.7-cp38-cp38-win_amd64.whl", hash = "sha256:ea41b75edb0f1110050a60e653820d9acc70b6fb471013971535f412addbb0d0"},
+    {file = "protobuf-4.25.7-cp39-cp39-win32.whl", hash = "sha256:2f738d4f341186e697c4cdd0e03143ee5cf6cf523790748e61273a51997494c3"},
+    {file = "protobuf-4.25.7-cp39-cp39-win_amd64.whl", hash = "sha256:3629b34b65f6204b17adf4ffe21adc8e85f6c6c0bc2baf3fb001b0d343edaebb"},
+    {file = "protobuf-4.25.7-py3-none-any.whl", hash = "sha256:e9d969f5154eaeab41404def5dcf04e62162178f4b9de98b2d3c1c70f5f84810"},
+    {file = "protobuf-4.25.7.tar.gz", hash = "sha256:28f65ae8c14523cc2c76c1e91680958700d3eac69f45c96512c12c63d9a38807"},
+]
 
 [[package]]
 name = "protobuf"
@@ -6552,6 +6885,86 @@ train = ["fsspec", "pandas", "pyarrow (<18) ; sys_platform == \"darwin\" and pla
 tune = ["fsspec", "pandas", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "requests", "tensorboardX (>=1.9)"]
 
 [[package]]
+name = "ray"
+version = "2.45.0"
+description = "Ray provides a simple, universal API for building distributed applications."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "ray-2.45.0-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:3afe594589061641b6b87d5a6d181f703d88eb8edec29f6b315449fb32b58d3a"},
+    {file = "ray-2.45.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:65e6c5bf3c9eb1ace9b90e3ea04cc73f7f3ca4fd53abd2048c0a7efa457d2e98"},
+    {file = "ray-2.45.0-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:c89f4ffd8e4623b6c690142e55813c1286a4941175c62e1056801bc139ad7ea7"},
+    {file = "ray-2.45.0-cp310-cp310-manylinux2014_x86_64.whl", hash = "sha256:948e11a1247f7b0b45a29108ba1cfedfabd80f1f3db7a5deda5698213588d8eb"},
+    {file = "ray-2.45.0-cp310-cp310-win_amd64.whl", hash = "sha256:ea5182b4f0559803e6dcf75309fb502dafae0bd323f76f38dc09205a70d1fba4"},
+    {file = "ray-2.45.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:40c8c146bec3710c511dd0380ea7c930b43487c0f9c8c78b583b0e890374528f"},
+    {file = "ray-2.45.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:5dc3b5ed8ab6f6978daa7bd7f8268c3e4042fac7811e8b661f74f820d7b2620f"},
+    {file = "ray-2.45.0-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:afbb85c9d05af3b2509602e13b5adb0b20979aa7ab177a710b41f060435bb7c2"},
+    {file = "ray-2.45.0-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:d3f8d8c807f899465e3ce48fad4e51f84671886d731e3f3a494f3ba50ed09458"},
+    {file = "ray-2.45.0-cp311-cp311-win_amd64.whl", hash = "sha256:f1869ce384d332d9b22252fd0f6d1873d286eafa72d892fd30d40ef68ba31942"},
+    {file = "ray-2.45.0-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:d3c33113f4196b923d7895fdcbf6b680a1642dd121444e974401c350da7ac809"},
+    {file = "ray-2.45.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:eeeff1da4803a5d2321a2bcb5fc16e20d8f104543e8ddf4f30d1acf6fa22fac2"},
+    {file = "ray-2.45.0-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:11582102a1757591a75376c4947db9819d5fab765e3ed307c884ed6761db8646"},
+    {file = "ray-2.45.0-cp312-cp312-manylinux2014_x86_64.whl", hash = "sha256:482d45f2f867fbec814595ce99fe558e9ff124327a61a486a4975e6a7c224a7e"},
+    {file = "ray-2.45.0-cp312-cp312-win_amd64.whl", hash = "sha256:31284755041291b51ff6b667f891e70da779d3496732831c570631e87396f680"},
+    {file = "ray-2.45.0-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:fa0dfa3b9606799d251262ae74afa86152da98351ca429d4026bac5759943569"},
+    {file = "ray-2.45.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:d3c7f340b08d4826c445f68024bb71e42861f4056b06f50df49a0957613cd729"},
+    {file = "ray-2.45.0-cp313-cp313-manylinux2014_aarch64.whl", hash = "sha256:6ba58cbdc0af2cf44ce49184bbdaa9886b559cad4ba4821a02e84020ed888fd7"},
+    {file = "ray-2.45.0-cp313-cp313-manylinux2014_x86_64.whl", hash = "sha256:517476ffadd4af135ca5dd8af015417c0062ccbb44a866740a2963dd7fd0d2f0"},
+    {file = "ray-2.45.0-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:dfcd4ccb4edb44ea893ef7348d35d70230eec1be9f9290c584bf021778160b01"},
+    {file = "ray-2.45.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:8f0f062927b118025c774643f18e4276130e3fe5754bc35e2aaca5b99083b7e3"},
+    {file = "ray-2.45.0-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:ed5c846af6c056c05a3ece3c6fdb5036b5cdda152b1e31bd13cdf5b5cd5b9fd3"},
+    {file = "ray-2.45.0-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:f63e450df6bfb0dfa2716a721d98656b7a134056202c41c9b95fdeabac31591f"},
+    {file = "ray-2.45.0-cp39-cp39-win_amd64.whl", hash = "sha256:ce6351c518f17cb415b169b0070026f04e0a6015ab427dc5dea588f01014dbbb"},
+]
+
+[package.dependencies]
+aiohttp = {version = ">=3.7", optional = true, markers = "extra == \"serve\""}
+aiohttp-cors = {version = "*", optional = true, markers = "extra == \"serve\""}
+click = ">=7.0"
+colorful = {version = "*", optional = true, markers = "extra == \"serve\""}
+cupy-cuda12x = {version = "*", optional = true, markers = "sys_platform != \"darwin\" and extra == \"cgraph\""}
+fastapi = {version = "*", optional = true, markers = "extra == \"serve\""}
+filelock = "*"
+grpcio = {version = ">=1.42.0", optional = true, markers = "python_version >= \"3.10\" and extra == \"serve\""}
+jsonschema = "*"
+msgpack = ">=1.0.0,<2.0.0"
+opencensus = {version = "*", optional = true, markers = "extra == \"serve\""}
+packaging = "*"
+prometheus-client = {version = ">=0.7.1", optional = true, markers = "extra == \"serve\""}
+protobuf = ">=3.15.3,<3.19.5 || >3.19.5"
+py-spy = [
+    {version = ">=0.2.0", optional = true, markers = "python_version < \"3.12\" and extra == \"serve\""},
+    {version = ">=0.4.0", optional = true, markers = "python_version >= \"3.12\" and extra == \"serve\""},
+]
+pydantic = {version = "<2.0.dev0 || >=2.5.dev0,<3", optional = true, markers = "extra == \"serve\""}
+pyyaml = "*"
+requests = "*"
+smart-open = {version = "*", optional = true, markers = "extra == \"serve\""}
+starlette = {version = "*", optional = true, markers = "extra == \"serve\""}
+uvicorn = {version = "*", extras = ["standard"], optional = true, markers = "extra == \"serve\""}
+virtualenv = {version = ">=20.0.24,<20.21.1 || >20.21.1", optional = true, markers = "extra == \"serve\""}
+watchfiles = {version = "*", optional = true, markers = "extra == \"serve\""}
+
+[package.extras]
+adag = ["cupy-cuda12x ; sys_platform != \"darwin\""]
+air = ["aiohttp (>=3.7)", "aiohttp-cors", "colorful", "fastapi", "fsspec", "grpcio (>=1.32.0) ; python_version < \"3.10\"", "grpcio (>=1.42.0) ; python_version >= \"3.10\"", "numpy (>=1.20)", "opencensus", "pandas", "pandas (>=1.3)", "prometheus-client (>=0.7.1)", "py-spy (>=0.2.0) ; python_version < \"3.12\"", "py-spy (>=0.4.0) ; python_version >= \"3.12\"", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "requests", "smart-open", "starlette", "tensorboardX (>=1.9)", "uvicorn[standard]", "virtualenv (>=20.0.24,!=20.21.1)", "watchfiles"]
+all = ["aiohttp (>=3.7)", "aiohttp-cors", "colorful", "cupy-cuda12x ; sys_platform != \"darwin\"", "dm-tree", "fastapi", "fsspec", "grpcio", "grpcio (!=1.56.0) ; sys_platform == \"darwin\"", "grpcio (>=1.32.0) ; python_version < \"3.10\"", "grpcio (>=1.42.0) ; python_version >= \"3.10\"", "gymnasium (==1.0.0)", "lz4", "memray ; sys_platform != \"win32\"", "numpy (>=1.20)", "opencensus", "opentelemetry-api", "opentelemetry-exporter-otlp", "opentelemetry-sdk", "ormsgpack (==1.7.0)", "pandas", "pandas (>=1.3)", "prometheus-client (>=0.7.1)", "py-spy (>=0.2.0) ; python_version < \"3.12\"", "py-spy (>=0.4.0) ; python_version >= \"3.12\"", "pyOpenSSL", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "pyyaml", "requests", "scipy", "smart-open", "starlette", "tensorboardX (>=1.9)", "uvicorn[standard]", "virtualenv (>=20.0.24,!=20.21.1)", "watchfiles"]
+all-cpp = ["aiohttp (>=3.7)", "aiohttp-cors", "colorful", "cupy-cuda12x ; sys_platform != \"darwin\"", "dm-tree", "fastapi", "fsspec", "grpcio", "grpcio (!=1.56.0) ; sys_platform == \"darwin\"", "grpcio (>=1.32.0) ; python_version < \"3.10\"", "grpcio (>=1.42.0) ; python_version >= \"3.10\"", "gymnasium (==1.0.0)", "lz4", "memray ; sys_platform != \"win32\"", "numpy (>=1.20)", "opencensus", "opentelemetry-api", "opentelemetry-exporter-otlp", "opentelemetry-sdk", "ormsgpack (==1.7.0)", "pandas", "pandas (>=1.3)", "prometheus-client (>=0.7.1)", "py-spy (>=0.2.0) ; python_version < \"3.12\"", "py-spy (>=0.4.0) ; python_version >= \"3.12\"", "pyOpenSSL", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "pyyaml", "ray-cpp (==2.45.0)", "requests", "scipy", "smart-open", "starlette", "tensorboardX (>=1.9)", "uvicorn[standard]", "virtualenv (>=20.0.24,!=20.21.1)", "watchfiles"]
+cgraph = ["cupy-cuda12x ; sys_platform != \"darwin\""]
+client = ["grpcio", "grpcio (!=1.56.0) ; sys_platform == \"darwin\""]
+cpp = ["ray-cpp (==2.45.0)"]
+data = ["fsspec", "numpy (>=1.20)", "pandas (>=1.3)", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)"]
+default = ["aiohttp (>=3.7)", "aiohttp-cors", "colorful", "grpcio (>=1.32.0) ; python_version < \"3.10\"", "grpcio (>=1.42.0) ; python_version >= \"3.10\"", "opencensus", "prometheus-client (>=0.7.1)", "py-spy (>=0.2.0) ; python_version < \"3.12\"", "py-spy (>=0.4.0) ; python_version >= \"3.12\"", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "requests", "smart-open", "virtualenv (>=20.0.24,!=20.21.1)"]
+llm = ["aiohttp (>=3.7)", "aiohttp-cors", "async-timeout ; python_version < \"3.11\"", "colorful", "fastapi", "fsspec", "grpcio (>=1.32.0) ; python_version < \"3.10\"", "grpcio (>=1.42.0) ; python_version >= \"3.10\"", "jsonref (>=1.1.0)", "jsonschema", "ninja", "numpy (>=1.20)", "opencensus", "pandas (>=1.3)", "prometheus-client (>=0.7.1)", "py-spy (>=0.2.0) ; python_version < \"3.12\"", "py-spy (>=0.4.0) ; python_version >= \"3.12\"", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "requests", "smart-open", "starlette", "typer", "uvicorn[standard]", "virtualenv (>=20.0.24,!=20.21.1)", "vllm (>=0.8.2)", "watchfiles"]
+observability = ["memray ; sys_platform != \"win32\"", "opentelemetry-api", "opentelemetry-exporter-otlp", "opentelemetry-sdk"]
+rllib = ["dm-tree", "fsspec", "gymnasium (==1.0.0)", "lz4", "ormsgpack (==1.7.0)", "pandas", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "pyyaml", "requests", "scipy", "tensorboardX (>=1.9)"]
+serve = ["aiohttp (>=3.7)", "aiohttp-cors", "colorful", "fastapi", "grpcio (>=1.32.0) ; python_version < \"3.10\"", "grpcio (>=1.42.0) ; python_version >= \"3.10\"", "opencensus", "prometheus-client (>=0.7.1)", "py-spy (>=0.2.0) ; python_version < \"3.12\"", "py-spy (>=0.4.0) ; python_version >= \"3.12\"", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "requests", "smart-open", "starlette", "uvicorn[standard]", "virtualenv (>=20.0.24,!=20.21.1)", "watchfiles"]
+serve-grpc = ["aiohttp (>=3.7)", "aiohttp-cors", "colorful", "fastapi", "grpcio (>=1.32.0) ; python_version < \"3.10\"", "grpcio (>=1.42.0) ; python_version >= \"3.10\"", "opencensus", "prometheus-client (>=0.7.1)", "py-spy (>=0.2.0) ; python_version < \"3.12\"", "py-spy (>=0.4.0) ; python_version >= \"3.12\"", "pyOpenSSL", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "requests", "smart-open", "starlette", "uvicorn[standard]", "virtualenv (>=20.0.24,!=20.21.1)", "watchfiles"]
+train = ["fsspec", "pandas", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "pydantic (<2.0.dev0 || >=2.5.dev0,<3)", "requests", "tensorboardX (>=1.9)"]
+tune = ["fsspec", "pandas", "pyarrow (<18) ; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", "pyarrow (>=9.0.0)", "requests", "tensorboardX (>=1.9)"]
+
+[[package]]
 name = "referencing"
 version = "0.36.2"
 description = "JSON Referencing + Python"
@@ -7743,6 +8156,40 @@ docs = ["setuptools-rust", "sphinx", "sphinx-rtd-theme"]
 testing = ["black (==22.3)", "datasets", "numpy", "pytest", "requests", "ruff"]
 
 [[package]]
+name = "tokenizers"
+version = "0.21.1"
+description = ""
+optional = false
+python-versions = ">=3.9"
+groups = ["main", "tests"]
+files = [
+    {file = "tokenizers-0.21.1-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:e78e413e9e668ad790a29456e677d9d3aa50a9ad311a40905d6861ba7692cf41"},
+    {file = "tokenizers-0.21.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:cd51cd0a91ecc801633829fcd1fda9cf8682ed3477c6243b9a095539de4aecf3"},
+    {file = "tokenizers-0.21.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:28da6b72d4fb14ee200a1bd386ff74ade8992d7f725f2bde2c495a9a98cf4d9f"},
+    {file = "tokenizers-0.21.1-cp39-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:34d8cfde551c9916cb92014e040806122295a6800914bab5865deb85623931cf"},
+    {file = "tokenizers-0.21.1-cp39-abi3-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:aaa852d23e125b73d283c98f007e06d4595732104b65402f46e8ef24b588d9f8"},
+    {file = "tokenizers-0.21.1-cp39-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:a21a15d5c8e603331b8a59548bbe113564136dc0f5ad8306dd5033459a226da0"},
+    {file = "tokenizers-0.21.1-cp39-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:2fdbd4c067c60a0ac7eca14b6bd18a5bebace54eb757c706b47ea93204f7a37c"},
+    {file = "tokenizers-0.21.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2dd9a0061e403546f7377df940e866c3e678d7d4e9643d0461ea442b4f89e61a"},
+    {file = "tokenizers-0.21.1-cp39-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:db9484aeb2e200c43b915a1a0150ea885e35f357a5a8fabf7373af333dcc8dbf"},
+    {file = "tokenizers-0.21.1-cp39-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:ed248ab5279e601a30a4d67bdb897ecbe955a50f1e7bb62bd99f07dd11c2f5b6"},
+    {file = "tokenizers-0.21.1-cp39-abi3-musllinux_1_2_i686.whl", hash = "sha256:9ac78b12e541d4ce67b4dfd970e44c060a2147b9b2a21f509566d556a509c67d"},
+    {file = "tokenizers-0.21.1-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:e5a69c1a4496b81a5ee5d2c1f3f7fbdf95e90a0196101b0ee89ed9956b8a168f"},
+    {file = "tokenizers-0.21.1-cp39-abi3-win32.whl", hash = "sha256:1039a3a5734944e09de1d48761ade94e00d0fa760c0e0551151d4dd851ba63e3"},
+    {file = "tokenizers-0.21.1-cp39-abi3-win_amd64.whl", hash = "sha256:0f0dcbcc9f6e13e675a66d7a5f2f225a736745ce484c1a4e07476a89ccdad382"},
+    {file = "tokenizers-0.21.1.tar.gz", hash = "sha256:a1bb04dc5b448985f86ecd4b05407f5a8d97cb2c0532199b2a302a604a0165ab"},
+]
+markers = {main = "extra == \"vllm\" or extra == \"all\" or extra == \"transformers\" or extra == \"hqq\" or extra == \"gemlite\" or extra == \"asr\""}
+
+[package.dependencies]
+huggingface-hub = ">=0.16.4,<1.0"
+
+[package.extras]
+dev = ["tokenizers[testing]"]
+docs = ["setuptools-rust", "sphinx", "sphinx-rtd-theme"]
+testing = ["black (==22.3)", "datasets", "numpy", "pytest", "requests", "ruff"]
+
+[[package]]
 name = "tomli"
 version = "2.2.1"
 description = "A lil' TOML parser"
@@ -8142,7 +8589,7 @@ files = [
     {file = "triton-3.2.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e5dfa23ba84541d7c0a531dfce76d8bcd19159d50a4a8b14ad01e91734a5c1b0"},
     {file = "triton-3.2.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:30ceed0eff2c4a73b14eb63e052992f44bbdf175f3fad21e1ac8097a772de7ee"},
 ]
-markers = {main = "(platform_system == \"Linux\" or platform_system == \"linux\" or extra == \"gemlite\" or extra == \"all\") and (platform_system == \"Linux\" or extra == \"vllm\" or extra == \"all\" or extra == \"gemlite\") and (platform_machine == \"x86_64\" or extra == \"gemlite\" or extra == \"all\")", tests = "platform_machine == \"x86_64\" and platform_system == \"Linux\""}
+markers = {main = "(platform_machine == \"x86_64\" or extra == \"gemlite\" or extra == \"all\") and (platform_system == \"Linux\" or extra == \"gemlite\" or extra == \"all\" or extra == \"vllm\") and (platform_system == \"Linux\" or platform_system == \"linux\" or extra == \"gemlite\" or extra == \"all\")", tests = "platform_machine == \"x86_64\" and platform_system == \"Linux\""}
 
 [package.extras]
 build = ["cmake (>=3.20)", "lit"]
@@ -8402,6 +8849,82 @@ fastsafetensors = ["fastsafetensors (>=0.1.10)"]
 runai = ["boto3", "runai-model-streamer", "runai-model-streamer-s3"]
 tensorizer = ["tensorizer (>=2.9.0)"]
 video = ["decord"]
+
+[[package]]
+name = "vllm"
+version = "0.8.5.post1"
+description = "A high-throughput and memory-efficient inference and serving engine for LLMs"
+optional = true
+python-versions = "<3.13,>=3.9"
+groups = ["main"]
+markers = "extra == \"vllm\" or extra == \"all\""
+files = [
+    {file = "vllm-0.8.5.post1-cp38-abi3-manylinux1_x86_64.whl", hash = "sha256:b7f0dbd46f82aac6b2e7489c2bbf1c90fdc2e56d3f1fff44549951db40814d5a"},
+    {file = "vllm-0.8.5.post1.tar.gz", hash = "sha256:5e5be78ee00637de4ee29f75ce86edc6c224c05d9e58d067a511eb83c3afe32d"},
+]
+
+[package.dependencies]
+aiohttp = "*"
+blake3 = "*"
+cachetools = "*"
+cloudpickle = "*"
+compressed-tensors = "0.9.3"
+depyf = "0.18.0"
+einops = "*"
+fastapi = {version = ">=0.115.0", extras = ["standard"]}
+filelock = ">=3.16.1"
+gguf = ">=0.13.0"
+huggingface-hub = {version = ">=0.30.0", extras = ["hf-xet"]}
+importlib_metadata = "*"
+lark = "1.2.2"
+llguidance = {version = ">=0.7.9,<0.8.0", markers = "platform_machine == \"x86_64\" or platform_machine == \"arm64\" or platform_machine == \"aarch64\""}
+lm-format-enforcer = ">=0.10.11,<0.11"
+mistral_common = {version = ">=1.5.4", extras = ["opencv"]}
+msgspec = "*"
+ninja = "*"
+numba = {version = "0.61.2", markers = "python_version > \"3.9\""}
+numpy = "*"
+openai = ">=1.52.0"
+opencv-python-headless = ">=4.11.0"
+opentelemetry-api = ">=1.26.0,<1.27.0"
+opentelemetry-exporter-otlp = ">=1.26.0,<1.27.0"
+opentelemetry-sdk = ">=1.26.0,<1.27.0"
+opentelemetry-semantic-conventions-ai = ">=0.4.1,<0.5.0"
+outlines = "0.1.11"
+partial-json-parser = "*"
+pillow = "*"
+prometheus_client = ">=0.18.0"
+prometheus-fastapi-instrumentator = ">=7.0.0"
+protobuf = "*"
+psutil = "*"
+py-cpuinfo = "*"
+pydantic = ">=2.9"
+python-json-logger = "*"
+pyyaml = "*"
+pyzmq = ">=25.0.0"
+ray = {version = ">=2.43.0,<2.44.dev0 || >=2.45.dev0", extras = ["cgraph"]}
+requests = ">=2.26.0"
+scipy = "*"
+sentencepiece = "*"
+setuptools = {version = ">=74.1.1", markers = "python_version > \"3.11\""}
+six = {version = ">=1.16.0", markers = "python_version > \"3.11\""}
+tiktoken = ">=0.6.0"
+tokenizers = ">=0.21.1"
+torch = "2.6.0"
+torchaudio = "2.6.0"
+torchvision = "0.21.0"
+tqdm = "*"
+transformers = ">=4.51.1"
+typing_extensions = ">=4.10"
+watchfiles = "*"
+xformers = {version = "0.0.29.post2", markers = "platform_system == \"Linux\" and platform_machine == \"x86_64\""}
+xgrammar = {version = "0.1.18", markers = "platform_machine == \"x86_64\" or platform_machine == \"aarch64\""}
+
+[package.extras]
+audio = ["librosa", "soundfile"]
+fastsafetensors = ["fastsafetensors (>=0.1.10)"]
+runai = ["boto3", "runai-model-streamer", "runai-model-streamer-s3"]
+tensorizer = ["tensorizer (>=2.9.0)"]
 
 [[package]]
 name = "watchdog"
@@ -8806,7 +9329,7 @@ description = "Efficient, Flexible and Portable Structured Generation"
 optional = true
 python-versions = "<4,>=3.8"
 groups = ["main"]
-markers = "extra == \"vllm\""
+markers = "(platform_machine == \"x86_64\" or platform_machine == \"aarch64\" or extra == \"vllm\") and (extra == \"vllm\" or extra == \"all\")"
 files = [
     {file = "xgrammar-0.1.18-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:61649e9e43edcde62b4bd6ebe2f3c46c89bfff8655283bff0efd72838661619f"},
     {file = "xgrammar-0.1.18-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:787781a002d55c0d70c3a17736eeb8aaea0fc5adb5897d333a96972d80ae3afb"},
@@ -8999,4 +9522,4 @@ vllm = ["outlines", "vllm", "xgrammar"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "7b296ab865f8eff90d76582eadcff7b1725d4ca8f9fe5280826c0b93c74a71ec"
+content-hash = "e2e7e946fcb856910f30ce4ae823d83a4f1ee2f048b0200c31cee76d23b522fa"
