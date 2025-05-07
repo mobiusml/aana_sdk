@@ -164,7 +164,6 @@ class VLLMDeployment(BaseDeployment):
             gemlite_imports.check()
 
             os.environ["VLLM_USE_V1"] = "0"
-            set_vllm_hqq_backend(backend=VLLM_HQQ_BACKEND.GEMLITE)
 
             # For ONTHEFLY mode, we need to set the gemlite config
             if config_obj.gemlite_mode == GemliteMode.ONTHEFLY:
@@ -179,6 +178,8 @@ class VLLMDeployment(BaseDeployment):
                     quant_mode=gemlite_config.quant_mode,
                     skip_modules=gemlite_config.skip_modules,
                 )
+            elif config_obj.gemlite_mode == GemliteMode.PREQUANTIZED:
+                set_vllm_hqq_backend(backend=VLLM_HQQ_BACKEND.GEMLITE)
 
         self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
