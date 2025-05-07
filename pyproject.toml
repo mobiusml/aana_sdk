@@ -61,7 +61,7 @@ hqq = [
     "accelerate>=0.34.2",
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0",
-    "hqq @ git+https://github.com/mobiusml/hqq.git",
+    "hqq>=0.2.5",
     "transformers>=4.47.0"
 ]
 
@@ -69,8 +69,8 @@ gemlite = [
     "accelerate>=0.34.2",
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0",
-    "hqq @ git+https://github.com/mobiusml/hqq.git",
-    "gemlite @ git+https://github.com/mobiusml/gemlite.git",
+    "hqq>=0.2.5",
+    "gemlite>=0.4.5",
     "transformers>=4.47.0"
 ]
 
@@ -84,8 +84,8 @@ all = [
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0", 
     "faster-whisper (>=1.1.1,<2.0.0)",
-    "hqq @ git+https://github.com/mobiusml/hqq.git",
-    "gemlite @ git+https://github.com/mobiusml/gemlite.git",
+    "hqq>=0.2.5",
+    "gemlite>=0.4.5",
     "outlines[serve]>=0.0.46",
     "pyannote-audio>=3.1.1",
     "transformers>=4.49.0",
