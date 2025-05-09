@@ -1,9 +1,9 @@
+import asyncio
 import base64
 import os
 from collections.abc import AsyncGenerator
 from enum import Enum
 from typing import Any
-import asyncio
 
 import torch
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
@@ -45,6 +45,7 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     )
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
+
 
 class GemliteQuantizationConfig(BaseModel):
     """The configuration of the gemlite quantization.
@@ -119,8 +120,9 @@ class VLLMConfig(BaseModel):
     engine_args: CustomConfig = {}
     mm_data_concurrency_limit: int = Field(default=100)
 
-    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,), extra="forbid")
-    
+    model_config = ConfigDict(
+        protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
+    )
 
 
 @serve.deployment
@@ -349,18 +351,18 @@ class VLLMDeployment(BaseDeployment):
 
         request_id = None
 
+        if len(prompt_token_ids) > self.model_config.max_model_len:
+            raise PromptTooLongException(
+                prompt_len=len(prompt_token_ids),
+                max_len=self.model_config.max_model_len,
+            )
+
         semaphore_acquired = False
         if mm_data is not None:
             await self.mm_data_semaphore.acquire()
             semaphore_acquired = True
 
         try:
-            if len(prompt_token_ids) > self.model_config.max_model_len:
-                raise PromptTooLongException(
-                    prompt_len=len(prompt_token_ids),
-                    max_len=self.model_config.max_model_len,
-                )
-
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
                 **sampling_params.model_dump(
