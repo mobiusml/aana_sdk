@@ -45,10 +45,6 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
 
-
-# weight_bits=4, group_size=64, quant_mode="static", skip_modules=["lm_head"]
-
-
 class GemliteQuantizationConfig(BaseModel):
     """The configuration of the gemlite quantization.
 
@@ -63,6 +59,10 @@ class GemliteQuantizationConfig(BaseModel):
     group_size: int | None = Field(default=64)
     quant_mode: str = Field(default="static")
     skip_modules: list[str] = Field(default_factory=lambda: ["lm_head"])
+
+    model_config = ConfigDict(
+        protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
+    )
 
 
 class GemliteMode(str, Enum):
@@ -115,7 +115,8 @@ class VLLMConfig(BaseModel):
 
     engine_args: CustomConfig = {}
 
-    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
+    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,), extra="forbid")
+    
 
 
 @serve.deployment
