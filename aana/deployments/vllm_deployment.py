@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import logging
 import os
 from collections.abc import AsyncGenerator
 from enum import Enum
@@ -46,6 +47,8 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
 
+
+logger = logging.getLogger(__name__)
 
 class GemliteQuantizationConfig(BaseModel):
     """The configuration of the gemlite quantization.
@@ -176,6 +179,13 @@ class VLLMDeployment(BaseDeployment):
             gemlite_imports.check()
 
             os.environ["VLLM_USE_V1"] = "0"
+
+            # Force dtype to float16 for gemlite
+            if config_obj.dtype != Dtype.FLOAT16:
+                logger.warning(
+                    "Forcing dtype to float16 because gemlite is used."
+                )
+                config_obj.dtype = Dtype.FLOAT16
 
             # For ONTHEFLY mode, we need to set the gemlite config
             if config_obj.gemlite_mode == GemliteMode.ONTHEFLY:

@@ -224,13 +224,12 @@ vLLM deployment supports [Gemlite](https://github.com/mobiusml/gemlite/). Gemlit
 
 You can find prequantized models on our [Hugging Face Hub](https://huggingface.co/mobiuslabsgmbh). 
 
-To use Gemlite with pre-quantized models, you need to set `gemlite_mode` to `GemliteMode.PREQUANTIZED` in the `VLLMConfig`. Also, set dtype to `Dtype.FLOAT16`.
+To use Gemlite with pre-quantized models, you need to set `gemlite_mode` to `GemliteMode.PREQUANTIZED` in the `VLLMConfig`.
 
 ??? example "Pre-quantized Qwen2.5-VL 3B Instruct"
 
     ```python
     from aana.core.models.sampling import SamplingParams
-    from aana.core.models.types import Dtype
     from aana.deployments.vllm_deployment import (
         GemliteMode,
         GemliteQuantizationConfig,
@@ -244,7 +243,6 @@ To use Gemlite with pre-quantized models, you need to set `gemlite_mode` to `Gem
         user_config=VLLMConfig(
             model_id="mobiuslabsgmbh/Qwen2.5-VL-3B-Instruct_4bitgs64_hqq_hf",
             gpu_memory_reserved=40000,
-            dtype=Dtype.FLOAT16,
             gemlite_mode=GemliteMode.PREQUANTIZED,
             default_sampling_params=SamplingParams(
                 temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
@@ -261,13 +259,12 @@ To use Gemlite with pre-quantized models, you need to set `gemlite_mode` to `Gem
     )
     ```
 
-To use Gemlite with on-the-fly quantization, you need to set `gemlite_mode` to `GemliteMode.ONTHEFLY` in the `VLLMConfig`. Also, set dtype to `Dtype.FLOAT16` and pass the quantization configuration in the `gemlite_config` parameter.
+To use Gemlite with on-the-fly quantization, you need to set `gemlite_mode` to `GemliteMode.ONTHEFLY` in the `VLLMConfig` and pass the quantization configuration in the `gemlite_config` parameter.
 
 ??? example "A8W8 On-the-fly Qwen2.5-VL 3B Instruct"
 
     ```python
     from aana.core.models.sampling import SamplingParams
-    from aana.core.models.types import Dtype
     from aana.deployments.vllm_deployment import (
         GemliteMode,
         GemliteQuantizationConfig,
@@ -281,7 +278,6 @@ To use Gemlite with on-the-fly quantization, you need to set `gemlite_mode` to `
         user_config=VLLMConfig(
             model_id="Qwen/Qwen2.5-VL-3B-Instruct",
             gpu_memory_reserved=40000,
-            dtype=Dtype.FLOAT16,
             gemlite_mode=GemliteMode.ONTHEFLY,
             gemlite_config=GemliteQuantizationConfig(
                 weight_bits=8,
