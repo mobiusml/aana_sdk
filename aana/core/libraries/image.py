@@ -31,12 +31,22 @@ class AbstractImageLibrary:
         raise NotImplementedError
 
     @classmethod
-    def write_file(cls, path: Path, img: np.ndarray):
-        """Write a file using the image library.
+    def write_file(
+        cls,
+        path: Path,
+        img: np.ndarray,
+        format: str = "bmp",  # noqa: A002
+        quality: int = 95,
+        compression: int = 3,
+    ):
+        """Write an image to disk in BMP, PNG or JPEG format.
 
         Args:
-            path (Path): The path of the file to write.
-            img (np.ndarray): The image to write.
+            path (Path): Base path (extension will be enforced).
+            img (np.ndarray): RGB image array.
+            format (str): One of "bmp", "png", "jpeg" (or "jpg").
+            quality (int): JPEG quality (0–100; higher is better). Only used if format is JPEG.
+            compression (int): PNG compression level (0–9; higher is smaller). Only used if format is PNG.
         """
         raise NotImplementedError
 
