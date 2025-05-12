@@ -99,7 +99,6 @@ deployments = [
                 user_config=VLLMConfig(
                     model_id="mobiuslabsgmbh/Qwen2.5-VL-3B-Instruct_4bitgs64_hqq_hf",
                     gpu_memory_reserved=40000,
-                    dtype=Dtype.FLOAT16,
                     gemlite_mode=GemliteMode.PREQUANTIZED,
                     default_sampling_params=SamplingParams(
                         temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
@@ -126,7 +125,6 @@ deployments = [
                 user_config=VLLMConfig(
                     model_id="Qwen/Qwen2.5-VL-3B-Instruct",
                     gpu_memory_reserved=40000,
-                    dtype=Dtype.FLOAT16,
                     gemlite_mode=GemliteMode.ONTHEFLY,
                     gemlite_config=GemliteQuantizationConfig(
                         weight_bits=8,
