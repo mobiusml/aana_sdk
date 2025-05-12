@@ -152,6 +152,10 @@ class VLLMDeployment(BaseDeployment):
         - chat_template: the name of the chat template (optional, default: None)
         - enforce_eager: whether to enforce eager execution (optional, default: False)
         - engine_args: extra engine arguments (optional, default: {})
+        - gemlite_mode: the mode of the gemlite quantization (optional, default: "off")
+        - gemlite_config: the configuration of the gemlite quantization (optional, default: None)
+        - mm_data_concurrency_limit: the limit for concurrent requests with multimodal data
+            (optional, default: 100)
 
         Args:
             config (dict): the configuration of the deployment
