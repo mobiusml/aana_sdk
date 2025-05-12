@@ -15,6 +15,7 @@ from aana.core.models.chat import ChatDialog, ChatMessage
 from aana.core.models.custom_config import CustomConfig
 from aana.core.models.image import Image
 from aana.core.models.image_chat import ImageChatDialog
+from aana.core.models.multimodal_chat import FrameVideo, MultimodalChatDialog
 from aana.core.models.sampling import SamplingParams
 from aana.core.models.types import Dtype
 from aana.deployments.base_deployment import BaseDeployment, exception_handler
@@ -49,6 +50,7 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
 
 
 logger = logging.getLogger(__name__)
+
 
 class GemliteQuantizationConfig(BaseModel):
     """The configuration of the gemlite quantization.
@@ -182,9 +184,7 @@ class VLLMDeployment(BaseDeployment):
 
             # Force dtype to float16 for gemlite
             if config_obj.dtype != Dtype.FLOAT16:
-                logger.warning(
-                    "Forcing dtype to float16 because gemlite is used."
-                )
+                logger.warning("Forcing dtype to float16 because gemlite is used.")
                 config_obj.dtype = Dtype.FLOAT16
 
             # For ONTHEFLY mode, we need to set the gemlite config
@@ -254,39 +254,53 @@ class VLLMDeployment(BaseDeployment):
             tuple[str | list[int], dict | None]: the prompt and the multimodal data
         """
 
-        def image_to_base64(image: Image) -> str:
-            """Convert an image to a base64 string."""
-            image_data = image.get_content()
-            base64_encoded_image = base64.b64encode(image_data)
-            base64_string = "data:image;base64," + base64_encoded_image.decode("utf-8")
-            return base64_string
+        def replace_multimodal_types(
+            messages: list[dict],
+            images: list[Image] | None = None,
+            videos: list[FrameVideo] | None = None,
+        ) -> list[dict]:
+            image_index = 0
+            video_index = 0
 
-        def replace_image_type(messages: list[dict], images: list[Image]) -> list[dict]:
-            """Replace the image type with image_url for compatibility with vLLM chat utils.
-
-            vLLM chat utils (parse_chat_messages) only support image_url type for images.
-            We need to replace the image type with image_url and provide the actual image content as base64 string.
-            """
-            i = 0
             for message in messages:
                 for item in message["content"]:
                     if item["type"] == "image":
                         item["type"] = "image_url"
-                        if i >= len(images):
+                        if image_index >= len(images):
                             raise ValueError(  # noqa: TRY003
                                 "Number of images does not match the number of image items in the message."
                             )
-                        item["image_url"] = {"url": image_to_base64(images[i])}
-                        i += 1
-            if i != len(images):
+                        item["image_url"] = {
+                            "url": images[image_index].get_base64_url()
+                        }
+                        image_index += 1
+                    elif item["type"] == "video":
+                        item["type"] = "video_url"
+                        if video_index >= len(videos):
+                            raise ValueError(  # noqa: TRY003
+                                "Number of videos does not match the number of video items in the message."
+                            )
+                        item["video_url"] = {
+                            "url": videos[video_index].get_base64_url()
+                        }
+                        video_index += 1
+
+            if image_index != len(images):
                 raise ValueError(  # noqa: TRY003
                     "Number of images does not match the number of image items in the message."
+                )
+            if video_index != len(videos):
+                raise ValueError(  # noqa: TRY003
+                    "Number of videos does not match the number of video items in the message."
                 )
             return messages
 
         if isinstance(dialog, ImageChatDialog):
             messages, images = dialog.to_objects()
-            messages = replace_image_type(messages, images)
+            messages = replace_multimodal_types(messages, images=images)
+        elif isinstance(dialog, MultimodalChatDialog):
+            messages, images, videos = dialog.to_objects()
+            messages = replace_multimodal_types(messages, images=images, videos=videos)
         else:
             messages = dialog.model_dump()["messages"]
             images = None

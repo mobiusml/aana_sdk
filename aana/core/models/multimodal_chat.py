@@ -18,6 +18,15 @@ class FrameVideo(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    def get_base64_url(self) -> str:
+        """Get the base64 URL of the video.
+
+        Returns:
+            str: the base64 URL of the video
+        """
+        base64_frames = [frame.get_base64() for frame in self.frames]
+        return f"data:video/jpeg;base64,{','.join(base64_frames)}"
+
 
 class TextContent(BaseModel):
     """Text content for a chat message.
@@ -129,20 +138,26 @@ class MultimodalChatDialog(BaseModel):
 
     @classmethod
     def from_prompt(
-        cls, prompt: str, images: list[Image], videos: list[FrameVideo]
+        cls,
+        prompt: str,
+        images: list[Image] | None = None,
+        videos: list[FrameVideo] | None = None,
     ) -> "MultimodalChatDialog":
         """Create an ImageChatDialog from a prompt and a list of images and videos.
 
         Args:
             prompt (str): the prompt
-            images (list[Image]): the list of images
-            videos (list[FrameVideo]): the list of videos
+            images (list[Image] | None): the list of images
+            videos (list[FrameVideo] | None): the list of videos
 
         Returns:
             ImageChatDialog: the chat dialog
         """
-        content: list[Content] = [ImageContent(image=image) for image in images]
-        content.extend([VideoContent(video=video) for video in videos])
+        content: list[Content] = []
+        if images:
+            content.extend([ImageContent(image=image) for image in images])
+        if videos:
+            content.extend([VideoContent(video=video) for video in videos])
         content.append(TextContent(text=prompt))
 
         return MultimodalChatDialog(
