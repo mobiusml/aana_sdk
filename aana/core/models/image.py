@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import io
 import uuid
@@ -40,6 +41,7 @@ class Image(Media):
         content (bytes): The content of the image in bytes (image file as bytes).
         numpy (np.ndarray): The image as a numpy array.
         media_id (MediaId): The ID of the image, generated automatically if not provided.
+        format (str): The format of the image (e.g., 'jpeg', 'png', 'bmp'). Default is 'bmp'.
     """
 
     media_dir: Path | None = settings.image_dir
@@ -47,6 +49,7 @@ class Image(Media):
     image_lib: type[AbstractImageLibrary] = (
         OpenCVWrapper  # The image library to use, TODO: add support for PIL and allow to choose the library
     )
+    format: str = "bmp"
 
     def _validate(self):
         """Validate the image."""
@@ -72,7 +75,7 @@ class Image(Media):
         If the image is already available on disk, do nothing.
         If the image represented as a byte string, save it on disk.
         If the image is represented as a URL, download it and save it on disk.
-        If the image is represented as a numpy array, convert it to BMP and save it on disk.
+        If the image is represented as a numpy array, convert it to the specified format and save it on disk.
 
         First check if the image is already available on disk, then content, then url, then numpy
         to avoid unnecessary operations (e.g. downloading the image or converting it to BMP).
@@ -85,7 +88,7 @@ class Image(Media):
 
         image_dir = settings.image_dir
         image_dir.mkdir(parents=True, exist_ok=True)
-        file_path = image_dir / (self.media_id + ".bmp")
+        file_path = image_dir / (self.media_id + f".{self.format.lower()}")
 
         if self.content:
             self._save_from_content(file_path)
@@ -107,7 +110,7 @@ class Image(Media):
             file_path (Path): The path of the file to write.
         """
         assert self.numpy is not None  # noqa: S101 TODO
-        self.image_lib.write_file(file_path, self.numpy)
+        self.image_lib.write_file(file_path, self.numpy, self.format)
 
     def get_numpy(self) -> np.ndarray:
         """Load the image as a numpy array.
@@ -141,6 +144,40 @@ class Image(Media):
             PIL.Image: The image as a PIL image.
         """
         return PIL.Image.fromarray(self.get_numpy())
+
+    def get_base64(self, format: str | None = None) -> str:  # noqa: A002
+        """Get the image as a base64-encoded string.
+
+        Args:
+            format (str | None): The format to encode the image in (e.g., 'jpeg', 'png', 'bmp').
+                                 If None, uses self.format.
+
+        Returns:
+            str: The base64-encoded image.
+        """
+        if format is None or (format == self.format and self.is_saved):
+            image_data = self.get_content()
+            base64_encoded_image = base64.b64encode(image_data)
+            return base64_encoded_image.decode("utf-8")
+        else:
+            buf = self.image_lib.write_to_bytes(self.get_numpy(), format)
+            base64_encoded_image = base64.b64encode(buf)
+            return base64_encoded_image.decode("utf-8")
+
+    def get_base64_url(self, format: str | None = None) -> str:  # noqa: A002
+        """Get the image as a base64-encoded string with a data URL.
+
+        Args:
+            format (str | None): The format to encode the image in (e.g., 'jpeg', 'png', 'bmp').
+                                 If None, uses self.format.
+
+        Returns:
+            str: The base64-encoded image with a data URL.
+        """
+        if format is None:
+            format = self.format  # noqa: A001
+        base64_image = self.get_base64(format)
+        return f"data:image/{format};base64,{base64_image}"
 
     def _load_numpy_from_path(self):
         """Load the image as a numpy array from a path.
