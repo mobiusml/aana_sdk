@@ -229,7 +229,7 @@ class VLLMDeployment(BaseDeployment):
 
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
-        self.tokenizer = self.engine.engine.tokenizer.tokenizer
+        self.tokenizer = await self.engine.get_tokenizer()
         self.model_config = await self.engine.get_model_config()
 
         self.mm_data_semaphore = asyncio.Semaphore(config_obj.mm_data_concurrency_limit)
@@ -242,7 +242,7 @@ class VLLMDeployment(BaseDeployment):
 
         await super().check_health()
 
-    def apply_chat_template(
+    def apply_chat_template(  # noqa: C901
         self, dialog: ChatDialog | ImageChatDialog
     ) -> tuple[str | list[int], dict | None]:
         """Apply the chat template to the dialog.
