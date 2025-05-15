@@ -61,7 +61,7 @@ class BaseDeployment:
         self.raised_exceptions = []
         self.restart_exceptions = [InferenceException]
 
-    async def request_gpu_from_manager(self):
+    async def _request_gpu_from_manager(self):
         """Request GPU resources for the deployment from the GPU manager."""
         num_gpus = ray.get_runtime_context().get_assigned_resources().get("GPU", 0)
         # If no GPUs are assigned, skip
@@ -88,7 +88,7 @@ class BaseDeployment:
         self.config = config
 
         if aana_settings.gpu_manager.enabled:
-            await self.request_gpu_from_manager()
+            await self._request_gpu_from_manager()
 
         await self.apply_config(config)
         self._configured = True

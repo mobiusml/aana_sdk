@@ -218,6 +218,89 @@ Here are some other example configurations for the VLLM deployment. Keep in mind
     )
     ```
 
+### Gemlite
+
+vLLM deployment supports [Gemlite](https://github.com/mobiusml/gemlite/). Gemlite allows to run LLMs with quantization efficiently. vLLM deployment supports both pre-quantized and on-the-fly quantization with Gemlite.
+
+You can find prequantized models on our [Hugging Face Hub](https://huggingface.co/mobiuslabsgmbh). 
+
+To use Gemlite with pre-quantized models, you need to set `gemlite_mode` to `GemliteMode.PREQUANTIZED` in the `VLLMConfig`.
+
+??? example "Pre-quantized Qwen2.5-VL 3B Instruct"
+
+    ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.deployments.vllm_deployment import (
+        GemliteMode,
+        GemliteQuantizationConfig,
+        VLLMConfig,
+        VLLMDeployment,
+    )
+
+    VLLMDeployment.options(
+        num_replicas=1,
+        ray_actor_options={"num_gpus": 1.0},
+        user_config=VLLMConfig(
+            model_id="mobiuslabsgmbh/Qwen2.5-VL-3B-Instruct_4bitgs64_hqq_hf",
+            gpu_memory_reserved=40000,
+            gemlite_mode=GemliteMode.PREQUANTIZED,
+            default_sampling_params=SamplingParams(
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+            ),
+            max_model_len=4096,
+            engine_args=dict(
+                limit_mm_per_prompt={"image": 3},
+                mm_processor_kwargs={
+                    "min_pixels": 28 * 28,
+                    "max_pixels": 640 * 640 * 3,
+                },
+            ),
+        ).model_dump(mode="json"),
+    )
+    ```
+
+To use Gemlite with on-the-fly quantization, you need to set `gemlite_mode` to `GemliteMode.ONTHEFLY` in the `VLLMConfig` and pass the quantization configuration in the `gemlite_config` parameter.
+
+??? example "A8W8 On-the-fly Qwen2.5-VL 3B Instruct"
+
+    ```python
+    from aana.core.models.sampling import SamplingParams
+    from aana.deployments.vllm_deployment import (
+        GemliteMode,
+        GemliteQuantizationConfig,
+        VLLMConfig,
+        VLLMDeployment,
+    )
+
+    VLLMDeployment.options(
+        num_replicas=1,
+        ray_actor_options={"num_gpus": 1.0},
+        user_config=VLLMConfig(
+            model_id="Qwen/Qwen2.5-VL-3B-Instruct",
+            gpu_memory_reserved=40000,
+            gemlite_mode=GemliteMode.ONTHEFLY,
+            gemlite_config=GemliteQuantizationConfig(
+                weight_bits=8,
+                group_size=None,
+                quant_mode="dynamic_int8",
+                skip_modules=["lm_head", "visual", "vision"],
+            ),
+            default_sampling_params=SamplingParams(
+                temperature=0.0, top_p=1.0, top_k=-1, max_tokens=1024
+            ),
+            max_model_len=4096,
+            engine_args=dict(
+                limit_mm_per_prompt={"image": 3},
+                mm_processor_kwargs={
+                    "min_pixels": 28 * 28,
+                    "max_pixels": 640 * 640 * 3,
+                },
+            ),
+        ).model_dump(mode="json"),
+    )
+    ```
+
+
 ### Structured Generation
 
 Structured generation is a feature that allows you to generate structured data using the vLLM deployment forcing LLM to adhere to a specific JSON schema or regular expression pattern.

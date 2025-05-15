@@ -56,7 +56,10 @@ class TestStructuredGeneration:
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("query", ["Tell me about Vienna.", "Describe Berlin."])
-    async def test_chat_with_json_schema(self, setup_deployment, query):
+    @pytest.mark.parametrize("guided_decoding_backend", ["outlines", "xgrammar"])
+    async def test_chat_with_json_schema(
+        self, setup_deployment, query, guided_decoding_backend
+    ):
         """Test chat method with JSON schema."""
         deployment_name, handle_name, _ = setup_deployment
 
@@ -75,7 +78,10 @@ class TestStructuredGeneration:
         output = await handle.chat(
             dialog=dialog,
             sampling_params=SamplingParams(
-                json_schema=schema, temperature=0.0, max_tokens=512
+                json_schema=schema,
+                temperature=0.0,
+                max_tokens=512,
+                guided_decoding_backend=guided_decoding_backend,
             ),
         )
 
@@ -98,7 +104,10 @@ class TestStructuredGeneration:
             "Describe Tokyo and London. Return a list of dictionaries.",
         ],
     )
-    async def test_chat_with_list_schema(self, setup_deployment, query):
+    @pytest.mark.parametrize("guided_decoding_backend", ["outlines", "xgrammar"])
+    async def test_chat_with_list_schema(
+        self, setup_deployment, query, guided_decoding_backend
+    ):
         """Test chat method with list of city descriptions schema."""
         deployment_name, handle_name, _ = setup_deployment
 
@@ -123,7 +132,10 @@ class TestStructuredGeneration:
         output = await handle.chat(
             dialog=dialog,
             sampling_params=SamplingParams(
-                json_schema=schema, temperature=0.0, max_tokens=512
+                json_schema=schema,
+                temperature=0.0,
+                max_tokens=512,
+                guided_decoding_backend=guided_decoding_backend,
             ),
         )
 
@@ -148,7 +160,10 @@ class TestStructuredGeneration:
             )
         ],
     )
-    async def test_chat_with_regex(self, setup_deployment, query, regex_pattern):
+    @pytest.mark.parametrize("guided_decoding_backend", ["outlines", "xgrammar"])
+    async def test_chat_with_regex(
+        self, setup_deployment, query, regex_pattern, guided_decoding_backend
+    ):
         """Test chat method with regex."""
         deployment_name, handle_name, _ = setup_deployment
 
@@ -167,14 +182,16 @@ class TestStructuredGeneration:
         output = await handle.chat(
             dialog=dialog,
             sampling_params=SamplingParams(
-                regex_string=regex_pattern, temperature=0.0, max_tokens=32
+                regex_string=regex_pattern,
+                temperature=0.0,
+                max_tokens=32,
+                guided_decoding_backend=guided_decoding_backend,
             ),
         )
 
         response_message = output["message"]
         assert response_message.role == "assistant"
         text = response_message.content
-        print(text)
 
         # Validate response against the regex pattern
         if not re.fullmatch(regex_pattern, text):
