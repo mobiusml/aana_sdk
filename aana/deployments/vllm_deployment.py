@@ -50,6 +50,7 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
 
 logger = logging.getLogger(__name__)
 
+
 class GemliteQuantizationConfig(BaseModel):
     """The configuration of the gemlite quantization.
 
@@ -182,9 +183,7 @@ class VLLMDeployment(BaseDeployment):
 
             # Force dtype to float16 for gemlite
             if config_obj.dtype != Dtype.FLOAT16:
-                logger.warning(
-                    "Forcing dtype to float16 because gemlite is used."
-                )
+                logger.warning("Forcing dtype to float16 because gemlite is used.")
                 config_obj.dtype = Dtype.FLOAT16
 
             # For ONTHEFLY mode, we need to set the gemlite config
@@ -229,7 +228,7 @@ class VLLMDeployment(BaseDeployment):
 
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
-        self.tokenizer = self.engine.engine.tokenizer.tokenizer
+        self.tokenizer = await self.engine.get_tokenizer()
         self.model_config = await self.engine.get_model_config()
 
         self.mm_data_semaphore = asyncio.Semaphore(config_obj.mm_data_concurrency_limit)
