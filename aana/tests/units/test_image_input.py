@@ -239,3 +239,9 @@ def test_imagelistinput_non_empty():
     """Test that ImageInputList must not be empty."""
     with pytest.raises(ValidationError):
         ImageInputList([])
+
+
+def test_disallowed_extra_fields():
+    """Test that extra fields are not allowed."""
+    with pytest.raises(ValueError):
+        ImageInput(path="image.png", extra_field="extra_value")

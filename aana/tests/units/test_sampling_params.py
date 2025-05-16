@@ -63,3 +63,9 @@ def test_kwargs():
     assert params.top_k is None
     assert params.max_tokens is None
     assert params.repetition_penalty == 1.0
+
+
+def test_disallowed_extra_fields():
+    """Test that extra fields are not allowed."""
+    with pytest.raises(ValueError):
+        SamplingParams(temperature=0.5, extra_field="extra_value")
