@@ -243,5 +243,5 @@ def test_imagelistinput_non_empty():
 
 def test_disallowed_extra_fields():
     """Test that extra fields are not allowed."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         ImageInput(path="image.png", extra_field="extra_value")
