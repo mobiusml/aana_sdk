@@ -1,5 +1,6 @@
 # ruff: noqa: S101
 import pytest
+from pydantic import ValidationError
 
 from aana.core.models.sampling import SamplingParams
 
@@ -67,5 +68,5 @@ def test_kwargs():
 
 def test_disallowed_extra_fields():
     """Test that extra fields are not allowed."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         SamplingParams(temperature=0.5, extra_field="extra_value")
