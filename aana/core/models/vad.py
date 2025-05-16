@@ -31,8 +31,9 @@ class VadParams(BaseModel):
 
     model_config = ConfigDict(
         json_schema_extra={
-            "description": "Parameters for the voice activity detection model.",
-        }
+            "description": "Parameters for the voice activity detection model."
+        },
+        extra="forbid",
     )
 
 
@@ -64,7 +65,8 @@ class VadSegment(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "description": "VAD Segment for ASR",
-        }
+        },
+        extra="forbid",
     )
 
 

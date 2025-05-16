@@ -20,6 +20,8 @@ class DeploymentStatus(BaseModel):
         description="The message for more information like error message."
     )
 
+    model_config = ConfigDict(extra="forbid")
+
 
 class SDKStatusResponse(BaseModel):
     """The response for the SDK status endpoint.
@@ -73,5 +75,6 @@ class SDKStatusResponse(BaseModel):
                     },
                 },
             ],
-        }
+        },
+        extra="forbid",
     )

@@ -64,9 +64,8 @@ class AsrWord(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "description": "Word",
-        }
+        json_schema_extra={"description": "Word"},
+        extra="forbid",
     )
 
 
@@ -128,9 +127,8 @@ class AsrSegment(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "description": "Segment",
-        }
+        json_schema_extra={"description": "Segment"},
+        extra="forbid",
     )
 
 
@@ -185,9 +183,8 @@ class AsrTranscriptionInfo(BaseModel):
         )
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "description": "Transcription info",
-        }
+        json_schema_extra={"description": "Transcription info"},
+        extra="forbid",
     )
 
 
@@ -213,9 +210,8 @@ class AsrTranscription(BaseModel):
         return AsrTranscription(text=text)
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "description": "Transcription/Translation",
-        }
+        json_schema_extra={"description": "Transcription/Translation"},
+        extra="forbid",
     )
 
 
