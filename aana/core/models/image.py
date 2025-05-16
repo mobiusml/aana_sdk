@@ -367,6 +367,7 @@ class ImageInput(BaseModel):
             ],
         },
         validate_assignment=True,
+        extra="forbid",
     )
 
 

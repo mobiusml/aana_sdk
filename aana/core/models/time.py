@@ -16,5 +16,6 @@ class TimeInterval(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "description": "Time interval in seconds",
-        }
+        },
+        extra="forbid",
     )
