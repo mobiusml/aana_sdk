@@ -1,5 +1,9 @@
+import asyncio
 import base64
+import logging
+import os
 from collections.abc import AsyncGenerator
+from enum import Enum
 from typing import Any
 
 import torch
@@ -24,19 +28,62 @@ from aana.utils.gpu import get_gpu_memory
 from aana.utils.lazy_import import LazyImport
 
 with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_imports:
-    from outlines.integrations.vllm import JSONLogitsProcessor, RegexLogitsProcessor
     from vllm.engine.arg_utils import AsyncEngineArgs
     from vllm.engine.async_llm_engine import AsyncLLMEngine
     from vllm.entrypoints.chat_utils import (
         apply_hf_chat_template,
         apply_mistral_chat_template,
         parse_chat_messages,
+        resolve_chat_template_content_format,
     )
     from vllm.inputs import TokensPrompt
     from vllm.model_executor.utils import set_random_seed
-    from vllm.sampling_params import SamplingParams as VLLMSamplingParams
+    from vllm.sampling_params import (
+        GuidedDecodingParams,
+    )
+    from vllm.sampling_params import (
+        SamplingParams as VLLMSamplingParams,
+    )
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
+
+
+logger = logging.getLogger(__name__)
+
+
+class GemliteQuantizationConfig(BaseModel):
+    """The configuration of the gemlite quantization.
+
+    Attributes:
+        weight_bits (int): The number of bits to use for weights. Defaults to 4.
+        group_size (int | None): The group size for quantization. Defaults to 64.
+        quant_mode (str): The quantization mode. Defaults to "static".
+        skip_modules (list[str]): The list of modules to skip for quantization. Defaults to ["lm_head", "vision", "visual"].
+    """
+
+    weight_bits: int = Field(default=4)
+    group_size: int | None = Field(default=64)
+    quant_mode: str = Field(default="static")
+    skip_modules: list[str] = Field(
+        default_factory=lambda: ["lm_head", "vision", "visual"]
+    )
+    model_config = ConfigDict(
+        protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
+    )
+
+
+class GemliteMode(str, Enum):
+    """The mode of the gemlite quantization.
+
+    Attributes:
+        OFF (str): The gemlite quantization is off.
+        PREQUANTIZED (str): The gemlite quantization is prequantized.
+        ONTHEFLY (str): The gemlite quantization is on the fly.
+    """
+
+    OFF = "off"
+    PREQUANTIZED = "prequantized"
+    ONTHEFLY = "onthefly"
 
 
 class VLLMConfig(BaseModel):
@@ -54,7 +101,11 @@ class VLLMConfig(BaseModel):
             from the model will be used. Some models may not have a chat template.
             Defaults to None.
         enforce_eager (bool): Whether to enforce eager execution. Defaults to False.
+        gemlite_mode (GemliteMode): The mode of the gemlite quantization. Defaults to GemliteMode.OFF.
+        gemlite_config (GemliteQuantizationConfig | None): The configuration of the gemlite quantization.
         engine_args (CustomConfig): Extra engine arguments. Defaults to {}.
+        mm_data_concurrency_limit (int): The limit for concurrent requests with multimodal data.
+            Defaults to 100.
     """
 
     model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
@@ -67,9 +118,16 @@ class VLLMConfig(BaseModel):
     max_model_len: int | None = Field(default=None)
     chat_template: str | None = Field(default=None)
     enforce_eager: bool = Field(default=False)
-    engine_args: CustomConfig = {}
 
-    model_config = ConfigDict(protected_namespaces=(*pydantic_protected_fields,))
+    gemlite_mode: GemliteMode = Field(default=GemliteMode.OFF)
+    gemlite_config: GemliteQuantizationConfig | None = Field(default=None)
+
+    engine_args: CustomConfig = {}
+    mm_data_concurrency_limit: int = Field(default=100, ge=1)
+
+    model_config = ConfigDict(
+        protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
+    )
 
 
 @serve.deployment
@@ -80,6 +138,7 @@ class VLLMDeployment(BaseDeployment):
         """Initialize the deployment."""
         super().__init__()
         self.engine = None
+        self.mm_data_semaphore = None
 
     async def apply_config(self, config: dict[str, Any]):
         """Apply the configuration.
@@ -98,12 +157,54 @@ class VLLMDeployment(BaseDeployment):
         - chat_template: the name of the chat template (optional, default: None)
         - enforce_eager: whether to enforce eager execution (optional, default: False)
         - engine_args: extra engine arguments (optional, default: {})
+        - gemlite_mode: the mode of the gemlite quantization (optional, default: "off")
+        - gemlite_config: the configuration of the gemlite quantization (optional, default: None)
+        - mm_data_concurrency_limit: the limit for concurrent requests with multimodal data
+            (optional, default: 100)
 
         Args:
             config (dict): the configuration of the deployment
         """
         vllm_imports.check()
         config_obj = VLLMConfig(**config)
+
+        if config_obj.gemlite_mode != GemliteMode.OFF:
+            with LazyImport(
+                "Run 'pip install gemlite hqq' or 'pip install aana[gemlite]'"
+            ) as gemlite_imports:
+                from hqq.utils.vllm import (
+                    VLLM_HQQ_BACKEND,
+                    set_vllm_hqq_backend,
+                    set_vllm_onthefly_hqq_quant,
+                )
+
+            gemlite_imports.check()
+
+            os.environ["VLLM_USE_V1"] = "0"
+
+            # Use float16 for gemlite by default
+            if config_obj.dtype == Dtype.AUTO:
+                logger.warning(
+                    "Using float16 for gemlite by default. Can be overridden by setting dtype."
+                )
+                config_obj.dtype = Dtype.FLOAT16
+
+            # For ONTHEFLY mode, we need to set the gemlite config
+            if config_obj.gemlite_mode == GemliteMode.ONTHEFLY:
+                if config_obj.gemlite_config is None:
+                    gemlite_config = GemliteQuantizationConfig()
+                else:
+                    gemlite_config = config_obj.gemlite_config
+
+                set_vllm_onthefly_hqq_quant(
+                    weight_bits=gemlite_config.weight_bits,
+                    group_size=gemlite_config.group_size,
+                    quant_mode=gemlite_config.quant_mode,
+                    skip_modules=gemlite_config.skip_modules,
+                )
+            elif config_obj.gemlite_mode == GemliteMode.PREQUANTIZED:
+                set_vllm_hqq_backend(backend=VLLM_HQQ_BACKEND.GEMLITE)
+
         self.model_id = config_obj.model_id
         total_gpu_memory_bytes = get_gpu_memory()
         total_gpu_memory_mb = total_gpu_memory_bytes / 1024**2
@@ -130,8 +231,10 @@ class VLLMDeployment(BaseDeployment):
 
         # create the engine
         self.engine = AsyncLLMEngine.from_engine_args(args)
-        self.tokenizer = self.engine.engine.tokenizer.tokenizer
+        self.tokenizer = await self.engine.get_tokenizer()
         self.model_config = await self.engine.get_model_config()
+
+        self.mm_data_semaphore = asyncio.Semaphore(config_obj.mm_data_concurrency_limit)
 
     async def check_health(self):
         """Check the health of the deployment and clear torch cache to prevent memory leaks."""
@@ -190,23 +293,33 @@ class VLLMDeployment(BaseDeployment):
             messages = dialog.model_dump()["messages"]
             images = None
 
+        content_format = resolve_chat_template_content_format(
+            chat_template=None,  # Use default chat template from tokenizer
+            given_format="auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
+            tokenizer=self.tokenizer,
+            tools=None,
+            trust_remote_code=self.model_config.trust_remote_code,
+        )
         conversation, mm_data = parse_chat_messages(
-            messages, self.model_config, self.tokenizer
+            messages, self.model_config, self.tokenizer, content_format=content_format
         )
 
         if isinstance(self.tokenizer, MistralTokenizer):
             prompt = apply_mistral_chat_template(
                 self.tokenizer,
                 messages=messages,
+                chat_template=None,
+                tools=None,
                 add_generation_prompt=True,
             )
         else:
             prompt = apply_hf_chat_template(
-                self.tokenizer,
+                tokenizer=self.tokenizer,
                 conversation=conversation,
-                chat_template=self.tokenizer.chat_template,
+                chat_template=None,
                 add_generation_prompt=True,
-                # tokenize=True
+                tools=None,
+                trust_remote_code=self.model_config.trust_remote_code,
             )
         return prompt, mm_data
 
@@ -242,11 +355,15 @@ class VLLMDeployment(BaseDeployment):
         json_schema = sampling_params.json_schema
         regex_string = sampling_params.regex_string
         if json_schema is not None:
-            logits_processors = [JSONLogitsProcessor(json_schema, self.engine.engine)]
+            guided_decoding_params = GuidedDecodingParams(
+                json=json_schema, backend=sampling_params.guided_decoding_backend
+            )
         elif regex_string is not None:
-            logits_processors = [RegexLogitsProcessor(regex_string, self.engine.engine)]
+            guided_decoding_params = GuidedDecodingParams(
+                regex=regex_string, backend=sampling_params.guided_decoding_backend
+            )
         else:
-            logits_processors = []
+            guided_decoding_params = None
 
         request_id = None
 
@@ -256,15 +373,25 @@ class VLLMDeployment(BaseDeployment):
                 max_len=self.model_config.max_model_len,
             )
 
+        semaphore_acquired = False
+        if mm_data is not None:
+            await self.mm_data_semaphore.acquire()
+            semaphore_acquired = True
+
         try:
             # convert SamplingParams to VLLMSamplingParams
             sampling_params_vllm = VLLMSamplingParams(
                 **sampling_params.model_dump(
                     exclude_unset=True,
-                    exclude=["kwargs", "json_schema", "regex_string"],
+                    exclude=[
+                        "kwargs",
+                        "json_schema",
+                        "regex_string",
+                        "guided_decoding_backend",
+                    ],
                 ),
                 **sampling_params.kwargs,
-                logits_processors=logits_processors,
+                guided_decoding=guided_decoding_params,
             )
             # start the request
             request_id = random_uuid()
@@ -295,6 +422,9 @@ class VLLMDeployment(BaseDeployment):
             raise
         except Exception as e:
             raise InferenceException(self.model_id, str(e)) from e
+        finally:
+            if semaphore_acquired:
+                self.mm_data_semaphore.release()
 
     async def generate(
         self,
