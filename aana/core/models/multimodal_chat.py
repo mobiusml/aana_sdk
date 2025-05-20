@@ -171,7 +171,9 @@ class MultimodalChatDialog(BaseModel):
             tuple[list[dict], list[Image], list[FrameVideo]]: the messages, images, and videos
         """
         dialog_dict = self.model_dump(
-            exclude={"messages": {"__all__": {"content": {"__all__": {"image"}}}}}
+            exclude={
+                "messages": {"__all__": {"content": {"__all__": {"image", "video"}}}}
+            }
         )
         messages = dialog_dict["messages"]
         # images = []
