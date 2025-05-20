@@ -1,6 +1,6 @@
 [project]
 name = "aana"
-version = "0.2.4"
+version = "0.2.4.post1"
 description = "Multimodal SDK"
 authors = [{name="Mobius Labs GmbH", email="dev@mobiuslabs.com"}]
 homepage = "https://www.mobiuslabs.com"
@@ -18,7 +18,7 @@ classifiers=[
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "alembic>=1.12.1",
     "av==11.*",
@@ -41,8 +41,9 @@ dependencies = [
 
 [project.optional-dependencies]
 vllm = [
-    "vllm>=0.6.1,<0.6.4",
-    "outlines[serve]>=0.0.46"
+    "vllm>=0.8.5",
+    "outlines[serve]>=0.1.11",
+    "xgrammar>=0.1.8"
 ]
 
 transformers = [
@@ -60,7 +61,16 @@ hqq = [
     "accelerate>=0.34.2",
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0",
-    "hqq>=0.2.2",
+    "hqq>=0.2.5",
+    "transformers>=4.47.0"
+]
+
+gemlite = [
+    "accelerate>=0.34.2",
+    "bitblas>=0.0.1.dev15",
+    "bitsandbytes>=0.42.0",
+    "hqq>=0.2.5",
+    "gemlite>=0.4.5",
     "transformers>=4.47.0"
 ]
 
@@ -74,11 +84,12 @@ all = [
     "bitblas>=0.0.1.dev15",
     "bitsandbytes>=0.42.0", 
     "faster-whisper (>=1.1.1,<2.0.0)",
-    "hqq>=0.2.2",
+    "hqq>=0.2.5",
+    "gemlite>=0.4.5",
     "outlines[serve]>=0.0.46",
     "pyannote-audio>=3.1.1",
-    "transformers>=4.47.0",
-    "vllm>=0.6.1,<0.6.4"
+    "transformers>=4.49.0",
+    "vllm>=0.8.0"
 ]
 
 [tool.poetry.group.dev]
@@ -151,7 +162,7 @@ fixable = ["ALL"]
 unfixable = []
 
 [tool.ruff.lint.pydocstyle]
-convention = "google"  # Accepts: "google", "numpy", or "pep257".
+convention = "google"
 
 [tool.ruff.format]
 quote-style = "double"

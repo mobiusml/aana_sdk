@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 __all__ = ["SamplingParams"]
@@ -19,6 +21,10 @@ class SamplingParams(BaseModel):
             they appear in the prompt and the generated text so far. Values > 1 encourage
             the model to use new tokens, while values < 1 encourage the model to repeat
             tokens. Default is 1.0 (no penalty).
+        json_schema (str): The schema to use for generation.
+        regex_string (str): The regex to use for generation.
+        guided_decoding_backend ("outlines" | "xgrammar"): The backend to use for guided decoding.
+            outlines and xgrammar are supported. If not set, the default backend will be used.
         kwargs (dict): Extra keyword arguments to pass as sampling parameters.
     """
 
@@ -64,6 +70,14 @@ class SamplingParams(BaseModel):
             "prompt and the generated text so far. Values > 1 encourage the model "
             "to use new tokens, while values < 1 encourage the model to repeat tokens. "
             "Default is 1.0 (no penalty)."
+        ),
+    )
+    guided_decoding_backend: Literal["outlines", "xgrammar"] | None = Field(
+        default=None,
+        description=(
+            "The backend to use for guided decoding. "
+            "outlines and xgrammar are supported. "
+            "If not set, the default backend will be used."
         ),
     )
     kwargs: dict = Field(
