@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +12,7 @@ from aana.api.exception_handler import (
 )
 from aana.configs.settings import settings as aana_settings
 from aana.exceptions.api_service import (
+    ApiKeyExpired,
     ApiKeyNotFound,
     ApiKeyNotProvided,
     ApiKeyValidationFailed,
@@ -57,6 +60,9 @@ async def api_key_check(request: Request, call_next):
 
             if not api_key_info:
                 raise ApiKeyNotFound(key=api_key)
+
+            if api_key_info.expired_at < datetime.now(timezone.utc):
+                raise ApiKeyExpired(key=api_key)
 
             request.state.api_key_info = api_key_info.to_model()
 
