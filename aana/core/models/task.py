@@ -47,7 +47,8 @@ class TaskInfo(BaseModel):
                     "result": None,
                 }
             ]
-        }
+        },
+        extra="forbid",
     )
 
     @classmethod

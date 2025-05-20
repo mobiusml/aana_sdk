@@ -18,6 +18,8 @@ class TextContent(BaseModel):
     type: Literal["text"] = "text"
     text: str
 
+    model_config = ConfigDict(extra="forbid")
+
 
 class ImageContent(BaseModel):
     """Image content for a chat message.
@@ -30,7 +32,7 @@ class ImageContent(BaseModel):
     type: Literal["image"] = "image"
     image: Image
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
 
 
 Content = Annotated[
@@ -50,7 +52,8 @@ class ImageChatMessage(BaseModel):
     content: list[Content]
     role: Role
     model_config = ConfigDict(
-        json_schema_extra={"description": "A chat message with image support."}
+        json_schema_extra={"description": "A chat message with image support."},
+        extra="forbid",
     )
 
 
@@ -63,7 +66,8 @@ class ImageChatDialog(BaseModel):
 
     messages: list[ImageChatMessage]
     model_config = ConfigDict(
-        json_schema_extra={"description": "A chat dialog with image support."}
+        json_schema_extra={"description": "A chat dialog with image support."},
+        extra="forbid",
     )
 
     @classmethod
@@ -75,7 +79,7 @@ class ImageChatDialog(BaseModel):
 
         Returns:
             ImageChatDialog: the chat dialog
-        
+
         Example:
         ```
         messages = [
@@ -134,6 +138,11 @@ class ImageChatDialog(BaseModel):
         #     for content in message.content:
         #         if content.type == "image":
         #             images.append(content.image)
-        images = [content.image for message in self.messages for content in message.content if content.type == "image"]
+        images = [
+            content.image
+            for message in self.messages
+            for content in message.content
+            if content.type == "image"
+        ]
 
         return messages, images

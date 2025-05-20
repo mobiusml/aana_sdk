@@ -228,7 +228,9 @@ class Endpoint:
         """
         model_name = self.__generate_model_name("Request")
         input_fields = self.__get_input_fields()
-        return create_model(model_name, **input_fields)
+        return create_model(
+            model_name, **input_fields, __config__=ConfigDict(extra="forbid")
+        )
 
     def __get_output_fields(self) -> dict[str, tuple[Any, Any]]:
         """Generate fields for the response Pydantic model based on the function annotations.
