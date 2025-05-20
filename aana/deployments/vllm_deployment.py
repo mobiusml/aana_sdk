@@ -1,5 +1,4 @@
 import asyncio
-import base64
 import logging
 import os
 from collections.abc import AsyncGenerator

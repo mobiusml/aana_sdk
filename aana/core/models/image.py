@@ -41,7 +41,8 @@ class Image(Media):
         content (bytes): The content of the image in bytes (image file as bytes).
         numpy (np.ndarray): The image as a numpy array.
         media_id (MediaId): The ID of the image, generated automatically if not provided.
-        format (str): The format of the image (e.g., 'jpeg', 'png', 'bmp'). Default is 'bmp'.
+        format (str): The format of the image to save from numpy input (e.g., 'jpeg', 'png', 'bmp'). Default is 'bmp'.
+            Ignored if the image is provided as a path, url, or content. Only used for numpy input.
     """
 
     media_dir: Path | None = settings.image_dir
