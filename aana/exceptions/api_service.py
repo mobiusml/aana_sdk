@@ -84,3 +84,21 @@ class ApiKeyValidationFailed(BaseException):
     def __reduce__(self):
         """Used for pickling."""
         return (self.__class__, ())
+
+
+class ApiKeyExpired(BaseException):
+    """Exception raised when the API key is expired."""
+
+    def __init__(self, key: str):
+        """Initialize the exception.
+
+        Args:
+            key (str): the expired API key
+        """
+        self.key = key
+        self.message = f"API key {key} is expired."
+        super().__init__(key=key, message=self.message)
+
+    def __reduce__(self):
+        """Used for pickling."""
+        return (self.__class__, (self.key,))

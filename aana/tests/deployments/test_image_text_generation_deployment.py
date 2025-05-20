@@ -125,6 +125,7 @@ deployments = [
                 user_config=VLLMConfig(
                     model_id="Qwen/Qwen2.5-VL-3B-Instruct",
                     gpu_memory_reserved=40000,
+                    dtype=Dtype.FLOAT16,
                     gemlite_mode=GemliteMode.ONTHEFLY,
                     gemlite_config=GemliteQuantizationConfig(
                         weight_bits=8,
