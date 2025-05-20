@@ -79,10 +79,11 @@ class WhisperParams(BaseModel):
             )
         return v
 
-    model_config = MyConfig(
+    model_config = ConfigDict(
         json_schema_extra={
             "description": "Parameters for the Whisper audio-to-text model."
-        }
+        },
+        extra="forbid",
     )
 
 
@@ -153,5 +154,6 @@ class BatchedWhisperParams(BaseModel):
     model_config = MyConfig(
         json_schema_extra={
             "description": "Parameters for the Batched Whisper audio-to-text model."
-        }
+        },
+        extra="forbid",
     )

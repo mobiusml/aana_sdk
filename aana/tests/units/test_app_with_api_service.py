@@ -14,6 +14,7 @@ from aana.storage.models.api_key import ApiKeyEntity, ApiServiceBase
 
 ACTIVE_API_KEY = "1234567890"
 INACTIVE_API_KEY = "0000000000"
+EXPIRED_API_KEY = "9999999999"
 NON_EXISTENT_API_KEY = "1111111111"
 
 
@@ -48,6 +49,7 @@ async def add_test_api_keys():
             [
                 ApiKeyEntity(user_id="1", is_subscription_active=True, api_key=ACTIVE_API_KEY, key_id=ACTIVE_API_KEY, subscription_id="sub1", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
                 ApiKeyEntity(user_id="2", is_subscription_active=False, api_key=INACTIVE_API_KEY, key_id=INACTIVE_API_KEY, subscription_id="sub2", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
+                ApiKeyEntity(user_id="3", is_subscription_active=True, api_key=EXPIRED_API_KEY, key_id=EXPIRED_API_KEY, subscription_id="sub3", expired_at=datetime.now(tz=timezone.utc) - timedelta(days=1)),
             ]
         )
         # fmt: on
@@ -197,3 +199,15 @@ def test_app(enable_api_service, create_app_with_api_service, add_test_api_keys)
     )
     assert response.status_code == 400, response.text
     assert response.json().get("error") == "ApiKeyNotProvided", response.json()
+
+    # Test with expired API key
+    headers = {
+        "x-api-key": EXPIRED_API_KEY,
+    }
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase",
+        data={"body": json.dumps(data)},
+        headers=headers,
+    )
+    assert response.status_code == 400, response.text
+    assert response.json().get("error") == "ApiKeyExpired", response.json()

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +12,7 @@ from aana.api.exception_handler import (
 )
 from aana.configs.settings import settings as aana_settings
 from aana.exceptions.api_service import (
+    ApiKeyExpired,
     ApiKeyNotFound,
     ApiKeyNotProvided,
     ApiKeyValidationFailed,
@@ -36,7 +39,7 @@ app.add_exception_handler(Exception, aana_exception_handler)
 @app.middleware("http")
 async def api_key_check(request: Request, call_next):
     """Middleware to check the API key and subscription status."""
-    excluded_paths = ["/openapi.json", "/docs", "/redoc"]
+    excluded_paths = ["/openapi.json", "/docs", "/redoc", "/api/ready"]
     if request.url.path in excluded_paths or request.method == "OPTIONS":
         return await call_next(request)
 
@@ -57,6 +60,9 @@ async def api_key_check(request: Request, call_next):
 
             if not api_key_info:
                 raise ApiKeyNotFound(key=api_key)
+
+            if api_key_info.expired_at < datetime.now(timezone.utc):
+                raise ApiKeyExpired(key=api_key)
 
             request.state.api_key_info = api_key_info.to_model()
 

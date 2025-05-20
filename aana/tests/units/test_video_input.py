@@ -189,3 +189,12 @@ def test_videoinputlist_non_empty():
     """Test that videoinputlist must not be empty."""
     with pytest.raises(ValidationError):
         VideoInputList(root=[])
+
+
+def test_video_input_extra_fields():
+    """Test that extra fields are not allowed in VideoInput."""
+    with pytest.raises(ValidationError):
+        VideoInput(
+            url="https://mobius-public.s3.eu-west-1.amazonaws.com/squirrel.mp4",
+            extra_field="extra_value",
+        )

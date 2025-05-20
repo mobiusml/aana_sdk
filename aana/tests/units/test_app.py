@@ -93,3 +93,11 @@ def test_app(create_app):
     assert response.status_code == 200
     lowercase_text = response.json().get("text")
     assert lowercase_text == "hello world! this is a test."
+
+    # Test that extra fields are not allowed
+    data = {"text": "Hello World! This is a test.", "extra_field": "extra_value"}
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase",
+        data={"body": json.dumps(data)},
+    )
+    assert response.status_code == 422, response.text
