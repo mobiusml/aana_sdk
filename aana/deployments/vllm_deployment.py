@@ -58,14 +58,15 @@ class GemliteQuantizationConfig(BaseModel):
         weight_bits (int): The number of bits to use for weights. Defaults to 4.
         group_size (int | None): The group size for quantization. Defaults to 64.
         quant_mode (str): The quantization mode. Defaults to "static".
-        skip_modules (list[str]): The list of modules to skip for quantization. Defaults to ["lm_head"].
+        skip_modules (list[str]): The list of modules to skip for quantization. Defaults to ["lm_head", "vision", "visual"].
     """
 
     weight_bits: int = Field(default=4)
     group_size: int | None = Field(default=64)
     quant_mode: str = Field(default="static")
-    skip_modules: list[str] = Field(default_factory=lambda: ["lm_head"])
-
+    skip_modules: list[str] = Field(
+        default_factory=lambda: ["lm_head", "vision", "visual"]
+    )
     model_config = ConfigDict(
         protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
     )
@@ -122,7 +123,7 @@ class VLLMConfig(BaseModel):
     gemlite_config: GemliteQuantizationConfig | None = Field(default=None)
 
     engine_args: CustomConfig = {}
-    mm_data_concurrency_limit: int = Field(default=100)
+    mm_data_concurrency_limit: int = Field(default=100, ge=1)
 
     model_config = ConfigDict(
         protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
@@ -180,11 +181,6 @@ class VLLMDeployment(BaseDeployment):
             gemlite_imports.check()
 
             os.environ["VLLM_USE_V1"] = "0"
-
-            # Force dtype to float16 for gemlite
-            if config_obj.dtype != Dtype.FLOAT16:
-                logger.warning("Forcing dtype to float16 because gemlite is used.")
-                config_obj.dtype = Dtype.FLOAT16
 
             # For ONTHEFLY mode, we need to set the gemlite config
             if config_obj.gemlite_mode == GemliteMode.ONTHEFLY:
