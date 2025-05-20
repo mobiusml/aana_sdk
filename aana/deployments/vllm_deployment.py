@@ -182,6 +182,13 @@ class VLLMDeployment(BaseDeployment):
 
             os.environ["VLLM_USE_V1"] = "0"
 
+            # Use float16 for gemlite by default
+            if config_obj.dtype == Dtype.AUTO:
+                logger.warning(
+                    "Using float16 for gemlite by default. Can be overridden by setting dtype."
+                )
+                config_obj.dtype = Dtype.FLOAT16
+
             # For ONTHEFLY mode, we need to set the gemlite config
             if config_obj.gemlite_mode == GemliteMode.ONTHEFLY:
                 if config_obj.gemlite_config is None:
