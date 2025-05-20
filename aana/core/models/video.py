@@ -175,7 +175,9 @@ class VideoParams(BaseModel):
         ),
     )
     model_config = ConfigDict(
-        json_schema_extra={"description": "Video parameters."}, validate_assignment=True
+        json_schema_extra={"description": "Video parameters."},
+        validate_assignment=True,
+        extra="forbid",
     )
 
 
@@ -286,6 +288,7 @@ class VideoInput(BaseModel):
             ],
         },
         validate_assignment=True,
+        extra="forbid",
     )
 
 

@@ -93,5 +93,5 @@ class SamplingParams(BaseModel):
         return v
 
     model_config = ConfigDict(
-        json_schema_extra={"description": "Sampling parameters for generating text."}
+        json_schema_extra={"description": "Sampling parameters."}, extra="forbid"
     )
