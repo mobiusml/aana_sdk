@@ -108,7 +108,7 @@ deployments = [
                         limit_mm_per_prompt={"image": 3},
                         mm_processor_kwargs={
                             "min_pixels": 28 * 28,
-                            "max_pixels": 640 * 640 * 3,
+                            "max_pixels": 640 * 640,
                         },
                     ),
                 ).model_dump(mode="json"),
@@ -141,7 +141,7 @@ deployments = [
                         limit_mm_per_prompt={"image": 3},
                         mm_processor_kwargs={
                             "min_pixels": 28 * 28,
-                            "max_pixels": 640 * 640 * 3,
+                            "max_pixels": 640 * 640,
                         },
                     ),
                 ).model_dump(mode="json"),
