@@ -81,7 +81,7 @@ def test_video_content_creation(input_image):
 
 
 def test_multimodal_dialog_creation(input_image, input_video, input_prompt):
-    """Test that a image chat dialog can be created."""
+    """Test that a multimodal chat dialog can be created."""
     system_messages = MultimodalChatMessage(
         content=[
             ImageContent(image=input_image),
@@ -147,8 +147,10 @@ def test_multimodal_dialog_creation(input_image, input_video, input_prompt):
             assert message["content"][1] == {"type": "text", "text": input_prompt}
 
 
-def test_image_dialog_creation_from_prompt(input_image, input_video, input_prompt):
-    """Test that a image chat dialog can be created from prompt."""
+def test_multimodal_chat_dialog_creation_from_prompt(
+    input_image, input_video, input_prompt
+):
+    """Test that an multimodal chat dialog can be created from prompt."""
     image_list = [input_image for _ in range(5)]
     video_list = [input_video for _ in range(3)]
 
@@ -189,8 +191,10 @@ def test_image_dialog_creation_from_prompt(input_image, input_video, input_promp
     assert message["content"][8] == {"type": "text", "text": input_prompt}
 
 
-def test_image_dialog_creation_from_list(input_image, input_video, input_prompt):
-    """Test that a image chat dialog can be created from prompt."""
+def test_multimodal_chat_dialog_creation_from_list(
+    input_image, input_video, input_prompt
+):
+    """Test that a multimodal chat dialog can be created from prompt."""
     messages = [
         {
             "content": [

@@ -51,11 +51,11 @@ class OpenCVWrapper(AbstractImageLibrary):
         """Write an image to disk in BMP, PNG or JPEG format.
 
         Args:
-            path (Path): Base path (extension will be enforced).
+            path (Path): File path.
             img (np.ndarray): RGB image array.
             format (str): One of "bmp", "png", "jpeg" (or "jpg").
-            quality (int): JPEG quality (0–100; higher is better). Only used if format is JPEG.
-            compression (int): PNG compression level (0–9; higher is smaller). Only used if format is PNG.
+            quality (int): JPEG quality (0-100; higher is better). Only used if format is JPEG.
+            compression (int): PNG compression level (0-9; higher is smaller). Only used if format is PNG.
         """
         fmt = format.lower()
         if fmt not in ("jpeg", "jpg", "png", "bmp"):

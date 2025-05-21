@@ -245,7 +245,7 @@ class VLLMDeployment(BaseDeployment):
         await super().check_health()
 
     def apply_chat_template(  # noqa: C901
-        self, dialog: ChatDialog | ImageChatDialog
+        self, dialog: ChatDialog | ImageChatDialog | MultimodalChatDialog
     ) -> tuple[str | list[int], dict | None]:
         """Apply the chat template to the dialog.
 
@@ -261,6 +261,8 @@ class VLLMDeployment(BaseDeployment):
             images: list[Image] | None = None,
             videos: list[FrameVideo] | None = None,
         ) -> list[dict]:
+            images = images or []
+            videos = videos or []
             image_index = 0
             video_index = 0
 

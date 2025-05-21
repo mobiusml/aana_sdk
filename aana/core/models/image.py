@@ -111,7 +111,7 @@ class Image(Media):
             file_path (Path): The path of the file to write.
         """
         assert self.numpy is not None  # noqa: S101 TODO
-        self.image_lib.write_file(file_path, self.numpy, self.format)
+        self.image_lib.write_file(file_path, self.numpy, self.format.lower())
 
     def get_numpy(self) -> np.ndarray:
         """Load the image as a numpy array.
@@ -156,7 +156,7 @@ class Image(Media):
         Returns:
             str: The base64-encoded image.
         """
-        if format is None or (format == self.format and self.is_saved):
+        if format is None or (format.lower() == self.format.lower() and self.is_saved):
             image_data = self.get_content()
             base64_encoded_image = base64.b64encode(image_data)
             return base64_encoded_image.decode("utf-8")
@@ -176,7 +176,7 @@ class Image(Media):
             str: The base64-encoded image with a data URL.
         """
         if format is None:
-            format = self.format  # noqa: A001
+            format = self.format.lower()  # noqa: A001
         base64_image = self.get_base64(format)
         return f"data:image/{format};base64,{base64_image}"
 
