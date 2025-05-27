@@ -345,7 +345,7 @@ class Endpoint:
                         async for output in self.run(**data_dict):
                             yield AanaConcatenatedJSONResponse(content=output).body
                     except Exception as e:
-                        yield custom_exception_handler(None, e).body
+                        yield custom_exception_handler(request, e).body
 
                 return StreamingResponse(
                     generator_wrapper(),
@@ -358,7 +358,7 @@ class Endpoint:
                 try:
                     output = await self.run(**data_dict)
                 except Exception as e:
-                    return custom_exception_handler(None, e)
+                    return custom_exception_handler(request, e)
                 return AanaJSONResponse(content=output)
 
         async def route_func(
