@@ -1,6 +1,7 @@
 # ruff: noqa: S101, S113
 import json
 import os
+import time
 from datetime import datetime, timedelta, timezone
 from typing import TypedDict
 
@@ -16,6 +17,7 @@ ACTIVE_API_KEY = "1234567890"
 INACTIVE_API_KEY = "0000000000"
 EXPIRED_API_KEY = "9999999999"
 NON_EXISTENT_API_KEY = "1111111111"
+ADMIN_API_KEY = "7777777777"
 
 
 @pytest.fixture(scope="module")
@@ -50,6 +52,7 @@ async def add_test_api_keys():
                 ApiKeyEntity(user_id="1", is_subscription_active=True, api_key=ACTIVE_API_KEY, key_id=ACTIVE_API_KEY, subscription_id="sub1", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
                 ApiKeyEntity(user_id="2", is_subscription_active=False, api_key=INACTIVE_API_KEY, key_id=INACTIVE_API_KEY, subscription_id="sub2", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
                 ApiKeyEntity(user_id="3", is_subscription_active=True, api_key=EXPIRED_API_KEY, key_id=EXPIRED_API_KEY, subscription_id="sub3", expired_at=datetime.now(tz=timezone.utc) - timedelta(days=1)),
+                ApiKeyEntity(user_id="4", is_subscription_active=True, api_key=ADMIN_API_KEY, key_id=ADMIN_API_KEY, is_admin=True, subscription_id="sub4", expired_at=datetime.now(tz=timezone.utc) + timedelta(days=180)),
             ]
         )
         # fmt: on
@@ -79,6 +82,8 @@ class LowercaseEndpoint(Endpoint):
             LowercaseEndpointOutput: The lowercase texts
         """
         lowercase_output = text.lower()
+        if lowercase_output == "error":
+            raise ValueError("This is a test error for the lowercase endpoint.")  # noqa: TRY003
         return {"text": lowercase_output, "api_key": api_key}
 
 
@@ -154,6 +159,89 @@ def test_app(enable_api_service, create_app_with_api_service, add_test_api_keys)
 
     api_key_in_response = response.json().get("api_key")
     assert api_key_in_response["api_key"] == ACTIVE_API_KEY, api_key_in_response
+
+    # Test lowercase endpoint with error handling
+    data = {"text": "Error"}
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase",
+        data={"body": json.dumps(data)},
+        headers=headers,
+    )
+    assert response.status_code == 400, response.text
+    error_response = response.json()
+    assert error_response.get("error") == "ValueError", error_response
+    # For non-admin users, stacktrace is not included
+    assert error_response.get("stacktrace") is None, error_response
+
+    # Test lowercase endpoint with error handling when task is deferred
+    data = {"text": "Error"}
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase?defer=True",
+        data={"body": json.dumps(data)},
+        headers=headers,
+    )
+    assert response.status_code == 200, response.text
+    task_id = response.json().get("task_id")
+    assert task_id is not None, "Task ID should not be None"
+
+    # Check the task status with timeout of 10 seconds
+    start_time = time.time()
+    while time.time() - start_time < 10:
+        response = requests.get(
+            f"http://localhost:{port}/tasks/{task_id}", headers=headers
+        )
+        task_status = response.json().get("status")
+        result = response.json().get("result")
+        if task_status == "completed":
+            break
+        time.sleep(0.1)
+
+    assert task_status == "failed", response.text
+    assert result.get("error") == "ValueError", response.text
+    # For non-admin users, stacktrace is not included
+    assert result.get("stacktrace") is None, response.text
+
+    # Test lowercase endpoint with admin API key
+    headers = {
+        "x-api-key": ADMIN_API_KEY,
+    }
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase",
+        data={"body": json.dumps(data)},
+        headers=headers,
+    )
+    assert response.status_code == 400, response.text
+    error_response = response.json()
+    assert error_response.get("error") == "ValueError", error_response
+    # For admin users, stacktrace is included
+    assert error_response.get("stacktrace") is not None, error_response
+
+    # Test lowercase endpoint with admin API key and error handling when task is deferred
+    data = {"text": "Error"}
+    response = requests.post(
+        f"http://localhost:{port}{route_prefix}/lowercase?defer=True",
+        data={"body": json.dumps(data)},
+        headers=headers,
+    )
+    assert response.status_code == 200, response.text
+    task_id = response.json().get("task_id")
+    assert task_id is not None, "Task ID should not be None"
+
+    # Check the task status with timeout of 10 seconds
+    start_time = time.time()
+    while time.time() - start_time < 10:
+        response = requests.get(
+            f"http://localhost:{port}/tasks/{task_id}", headers=headers
+        )
+        task_status = response.json().get("status")
+        result = response.json().get("result")
+        if task_status == "completed":
+            break
+        time.sleep(0.1)
+    assert task_status == "failed", response.text
+    assert result.get("error") == "ValueError", response.text
+    # For admin users, stacktrace is included
+    assert result.get("stacktrace") is not None, response.text
 
     # Test uppercase endpoint (endpoint without API key)
     data = {"text": "Hello World! This is a test."}
