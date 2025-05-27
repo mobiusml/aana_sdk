@@ -1,3 +1,4 @@
+import logging
 import traceback
 
 from fastapi import FastAPI, Request
@@ -11,6 +12,8 @@ from aana.api.responses import AanaJSONResponse
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.exception import ExceptionResponseModel
 from aana.exceptions.core import BaseException
+
+logger = logging.getLogger(__name__)
 
 
 def get_app_middleware(
@@ -125,8 +128,17 @@ def custom_exception_handler(request: Request | None, exc_raw: Exception):
         # then we need to get the stack trace
         stacktrace = traceback.format_exc()
         exc = exc_raw
-    # Remove the stacktrace if it is disabled
-    if not aana_settings.include_stacktrace:
+
+    # Get is_admin status from the request state
+    # If api_key_info is not set, assume the user is an admin or api service is disabled
+    api_key_info = getattr(request.state, "api_key_info", None) if request else None
+    is_admin = api_key_info.is_admin if api_key_info else True
+
+    # log the stacktrace for debugging purposes
+    logger.exception(exc)
+
+    # Remove the stacktrace if it is disabled or if the user is not an admin
+    if not aana_settings.include_stacktrace or not is_admin:
         stacktrace = None
     # get the data from the exception
     # can be used to return additional info

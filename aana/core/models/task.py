@@ -52,7 +52,7 @@ class TaskInfo(BaseModel):
     )
 
     @classmethod
-    def from_entity(cls, task: TaskEntity) -> "TaskInfo":
+    def from_entity(cls, task: TaskEntity, is_admin: bool = False) -> "TaskInfo":
         """Create a TaskInfo from a TaskEntity."""
         # Prepare data (remove ApiKey, None values, etc.)
         task_data = {}
@@ -60,6 +60,10 @@ class TaskInfo(BaseModel):
             if value is None or isinstance(value, ApiKey):
                 continue
             task_data[key] = value
+
+        # Remove stacktrace from result if not admin
+        if not is_admin and "stacktrace" in task.result:
+            task.result.pop("stacktrace", None)
 
         return TaskInfo(
             id=str(task.id),
