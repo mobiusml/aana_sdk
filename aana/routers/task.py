@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from aana.api.security import UserIdDependency
+from aana.api.security import IsAdminDependency, UserIdDependency
 from aana.configs.settings import settings as aana_settings
 from aana.core.models.task import TaskId, TaskInfo
 from aana.storage.models.task import Status as TaskStatus
@@ -78,7 +78,10 @@ async def count_tasks(db: GetDbDependency, user_id: UserIdDependency) -> TaskCou
     },
 )
 async def get_task(
-    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId,
+    db: GetDbDependency,
+    user_id: UserIdDependency,
+    is_admin: IsAdminDependency,
 ) -> TaskInfo:
     """Get the task with the given ID."""
     task_repo = TaskRepository(db)
@@ -88,7 +91,7 @@ async def get_task(
             status_code=404,
             detail="Task not found",
         )
-    return TaskInfo.from_entity(task)
+    return TaskInfo.from_entity(task, is_admin)
 
 
 @router.get(
@@ -99,6 +102,7 @@ async def get_task(
 async def list_tasks(
     db: GetDbDependency,
     user_id: UserIdDependency,
+    is_admin: IsAdminDependency,
     status: Annotated[
         TaskStatus | None,
         Field(description="Filter tasks by status. If None, all tasks are returned."),
@@ -111,7 +115,7 @@ async def list_tasks(
     tasks = await task_repo.get_tasks(
         user_id=user_id, status=status, limit=per_page, offset=(page - 1) * per_page
     )
-    return TaskList(tasks=[TaskInfo.from_entity(task) for task in tasks])
+    return TaskList(tasks=[TaskInfo.from_entity(task, is_admin) for task in tasks])
 
 
 @router.delete(
@@ -130,7 +134,10 @@ async def list_tasks(
     },
 )
 async def delete_task(
-    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId,
+    db: GetDbDependency,
+    user_id: UserIdDependency,
+    is_admin: IsAdminDependency,
 ) -> TaskInfo:
     """Delete the task with the given ID."""
     task_repo = TaskRepository(db)
@@ -151,7 +158,7 @@ async def delete_task(
             status_code=404,
             detail="Task not found",
         )
-    return TaskInfo.from_entity(task)
+    return TaskInfo.from_entity(task, is_admin)
 
 
 @router.post(
@@ -170,7 +177,10 @@ async def delete_task(
     },
 )
 async def retry_task(
-    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId,
+    db: GetDbDependency,
+    user_id: UserIdDependency,
+    is_admin: IsAdminDependency,
 ) -> TaskInfo:
     """Retry a failed task by resetting its status."""
     task_repo = TaskRepository(db)
@@ -187,7 +197,7 @@ async def retry_task(
         )
 
     updated_task = await task_repo.retry_task(task.id)
-    return TaskInfo.from_entity(updated_task)
+    return TaskInfo.from_entity(updated_task, is_admin)
 
 
 # Legacy endpoints (to be removed in the future)
@@ -206,14 +216,17 @@ async def retry_task(
     },
 )
 async def get_task_legacy(
-    task_id: TaskId, db: GetDbDependency, user_id: UserIdDependency
+    task_id: TaskId,
+    db: GetDbDependency,
+    user_id: UserIdDependency,
+    is_admin: IsAdminDependency,
 ) -> TaskInfo:
     """Get the task with the given ID (Legacy endpoint)."""
     task_repo = TaskRepository(db)
     task = await task_repo.read(task_id)
     if not task or task.user_id != user_id:
         raise HTTPException(status_code=404, detail="Task not found")
-    return TaskInfo.from_entity(task)
+    return TaskInfo.from_entity(task, is_admin)
 
 
 @router.get(
