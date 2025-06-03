@@ -195,7 +195,10 @@ class RequestHandler:
             try:
                 await task_repo.heartbeat(self.running_tasks)
             except Exception:
-                logger.exception("Error while updating task heartbeat: %s")
+                logger.exception(
+                    f"Error while updating task heartbeat for tasks: {self.running_tasks}",
+                    exc_info=True,
+                )
 
     @app.get(
         "/api/status",
