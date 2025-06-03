@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from uuid import UUID
 
@@ -30,6 +31,8 @@ from aana.utils.openapi import (
     add_custom_schemas_to_openapi_schema,
     rewrite_anyof,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @serve.deployment(ray_actor_options={"num_cpus": 0.1})
@@ -189,7 +192,10 @@ class RequestHandler:
         # Heartbeat for the running tasks
         async with get_session() as session:
             task_repo = TaskRepository(session)
-            await task_repo.heartbeat(self.running_tasks)
+            try:
+                await task_repo.heartbeat(self.running_tasks)
+            except Exception:
+                logger.exception("Error while updating task heartbeat: %s")
 
     @app.get(
         "/api/status",
