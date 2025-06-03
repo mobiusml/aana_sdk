@@ -57,6 +57,8 @@ class DbSettings(BaseSettings):
             Default is 10.
         pool_recycle (int): The number of seconds a connection can be idle in the pool before it is invalidated.
             Default is 3600.
+        query_timeout (int): The timeout for database queries in seconds. Default is 30.
+        connection_timeout (int): The timeout for database connections in seconds. Default is 10.
     """
 
     datastore_type: DbType | str = DbType.SQLITE
@@ -66,3 +68,5 @@ class DbSettings(BaseSettings):
     pool_size: int = 5
     max_overflow: int = 10
     pool_recycle: int = 3600
+    query_timeout: int = 30
+    connection_timeout: int = 10

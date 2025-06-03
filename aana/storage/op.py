@@ -106,6 +106,12 @@ class DatabaseSessionManager:
         connection_string = (
             f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
         )
+        connect_args = {
+            "server_settings": {
+                "statement_timeout": str(db_config.query_timeout * 1000)
+            }
+        }
+
         return create_async_engine(
             connection_string,
             json_serializer=lambda obj: jsonify(obj),
@@ -113,6 +119,8 @@ class DatabaseSessionManager:
             pool_size=db_config.pool_size,
             max_overflow=db_config.max_overflow,
             pool_recycle=db_config.pool_recycle,
+            pool_timeout=db_config.connection_timeout,
+            connect_args=connect_args,
         )
 
     @classmethod
