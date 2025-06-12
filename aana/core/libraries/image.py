@@ -58,7 +58,7 @@ class AbstractImageLibrary:
         quality: int = 95,
         compression: int = 3,
     ) -> bytes:
-        """Write bytes using OpenCV.
+        """Write image to bytes in a specified format.
 
         Args:
             img (np.ndarray): The image to write.
