@@ -51,11 +51,20 @@ class AbstractImageLibrary:
         raise NotImplementedError
 
     @classmethod
-    def write_to_bytes(cls, img: np.ndarray) -> bytes:
-        """Write bytes using the image library.
+    def write_to_bytes(
+        cls,
+        img: np.ndarray,
+        format: str = "jpeg",  # noqa: A002
+        quality: int = 95,
+        compression: int = 3,
+    ) -> bytes:
+        """Write bytes using OpenCV.
 
         Args:
             img (np.ndarray): The image to write.
+            format (str): The format to use for encoding. Default is "jpeg".
+            quality (int): The quality to use for encoding. Default is 95.
+            compression (int): The compression level to use for encoding. Default is 3.
 
         Returns:
             bytes: The image as bytes.
