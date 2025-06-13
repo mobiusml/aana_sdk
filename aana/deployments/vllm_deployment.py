@@ -314,6 +314,7 @@ class VLLMDeployment(BaseDeployment):
             given_format="auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
             tokenizer=self.tokenizer,
             tools=None,
+            model_config=self.model_config,
             trust_remote_code=self.model_config.trust_remote_code,
         )
         conversation, mm_data = parse_chat_messages(
@@ -335,6 +336,7 @@ class VLLMDeployment(BaseDeployment):
                 chat_template=None,
                 add_generation_prompt=True,
                 tools=None,
+                model_config=self.model_config,
                 trust_remote_code=self.model_config.trust_remote_code,
             )
         return prompt, mm_data
