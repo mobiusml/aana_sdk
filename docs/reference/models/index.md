@@ -47,6 +47,10 @@ Models for working with chat models. These models represent the input and output
 
 Models for working with visual chat models. These models represent the input of chat models containing text and image input for describing visual content of vision-language model (VLM).
 
+## [Multimodal Chat Models](./multimodal_chat.md)
+
+Models for working with multimodal chat models. These models represent the input of chat models containing text, image, and video input for describing visual content of vision-language model (VLM).
+
 ## [Custom Config](./custom_config.md)
 
 Custom Config model can be used to pass arbitrary configuration to the deployment.

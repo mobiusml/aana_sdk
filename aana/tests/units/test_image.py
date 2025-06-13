@@ -1,4 +1,5 @@
 # ruff: noqa: S101, NPY002
+import base64
 from importlib import resources
 from pathlib import Path
 
@@ -13,6 +14,14 @@ def load_numpy_from_image_bytes(content: bytes) -> np.ndarray:
     """Load a numpy array from image bytes."""
     image = Image(content=content, save_on_disk=False)
     return image.get_numpy()
+
+
+@pytest.fixture
+def test_numpy_image():
+    """Fixture to create a test numpy image."""
+    # Create a random numpy array
+    numpy_image = np.random.rand(100, 100, 3).astype(np.uint8)
+    return numpy_image
 
 
 @pytest.fixture
@@ -192,5 +201,80 @@ def test_get_pil_image():
         pil_image = image.get_pil_image()
         assert isinstance(pil_image, PIL.Image.Image)
         assert pil_image.size == (909, 720)
+    finally:
+        image.cleanup()
+
+
+def test_jpg_format(test_numpy_image):
+    """Test that jpg format is used if format is set to jpg."""
+    try:
+        image = Image(numpy=test_numpy_image, save_on_disk=True, format="jpeg")
+        assert image.format == "jpeg"
+        assert image.path.suffix == ".jpeg"
+    finally:
+        image.cleanup()
+
+
+def test_png_format(test_numpy_image):
+    """Test that png format is used if format is set to png."""
+    try:
+        image = Image(numpy=test_numpy_image, save_on_disk=True, format="png")
+        assert image.format == "png"
+        assert image.path.suffix == ".png"
+    finally:
+        image.cleanup()
+
+
+def test_invalid_format(test_numpy_image):
+    """Test that ValueError is raised if an invalid format is provided."""
+    with pytest.raises(ValueError):
+        Image(numpy=test_numpy_image, save_on_disk=True, format="invalid_format")
+
+
+def test_get_base64():
+    """Test that get_base64 method."""
+    try:
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
+        image = Image(path=path, save_on_disk=False)
+        base64_content = image.get_base64(format="jpeg")
+        img_bytes = base64.b64decode(base64_content, validate=True)
+        assert img_bytes.startswith(b"\xff\xd8")  # JPEG magic number
+    finally:
+        image.cleanup()
+
+
+def test_get_base64_url():
+    """Test that get_base64_url method."""
+    try:
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
+        image = Image(path=path, save_on_disk=False)
+        base64_url = image.get_base64_url(format="jpeg")
+        assert base64_url.startswith("data:image/jpeg;base64,")
+        img_bytes = base64.b64decode(base64_url.split(",")[1], validate=True)
+        assert img_bytes.startswith(b"\xff\xd8")  # JPEG magic number
+    finally:
+        image.cleanup()
+
+
+def test_get_base64_png():
+    """Test that get_base64 method with png format."""
+    try:
+        path = resources.files("aana.tests.files.images") / "Starry_Night.jpeg"
+        image = Image(path=path, save_on_disk=False)
+        base64_content = image.get_base64(format="png")
+        img_bytes = base64.b64decode(base64_content, validate=True)
+        assert img_bytes.startswith(b"\x89PNG")  # PNG magic number
+    finally:
+        image.cleanup()
+
+
+def test_get_base64_url_from_numpy_as_jpeg(test_numpy_image):
+    """Test that get_base64_url method with numpy as jpeg."""
+    try:
+        image = Image(numpy=test_numpy_image, save_on_disk=False)
+        base64_url = image.get_base64_url(format="jpeg")
+        assert base64_url.startswith("data:image/jpeg;base64,")
+        img_bytes = base64.b64decode(base64_url.split(",")[1], validate=True)
+        assert img_bytes.startswith(b"\xff\xd8")  # JPEG magic number
     finally:
         image.cleanup()
