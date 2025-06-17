@@ -11,7 +11,6 @@ from alembic.config import Config
 from alembic.operations import Operations
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
-from sqlalchemy import NullPool
 from sqlalchemy.exc import PendingRollbackError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
@@ -20,6 +19,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.pool import NullPool
 
 from aana.configs.db import DbType
 from aana.exceptions.db import DatabaseException
