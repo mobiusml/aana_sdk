@@ -11,6 +11,7 @@ from alembic.config import Config
 from alembic.operations import Operations
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
+from sqlalchemy import NullPool
 from sqlalchemy.exc import PendingRollbackError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
@@ -137,6 +138,8 @@ class DatabaseSessionManager:
         connection_string = f"sqlite+aiosqlite:///{datastore_config['path']}"
         return create_async_engine(
             connection_string,
+            connect_args={"timeout": 30},
+            poolclass=NullPool,
             json_serializer=lambda obj: jsonify(obj),
             json_deserializer=orjson.loads,
             pool_recycle=db_config.pool_recycle,
