@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.pool import NullPool
 
 from aana.configs.db import DbType
 from aana.exceptions.db import DatabaseException
@@ -137,6 +138,8 @@ class DatabaseSessionManager:
         connection_string = f"sqlite+aiosqlite:///{datastore_config['path']}"
         return create_async_engine(
             connection_string,
+            connect_args={"timeout": 30},
+            poolclass=NullPool,
             json_serializer=lambda obj: jsonify(obj),
             json_deserializer=orjson.loads,
             pool_recycle=db_config.pool_recycle,
