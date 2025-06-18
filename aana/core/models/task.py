@@ -62,7 +62,7 @@ class TaskInfo(BaseModel):
             task_data[key] = value
 
         # Remove stacktrace from result if not admin
-        if not is_admin and "stacktrace" in task.result:
+        if not is_admin and task.result and "stacktrace" in task.result:
             task.result.pop("stacktrace", None)
 
         return TaskInfo(
