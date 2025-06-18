@@ -1,7 +1,12 @@
+import logging
+
+import ray
 from ray import serve
 
 from aana.utils.core import sleep_exponential_backoff
 from aana.utils.typing import is_async_generator
+
+logger = logging.getLogger(__name__)
 
 
 class AanaDeploymentHandle:
@@ -43,6 +48,16 @@ class AanaDeploymentHandle:
         self.retry_delay = retry_delay
         self.retry_max_delay = retry_max_delay
 
+    def _is_exception_retryable(self, e: Exception) -> bool:
+        """Check if the exception is retryable based on the configuration."""
+        if self.retry_exceptions is True:
+            return True
+        if isinstance(self.retry_exceptions, list):
+            return isinstance(e, tuple(self.retry_exceptions)) or isinstance(
+                getattr(e, "cause", None), tuple(self.retry_exceptions)
+            )
+        return False
+
     def __create_async_method(self, name: str):  # noqa: C901
         """Create an method to interact with the deployment.
 
@@ -65,11 +80,9 @@ class AanaDeploymentHandle:
                             yield item
                         break
                     except Exception as e:
-                        is_retryable = self.retry_exceptions is True or (
-                            isinstance(self.retry_exceptions, list)
-                            and isinstance(
-                                e.cause.__class__, tuple(self.retry_exceptions)
-                            )
+                        is_retryable = self._is_exception_retryable(e)
+                        logger.exception(
+                            f"Error in method {name} on attempt {retries + 1}: {e.__class__}"
                         )
                         if not is_retryable or retries >= self.num_retries:
                             raise
@@ -90,11 +103,9 @@ class AanaDeploymentHandle:
                             *args, **kwargs
                         )
                     except Exception as e:  # noqa: PERF203
-                        is_retryable = self.retry_exceptions is True or (
-                            isinstance(self.retry_exceptions, list)
-                            and isinstance(
-                                e.cause.__class__, tuple(self.retry_exceptions)
-                            )
+                        is_retryable = self._is_exception_retryable(e)
+                        logger.exception(
+                            f"Error in method {name} on attempt {retries + 1}: {e.__class__}"
                         )
                         if not is_retryable or retries >= self.num_retries:
                             raise
@@ -135,6 +146,13 @@ class AanaDeploymentHandle:
             retry_delay (float): The initial delay between retries.
             retry_max_delay (float): The maximum delay between retries.
         """
+        # Always retry on ActorDiedError to handle actor restarts gracefully.
+        if retry_exceptions is False or isinstance(retry_exceptions, list):
+            retry_exceptions = (
+                retry_exceptions if isinstance(retry_exceptions, list) else []
+            )
+            retry_exceptions = [*retry_exceptions, ray.exceptions.ActorDiedError]
+
         handle = cls(
             deployment_name=deployment_name,
             num_retries=num_retries,
