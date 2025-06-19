@@ -245,17 +245,21 @@ class VLLMDeployment(BaseDeployment):
 
             if isinstance(self.engine, AsyncLLMV1):
                 # vLLM v1 engine does not have proper health check,
-                # so we manually check if each enine core process is alive.
-                engine_core_processes = (
-                    self.engine.engine_core.resources.engine_manager.processes
-                )
-                print(engine_core_processes)
-                for process in engine_core_processes:
-                    if not process.is_alive():
-                        raise InferenceException(
-                            self.model_id,
-                            f"Engine core process {process.pid} died unexpectedly.",
-                        )
+                # so we manually check if each engine core process is alive.
+                try:
+                    engine_core_processes = (
+                        self.engine.engine_core.resources.engine_manager.processes
+                    )
+                    for process in engine_core_processes:
+                        if not process.is_alive():
+                            raise InferenceException(
+                                self.model_id,
+                                f"Engine core process {process.pid} died unexpectedly.",
+                            )
+                except AttributeError as e:
+                    logger.warning(
+                        f"Unable to access engine core processes for health check: {e}"
+                    )
 
         await super().check_health()
 
