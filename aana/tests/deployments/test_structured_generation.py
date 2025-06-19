@@ -13,7 +13,7 @@ from aana.deployments.vllm_deployment import VLLMConfig, VLLMDeployment
 
 deployments = [
     (
-        "phi3_mini_4k_instruct_vllm_deployment",
+        "phi3_mini_4k_instruct_vllm_deployment_xgrammar",
         VLLMDeployment.options(
             num_replicas=1,
             max_ongoing_requests=1000,
@@ -29,9 +29,34 @@ deployments = [
                     top_k=-1,
                     max_tokens=1024,
                 ),
-                engine_args={
-                    "trust_remote_code": True,
-                },
+                engine_args=dict(
+                    trust_remote_code=True,
+                    guided_decoding_backend="xgrammar",
+                )
+            ).model_dump(mode="json"),
+        ),
+    ),
+    (
+        "phi3_mini_4k_instruct_vllm_deployment_outlines",
+        VLLMDeployment.options(
+            num_replicas=1,
+            max_ongoing_requests=1000,
+            ray_actor_options={"num_gpus": 0.5},
+            user_config=VLLMConfig(
+                model_id="microsoft/Phi-3-mini-4k-instruct",
+                dtype=Dtype.FLOAT16,
+                gpu_memory_reserved=10000,
+                enforce_eager=True,
+                default_sampling_params=SamplingParams(
+                    temperature=0.0,
+                    top_p=1.0,
+                    top_k=-1,
+                    max_tokens=1024,
+                ),
+                engine_args=dict(
+                    trust_remote_code=True,
+                    guided_decoding_backend="outlines",
+                )
             ).model_dump(mode="json"),
         ),
     ),
@@ -56,9 +81,8 @@ class TestStructuredGeneration:
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("query", ["Tell me about Vienna.", "Describe Berlin."])
-    @pytest.mark.parametrize("guided_decoding_backend", ["outlines", "xgrammar"])
     async def test_chat_with_json_schema(
-        self, setup_deployment, query, guided_decoding_backend
+        self, setup_deployment, query
     ):
         """Test chat method with JSON schema."""
         deployment_name, handle_name, _ = setup_deployment
@@ -81,15 +105,13 @@ class TestStructuredGeneration:
                 json_schema=schema,
                 temperature=0.0,
                 max_tokens=512,
-                guided_decoding_backend=guided_decoding_backend,
             ),
         )
 
         response_message = output["message"]
         assert response_message.role == "assistant"
         text = response_message.content
-        print(text)
-
+    
         # Validate JSON response against the schema
         try:
             CityDescription.model_validate_json(text)
@@ -104,9 +126,8 @@ class TestStructuredGeneration:
             "Describe Tokyo and London. Return a list of dictionaries.",
         ],
     )
-    @pytest.mark.parametrize("guided_decoding_backend", ["outlines", "xgrammar"])
     async def test_chat_with_list_schema(
-        self, setup_deployment, query, guided_decoding_backend
+        self, setup_deployment, query
     ):
         """Test chat method with list of city descriptions schema."""
         deployment_name, handle_name, _ = setup_deployment
@@ -134,15 +155,13 @@ class TestStructuredGeneration:
             sampling_params=SamplingParams(
                 json_schema=schema,
                 temperature=0.0,
-                max_tokens=512,
-                guided_decoding_backend=guided_decoding_backend,
+                max_tokens=512
             ),
         )
 
         response_message = output["message"]
         assert response_message.role == "assistant"
         text = response_message.content
-        print(text)
 
         # Validate JSON response against the schema
         try:
@@ -160,9 +179,8 @@ class TestStructuredGeneration:
             )
         ],
     )
-    @pytest.mark.parametrize("guided_decoding_backend", ["outlines", "xgrammar"])
     async def test_chat_with_regex(
-        self, setup_deployment, query, regex_pattern, guided_decoding_backend
+        self, setup_deployment, query, regex_pattern
     ):
         """Test chat method with regex."""
         deployment_name, handle_name, _ = setup_deployment
@@ -184,8 +202,7 @@ class TestStructuredGeneration:
             sampling_params=SamplingParams(
                 regex_string=regex_pattern,
                 temperature=0.0,
-                max_tokens=32,
-                guided_decoding_backend=guided_decoding_backend,
+                max_tokens=32
             ),
         )
 

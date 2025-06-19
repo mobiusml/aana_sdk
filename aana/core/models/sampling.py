@@ -21,8 +21,6 @@ class SamplingParams(BaseModel):
             tokens. Default is 1.0 (no penalty).
         json_schema (str): The schema to use for generation.
         regex_string (str): The regex to use for generation.
-        guided_decoding_backend ("outlines" | "xgrammar"): The backend to use for guided decoding.
-            outlines and xgrammar are supported. If not set, the default backend will be used.
         kwargs (dict): Extra keyword arguments to pass as sampling parameters.
     """
 
@@ -70,16 +68,6 @@ class SamplingParams(BaseModel):
             "Default is 1.0 (no penalty)."
         ),
     )
-    guided_decoding_backend: str | None = Field(
-        default=None,
-        description=(
-            "The backend to use for guided decoding. "
-            "outlines and xgrammar are supported. "
-            "Backend specific options can be supplied after a colon, "
-            "e.g. 'xgrammar:no-fallback'. "
-            "If not set, the default backend will be used."
-        ),
-    )
     kwargs: dict = Field(
         default_factory=dict,
         description="Extra keyword arguments to pass as sampling parameters.",
@@ -104,30 +92,6 @@ class SamplingParams(BaseModel):
             return v
         if v < -1 or v == 0:
             raise ValueError(f"top_k must be -1 (disable), or at least 1, got {v}.")  # noqa: TRY003
-        return v
-
-    @field_validator("guided_decoding_backend")
-    def check_guided_decoding_backend(cls, v: str | None) -> str | None:
-        """Validate guided decoding backend string.
-
-        Allows specifying backend options after a colon, e.g. ``xgrammar:no-fallback``.
-
-        Args:
-            v: The backend string.
-
-        Raises:
-            ValueError: If the backend name is not supported.
-
-        Returns:
-            The validated backend string.
-        """
-        if v is None:
-            return v
-        backend = v.split(":", 1)[0]
-        if backend not in {"outlines", "xgrammar"}:
-            raise ValueError(  # noqa: TRY003
-                f"Unsupported backend '{backend}'. Supported backends: 'outlines', 'xgrammar'"
-            )
         return v
 
     model_config = ConfigDict(
