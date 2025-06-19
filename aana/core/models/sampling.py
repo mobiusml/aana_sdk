@@ -125,7 +125,9 @@ class SamplingParams(BaseModel):
             return v
         backend = v.split(":", 1)[0]
         if backend not in {"outlines", "xgrammar"}:
-            raise ValueError("invalid backend")  # noqa: TRY003
+            raise ValueError(  # noqa: TRY003
+                f"Unsupported backend '{backend}'. Supported backends: 'outlines', 'xgrammar'"
+            )
         return v
 
     model_config = ConfigDict(
