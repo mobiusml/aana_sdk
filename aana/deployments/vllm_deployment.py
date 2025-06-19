@@ -314,6 +314,7 @@ class VLLMDeployment(BaseDeployment):
             given_format="auto",  # Use auto as the default content format ( ChatTemplateContentFormatOption = Literal["auto", "string", "openai"])
             tokenizer=self.tokenizer,
             tools=None,
+            model_config=self.model_config,
             trust_remote_code=self.model_config.trust_remote_code,
         )
         conversation, mm_data = parse_chat_messages(
@@ -335,6 +336,7 @@ class VLLMDeployment(BaseDeployment):
                 chat_template=None,
                 add_generation_prompt=True,
                 tools=None,
+                model_config=self.model_config,
                 trust_remote_code=self.model_config.trust_remote_code,
             )
         return prompt, mm_data
@@ -371,13 +373,9 @@ class VLLMDeployment(BaseDeployment):
         json_schema = sampling_params.json_schema
         regex_string = sampling_params.regex_string
         if json_schema is not None:
-            guided_decoding_params = GuidedDecodingParams(
-                json=json_schema, backend=sampling_params.guided_decoding_backend
-            )
+            guided_decoding_params = GuidedDecodingParams(json=json_schema)
         elif regex_string is not None:
-            guided_decoding_params = GuidedDecodingParams(
-                regex=regex_string, backend=sampling_params.guided_decoding_backend
-            )
+            guided_decoding_params = GuidedDecodingParams(regex=regex_string)
         else:
             guided_decoding_params = None
 
@@ -403,7 +401,6 @@ class VLLMDeployment(BaseDeployment):
                         "kwargs",
                         "json_schema",
                         "regex_string",
-                        "guided_decoding_backend",
                     ],
                 ),
                 **sampling_params.kwargs,

@@ -70,12 +70,3 @@ def test_disallowed_extra_fields():
     """Test that extra fields are not allowed."""
     with pytest.raises(ValidationError):
         SamplingParams(temperature=0.5, extra_field="extra_value")
-
-
-def test_guided_decoding_backend_with_options():
-    """Test guided decoding backend with additional options."""
-    params = SamplingParams(guided_decoding_backend="xgrammar:no-fallback")
-    assert params.guided_decoding_backend == "xgrammar:no-fallback"
-
-    with pytest.raises(ValidationError):
-        SamplingParams(guided_decoding_backend="invalid-backend")
