@@ -373,13 +373,9 @@ class VLLMDeployment(BaseDeployment):
         json_schema = sampling_params.json_schema
         regex_string = sampling_params.regex_string
         if json_schema is not None:
-            guided_decoding_params = GuidedDecodingParams(
-                json=json_schema, backend=sampling_params.guided_decoding_backend
-            )
+            guided_decoding_params = GuidedDecodingParams(json=json_schema)
         elif regex_string is not None:
-            guided_decoding_params = GuidedDecodingParams(
-                regex=regex_string, backend=sampling_params.guided_decoding_backend
-            )
+            guided_decoding_params = GuidedDecodingParams(regex=regex_string)
         else:
             guided_decoding_params = None
 
@@ -405,7 +401,6 @@ class VLLMDeployment(BaseDeployment):
                         "kwargs",
                         "json_schema",
                         "regex_string",
-                        "guided_decoding_backend",
                     ],
                 ),
                 **sampling_params.kwargs,
