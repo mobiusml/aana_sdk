@@ -46,6 +46,7 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     )
     from vllm.transformers_utils.tokenizer import MistralTokenizer
     from vllm.utils import random_uuid
+    from vllm.v1.engine.async_llm import AsyncLLM as AsyncLLMV1
 
 
 logger = logging.getLogger(__name__)
@@ -241,6 +242,24 @@ class VLLMDeployment(BaseDeployment):
         if self.engine:
             await self.engine.check_health()
             torch.cuda.empty_cache()
+
+            if isinstance(self.engine, AsyncLLMV1):
+                # vLLM v1 engine does not have proper health check,
+                # so we manually check if each engine core process is alive.
+                try:
+                    engine_core_processes = (
+                        self.engine.engine_core.resources.engine_manager.processes
+                    )
+                    for process in engine_core_processes:
+                        if not process.is_alive():
+                            raise InferenceException(
+                                self.model_id,
+                                f"Engine core process {process.pid} died unexpectedly.",
+                            )
+                except AttributeError as e:
+                    logger.warning(
+                        f"Unable to access engine core processes for health check: {e}"
+                    )
 
         await super().check_health()
 
