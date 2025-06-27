@@ -107,10 +107,11 @@ class DatabaseSessionManager:
         connection_string = (
             f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
         )
+        server_settings = {}
+        if db_config.query_timeout > 0:
+            server_settings["statement_timeout"] = str(db_config.query_timeout * 1000)
         connect_args = {
-            "server_settings": {
-                "statement_timeout": str(db_config.query_timeout * 1000)
-            }
+            "server_settings": server_settings,
         }
 
         return create_async_engine(
