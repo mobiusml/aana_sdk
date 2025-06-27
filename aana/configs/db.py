@@ -57,7 +57,7 @@ class DbSettings(BaseSettings):
             Default is 10.
         pool_recycle (int): The number of seconds a connection can be idle in the pool before it is invalidated.
             Default is 3600.
-        query_timeout (int): The timeout for database queries in seconds. Default is 30.
+        query_timeout (int): The timeout for database queries in seconds. Default is 30. Set to 0 for no timeout.
         connection_timeout (int): The timeout for database connections in seconds. Default is 10.
     """
 
