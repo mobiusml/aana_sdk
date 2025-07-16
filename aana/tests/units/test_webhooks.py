@@ -2,6 +2,7 @@
 import hashlib
 import hmac
 import json
+import time
 from typing import Annotated, TypedDict
 
 import requests
@@ -57,7 +58,6 @@ def test_webhooks(create_app, httpserver):
     assert response.status_code == 200, response.text
     assert response.json() == {"ready": True}
 
-    # Setup the webhook listener
     def webhook_listener(request):
         payload = request.json
 
@@ -70,6 +70,8 @@ def test_webhooks(create_app, httpserver):
         ).hexdigest()
         assert signature == actual_signature
         assert payload["event"] == "task.completed"
+        assert "task_type" in payload["payload"]
+        assert payload["payload"]["task_type"] == "/lowercase"
 
     httpserver.expect_request("/webhooks").respond_with_handler(webhook_listener)
 
@@ -100,6 +102,36 @@ def test_webhooks(create_app, httpserver):
         data={"body": json.dumps(data)},
     )
     assert response.status_code == 200, response.text
+
+    # Get the task ID from the response to wait for completion
+    task_id = response.json().get("task_id")
+    assert task_id is not None, "Task ID should be returned for deferred requests"
+
+    # Wait for the deferred task to complete and trigger webhooks
+    max_wait_time = 30  # 30 seconds maximum wait
+    poll_interval = 0.5  # Check every 500ms
+    waited_time = 0
+    task_completed = False
+
+    while waited_time < max_wait_time:
+        # Check task status
+        status_response = requests.get(f"http://localhost:{port}/tasks/{task_id}")
+        if status_response.status_code == 200:
+            task_status = status_response.json().get("status")
+            if task_status == "completed":
+                task_completed = True
+                break
+
+        time.sleep(poll_interval)
+        waited_time += poll_interval
+
+    # Ensure the task completed
+    assert task_completed, (
+        f"Task {task_id} did not complete within {max_wait_time} seconds"
+    )
+
+    # Give a little extra time for webhook delivery
+    time.sleep(1.0)
 
     httpserver.check_assertions()
     httpserver.check_handler_errors()
