@@ -70,6 +70,9 @@ def test_webhooks(create_app, httpserver):
         ).hexdigest()
         assert signature == actual_signature
         assert payload["event"] == "task.completed"
+        # Validate the new task_type field is present
+        assert "task_type" in payload["payload"]
+        assert payload["payload"]["task_type"] == "lowercase"
 
     httpserver.expect_request("/webhooks").respond_with_handler(webhook_listener)
 
