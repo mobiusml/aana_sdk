@@ -428,7 +428,7 @@ class VLLMDeployment(BaseDeployment):
             # start the request
             request_id = random_uuid()
             # set the random seed for reproducibility
-            set_random_seed(42)
+            # set_random_seed(42)
             if mm_data is not None:
                 inputs = TokensPrompt(
                     prompt_token_ids=prompt_token_ids,
