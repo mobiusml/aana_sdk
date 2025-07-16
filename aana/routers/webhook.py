@@ -93,6 +93,7 @@ class TaskStatusChangeWebhookPayload(BaseModel):
     """Payload for a task status change webhook."""
 
     task_id: str
+    task_type: str
     status: str
     result: Any | None
     num_retries: int
@@ -199,6 +200,7 @@ async def trigger_task_webhooks(event: WebhookEventType, task: TaskEntity):
     """
     payload = TaskStatusChangeWebhookPayload(
         task_id=str(task.id),
+        task_type=task.endpoint,
         status=task.status,
         result=task.result,
         num_retries=task.num_retries,
