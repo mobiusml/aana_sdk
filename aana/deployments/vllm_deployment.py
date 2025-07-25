@@ -105,6 +105,7 @@ class VLLMConfig(BaseModel):
         gemlite_mode (GemliteMode): The mode of the gemlite quantization. Defaults to GemliteMode.OFF.
         gemlite_config (GemliteQuantizationConfig | None): The configuration of the gemlite quantization.
         engine_args (CustomConfig): Extra engine arguments. Defaults to {}.
+        enable_non_cjk_filter (bool): Whether to filter out CJK characters from the generated text.
         mm_data_concurrency_limit (int): The limit for concurrent requests with multimodal data.
             Defaults to 100.
     """
@@ -125,6 +126,8 @@ class VLLMConfig(BaseModel):
 
     engine_args: CustomConfig = {}
     mm_data_concurrency_limit: int = Field(default=100, ge=1)
+
+    enable_non_cjk_filter: bool = Field(default=False, description="Filter out CJK characters from the generated text.")
 
     model_config = ConfigDict(
         protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
@@ -162,6 +165,7 @@ class VLLMDeployment(BaseDeployment):
         - gemlite_config: the configuration of the gemlite quantization (optional, default: None)
         - mm_data_concurrency_limit: the limit for concurrent requests with multimodal data
             (optional, default: 100)
+        - enable_non_cjk_filter: whether to filter out CJK characters from the generated text (optional, default: False)
 
         Args:
             config (dict): the configuration of the deployment
@@ -235,7 +239,27 @@ class VLLMDeployment(BaseDeployment):
         self.tokenizer = await self.engine.get_tokenizer()
         self.model_config = await self.engine.get_model_config()
 
+        # Optionally filter out non-CJK characters
+        self.enable_non_cjk_filter = config_obj.enable_non_cjk_filter
+        if self.enable_non_cjk_filter:
+            self.non_cjk_token_ids = self.get_non_cjk_token_ids()
+
         self.mm_data_semaphore = asyncio.Semaphore(config_obj.mm_data_concurrency_limit)
+
+            
+    def get_non_cjk_token_ids(self) -> list[int]:
+        """
+        Return all token IDs whose decoded tokens do NOT include CJK characters or
+        punctuation (i.e. every character’s Unicode code point is below U+3000).
+        """
+        vocab: dict[str, int] = self.tokenizer.get_vocab()
+        non_cjk_ids = []
+        for _, token_id in vocab.items():
+            decoded = self.tokenizer.decode([token_id])
+            if all(ord(ch) < 0x3000 for ch in decoded):
+                non_cjk_ids.append(token_id)
+        return non_cjk_ids
+
 
     async def check_health(self):
         """Check the health of the deployment and clear torch cache to prevent memory leaks."""
@@ -424,6 +448,7 @@ class VLLMDeployment(BaseDeployment):
                 ),
                 **sampling_params.kwargs,
                 guided_decoding=guided_decoding_params,
+                allowed_token_ids=self.non_cjk_token_ids if self.enable_non_cjk_filter else None,
             )
             # start the request
             request_id = random_uuid()
