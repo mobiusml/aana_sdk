@@ -24,6 +24,7 @@ dependencies = [
     "av==11.*",
     "decord>=0.6.0",
     "fastapi>=0.111.0",
+    "ftfy>=6.0.0",
     "haystack-ai>=2.1.0",
     "hf-transfer>=0.1.6",
     "numpy>=1.17,<2",
