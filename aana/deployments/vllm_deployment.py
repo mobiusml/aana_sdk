@@ -417,7 +417,7 @@ class VLLMDeployment(BaseDeployment):
 
         if lora is not None:
             if lora not in self.loras:
-                raise ValueError(f"LoRA adapter '{lora}' is not available.")
+                raise ValueError(f"LoRA adapter '{lora}' is not available.")  # noqa: TRY003
             lora_request = self.loras[lora]
         else:
             lora_request = None
