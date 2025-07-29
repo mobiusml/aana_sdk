@@ -1,10 +1,13 @@
 import asyncio
+import json
 import logging
 import os
 from collections.abc import AsyncGenerator
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
+import anyio
 import torch
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
@@ -241,6 +244,20 @@ class VLLMDeployment(BaseDeployment):
         self.loras: dict[str, LoRARequest] = {}
         for lora_id, lora_config in enumerate(config_obj.loras):
             lora_path = snapshot_download(repo_id=lora_config.model_id)
+            # Check if the LoRA adapter is compatible with the base model
+            adapter_config_path = Path(lora_path, "adapter_config.json")
+            if not adapter_config_path.exists():
+                raise ValueError(  # noqa: TRY003
+                    f"LoRA adapter '{lora_config.name}' is invalid: adapter_config.json not found."
+                )
+            async with await anyio.open_file(str(adapter_config_path), "r") as f:
+                adapter_cfg = json.loads(await f.read())
+                if adapter_cfg["base_model_name_or_path"] != self.model_id:
+                    raise ValueError(  # noqa: TRY003
+                        f"LoRA adapter '{lora_config.name}' targets "
+                        f"{adapter_cfg['model_type']} but base model is {self.model_id}."
+                    )
+
             self.loras[lora_config.name] = LoRARequest(
                 lora_name=lora_config.name,
                 lora_int_id=lora_id + 1,  # LoRA IDs start from 1
