@@ -145,3 +145,20 @@ class TestVLLMDeploymentLoRA:
                 sampling_params=SamplingParams(temperature=0.0, max_tokens=32),
                 lora="non_existent",
             )
+
+        # Test that LoRA adapter produces different output than base model
+        prompt = prompt_template.format(query="Tell me about artificial intelligence.")
+        sampling_params = SamplingParams(temperature=0.0, max_tokens=50)
+
+        # Generate with LoRA
+        output_with_lora = await handle.generate(
+            prompt=prompt, sampling_params=sampling_params, lora="test"
+        )
+
+        # Generate without LoRA (if base model generation is supported)
+        output_without_lora = await handle.generate(
+            prompt=prompt, sampling_params=sampling_params
+        )
+
+        # Verify outputs are different (indicating LoRA has an effect)
+        assert output_with_lora["text"] != output_without_lora["text"]
