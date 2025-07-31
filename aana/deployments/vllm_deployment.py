@@ -1,10 +1,13 @@
 import asyncio
+import json
 import logging
 import os
 from collections.abc import AsyncGenerator
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
+import anyio
 import torch
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from ray import serve
@@ -28,6 +31,7 @@ from aana.utils.gpu import get_gpu_memory
 from aana.utils.lazy_import import LazyImport
 
 with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_imports:
+    from huggingface_hub import snapshot_download
     from vllm.engine.arg_utils import AsyncEngineArgs
     from vllm.engine.async_llm_engine import AsyncLLMEngine
     from vllm.entrypoints.chat_utils import (
@@ -37,6 +41,7 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
         resolve_chat_template_content_format,
     )
     from vllm.inputs import TokensPrompt
+    from vllm.lora.request import LoRARequest
     from vllm.model_executor.utils import set_random_seed
     from vllm.sampling_params import (
         GuidedDecodingParams,
@@ -87,6 +92,22 @@ class GemliteMode(str, Enum):
     ONTHEFLY = "onthefly"
 
 
+class LoRAConfig(BaseModel):
+    """The configuration of the LoRA request.
+
+    Attributes:
+        name (str): The name of the LoRA adapter.
+        model_id (str): The model ID on Hugging Face Hub.
+    """
+
+    name: str
+    model_id: str
+
+    model_config = ConfigDict(
+        protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
+    )
+
+
 class VLLMConfig(BaseModel):
     """The configuration of the vLLM deployment.
 
@@ -108,6 +129,7 @@ class VLLMConfig(BaseModel):
         enable_non_cjk_filter (bool): Whether to filter out CJK characters from the generated text.
         mm_data_concurrency_limit (int): The limit for concurrent requests with multimodal data.
             Defaults to 100.
+        loras (list[LoRAConfig]): The list of LoRA configurations. Defaults to an empty list.
     """
 
     model_id: str = Field(validation_alias=AliasChoices("model_id", "model"))
@@ -130,6 +152,7 @@ class VLLMConfig(BaseModel):
     enable_non_cjk_filter: bool = Field(
         default=False, description="Filter out CJK characters from the generated text."
     )
+    loras: list[LoRAConfig] = Field(default_factory=list)
 
     model_config = ConfigDict(
         protected_namespaces=(*pydantic_protected_fields,), extra="forbid"
@@ -223,6 +246,29 @@ class VLLMDeployment(BaseDeployment):
         )
         self.chat_template_name = config_obj.chat_template
 
+        self.loras: dict[str, LoRARequest] = {}
+        for lora_id, lora_config in enumerate(config_obj.loras):
+            lora_path = snapshot_download(repo_id=lora_config.model_id)
+            # Check if the LoRA adapter is compatible with the base model
+            adapter_config_path = Path(lora_path, "adapter_config.json")
+            if not adapter_config_path.exists():
+                raise ValueError(  # noqa: TRY003
+                    f"LoRA adapter '{lora_config.name}' is invalid: adapter_config.json not found."
+                )
+            async with await anyio.open_file(str(adapter_config_path), "r") as f:
+                adapter_cfg = json.loads(await f.read())
+                if adapter_cfg["base_model_name_or_path"] != self.model_id:
+                    raise ValueError(  # noqa: TRY003
+                        f"LoRA adapter '{lora_config.name}' targets "
+                        f"{adapter_cfg['model_type']} but base model is {self.model_id}."
+                    )
+
+            self.loras[lora_config.name] = LoRARequest(
+                lora_name=lora_config.name,
+                lora_int_id=lora_id + 1,  # LoRA IDs start from 1
+                lora_path=lora_path,
+            )
+
         args = AsyncEngineArgs(
             model=config_obj.model_id,
             dtype=config_obj.dtype,
@@ -230,6 +276,7 @@ class VLLMDeployment(BaseDeployment):
             enforce_eager=config_obj.enforce_eager,
             gpu_memory_utilization=self.gpu_memory_utilization,
             max_model_len=config_obj.max_model_len,
+            enable_lora=bool(config_obj.loras),
             **config_obj.engine_args,
         )
 
@@ -386,6 +433,7 @@ class VLLMDeployment(BaseDeployment):
         self,
         prompt: str | list[int],
         sampling_params: SamplingParams | None = None,
+        lora: str | None = None,
         mm_data: dict | None = None,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Generate completion for the given prompt and stream the results.
@@ -394,6 +442,7 @@ class VLLMDeployment(BaseDeployment):
             prompt (str | list[int]): the prompt or the tokenized prompt
             mm_data (dict | None): the multimodal data
             sampling_params (SamplingParams | None): the sampling parameters
+            lora (str | None): the name of the LoRA adapter to apply
 
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
@@ -402,6 +451,13 @@ class VLLMDeployment(BaseDeployment):
             prompt_token_ids = self.tokenizer.encode(prompt)
         else:
             prompt_token_ids = prompt
+
+        if lora is not None:
+            if lora not in self.loras:
+                raise ValueError(f"LoRA adapter '{lora}' is not available.")  # noqa: TRY003
+            lora_request = self.loras[lora]
+        else:
+            lora_request = None
 
         if sampling_params is None:
             sampling_params = self.default_sampling_params
@@ -460,10 +516,12 @@ class VLLMDeployment(BaseDeployment):
                 )
             else:
                 inputs = TokensPrompt(prompt_token_ids=prompt_token_ids)
+
             results_generator = self.engine.generate(
                 inputs,
                 sampling_params=sampling_params_vllm,
                 request_id=request_id,
+                lora_request=lora_request,
             )
 
             num_returned = 0
@@ -486,6 +544,7 @@ class VLLMDeployment(BaseDeployment):
         self,
         prompt: str | list[int],
         sampling_params: SamplingParams | None = None,
+        lora: str | None = None,
         mm_data: dict | None = None,
     ) -> LLMOutput:
         """Generate completion for the given prompt.
@@ -494,13 +553,14 @@ class VLLMDeployment(BaseDeployment):
             prompt (str | list[int]): the prompt or the tokenized prompt
             mm_data (dict | None): the multimodal data
             sampling_params (SamplingParams | None): the sampling parameters
+            lora (str | None): the name of the LoRA adapter to apply
 
         Returns:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         generated_text = ""
         async for chunk in self.generate_stream(
-            prompt, sampling_params=sampling_params, mm_data=mm_data
+            prompt, sampling_params=sampling_params, mm_data=mm_data, lora=lora
         ):
             generated_text += chunk["text"]
         return LLMOutput(text=generated_text)
@@ -510,6 +570,7 @@ class VLLMDeployment(BaseDeployment):
         prompts: list[str] | list[list[int]],
         sampling_params: SamplingParams | None = None,
         mm_data_list: list[dict] | None = None,
+        lora: str | None = None,
     ) -> LLMBatchOutput:
         """Generate completion for the batch of prompts.
 
@@ -517,6 +578,7 @@ class VLLMDeployment(BaseDeployment):
             prompts (List[str] | List[List[int]]): the list of prompts or the tokenized prompts
             mm_data_list (List[dict] | None): the list of multimodal data
             sampling_params (SamplingParams | None): the sampling parameters
+            lora (str | None): the name of the LoRA adapter to apply
 
         Returns:
             LLMBatchOutput: the dictionary with the key "texts"
@@ -526,10 +588,15 @@ class VLLMDeployment(BaseDeployment):
         for i, prompt in enumerate(prompts):
             if mm_data_list is not None:
                 text = await self.generate(
-                    prompt, sampling_params=sampling_params, mm_data=mm_data_list[i]
+                    prompt,
+                    sampling_params=sampling_params,
+                    mm_data=mm_data_list[i],
+                    lora=lora,
                 )
             else:
-                text = await self.generate(prompt, sampling_params=sampling_params)
+                text = await self.generate(
+                    prompt, sampling_params=sampling_params, lora=lora
+                )
             texts.append(text["text"])
 
         return LLMBatchOutput(texts=texts)
@@ -538,12 +605,14 @@ class VLLMDeployment(BaseDeployment):
         self,
         dialog: ChatDialog | ImageChatDialog,
         sampling_params: SamplingParams | None = None,
+        lora: str | None = None,
     ) -> ChatOutput:
         """Chat with the model.
 
         Args:
             dialog (ChatDialog | ImageChatDialog): the dialog (optionally with images)
             sampling_params (SamplingParams | None): the sampling parameters
+            lora (str | None): the name of the LoRA adapter to apply
 
         Returns:
             ChatOutput: the dictionary with the key "message"
@@ -552,7 +621,7 @@ class VLLMDeployment(BaseDeployment):
         """
         prompt_ids, mm_data = self.apply_chat_template(dialog)
         response = await self.generate(
-            prompt_ids, sampling_params=sampling_params, mm_data=mm_data
+            prompt_ids, sampling_params=sampling_params, mm_data=mm_data, lora=lora
         )
         response_message = ChatMessage(content=response["text"], role="assistant")
         return ChatOutput(message=response_message)
@@ -561,18 +630,20 @@ class VLLMDeployment(BaseDeployment):
         self,
         dialog: ChatDialog | ImageChatDialog,
         sampling_params: SamplingParams | None = None,
+        lora: str | None = None,
     ) -> AsyncGenerator[LLMOutput, None]:
         """Chat with the model and stream the responses.
 
         Args:
             dialog (ChatDialog | ImageChatDialog): the dialog (optionally with images)
             sampling_params (SamplingParams | None): the sampling parameters
+            lora (str | None): the name of the LoRA adapter to apply
 
         Yields:
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         prompt_ids, mm_data = self.apply_chat_template(dialog)
         async for chunk in self.generate_stream(
-            prompt_ids, sampling_params=sampling_params, mm_data=mm_data
+            prompt_ids, sampling_params=sampling_params, mm_data=mm_data, lora=lora
         ):
             yield chunk
