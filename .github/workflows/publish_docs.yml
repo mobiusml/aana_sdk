@@ -18,15 +18,13 @@ jobs:
       with:
         python-version: "3.10"
 
-    - name: Bootstrap poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python - -y
-
-    - name: Update PATH
-      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+    - name: Bootstrap uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.8.4"
 
     - name: Install dependencies
-      run: poetry install --only docs
+      run: uv sync --extra docs
     
     - name: Deploy docs
-      run: poetry run mkdocs gh-deploy --force
+      run: uv run mkdocs gh-deploy --force
