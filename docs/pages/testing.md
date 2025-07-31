@@ -3,7 +3,7 @@
 The project uses pytest for testing. To run the tests, use the following command:
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
 Most deployment tests require GPU to run. They are skipped if the GPU is not available. Right now we don't GPU runner for our CI/CD pipeline, so if you change anything related to deployments, make sure to run the tests locally with GPU and mention it in the PR description.
