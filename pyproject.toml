@@ -23,6 +23,7 @@ dependencies = [
     "fastapi>=0.111.0",
     "haystack-ai>=2.1.0",
     "hf-transfer>=0.1.6",
+    "huggingface-hub>=0.21.0",
     "numpy>=1.17,<2",
     "opencv-python-headless>=4.8.1.78",
     "orjson>=3.10.3", 
