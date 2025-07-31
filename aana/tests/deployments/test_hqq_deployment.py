@@ -1,4 +1,3 @@
-# ruff: noqa: S101
 from importlib import resources
 
 import pytest
