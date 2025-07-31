@@ -112,20 +112,20 @@ For optimal performance install [PyTorch](https://pytorch.org/get-started/locall
 
 Some models use Flash Attention. Install Flash Attention library for better performance. See [flash attention installation instructions](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) for more details and supported GPUs.
 
-3. Install the package with poetry.
+3. Install the package with uv.
 
-The project is managed with [Poetry](https://python-poetry.org/docs/). See the [Poetry installation instructions](https://python-poetry.org/docs/#installation) on how to install it on your system. Use poetry >= 2.0 for the best experience.
+The project is managed with [uv](https://docs.astral.sh/uv/), a fast Python package manager. See the [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/) on how to install it on your system.
 
-It will install the package in the virtual environment created by Poetry. Add `--extras all` to install all extra dependencies.
+It will install the package in the virtual environment created by uv. Add `--extra all` to install all extra dependencies.
 
 ```bash
-poetry install --extras all
+uv sync --extra all
 ```
 
-For the development environment, it is recommended to install all extras and tests and dev dependencies. You can do this by running the following command:
+For the development environment, it is recommended to install all extras and dev and test dependencies. You can do this by running the following command:
 
 ```bash
-poetry install --extras all --with dev,tests
+uv sync --extra all --extra dev --extra tests
 ```
 
 ## Integrations    

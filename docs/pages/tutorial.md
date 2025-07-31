@@ -705,10 +705,10 @@ Now you can run the application:
 aana deploy aana_summarize_video.app:aana_app
 ```
 
-Or if you want to be on the safe side, you can run the application with `poetry run` and CUDA_VISIBLE_DEVICES set to the GPU index you want to use:
+Or if you want to be on the safe side, you can run the application with `uv run` and CUDA_VISIBLE_DEVICES set to the GPU index you want to use:
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 poetry run aana deploy aana_summarize_video.app:aana_app
+CUDA_VISIBLE_DEVICES=0 uv run aana deploy aana_summarize_video.app:aana_app
 ```
 
 Once the application is running, you can send a request to transcribe and summarize a video as described in the previous sections.
