@@ -11,12 +11,10 @@
 			"installTools": true,
 			"version": "3.10"
 		},
-		"ghcr.io/devcontainers-contrib/features/poetry:2": {
-			"version": "2.0"
-		},
 		"ghcr.io/itsmechlark/features/postgresql:1": {
 			"version": "16"
-		}
+		},
+		"ghcr.io/va-h/devcontainers-features/uv:1": {}
 	},
 	"hostRequirements": {
 		"gpu": "optional"
@@ -24,7 +22,7 @@
 	"securityOpt": [
 		"seccomp=unconfined"
 	],
-	"postCreateCommand": "poetry config virtualenvs.in-project true;poetry install  --extras 'all api_service' --with dev,tests",
+	"postCreateCommand": "uv sync --all-groups --extra all --extra api_service",
 	"postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
 	"customizations": {
 		"vscode": {

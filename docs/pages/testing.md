@@ -6,6 +6,12 @@ The project uses pytest for testing. To run the tests, use the following command
 uv run pytest
 ```
 
+Make sure to install test dependencies first:
+
+```bash
+uv sync --group tests
+```
+
 Most deployment tests require GPU to run. They are skipped if the GPU is not available. Right now we don't GPU runner for our CI/CD pipeline, so if you change anything related to deployments, make sure to run the tests locally with GPU and mention it in the PR description.
 
 If you are using VS Code, you can run the tests using the Test Explorer that is installed with the [Python extension](https://code.visualstudio.com/docs/python/testing).

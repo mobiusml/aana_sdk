@@ -125,7 +125,7 @@ uv sync --extra all
 For the development environment, it is recommended to install all extras and dev and test dependencies. You can do this by running the following command:
 
 ```bash
-uv sync --extra all --extra dev --extra tests
+uv sync --extra all --group dev --group tests
 ```
 
 ## Integrations    
