@@ -1,2 +1,2 @@
 #!/bin/sh
-poetry install $1
+uv sync $1
