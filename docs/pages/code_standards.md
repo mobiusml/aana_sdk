@@ -9,7 +9,7 @@ uv run ruff check aana
 
 You can automatically fix some issues with the `--fix`
  and `--unsafe-fixes` options. (Be sure to install the dev 
- dependencies: `uv sync --extra dev`. )
+ dependencies: `uv sync --group dev`. )
 
 To run the auto-formatter, it's
 

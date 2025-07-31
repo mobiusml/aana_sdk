@@ -17,7 +17,7 @@ commands:
   - export LANG="en_US.UTF-8" LANGUAGE="en_US:en" LC_ALL="en_US.UTF-8"
   - curl -LsSf https://astral.sh/uv/install.sh | sh
   - export PATH=$PATH:/root/.cargo/bin
-  - uv sync --extra tests --extra all
+  - uv sync --group tests --extra all
   - HF_HUB_CACHE="/models_cache" CUDA_VISIBLE_DEVICES="0" uv run pytest -vv -s
 
 volumes:

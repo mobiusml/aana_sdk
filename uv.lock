@@ -58,17 +58,6 @@ asr = [
     { name = "faster-whisper" },
     { name = "pyannote-audio" },
 ]
-dev = [
-    { name = "ipykernel" },
-    { name = "matplotlib" },
-    { name = "mypy" },
-    { name = "ruff" },
-]
-docs = [
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extra = ["python"] },
-]
 gemlite = [
     { name = "accelerate" },
     { name = "bitblas" },
@@ -84,6 +73,29 @@ hqq = [
     { name = "hqq" },
     { name = "transformers" },
 ]
+transformers = [
+    { name = "accelerate" },
+    { name = "bitsandbytes" },
+    { name = "transformers" },
+]
+vllm = [
+    { name = "outlines", extra = ["serve"] },
+    { name = "vllm" },
+    { name = "xgrammar" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "ipykernel" },
+    { name = "matplotlib" },
+    { name = "mypy" },
+    { name = "ruff" },
+]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
+]
 tests = [
     { name = "pytest-asyncio" },
     { name = "pytest-dotenv" },
@@ -95,16 +107,6 @@ tests = [
     { name = "rapidfuzz" },
     { name = "sentence-transformers" },
     { name = "sqlalchemy-utils" },
-]
-transformers = [
-    { name = "accelerate" },
-    { name = "bitsandbytes" },
-    { name = "transformers" },
-]
-vllm = [
-    { name = "outlines", extra = ["serve"] },
-    { name = "vllm" },
-    { name = "xgrammar" },
 ]
 
 [package.metadata]
@@ -133,13 +135,7 @@ requires-dist = [
     { name = "hqq", marker = "extra == 'all'", specifier = ">=0.2.5" },
     { name = "hqq", marker = "extra == 'gemlite'", specifier = ">=0.2.5" },
     { name = "hqq", marker = "extra == 'hqq'", specifier = ">=0.2.5" },
-    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.25.2" },
     { name = "lago-python-client", marker = "extra == 'api-service'", specifier = ">=1.19.0" },
-    { name = "matplotlib", marker = "extra == 'dev'", specifier = ">=3.8.2" },
-    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.0" },
-    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.5.29" },
-    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.25.1" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.6.1" },
     { name = "numpy", specifier = ">=1.17,<2" },
     { name = "opencv-python-headless", specifier = ">=4.8.1.78" },
     { name = "orjson", specifier = ">=3.10.3" },
@@ -149,21 +145,10 @@ requires-dist = [
     { name = "pyannote-audio", marker = "extra == 'asr'", specifier = ">=3.1.1" },
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.1.0" },
-    { name = "pytest-asyncio", marker = "extra == 'tests'", specifier = ">=0.26.0" },
-    { name = "pytest-dotenv", marker = "extra == 'tests'", specifier = ">=0.5.2" },
-    { name = "pytest-env", marker = "extra == 'tests'", specifier = ">=1.1.3" },
-    { name = "pytest-httpserver", marker = "extra == 'tests'", specifier = ">=1.1.1" },
-    { name = "pytest-mock", marker = "extra == 'tests'", specifier = ">=3.12.0" },
-    { name = "pytest-postgresql", marker = "extra == 'tests'", specifier = ">=6.0.0" },
-    { name = "pytest-timeout", marker = "extra == 'tests'", specifier = ">=2.2.0" },
     { name = "python-multipart", specifier = ">=0.0.18" },
-    { name = "rapidfuzz", marker = "extra == 'tests'", specifier = ">=3.4.0" },
     { name = "ray", extras = ["serve"], specifier = ">=2.20" },
     { name = "rich", specifier = ">=13.9.4" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9.0" },
-    { name = "sentence-transformers", marker = "extra == 'tests'", specifier = ">=2.6.1" },
     { name = "sqlalchemy", extras = ["aiosqlite", "asyncio", "mypy", "postgresql-asyncpg"], specifier = ">=2.0.23" },
-    { name = "sqlalchemy-utils", marker = "extra == 'tests'", specifier = ">=0.41.1" },
     { name = "tenacity", marker = "extra == 'api-service'", specifier = ">=9.0.0" },
     { name = "torch", specifier = ">=2.4.0" },
     { name = "transformers", marker = "extra == 'all'", specifier = ">=4.49.0" },
@@ -175,7 +160,32 @@ requires-dist = [
     { name = "xgrammar", marker = "extra == 'vllm'", specifier = ">=0.1.8" },
     { name = "yt-dlp", specifier = ">=2024.8.6" },
 ]
-provides-extras = ["vllm", "transformers", "asr", "hqq", "gemlite", "api-service", "all", "dev", "docs", "tests"]
+provides-extras = ["vllm", "transformers", "asr", "hqq", "gemlite", "api-service", "all"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "ipykernel", specifier = ">=6.25.2" },
+    { name = "matplotlib", specifier = ">=3.8.2" },
+    { name = "mypy", specifier = ">=1.6.1" },
+    { name = "ruff", specifier = ">=0.9.0" },
+]
+docs = [
+    { name = "mkdocs", specifier = ">=1.6.0" },
+    { name = "mkdocs-material", specifier = ">=9.5.29" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.25.1" },
+]
+tests = [
+    { name = "pytest-asyncio", specifier = ">=0.26.0" },
+    { name = "pytest-dotenv", specifier = ">=0.5.2" },
+    { name = "pytest-env", specifier = ">=1.1.3" },
+    { name = "pytest-httpserver", specifier = ">=1.1.1" },
+    { name = "pytest-mock", specifier = ">=3.12.0" },
+    { name = "pytest-postgresql", specifier = ">=6.0.0" },
+    { name = "pytest-timeout", specifier = ">=2.2.0" },
+    { name = "rapidfuzz", specifier = ">=3.4.0" },
+    { name = "sentence-transformers", specifier = ">=2.6.1" },
+    { name = "sqlalchemy-utils", specifier = ">=0.41.1" },
+]
 
 [[package]]
 name = "accelerate"
