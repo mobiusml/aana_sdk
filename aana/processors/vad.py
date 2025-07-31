@@ -2,10 +2,14 @@ from collections.abc import Callable
 
 import numpy as np
 import torch
-from pyannote.audio.core.io import AudioFile
-from pyannote.audio.pipelines import VoiceActivityDetection
-from pyannote.audio.pipelines.utils import PipelineModel
-from pyannote.core import Annotation, Segment, SlidingWindowFeature
+
+from aana.utils.lazy_import import LazyImport
+
+with LazyImport("Run 'pip install pyannote-audio' or 'pip install aana[asr]'"):
+    from pyannote.audio.core.io import AudioFile
+    from pyannote.audio.pipelines import VoiceActivityDetection
+    from pyannote.audio.pipelines.utils import PipelineModel
+    from pyannote.core import Annotation, Segment, SlidingWindowFeature
 
 
 class VoiceActivitySegmentation(VoiceActivityDetection):
