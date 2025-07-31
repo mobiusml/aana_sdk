@@ -63,6 +63,8 @@ class AanaSDK:
                 "InferenceException",
                 "ActorDiedError",
                 "OutOfMemoryError",
+                "DatabaseException",
+                "PipelineRuntimeError",
             ]
         else:
             self.retryable_exceptions = retryable_exceptions
