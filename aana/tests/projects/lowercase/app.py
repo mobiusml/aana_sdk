@@ -1,4 +1,3 @@
-# ruff: noqa: S101, S113
 from typing import Annotated, TypedDict
 
 from pydantic import Field

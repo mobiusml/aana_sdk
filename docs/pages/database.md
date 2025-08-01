@@ -200,7 +200,7 @@ In this example, we created a new repository class `ExtendedVideoRepository` tha
 Once you have created your custom model and repository classes, you need to create a migration to update the database schema. You can do this by running the following command from the package root directory:
 
 ```bash
-poetry run alembic revision --autogenerate -m "<Short description of changes in sentence form.>"
+uv run alembic revision --autogenerate -m "<Short description of changes in sentence form.>"
 ```
 
 This will create a new migration file in the `alembic/versions` directory. You can then apply with aana migrate command.

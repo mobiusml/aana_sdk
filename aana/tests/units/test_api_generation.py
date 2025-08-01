@@ -1,4 +1,4 @@
-# ruff: noqa: S101, A003
+# ruff: noqa: S101
 from collections.abc import AsyncGenerator
 from typing import Annotated, TypedDict
 
