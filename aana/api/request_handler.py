@@ -40,8 +40,6 @@ logger = logging.getLogger(__name__)
 class RequestHandler:
     """This class is used to handle requests to the Aana application."""
 
-    ready = False
-
     def __init__(
         self,
         app_name: str,
@@ -84,7 +82,6 @@ class RequestHandler:
             )
 
         app.openapi = self.custom_openapi
-        self.ready = True
         self.running_tasks = set()
 
     def custom_openapi(self) -> dict[str, Any]:
@@ -186,7 +183,7 @@ class RequestHandler:
             # If the app is not in the deployments yet, it is not ready
             is_ready = False
         # If the app is not ready, return 503 Service Unavailable
-        if not self.ready:
+        if not is_ready:
             return AanaJSONResponse(content={"ready": False}, status_code=503)
 
         return AanaJSONResponse(content={"ready": is_ready})
