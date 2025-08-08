@@ -185,6 +185,10 @@ class RequestHandler:
         if self.app_name not in status_response.deployments:
             # If the app is not in the deployments yet, it is not ready
             is_ready = False
+        # If the app is not ready, return 503 Service Unavailable
+        if not self.ready:
+            return AanaJSONResponse(content={"ready": False}, status_code=503)
+
         return AanaJSONResponse(content={"ready": is_ready})
 
     async def check_health(self):
