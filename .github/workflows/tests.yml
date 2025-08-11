@@ -27,22 +27,21 @@ jobs:
       run: python -c "import sys; print(sys.version)"
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Bootstrap poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python - -y
-    - name: Update PATH
-      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+    - name: Bootstrap uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "latest"
     - name: Install dependencies
       run: |
-        poetry install --with dev,tests --extras all
+        uv sync --group dev --group tests --extra all
         sudo apt-get update
         sudo apt-get install ffmpeg
     - name: Install postgres
       uses: ikalnytskyi/action-setup-postgres@v6 
     - name: Run Ruff Check
-      run: poetry run ruff check
+      run: uv run ruff check
     - name: Test with pytest
       if: always()
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      run: poetry run pytest -vv
+      run: uv run pytest -vv

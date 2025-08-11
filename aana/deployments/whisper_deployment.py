@@ -281,9 +281,9 @@ class WhisperDeployment(BaseDeployment):
         transcriptions: list[AsrTranscription] = []
         for audio in audio_batch:
             output = await self.transcribe(audio, params)
-            segments.append(cast(list[AsrSegment], output["segments"]))
-            infos.append(cast(AsrTranscriptionInfo, output["transcription_info"]))
-            transcriptions.append(cast(AsrTranscription, output["transcription"]))
+            segments.append(cast("list[AsrSegment]", output["segments"]))
+            infos.append(cast("AsrTranscriptionInfo", output["transcription_info"]))
+            transcriptions.append(cast("AsrTranscription", output["transcription"]))
 
         return WhisperBatchOutput(
             segments=segments, transcription_info=infos, transcription=transcriptions

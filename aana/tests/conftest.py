@@ -1,5 +1,4 @@
 # This file is used to define fixtures that are used in the integration tests.
-# ruff: noqa: S101
 import os
 import random
 import tempfile

@@ -1,4 +1,4 @@
-# ruff: noqa: S101, S113
+# ruff: noqa: S101
 
 import pytest
 from ray import serve
