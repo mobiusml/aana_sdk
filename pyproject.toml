@@ -45,7 +45,7 @@ Documentation = "https://mobiusml.github.io/aana_sdk"
 [project.optional-dependencies]
 vllm = [
     "vllm>=0.10.0",
-    "outlines[serve]>=0.1.11",
+    "outlines-core>=0.2.10",
     "xgrammar>=0.1.8"
 ]
 
@@ -89,7 +89,7 @@ all = [
     "faster-whisper (>=1.1.1,<2.0.0)",
     "hqq>=0.2.5",
     "gemlite>=0.4.5",
-    "outlines[serve]>=0.0.46",
+    "outlines-core>=0.2.10",
     "pyannote-audio>=3.1.1",
     "transformers>=4.49.0",
     "vllm>=0.10.0"
