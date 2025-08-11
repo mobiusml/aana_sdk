@@ -148,7 +148,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.1.0" },
     { name = "python-multipart", specifier = ">=0.0.18" },
-    { name = "ray", extras = ["serve"], specifier = ">=2.20,<2.47" },
+    { name = "ray", extras = ["serve"], specifier = ">=2.20" },
     { name = "rich", specifier = ">=13.9.4" },
     { name = "sqlalchemy", extras = ["aiosqlite", "asyncio", "mypy", "postgresql-asyncpg"], specifier = ">=2.0.23" },
     { name = "tenacity", marker = "extra == 'api-service'", specifier = ">=9.0.0" },
