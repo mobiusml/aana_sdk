@@ -210,8 +210,6 @@ class VLLMDeployment(BaseDeployment):
 
             gemlite_imports.check()
 
-            os.environ["VLLM_USE_V1"] = "0"
-
             # Use float16 for gemlite by default
             if config_obj.dtype == Dtype.AUTO:
                 logger.warning(
