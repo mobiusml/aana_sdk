@@ -44,7 +44,7 @@ Documentation = "https://mobiusml.github.io/aana_sdk"
 
 [project.optional-dependencies]
 vllm = [
-    "vllm>=0.9.0",
+    "vllm>=0.10.0",
     "outlines[serve]>=0.1.11",
     "xgrammar>=0.1.8"
 ]
@@ -92,7 +92,7 @@ all = [
     "outlines[serve]>=0.0.46",
     "pyannote-audio>=3.1.1",
     "transformers>=4.49.0",
-    "vllm>=0.9.0"
+    "vllm>=0.10.0"
 ]
 
 [dependency-groups]
