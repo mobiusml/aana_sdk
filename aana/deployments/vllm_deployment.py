@@ -402,7 +402,6 @@ class VLLMDeployment(BaseDeployment):
             tokenizer=self.tokenizer,
             tools=None,
             model_config=self.model_config,
-            trust_remote_code=self.model_config.trust_remote_code,
         )
         conversation, mm_data = parse_chat_messages(
             messages, self.model_config, self.tokenizer, content_format=content_format
