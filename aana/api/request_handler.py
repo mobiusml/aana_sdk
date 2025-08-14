@@ -5,11 +5,12 @@ from uuid import UUID
 import orjson
 from fastapi import APIRouter
 from fastapi.openapi.utils import get_openapi
+from httpx import ASGITransport, AsyncClient
 from ray import serve
 
 # from scalar_fastapi import get_scalar_api_reference
 from aana.api.api_generation import Endpoint
-from aana.api.app import app
+from aana.api.app import app, worker_app
 from aana.api.event_handlers.event_manager import EventManager
 from aana.api.exception_handler import custom_exception_handler
 from aana.api.responses import AanaJSONResponse
@@ -131,26 +132,23 @@ class RequestHandler:
             async with get_session() as session:
                 task_repo = TaskRepository(session)
                 task = await task_repo.read(task_id)
+                user_id = task.user_id
                 path = task.endpoint
-                kwargs = task.data
+                data = task.data
 
                 task = await task_repo.update_status(task_id, TaskStatus.RUNNING, 0)
                 await trigger_task_webhooks(WebhookEventType.TASK_STARTED, task)
 
-            for e in self.endpoints:
-                if e.path == path:
-                    endpoint = e
-                    break
-            else:
-                raise ValueError(f"Endpoint {path} not found")  # noqa: TRY003, TRY301
-
-            if not endpoint.initialized:
-                await endpoint.initialize()
-
-            if endpoint.is_streaming_response():
-                out = [item async for item in endpoint.run(**kwargs)]
-            else:
-                out = await endpoint.run(**kwargs)
+            async with AsyncClient(
+                transport=ASGITransport(app=worker_app), base_url="http://internal"
+            ) as client:
+                response = await client.post(
+                    # path,
+                    f"/__worker/{path.lstrip('/')}",
+                    json=data,
+                    headers={"user_id": user_id},
+                )
+            out = response.json()
 
             async with get_session() as session:
                 task = await TaskRepository(session).update_status(
