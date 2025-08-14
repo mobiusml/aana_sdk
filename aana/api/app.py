@@ -21,6 +21,7 @@ from aana.storage.models.api_key import ApiKeyEntity
 from aana.storage.session import get_session
 
 app = FastAPI()
+worker_app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,6 +35,10 @@ app.add_middleware(
 app.add_exception_handler(ValidationError, validation_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, aana_exception_handler)
+
+worker_app.add_exception_handler(ValidationError, validation_exception_handler)
+worker_app.add_exception_handler(RequestValidationError, validation_exception_handler)
+worker_app.add_exception_handler(Exception, aana_exception_handler)
 
 
 @app.middleware("http")
