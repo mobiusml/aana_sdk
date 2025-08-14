@@ -53,6 +53,8 @@ with LazyImport("Run 'pip install vllm' or 'pip install aana[vllm]'") as vllm_im
     from vllm.utils import random_uuid
     from vllm.v1.engine.async_llm import AsyncLLM as AsyncLLMV1
 
+with LazyImport("Run 'pip install ftfy'") as ftfy_imports:
+    import ftfy
 
 logger = logging.getLogger(__name__)
 
@@ -196,6 +198,8 @@ class VLLMDeployment(BaseDeployment):
             config (dict): the configuration of the deployment
         """
         vllm_imports.check()
+        ftfy_imports.check()
+
         config_obj = VLLMConfig(**config)
 
         if config_obj.gemlite_mode != GemliteMode.OFF:
@@ -448,6 +452,8 @@ class VLLMDeployment(BaseDeployment):
             LLMOutput: the dictionary with the key "text" and the generated text as the value
         """
         if isinstance(prompt, str):
+            # Fix text encoding issues in the prompt before tokenization
+            prompt = ftfy.fix_text(prompt)
             prompt_token_ids = self.tokenizer.encode(prompt)
         else:
             prompt_token_ids = prompt
@@ -563,6 +569,8 @@ class VLLMDeployment(BaseDeployment):
             prompt, sampling_params=sampling_params, mm_data=mm_data, lora=lora
         ):
             generated_text += chunk["text"]
+
+        generated_text = ftfy.fix_text(generated_text)
         return LLMOutput(text=generated_text)
 
     async def generate_batch(
