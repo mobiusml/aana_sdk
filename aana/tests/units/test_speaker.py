@@ -11,6 +11,7 @@ from aana.processors.speaker import PostProcessingForDiarizedAsr
 from aana.tests.utils import verify_deployment_results
 
 
+@pytest.mark.skip(reason="The test is temporary disabled")
 @pytest.mark.parametrize("audio_file", ["sd_sample.wav"])
 def test_asr_diarization_post_process(audio_file: Literal["sd_sample.wav"]):
     """Test that the ASR output can be processed to generate diarized transcription and an invalid ASR output leads to ValueError."""

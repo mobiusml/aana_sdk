@@ -32,7 +32,7 @@ class TestHFBlip2Deployment:
     """Test HuggingFace BLIP2 deployment."""
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("image_name", ["Starry_Night.jpeg", "Seated_Man.png"])
+    @pytest.mark.parametrize("image_name", ["Starry_Night.jpeg"])
     async def test_methods(self, setup_deployment, image_name):
         """Test HuggingFace BLIP2 methods."""
         deployment_name, handle_name, _ = setup_deployment

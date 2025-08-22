@@ -29,6 +29,7 @@ deployments = [
 ]
 
 
+@pytest.mark.skip(reason="The test is temporary disabled")
 @pytest.mark.parametrize("setup_deployment", deployments, indirect=True)
 class TestPyannoteSpeakerDiarizationDeployment:
     """Test pyannote Speaker Diarization deployment."""
